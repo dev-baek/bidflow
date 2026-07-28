@@ -1,0 +1,30 @@
+.DS_Store
+.idea/
+.vscode/
+.env
+.env.*
+!.env.example
+
+# Build outputs
+node_modules/
+.next/
+dist/
+build/
+target/
+.gradle/
+
+# Infrastructure
+.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
+
+# Local services and reports
+data/
+coverage/
+playwright-report/
+test-results/
+
+# Codex working files
+work/
+.superpowers/
