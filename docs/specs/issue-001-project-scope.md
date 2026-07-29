@@ -2,8 +2,10 @@
 
 - 상태: Review
 - 작성일: 2026-07-28
+- 개정일: 2026-07-29 — EC2·ALB·RDS PostgreSQL 구조로 전환
 - 상위 Issue: [#1 BidFlow 프로젝트 범위와 성공 기준 확정](https://github.com/dev-baek/bidflow/issues/1)
 - 사양 작업: [#22 제품 목표·사용자·MVP 범위 사양 작성](https://github.com/dev-baek/bidflow/issues/22)
+- 전환 사양: [#107 EC2·ALB 기반 아키텍처 전환 사양 작성](https://github.com/dev-baek/bidflow/issues/107)
 
 ## 1. 문제 정의
 
@@ -29,7 +31,7 @@ BidFlow는 다음 문제를 해결하는 AWS 기반 종합 중고 경매 플랫�
 
 ### 2.2 포트폴리오 목표
 
-- AWS 서버리스 서비스의 역할과 연결 방식을 실제 배포로 설명한다.
+- AWS ALB·EC2 Auto Scaling·RDS와 관리형 데이터 서비스의 역할을 실제 배포로 설명한다.
 - Kafka, Redis, OpenSearch를 선택한 이유와 사용하지 않을 조건을 설명한다.
 - 비동기 처리, 순서 보장, 멱등성, 최종적 일관성, 장애 복구를 코드와 실험으로 증명한다.
 - TDD와 순수한 도메인 함수로 입찰 규칙과 화면 상태 전이를 재현 가능한 테스트로 증명한다.
@@ -64,7 +66,7 @@ MVP에서는 별도의 운영자 CRUD 화면을 만들지 않는다. CloudWatch 
 | 자동 입찰 | 사용자가 최대 지불 금액을 등록하면 시스템이 최소 입찰 단위로 현재가를 계산하는 방식 |
 | 현재가 | 현재 최고 입찰자가 승리 상태를 유지하는 데 필요한 공개 가격 |
 | 입찰 원장 | 승인·거절된 입찰 명령과 계산 결과를 영구 보관한 기록 |
-| 파생 데이터 | DynamoDB 원본에서 다시 만들 수 있는 Redis 상태와 OpenSearch 인덱스 |
+| 파생 데이터 | PostgreSQL 원본에서 다시 만들 수 있는 Redis 상태와 OpenSearch 인덱스 |
 | 입찰 명령 | 처리 전 상태로 Kafka에 기록된 사용자의 입찰 요청 |
 | 도메인 이벤트 | 입찰 승인, 최고 입찰자 변경, 경매 종료 등 확정된 사실 |
 
@@ -80,10 +82,10 @@ MVP에서는 별도의 운영자 CRUD 화면을 만들지 않는다. CloudWatch 
 6. 직접 입찰
 7. 최대 금액 기반 자동 입찰
 8. Redis Lua Script 기반 원자적 가격 계산
-9. DynamoDB 입찰 원장과 멱등성 처리
-10. WebSocket 기반 입찰 결과와 현재가 전파
+9. RDS PostgreSQL 입찰 원장과 멱등성 처리
+10. Spring WebSocket 기반 입찰 결과와 현재가 전파
 11. 마감 5분 미만에 승인된 입찰의 경매 종료 시각 5분 자동 연장
-12. EventBridge Scheduler 기반 경매 종료
+12. PostgreSQL 잠금 기반 경매 종료 Scheduler
 13. 낙찰·유찰 결과 확정
 14. Consumer 재시도와 실패 이벤트 격리
 15. Redis 상태 복구와 OpenSearch 전체 재색인
@@ -118,36 +120,36 @@ MVP에서는 별도의 운영자 CRUD 화면을 만들지 않는다. CloudWatch 
 1. 판매자가 로그인한다.
 2. 상품 정보, 경매 기간과 시작가를 입력한다.
 3. Presigned URL을 발급받아 이미지를 S3에 직접 업로드한다.
-4. 등록 API가 이미지와 입력값을 검증하고 DynamoDB에 저장한다.
-5. `ListingPublished` 이벤트가 발행된다.
-6. Search Indexer가 OpenSearch에 상품을 색인한다.
+4. 등록 API가 이미지와 입력값을 검증하고 PostgreSQL에 Outbox와 함께 저장한다.
+5. Outbox Publisher가 `ListingPublished` 이벤트를 Kafka에 발행한다.
+6. Projection Worker가 OpenSearch에 상품을 색인한다.
 
 ### 6.2 상품 검색
 
 1. 구매자가 검색어와 필터를 입력한다.
-2. Search Lambda가 OpenSearch를 조회한다.
+2. Spring Boot API가 OpenSearch를 조회한다.
 3. 화면에 검색 결과 또는 결과 없음·장애 상태를 표시한다.
 4. OpenSearch 장애는 상품 등록과 입찰 처리에 영향을 주지 않는다.
 
 ### 6.3 직접·자동 입찰
 
 1. 구매자가 직접 입찰가 또는 최대 자동 입찰가를 제출한다.
-2. Bid Command Lambda가 요청을 검증하고 `202 Accepted`와 `bidRequestId`를 반환한다.
-3. `auctionId`를 Kafka Key로 사용해 `bid-command`에 발행한다.
+2. Spring Boot API가 요청을 검증하고 `202 Accepted`와 `bidRequestId`를 반환한다.
+3. PostgreSQL에 입찰 요청과 Outbox를 저장하고 Publisher가 `auctionId`를 Kafka Key로 `bid-command`에 발행한다.
 4. Bid Engine이 같은 경매의 명령을 파티션 순서대로 소비한다.
 5. Redis Lua Script가 승자와 현재가를 원자적으로 계산한다.
-6. 처리 결과와 입찰 원장을 DynamoDB에 저장한다.
+6. 처리 결과, 입찰 원장과 Outbox를 PostgreSQL Transaction으로 저장한다.
 7. 승인 시 남은 시간이 5분 미만이면 현재 종료 시각에 5분을 추가한다.
 8. `BidAccepted`, `BidRejected` 또는 `AuctionExtended` 이벤트를 발행한다.
-9. WebSocket Consumer가 사용자에게 최종 결과와 변경된 종료 시각을 전송한다.
+9. Redis Pub/Sub과 Spring WebSocket이 사용자에게 최종 결과와 변경된 종료 시각을 전송한다.
 
 ### 6.4 경매 종료
 
-1. 상품 등록 시 종료 시각의 EventBridge Schedule을 생성한다.
-2. 종료 Lambda가 `AuctionCloseRequested`를 발행한다.
-3. 종료 Consumer가 마지막 유효 입찰과 경매 상태를 확인한다.
-4. 낙찰자 또는 유찰 결과를 한 번만 확정한다.
-5. 종료 이벤트가 검색 인덱스와 실시간 화면에 반영된다.
+1. Spring Scheduler가 종료 시각이 지난 진행 중 경매를 조회한다.
+2. PostgreSQL `FOR UPDATE SKIP LOCKED`로 하나의 Worker가 종료 대상을 점유한다.
+3. 마지막 유효 입찰과 경매 상태를 확인한다.
+4. 낙찰자 또는 유찰 결과와 Outbox를 한 번만 저장한다.
+5. 종료 이벤트가 Kafka를 거쳐 검색 인덱스와 실시간 화면에 반영된다.
 
 ## S. 화면 범위
 
@@ -167,7 +169,7 @@ UI의 목표는 기능의 기술적 흐름을 분명하게 보여주는 것이�
 
 ### 8.1 최종 원본
 
-DynamoDB에 다음 데이터를 영구 보관한다.
+RDS PostgreSQL에 다음 데이터를 영구 보관한다.
 
 - 사용자 참조 정보
 - 상품과 경매
@@ -175,6 +177,8 @@ DynamoDB에 다음 데이터를 영구 보관한다.
 - 입찰 요청 처리 상태
 - 입찰 원장
 - 낙찰 결과
+- Transactional Outbox
+- Consumer 멱등 처리 기록
 - 실패 이벤트와 재처리 상태
 
 ### 8.2 파생 데이터
@@ -183,7 +187,7 @@ DynamoDB에 다음 데이터를 영구 보관한다.
 - OpenSearch: 상품 검색 문서
 - CloudWatch: 운영 로그와 지표
 
-Redis와 OpenSearch 데이터는 DynamoDB 원본으로 복원할 수 있어야 한다.
+Redis와 OpenSearch 데이터는 PostgreSQL 원본으로 복원할 수 있어야 한다.
 
 ### 8.3 정합성 원칙
 
@@ -235,25 +239,26 @@ Redis와 OpenSearch 데이터는 DynamoDB 원본으로 복원할 수 있어야 �
 - 거절되거나 중복 처리된 입찰은 연장하지 않는다.
 - 연장된 종료 시각을 기준으로 이후 유효 입찰도 같은 규칙을 반복 적용한다.
 - 반복 연장 횟수에는 상한을 두지 않는다.
-- DynamoDB 종료 시각 갱신과 EventBridge Schedule 변경은 멱등하게 처리한다.
-- Schedule 변경이 일시적으로 실패하면 보정 작업이 DynamoDB 종료 시각을 기준으로 복구한다.
+- PostgreSQL 종료 시각 갱신은 낙관적 잠금 또는 조건부 갱신으로 멱등하게 처리한다.
+- Scheduler는 항상 PostgreSQL의 최신 종료 시각을 조회하므로 자동 연장 시 별도 예약 작업을 갱신하지 않는다.
 
 ## I. AWS와 기술 범위
 
 | 기술 | 역할 | 선택 이유 |
 |---|---|---|
 | React.js·TypeScript·Vite | 사용자 화면과 정적 웹 빌드 | 타입이 있는 상태 모델과 빠른 테스트, S3·CloudFront 정적 배포 |
-| Java·Spring Boot | 도메인 모듈과 로컬 실행 기반 | 국내 백엔드 채용 범용성, DI와 테스트 생태계, Lambda 진입점 재사용 |
-| API Gateway | REST·WebSocket 진입점 | Lambda와 관리형 인증·실시간 연결을 통합 |
-| Lambda | API와 Event Consumer | 간헐적인 검증 워크로드에서 실행 기반 비용과 AWS 경험 확보 |
+| Java·Spring Boot | REST·WebSocket·Worker·Scheduler | 국내 백엔드 채용 범용성, 장기 실행 Kafka Consumer와 테스트 생태계 |
+| ALB | HTTPS·Health Check·부하 분산 | 여러 EC2의 정상 Target에 REST와 WebSocket 전달 |
+| EC2 Auto Scaling | Spring Boot 실행 | OS·JVM·배포·확장 경험과 장기 실행 Process 운영 |
 | Cognito | 사용자 인증 | 인증 인프라보다 경매 도메인에 집중 |
-| DynamoDB | 최종 원장 | Lambda 친화적 비용, 조건부 쓰기와 멱등 처리 |
+| RDS PostgreSQL | 최종 원장 | 관계·Transaction·잠금·SQL 실행 계획과 Spring Data 경험 |
 | MSK Serverless | 입찰 명령·이벤트 스트림 | 경매별 순서, 다중 Consumer, 이벤트 재생 |
 | ElastiCache | 활성 경매 계산 | Sorted Set과 Lua의 원자 연산으로 자동 입찰 계산 |
 | OpenSearch Serverless | 상품 검색 | 전문 검색, 필터, 정렬과 재색인 |
 | S3 | 상품 이미지 | Presigned URL로 애플리케이션 서버 중계 제거 |
 | CloudFront | 정적 웹·이미지 전달 | 원본 노출 축소와 캐시 |
-| EventBridge Scheduler | 경매 종료 예약 | 경매별 지정 시각 실행 |
+| ECR | Spring Boot Image | Digest 기반 배포 Artifact 보관 |
+| Systems Manager | EC2 운영 접속 | SSH Port와 장기 운영 Key 제거 |
 | CloudWatch | 로그·지표·알람 | 실패·지연 탐지와 검증 증적 |
 | Terraform | IaC | 검증 환경 재현과 고비용 리소스 삭제 자동화 |
 
@@ -261,8 +266,8 @@ Redis와 OpenSearch 데이터는 DynamoDB 원본으로 복원할 수 있어야 �
 
 - 월 예산 상한은 100,000원이다.
 - 80,000원 예상 비용에서 경고한다.
-- MSK, ElastiCache와 OpenSearch는 AWS 통합 검증 시에만 생성한다.
-- 로컬 개발에서는 Docker 기반 Kafka, Redis와 OpenSearch를 사용한다.
+- ALB, EC2, NAT Gateway, RDS, MSK, ElastiCache와 OpenSearch는 AWS 통합 검증 시에만 생성한다.
+- 로컬 개발에서는 Docker 기반 PostgreSQL, Kafka, Redis와 OpenSearch를 사용한다.
 - 검증 종료 후 Terraform Destroy와 별도 잔존 리소스 점검을 수행한다.
 - NAT Gateway, Elastic IP, 로그 보존 등 간접 비용도 점검한다.
 
@@ -297,8 +302,8 @@ Redis와 OpenSearch 데이터는 DynamoDB 원본으로 복원할 수 있어야 �
 
 #### 효과를 허용하는 경계 영역
 
-- Lambda Handler와 HTTP·WebSocket 진입점
-- DynamoDB, Kafka, Redis, OpenSearch와 EventBridge Adapter
+- Spring MVC·WebSocket·Kafka Listener와 Scheduler 진입점
+- PostgreSQL, Kafka, Redis와 OpenSearch Adapter
 - 파일, 로그, 네트워크와 시스템 시각 접근
 - React API Client, 브라우저 저장소와 WebSocket 연결
 
@@ -363,7 +368,7 @@ Redis와 OpenSearch 데이터는 DynamoDB 원본으로 복원할 수 있어야 �
 
 ### 12.4 운영과 비용
 
-- CloudWatch에서 입찰 실패율, 처리시간, Lambda 오류와 Consumer Lag을 확인할 수 있다.
+- CloudWatch에서 입찰 실패율, 처리시간, ALB Target 상태, EC2·JVM 오류와 Consumer Lag을 확인할 수 있다.
 - 테스트 알람을 발생시키고 수신 여부를 확인한다.
 - Terraform으로 AWS 검증 환경을 반복 생성·삭제할 수 있다.
 - 검증 종료 후 의도하지 않은 고정비 리소스가 남지 않는다.
@@ -404,6 +409,7 @@ Redis와 OpenSearch 데이터는 DynamoDB 원본으로 복원할 수 있어야 �
 ### 4주차
 
 - 실제 AWS 배포
+- ALB Health Check와 EC2 Auto Scaling 검증
 - CloudWatch 관측성
 - 부하·장애·E2E 검증
 - README, ADR, 결과와 회고
@@ -448,13 +454,14 @@ Redis와 OpenSearch 데이터는 DynamoDB 원본으로 복원할 수 있어야 �
 
 ## 16. 결정 사항
 
-- 서버리스 이벤트 기반 구조를 사용한다.
-- 백엔드는 Java·Spring Boot 도메인 모듈과 Lambda Adapter로 구성한다.
+- EC2 장기 실행 Spring Boot와 Kafka 이벤트 기반 구조를 사용한다.
+- 백엔드는 Java·Spring Boot 장기 실행 애플리케이션과 Port·Adapter 구조로 구성한다.
 - 프론트엔드는 React.js·TypeScript·Vite를 사용한다.
 - 핵심 도메인과 화면 상태는 TDD로 개발하고 순수 함수로 구성한다.
-- AWS·DB·메시징·브라우저 I/O는 얇은 Imperative Shell과 Adapter로 격리한다.
+- Spring·RDB·메시징·브라우저 I/O는 얇은 Imperative Shell과 Adapter로 격리한다.
 - Kafka 개발 환경은 로컬 Docker, AWS 검증 환경은 MSK Serverless를 사용한다.
-- DynamoDB를 최종 원장으로 사용한다.
+- RDS PostgreSQL을 최종 원장으로 사용한다.
 - Redis와 OpenSearch는 복구 가능한 파생 데이터로 취급한다.
+- ALB가 HTTPS·Health Check·WebSocket과 분산을 담당하므로 Nginx는 사용하지 않는다.
 - 실제 결제·배송·채팅은 한 달 MVP에서 제외한다.
 - AWS 관리형 고비용 리소스는 상시 운영하지 않는다.

@@ -2,13 +2,15 @@
 
 - 상태: Review
 - 작성일: 2026-07-28
+- 개정일: 2026-07-29 — EC2 장기 실행 Spring Boot 구조로 전환
 - 상위 Issue: [#3 모노레포 구조와 로컬 개발 환경 구성](https://github.com/dev-baek/bidflow/issues/3)
 - 사양 작업: [#28 모노레포와 로컬 실행 규칙 사양 작성](https://github.com/dev-baek/bidflow/issues/28)
 - 선행 사양: [Issue #1 프로젝트 범위와 성공 기준](./issue-001-project-scope.md)
+- 아키텍처 사양: [Issue #2 EC2 이벤트 기반 아키텍처와 ADR](./issue-002-architecture-adr.md)
 
 ## 1. 목적
 
-BidFlow의 React 프론트엔드, Java 백엔드, 로컬 의존 서비스와 Terraform을 하나의 저장소에서 일관되게 개발·테스트할 수 있는 기반을 정의한다.
+BidFlow의 React 프론트엔드, Spring Boot 백엔드, 로컬 의존 서비스와 Terraform을 하나의 저장소에서 일관되게 개발·테스트할 수 있는 기반을 정의한다.
 
 이 사양은 다음 질문에 답해야 한다.
 
@@ -27,7 +29,7 @@ BidFlow의 React 프론트엔드, Java 백엔드, 로컬 의존 서비스와 Ter
 | 프론트엔드 실행 환경 | Node.js 24 LTS, npm |
 | 백엔드 | Java 21 LTS·Spring Boot 3.5.x·Gradle Kotlin DSL 멀티프로젝트 |
 | 백엔드 구조 | Functional Core / Imperative Shell을 적용한 Domain·Application·Adapter·Runtime 분리 |
-| 로컬 의존 서비스 | Docker Compose 기반 Kafka·Redis·OpenSearch |
+| 로컬 의존 서비스 | Docker Compose 기반 PostgreSQL·Kafka·Redis·OpenSearch |
 | AWS 인프라 | Terraform |
 | 공통 명령 | 루트 Makefile |
 | 개발 방식 | 문서 승인 후 Red–Green–Refactor TDD |
@@ -42,7 +44,7 @@ Node.js는 프론트엔드 개발 도구를 실행하는 런타임이며, Next.j
 
 BidFlow 프론트엔드는 다음 특성을 가진다.
 
-- 인증과 데이터 API는 Cognito와 API Gateway가 담당한다.
+- 인증은 Cognito, 데이터 API는 ALB 뒤의 Spring Boot가 담당한다.
 - 검색·입찰·WebSocket 연결은 브라우저에서 AWS API에 요청한다.
 - 프론트엔드 자체 서버에서 실행할 SSR, Server Action과 API Route가 필요하지 않다.
 - 배포 결과는 S3에 저장하고 CloudFront로 제공한다.
@@ -57,17 +59,17 @@ Next.js도 `output: 'export'`로 정적 파일을 만들 수 있지만 서버가
 
 검토한 대안은 다음과 같다.
 
-1. Lambda마다 독립 Gradle 프로젝트와 저장소를 만든다.
-   - 장점: 배포 단위가 완전히 독립적이다.
-   - 단점: 한 달 MVP에서 빌드·버전·공통 계약 관리 비용이 크다.
+1. API와 Worker마다 독립 Spring Boot 프로젝트와 저장소를 만든다.
+   - 장점: 배포 단위와 장애 경계가 완전히 독립적이다.
+   - 단점: 한 달 MVP에서 빌드·버전·공통 계약과 배포 관리 비용이 크다.
 2. 모든 코드를 단일 Spring Boot 모듈에 둔다.
    - 장점: 초기 구성이 가장 단순하다.
-   - 단점: 도메인이 Spring과 AWS SDK에 결합되기 쉽고 Lambda별 패키징 경계가 불분명하다.
+   - 단점: 도메인이 Spring과 AWS SDK에 결합되기 쉽고 API·Worker 역할 경계가 불분명하다.
 3. 한 저장소 안에서 Gradle 멀티프로젝트와 Port·Adapter 경계를 사용한다.
    - 장점: 도메인 테스트는 빠르게 유지하면서 런타임과 배포 Adapter를 분리할 수 있다.
    - 단점: 모듈 의존 규칙과 빌드 구성을 관리해야 한다.
 
-3번을 선택한다. Lambda를 처음부터 별도 서비스로 과도하게 분할하지 않고, 독립적으로 테스트할 가치가 있는 코드 경계만 모듈로 만든다.
+3번을 선택한다. API·Kafka Worker·Scheduler를 처음부터 별도 Codebase로 과도하게 분할하지 않고, 동일한 OCI Image를 Profile별 Process로 실행한다. 독립적으로 테스트할 가치가 있는 코드 경계만 Gradle 프로젝트로 만든다.
 
 ## 4. 저장소 구조
 
@@ -174,8 +176,8 @@ Issue #3은 경매 데이터를 저장하거나 데이터 모델을 확정하지
 | `domain` | 입찰·경매 규칙, 값 객체, 순수 상태 전이 | Java 표준 라이브러리 |
 | `application` | Use Case, 입력·출력 Port, 트랜잭션 경계 | `domain` |
 | `event-contract` | 외부로 전달되는 Event Envelope와 버전 계약 | Java 표준 라이브러리와 JSON Annotation 최소 범위 |
-| `adapters` | DynamoDB, Kafka, Redis, OpenSearch, EventBridge 구현 | `application`, `domain`, `event-contract`, 외부 SDK |
-| `runtime` | Spring Boot 구성, Lambda Handler와 의존성 조립 | 모든 백엔드 프로젝트 |
+| `adapters` | PostgreSQL, Kafka, Redis와 OpenSearch 구현 | `application`, `domain`, `event-contract`, 외부 SDK |
+| `runtime` | Spring MVC·WebSocket·Worker·Scheduler와 의존성 조립 | 모든 백엔드 프로젝트 |
 
 다음 의존은 금지한다.
 
@@ -190,7 +192,7 @@ Issue #3은 경매 데이터를 저장하거나 데이터 모델을 확정하지
 핵심 계산은 입력을 받아 결과를 반환하는 순수 함수로 작성한다.
 
 ```text
-Lambda/HTTP/Kafka Input
+HTTP/WebSocket/Kafka/Scheduler Input
         ↓
 Imperative Adapter
         ↓
@@ -207,13 +209,13 @@ Imperative Adapter
 
 ### B.3 Spring Boot 사용 범위
 
-Spring Boot는 `runtime`의 의존성 조립과 로컬 실행에 사용한다. 도메인 객체를 Spring Bean으로 만들지 않는다.
+Spring Boot는 `runtime`의 의존성 조립, REST·WebSocket과 장기 실행 Worker에 사용한다. 도메인 객체를 Spring Bean으로 만들지 않는다.
 
 - 생성자 주입만 사용한다.
 - Field Injection을 사용하지 않는다.
 - Spring Context가 없어도 `domain`과 `application` 단위 테스트가 실행돼야 한다.
-- Lambda Handler는 요청 변환, Use Case 호출과 응답 변환만 담당한다.
-- Lambda Handler 안에 입찰 규칙과 저장소 재시도 규칙을 작성하지 않는다.
+- Controller, WebSocket Handler, Kafka Listener와 Scheduler는 입력 변환, Use Case 호출과 결과 전달만 담당한다.
+- Controller, Listener와 Scheduler 안에 입찰 규칙과 저장소 재시도 규칙을 작성하지 않는다.
 
 ### B.4 공통 Event Envelope
 
@@ -255,6 +257,7 @@ Node.js Current 버전인 26 대신 LTS인 24를 사용한다. 프론트엔드 �
 
 | 서비스 | 목적 | 기본 실행 |
 |---|---|---|
+| PostgreSQL | 최종 원장과 Outbox 개발 | 포함 |
 | Kafka | 입찰 명령과 이벤트 개발 | 포함 |
 | Redis | 활성 경매 계산 개발 | 포함 |
 | OpenSearch | 검색 색인 개발 | 별도 Profile |
@@ -289,8 +292,8 @@ OpenSearch는 메모리 사용량이 크므로 기본 `make local-up`에서 제�
 | `make test-web` | Vitest를 CI Mode로 실행 |
 | `make build` | 백엔드 Artifact와 프론트엔드 `dist` 생성 |
 | `make verify` | Format, 정적 검사, 테스트와 Build 순서 실행 |
-| `make local-up` | Kafka와 Redis 시작 후 Health 확인 |
-| `make local-up-search` | Kafka, Redis와 OpenSearch 시작 후 Health 확인 |
+| `make local-up` | PostgreSQL, Kafka와 Redis 시작 후 Health 확인 |
+| `make local-up-search` | PostgreSQL, Kafka, Redis와 OpenSearch 시작 후 Health 확인 |
 | `make local-down` | 로컬 서비스 종료, Volume 보존 |
 | `make local-reset` | 확인 가능한 대상의 개발 Volume 제거 |
 
@@ -309,6 +312,7 @@ OpenSearch는 메모리 사용량이 크므로 기본 `make local-up`에서 제�
 - Java Key Store와 Private Key
 - AWS 자격증명 파일
 - Cognito Client Secret
+- Database Password
 
 프론트엔드에 주입되는 `VITE_` 변수는 사용자에게 공개되는 값으로 간주한다. AWS Secret, Client Secret과 서명 Key를 `VITE_` 변수에 넣지 않는다.
 
@@ -407,8 +411,8 @@ Mock 호출 여부 자체를 성공 기준으로 삼지 않는다. 외부 Port�
 |---|---|---|
 | 1 | #28 DOC | 본 사양 승인 |
 | 2 | #30 S | React.js·TypeScript·Vite와 프론트 테스트 기반 |
-| 3 | #31 B | Gradle 멀티프로젝트, Event Contract와 백엔드 테스트 기반 |
-| 4 | #32 I | Kafka·Redis·OpenSearch Compose와 Health Check |
+| 3 | #31 B | Gradle 멀티프로젝트, Spring Boot Runtime, Event Contract와 백엔드 테스트 기반 |
+| 4 | #32 I | PostgreSQL·Kafka·Redis·OpenSearch Compose와 Health Check |
 | 5 | #3 Epic | 공통 Make Target과 전체 검증 완료 |
 
 #30, #31과 #32는 본 사양이 승인·병합된 뒤 각각 `feature/issue-<번호>-<slug>` 브랜치에서 작업한다. 독립 변경은 별도 PR로 검토한다.
@@ -420,7 +424,7 @@ Issue #3은 다음 조건을 모두 충족해야 완료된다.
 - 저장소 구조가 본 사양과 일치한다.
 - Node.js 24, Java 21과 Docker가 설치된 Apple Silicon 환경에서 `make setup`이 성공한다.
 - `make test`가 AWS 자격증명과 실행 중인 Docker Container 없이 성공한다.
-- `make local-up` 후 Kafka와 Redis Health Check가 성공한다.
+- `make local-up` 후 PostgreSQL, Kafka와 Redis Health Check가 성공한다.
 - `make local-up-search` 후 OpenSearch를 포함한 Health Check가 성공한다.
 - `make local-down`이 데이터 Volume을 보존한다.
 - `make local-reset`이 BidFlow 개발 Volume만 제거한다.
@@ -434,6 +438,7 @@ Issue #3은 다음 조건을 모두 충족해야 완료된다.
 
 - 실제 AWS 리소스 생성
 - 실제 Cognito 로그인
+- ALB·EC2 Auto Scaling과 ECR 배포
 - 경매 업무 모델과 API 구현
 - Kafka Topic과 Event Payload 전체 정의
 - OpenSearch 상품 Mapping
