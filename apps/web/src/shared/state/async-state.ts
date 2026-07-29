@@ -6,7 +6,8 @@ export type AsyncState<T> =
   | { readonly status: "error"; readonly message: string };
 
 export type AsyncEvent<T> =
-  | { readonly type: "load" | "retry" }
+  | { readonly type: "load" }
+  | { readonly type: "retry" }
   | { readonly type: "succeed"; readonly data: T }
   | { readonly type: "fail"; readonly message: string };
 
