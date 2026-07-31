@@ -1,0 +1,11 @@
+[versions]
+spring-boot = "3.5.16"
+junit = "5.12.2"
+assertj = "3.27.3"
+
+[libraries]
+junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit" }
+assertj-core = { module = "org.assertj:assertj-core", version.ref = "assertj" }
+
+[plugins]
+spring-boot = { id = "org.springframework.boot", version.ref = "spring-boot" }
