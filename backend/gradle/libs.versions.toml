@@ -1,10 +1,12 @@
 [versions]
 spring-boot = "3.5.16"
 junit = "5.12.2"
+junit-platform = "1.12.2"
 assertj = "3.27.3"
 
 [libraries]
 junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit" }
+junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher", version.ref = "junit-platform" }
 assertj-core = { module = "org.assertj:assertj-core", version.ref = "assertj" }
 
 [plugins]
