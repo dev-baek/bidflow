@@ -19,5 +19,5 @@ export function App({ configResult }: AppProps) {
     );
   }
 
-  return <RouterProvider router={createAppRouter()} />;
+  return <RouterProvider router={createAppRouter(configResult.value.apiBaseUrl)} />;
 }
