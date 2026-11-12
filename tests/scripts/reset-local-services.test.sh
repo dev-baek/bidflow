@@ -16,6 +16,7 @@ status=$?
 set -e
 [ "$status" -eq 2 ]
 printf '%s' "$output" | grep -F "bidflow-local_postgres-data" >/dev/null
+printf '%s' "$output" | grep -F "bidflow-local_object-storage-data" >/dev/null
 [ ! -s "$log" ]
 
 set +e

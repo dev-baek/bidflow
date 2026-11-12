@@ -60,6 +60,23 @@ services:
       - redis-data:/data
     networks: [backend]
 
+  object-storage:
+    image: chrislusf/seaweedfs:4.38
+    environment:
+      AWS_ACCESS_KEY_ID: ${OBJECT_STORAGE_ACCESS_KEY:-bidflow-local-access}
+      AWS_SECRET_ACCESS_KEY: ${OBJECT_STORAGE_SECRET_KEY:-bidflow-local-secret}
+      S3_BUCKET: ${OBJECT_STORAGE_BUCKET:-bidflow-images}
+    ports:
+      - "127.0.0.1:${OBJECT_STORAGE_PORT:-8333}:8333"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:9333/cluster/status >/dev/null"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+    volumes:
+      - object-storage-data:/data
+    networks: [backend]
+
   opensearch:
     image: opensearchproject/opensearch:2.19.2
     profiles: ["search"]
@@ -90,4 +107,5 @@ volumes:
   postgres-data:
   kafka-data:
   redis-data:
+  object-storage-data:
   opensearch-data:
