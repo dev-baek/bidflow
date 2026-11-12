@@ -9,6 +9,7 @@ dependencies {
     implementation(libs.aws.sdk.url.connection.client)
     implementation("org.springframework:spring-jdbc")
     implementation("org.springframework:spring-tx")
+    implementation("com.fasterxml.jackson.core:jackson-databind")
     runtimeOnly(libs.postgresql)
     testImplementation(libs.testcontainers.postgresql)
     testImplementation(libs.testcontainers.junit.jupiter)
