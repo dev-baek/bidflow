@@ -57,7 +57,7 @@ Producer와 Consumer가 독립적으로 개발될 수 있도록 Kafka Topic, 공
 | Topic | Event Type | Key | Producer | Consumer | Payload 필수 필드 |
 |---|---|---|---|---|---|
 | `bid-command` | `BidCommandRequested` | `auctionId` | Outbox Publisher | Bid Worker | `bidRequestId`, `auctionId`, `bidderId`, `bidKind`, `amount`, `requestedAt` |
-| `bid-event` | `BidAccepted` | `auctionId` | Bid Worker Outbox Publisher | Realtime Projection, Analytics Projection | `bidRequestId`, `auctionId`, `bidderId`, `currentPrice`, `auctionVersion`, `processedAt` |
+| `bid-event` | `BidAccepted` | `auctionId` | Bid Worker Outbox Publisher | Realtime Projection, Analytics Projection | `bidRequestId`, `auctionId`, `bidderId`, `currentPrice`, `auctionVersion`, `processedAt`, `isHighestBidder` |
 | `bid-event` | `BidRejected` | `auctionId` | Bid Worker Outbox Publisher | Realtime Projection, Analytics Projection | `bidRequestId`, `auctionId`, `bidderId`, `reason`, `auctionVersion`, `processedAt` |
 | `bid-event` | `AuctionExtended` | `auctionId` | Bid Worker Outbox Publisher | Realtime Projection, Search Projection | `auctionId`, `previousEndsAt`, `extendedEndsAt`, `auctionVersion` |
 | `bid-event` | `AuctionEnded` | `auctionId` | Scheduler Outbox Publisher | Realtime Projection, Search Projection, Analytics Projection | `auctionId`, `outcome`, `winnerId`, `finalPrice`, `auctionVersion`, `endedAt` |

@@ -95,6 +95,7 @@ public final class JdbcBidLedgerRepository implements BidLedgerRepository {
         payload.put("auctionVersion", command.result().version());
         payload.put("processedAt", command.processedAt().toString());
         payload.put("endsAt", command.result().endsAt().toString());
+        payload.put("isHighestBidder", command.bidderId().equals(command.result().winnerId()));
         return json(payload);
     }
 
