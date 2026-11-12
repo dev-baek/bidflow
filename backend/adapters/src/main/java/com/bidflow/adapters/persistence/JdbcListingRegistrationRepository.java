@@ -41,7 +41,7 @@ public final class JdbcListingRegistrationRepository implements ListingRegistrat
                 jdbc.update("insert into product_image (image_id,product_id,object_key,display_order,created_at) values (?,?,?,?,?)", image.imageId(), value.result().productId(), image.objectKey(), image.displayOrder(), Timestamp.from(value.outbox().occurredAt()));
             }
             jdbc.update("insert into listing_idempotency (seller_id,idempotency_key,payload_hash,product_id,auction_id,created_at) values (?,?,?,?,?,?)", value.sellerId(), value.idempotencyKey(), value.payloadHash(), value.result().productId(), value.result().auctionId(), Timestamp.from(value.outbox().occurredAt()));
-            jdbc.update("insert into outbox_event (event_id,aggregate_type,aggregate_id,topic,partition_key,event_type,schema_version,payload,occurred_at) values (?,'Product',?,'listing-event',?,'ListingPublished',1,cast(? as jsonb),?)", value.outbox().eventId(), value.outbox().aggregateId(), value.outbox().aggregateId().toString(), value.outbox().payload(), Timestamp.from(value.outbox().occurredAt()));
+            jdbc.update("insert into outbox_event (event_id,aggregate_type,aggregate_id,topic,partition_key,correlation_id,event_type,schema_version,payload,occurred_at) values (?,'Product',?,'listing-event',?,?,'ListingPublished',1,cast(? as jsonb),?)", value.outbox().eventId(), value.outbox().aggregateId(), value.outbox().aggregateId().toString(), value.outbox().correlationId(), value.outbox().payload(), Timestamp.from(value.outbox().occurredAt()));
         });
     }
 }
