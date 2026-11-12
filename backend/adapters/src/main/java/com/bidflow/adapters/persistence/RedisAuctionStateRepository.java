@@ -42,8 +42,8 @@ public final class RedisAuctionStateRepository implements AuctionStateRepository
                 Long.parseLong(required(values, "currentPrice")),
                 required(values, "winnerId"),
                 Long.parseLong(required(values, "winnerMax")),
-                Instant.parse(required(values, "startsAt")),
-                Instant.parse(required(values, "endsAt")),
+                Instant.ofEpochMilli(Long.parseLong(required(values, "startsAt"))),
+                Instant.ofEpochMilli(Long.parseLong(required(values, "endsAt"))),
                 Long.parseLong(required(values, "version"))
         ));
     }
@@ -68,8 +68,8 @@ public final class RedisAuctionStateRepository implements AuctionStateRepository
         values.put("currentPrice", Long.toString(state.currentPrice()));
         values.put("winnerId", state.winnerId());
         values.put("winnerMax", Long.toString(state.winnerMaximum()));
-        values.put("startsAt", state.startsAt().toString());
-        values.put("endsAt", state.endsAt().toString());
+        values.put("startsAt", Long.toString(state.startsAt().toEpochMilli()));
+        values.put("endsAt", Long.toString(state.endsAt().toEpochMilli()));
         values.put("version", Long.toString(state.version()));
         return values;
     }

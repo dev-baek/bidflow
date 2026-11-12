@@ -18,9 +18,10 @@ Redis는 활성 경매의 경쟁 상태를 원자적으로 갱신하는 고속 �
 |---|---|---|---|
 | `auction:{auctionId}:state` | Hash | status, currentPrice, winnerId, winnerMax, startsAt, endsAt, version | `endsAt + 24시간` |
 | `auction:{auctionId}:auto` | Sorted Set | member=bidderId, score=maximum | `endsAt + 24시간` |
-| `auction:{auctionId}:processed` | Set | bidRequestId | `endsAt + 24시간` |
+| `auction:{auctionId}:processed` | Hash | field=`bidRequestId`, value=최초 Lua 결과 | `endsAt + 24시간` |
 
 - Sorted Set score는 최대가 정수다. 같은 score의 승자 우선순위는 ZSET lexicographic 순서가 아니라 state의 기존 `winnerId`로 결정한다.
+- `processed`는 단순 Set 대신 최초 결과를 함께 저장하는 Hash다. 재소비는 가격을 다시 계산하지 않고 이 결과를 반환한다.
 - TTL은 Script가 종료 시각을 연장하면 `endsAt + 24시간`으로 함께 갱신한다.
 - 종료 후 24시간은 장애 복구·재처리 확인 여유다. 장기 원장은 PostgreSQL에만 남긴다.
 
@@ -28,7 +29,7 @@ Redis는 활성 경매의 경쟁 상태를 원자적으로 갱신하는 고속 �
 
 같은 `auctionId` 명령은 하나의 Lua Script가 다음을 모두 수행한다.
 
-1. `processed`에 `bidRequestId`가 있으면 기존 결과를 반환한다.
+1. `processed`에 `bidRequestId`가 있으면 고정된 기존 결과를 반환한다.
 2. state의 status·startsAt·endsAt을 확인한다.
 3. 최소 다음 가격·직접/자동 최대가·동점 우선순위를 계산한다.
 4. currentPrice, winnerId, winnerMax, version과 auto ZSET을 갱신한다.
