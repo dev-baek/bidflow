@@ -22,6 +22,10 @@ spring:
       enable-auto-commit: false
     listener:
       ack-mode: record
+  data:
+    redis:
+      host: ${BIDFLOW_REDIS_HOST:localhost}
+      port: ${BIDFLOW_REDIS_PORT:6379}
 bidflow:
   storage:
     endpoint: ${BIDFLOW_STORAGE_ENDPOINT:http://localhost:8333}

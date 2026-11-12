@@ -9,6 +9,8 @@ dependencies {
     implementation(libs.aws.sdk.url.connection.client)
     implementation("org.springframework:spring-jdbc")
     implementation("org.springframework:spring-tx")
+    implementation("org.springframework.data:spring-data-redis")
+    implementation("io.lettuce:lettuce-core")
     implementation("com.fasterxml.jackson.core:jackson-databind")
     runtimeOnly(libs.postgresql)
     testImplementation(libs.testcontainers.postgresql)
