@@ -1,0 +1,14 @@
+management:
+  endpoint:
+    health:
+      probes:
+        enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: health
+server:
+  shutdown: graceful
+spring:
+  application:
+    name: bidflow
