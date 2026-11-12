@@ -66,8 +66,8 @@ public final class ListingRegistrationService {
                 .mapToObj(index -> new ListingImageRegistration(identifiers.nextUuid(), objectKeys.get(index), index))
                 .toList();
         OutboxRegistration outbox = new OutboxRegistration(
-                identifiers.nextUuid(), productId, "ListingPublished",
-                "{\"productId\":\"" + productId + "\",\"sellerId\":\"" + sellerId + "\"}", now
+                identifiers.nextUuid(), productId, command.idempotencyKey(), "ListingPublished",
+                listingPublishedPayload(productId, sellerId, product, now), now
         );
         repository.save(new NewListingRegistration(sellerId, command.idempotencyKey(), payloadHash, result, product, auction, images, outbox));
         return result;
@@ -81,5 +81,22 @@ public final class ListingRegistrationService {
         } catch (NoSuchAlgorithmException exception) {
             throw new IllegalStateException(exception);
         }
+    }
+
+    private static String listingPublishedPayload(UUID productId, String sellerId, ProductDraft product, Instant publishedAt) {
+        return "{\"productId\":\"" + productId
+                + "\",\"sellerId\":\"" + jsonText(sellerId)
+                + "\",\"title\":\"" + jsonText(product.title())
+                + "\",\"categoryId\":\"" + jsonText(product.categoryId())
+                + "\",\"publishedAt\":\"" + publishedAt
+                + "\",\"listingVersion\":1}";
+    }
+
+    private static String jsonText(String value) {
+        return value.replace("\\", "\\\\")
+                .replace("\"", "\\\"")
+                .replace("\n", "\\n")
+                .replace("\r", "\\r")
+                .replace("\t", "\\t");
     }
 }

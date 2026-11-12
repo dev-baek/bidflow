@@ -31,6 +31,12 @@ class ListingRegistrationServiceTest {
         assertThat(repository.saved).hasSize(1);
         assertThat(repository.saved.getFirst().images()).hasSize(1);
         assertThat(repository.saved.getFirst().outbox().eventType()).isEqualTo("ListingPublished");
+        assertThat(repository.saved.getFirst().outbox().payload())
+                .contains("\"sellerId\":\"seller-1\"")
+                .contains("\"title\":\"중고 카메라\"")
+                .contains("\"categoryId\":\"DIGITAL\"")
+                .contains("\"publishedAt\":\"2026-11-12T00:00:00Z\"")
+                .contains("\"listingVersion\":1");
     }
 
     @Test

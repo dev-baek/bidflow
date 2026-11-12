@@ -16,6 +16,8 @@ spring:
     url: ${BIDFLOW_DATABASE_URL:jdbc:postgresql://localhost:15432/bidflow}
     username: ${BIDFLOW_DATABASE_USER:bidflow}
     password: ${BIDFLOW_DATABASE_PASSWORD:bidflow-local-only}
+  kafka:
+    bootstrap-servers: ${BIDFLOW_KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
 bidflow:
   storage:
     endpoint: ${BIDFLOW_STORAGE_ENDPOINT:http://localhost:8333}

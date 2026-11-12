@@ -34,7 +34,7 @@ class OutboxPublisherTest {
     }
 
     private static OutboxEvent event() {
-        return new OutboxEvent(UUID.fromString("00000000-0000-0000-0000-000000000001"), "listing-event", "product-1", "ListingPublished", "{\"productId\":\"product-1\"}");
+        return new OutboxEvent(UUID.fromString("00000000-0000-0000-0000-000000000001"), "listing-event", "product-1", "request-1", "ListingPublished", "{\"productId\":\"product-1\"}", Instant.parse("2026-11-12T00:00:00Z"));
     }
 
     private static final class InMemoryOutbox implements OutboxRepository {
