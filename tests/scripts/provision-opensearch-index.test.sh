@@ -22,9 +22,11 @@ case "\$url" in
   */bidflow-products-v1)
     if [ "\${FAKE_INDEX_EXISTS:-}" = "true" ]; then
       printf '%s' '{"error":{"type":"resource_already_exists_exception"}}' >"\$output_file"
-      exit 22
+      printf '%s' '400'
+      exit 0
     fi
     if [ "\${FAKE_INDEX_FAILURE:-}" = "true" ]; then exit 23; fi
+    printf '%s' '201'
     ;;
   */_aliases) ;;
   *) exit 23 ;;

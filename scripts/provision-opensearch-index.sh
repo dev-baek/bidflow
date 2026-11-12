@@ -8,14 +8,26 @@ index=bidflow-products-v1
 response=$(mktemp)
 trap 'rm -f "$response"' EXIT
 
-if ! "$curl_bin" -fsS -o "$response" -X PUT "$endpoint/$index" \
+if ! response_status=$("$curl_bin" -sS -o "$response" -w '%{http_code}' -X PUT "$endpoint/$index" \
   -H 'Content-Type: application/json' \
-  --data-binary "@$root/infra/opensearch/products-v1.json"; then
-  if ! grep -F 'resource_already_exists_exception' "$response" >/dev/null 2>&1; then
+  --data-binary "@$root/infra/opensearch/products-v1.json"); then
+  printf '%s\n' "OpenSearch 인덱스 생성 실패: $index" >&2
+  exit 1
+fi
+
+case "$response_status" in
+  200|201) ;;
+  400)
+    if ! grep -F 'resource_already_exists_exception' "$response" >/dev/null 2>&1; then
+      printf '%s\n' "OpenSearch 인덱스 생성 실패: $index" >&2
+      exit 1
+    fi
+    ;;
+  *)
     printf '%s\n' "OpenSearch 인덱스 생성 실패: $index" >&2
     exit 1
-  fi
-fi
+    ;;
+esac
 
 "$curl_bin" -fsS -X POST "$endpoint/_aliases" \
   -H 'Content-Type: application/json' \
