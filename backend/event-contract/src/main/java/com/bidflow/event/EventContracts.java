@@ -6,7 +6,7 @@ import java.util.Optional;
 public final class EventContracts {
     private static final List<EventContract> CONTRACTS = List.of(
             contract("bid-command", "BidCommandRequested", "auctionId", "bidRequestId", "auctionId", "bidderId", "bidKind", "amount", "requestedAt"),
-            contract("bid-event", "BidAccepted", "auctionId", "bidRequestId", "auctionId", "bidderId", "currentPrice", "auctionVersion", "processedAt"),
+            contract("bid-event", "BidAccepted", "auctionId", "bidRequestId", "auctionId", "bidderId", "currentPrice", "auctionVersion", "processedAt", "isHighestBidder"),
             contract("bid-event", "BidRejected", "auctionId", "bidRequestId", "auctionId", "bidderId", "reason", "auctionVersion", "processedAt"),
             contract("bid-event", "AuctionExtended", "auctionId", "auctionId", "previousEndsAt", "extendedEndsAt", "auctionVersion"),
             contract("bid-event", "AuctionEnded", "auctionId", "auctionId", "outcome", "winnerId", "finalPrice", "auctionVersion", "endedAt"),

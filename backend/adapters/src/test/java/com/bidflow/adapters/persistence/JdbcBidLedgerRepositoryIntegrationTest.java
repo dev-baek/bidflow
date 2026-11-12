@@ -52,8 +52,8 @@ class JdbcBidLedgerRepositoryIntegrationTest {
         assertThat(jdbc.queryForMap("select current_price, ends_at, version from auction where auction_id = ?", fixture.auctionId()))
                 .containsEntry("current_price", 13_000L).containsEntry("version", 2L);
         assertThat(jdbc.queryForObject("select count(*) from bid_ledger where bid_request_id = ?", Integer.class, fixture.requestId())).isEqualTo(1);
-        assertThat(jdbc.queryForMap("select topic, event_type, payload->>'currentPrice' as current_price from outbox_event where aggregate_id = ? and event_type = 'BidAccepted'", fixture.auctionId()))
-                .containsEntry("topic", "bid-event").containsEntry("event_type", "BidAccepted").containsEntry("current_price", "13000");
+        assertThat(jdbc.queryForMap("select topic, event_type, payload->>'currentPrice' as current_price, payload->>'isHighestBidder' as highest_bidder from outbox_event where aggregate_id = ? and event_type = 'BidAccepted'", fixture.auctionId()))
+                .containsEntry("topic", "bid-event").containsEntry("event_type", "BidAccepted").containsEntry("current_price", "13000").containsEntry("highest_bidder", "true");
     }
 
     @Test
