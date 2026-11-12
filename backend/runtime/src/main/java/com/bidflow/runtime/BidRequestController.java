@@ -7,12 +7,14 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1/auctions")
 class BidRequestController {
+    private final BidRequestIdempotencyService service;
+    BidRequestController(BidRequestIdempotencyService service) { this.service = service; }
     @PostMapping("/{auctionId}/bid-requests")
     @ResponseStatus(HttpStatus.ACCEPTED)
     Response create(@RequestHeader("X-Actor-Id") String actorId, @RequestHeader("Idempotency-Key") String key, @PathVariable UUID auctionId, @RequestBody Request request) {
         if (actorId.isBlank() || key.isBlank()) throw new IllegalArgumentException("invalid request headers");
         BidRequestValidation.validate(new BidRequestCommand(auctionId, request.bidKind(), request.amount()));
-        return new Response(UUID.randomUUID(), "RECEIVED");
+        return new Response(service.receive(actorId, key, new BidRequestCommand(auctionId, request.bidKind(), request.amount())), "RECEIVED");
     }
     record Request(String bidKind, long amount) {}
     record Response(UUID bidRequestId, String status) {}
