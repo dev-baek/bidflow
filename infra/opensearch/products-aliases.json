@@ -1,0 +1,6 @@
+{
+  "actions": [
+    { "add": { "index": "bidflow-products-v1", "alias": "bidflow-products-read" } },
+    { "add": { "index": "bidflow-products-v1", "alias": "bidflow-products-write", "is_write_index": true } }
+  ]
+}
