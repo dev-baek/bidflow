@@ -1,0 +1,44 @@
+{
+  "settings": {
+    "number_of_shards": 1,
+    "number_of_replicas": 0,
+    "analysis": {
+      "normalizer": {
+        "lowercase_normalizer": {
+          "type": "custom",
+          "filter": ["lowercase"]
+        }
+      }
+    }
+  },
+  "mappings": {
+    "dynamic": "strict",
+    "properties": {
+      "productId": { "type": "keyword" },
+      "sellerId": { "type": "keyword" },
+      "title": {
+        "type": "text",
+        "analyzer": "standard",
+        "fields": {
+          "sort": {
+            "type": "keyword",
+            "normalizer": "lowercase_normalizer",
+            "ignore_above": 256
+          }
+        }
+      },
+      "categoryId": { "type": "keyword" },
+      "conditionGrade": { "type": "keyword" },
+      "thumbnailObjectKey": { "type": "keyword", "index": false },
+      "startingPrice": { "type": "long" },
+      "currentPrice": { "type": "long" },
+      "status": { "type": "keyword" },
+      "startsAt": { "type": "date" },
+      "endsAt": { "type": "date" },
+      "searchable": { "type": "boolean" },
+      "listingVersion": { "type": "long" },
+      "auctionVersion": { "type": "long" },
+      "indexedAt": { "type": "date" }
+    }
+  }
+}
