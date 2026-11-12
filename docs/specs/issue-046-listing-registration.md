@@ -1,17 +1,18 @@
 # [Issue #46] 상품 등록 화면·API·이미지 업로드 사양
 
-- 상태: 제안됨
+- 상태: 개정 제안됨
 - 작성일: 2026-11-12
 - 상위 Epic: [#7 상품 이미지 업로드와 경매 등록 구현](https://github.com/dev-baek/bidflow/issues/7)
 - 작업 Issue: [#46 상품 등록 화면·API·이미지 업로드 사양 작성](https://github.com/dev-baek/bidflow/issues/46)
 - 선행 사양: [상품·경매 데이터 모델](./issue-042-listing-auction-data-model.md), [이벤트 계약](./issue-008-event-contract.md)
 - 후속 작업: #47 업로드 Adapter, #48 등록 화면, #49 등록 API·멱등성, #50 `ListingPublished` 발행
+- 개정일: 2026-11-12 — 로컬 S3 호환 구현을 MinIO에서 SeaweedFS로 변경
 
 ## 1. 목적과 범위
 
 판매자는 하나 이상의 이미지를 올리고 상품 정보와 경매 기간·시작가를 한 번에 등록한다. 이미지의 바이트는 애플리케이션 서버를 거치지 않고 Browser가 Object Storage에 직접 올린다. 서버는 업로드 권한과 최종 등록 Transaction을 관리한다.
 
-이 문서는 실제 AWS S3 배포 전에도 같은 흐름을 검증할 수 있도록 `ObjectStorage` Port를 정의한다. 로컬은 MinIO(S3 API 호환) Adapter, AWS 이전 후에는 S3 Adapter를 사용한다. Domain은 S3·MinIO·HTTP Client를 참조하지 않는다.
+이 문서는 실제 AWS S3 배포 전에도 같은 흐름을 검증할 수 있도록 `ObjectStorage` Port를 정의한다. 로컬은 SeaweedFS(S3 API 호환) Adapter, AWS 이전 후에는 S3 Adapter를 사용한다. Domain은 S3·SeaweedFS·HTTP Client를 참조하지 않는다.
 
 범위에서 제외한다.
 
@@ -161,7 +162,7 @@ Content-Type: application/json
 - 각 파일 최대: 10 MiB
 - URL 만료: 발급 후 15분
 - Object Key는 서버가 생성하고 Browser가 임의 지정할 수 없다.
-- S3 Adapter는 Presigned PUT URL을, 로컬 MinIO Adapter는 동일 S3 API 계약의 URL을 발급한다.
+- S3 Adapter는 Presigned PUT URL을, 로컬 SeaweedFS Adapter는 동일 S3 API 계약의 URL을 발급한다.
 
 ### B.3 등록 API
 
@@ -220,10 +221,10 @@ Use Case는 다음 순서로 실행한다.
 
 | 환경 | Storage Adapter | 이유 |
 |---|---|---|
-| 로컬 Docker | MinIO, S3 API 호환 | Presign·CORS·직접 업로드를 비용 없이 재현 |
+| 로컬 Docker | SeaweedFS `weed mini`, S3 API 호환 | Presign·CORS·직접 업로드를 비용 없이 재현 |
 | AWS 검증 | Amazon S3 | 관리형 내구성·Presigned URL·ALB/EC2 서버 중계 제거 |
 
-MinIO는 S3 자체가 아니며 로컬 통합 검증용이다. S3 고유 정책(IAM, Lifecycle, Event Notification)은 AWS 검증 단계에서 별도 확인한다.
+SeaweedFS는 S3 자체가 아니며 로컬 통합 검증용이다. 공식 단일 노드 `weed mini` 실행은 S3 Endpoint(기본 8333)와 환경 변수로 지정한 Bucket을 제공한다. S3 고유 정책(IAM, Lifecycle, Event Notification)은 AWS 검증 단계에서 별도 확인한다.
 
 필수 CORS는 개발 Origin에서 `PUT`와 `Content-Type` Header를 허용하고, Production에서는 CloudFront 도메인만 허용한다. Bucket은 공개 읽기를 허용하지 않는다. 조회 URL 정책은 이미지 제공 기능에서 별도 확정한다.
 
@@ -234,7 +235,7 @@ MinIO는 S3 자체가 아니며 로컬 통합 검증용이다. S3 고유 정책(
 | Frontend Reducer | 이미지·제출 상태 전이 | 업로드 완료 전 제출 차단, 실패 재시도, 중복 제출 차단 |
 | Domain | Product·Auction 순수 규칙 | #45 경계 테스트 재사용 |
 | Application | 등록 Use Case | Object 소유권, DB Transaction, Idempotency Key 재시도·충돌 |
-| Adapter 통합 | MinIO Presign·HEAD | 허용 MIME·10 MiB, 만료 URL, 다른 판매자 Object 거절 |
+| Adapter 통합 | SeaweedFS Presign·HEAD | 허용 MIME·10 MiB, 만료 URL, 다른 판매자 Object 거절 |
 | E2E | Browser 직접 업로드 후 등록 | 1장·10장 정상, 0장·11장, 업로드 실패, 등록 재시도 |
 | Cleanup | 미참조 임시 Object | 24시간 전 보존, 24시간 후 미참조만 삭제, 참조 Object 보존 |
 
@@ -243,5 +244,14 @@ MinIO는 S3 자체가 아니며 로컬 통합 검증용이다. S3 고유 정책(
 - [x] 화면 상태, 입력 검증, 업로드·제출 순서가 정의됐다.
 - [x] 임시 Object와 PostgreSQL 참조의 책임·실패 보상이 정의됐다.
 - [x] 등록 API, Idempotency Key, 소유권과 오류 계약이 정의됐다.
-- [x] 로컬 MinIO와 AWS S3의 Adapter 경계·CORS 정책이 정의됐다.
+- [x] 로컬 SeaweedFS와 AWS S3의 Adapter 경계·CORS 정책이 정의됐다.
 - [x] S/D/B/I/T별 후속 구현·검증 범위가 분리됐다.
+
+## 3. 개정 기록 — SeaweedFS 선택
+
+초기에는 MinIO를 로컬 S3 호환 구현으로 정했다. 그러나 2026-11-12 기준 MinIO의 공식 Container Image가 익명 Pull에서 인증 오류를 반환해, 이 저장소의 `make local-up` 재현 조건을 충족하지 못했다. 비공식 Mirror를 사용하면 이미지 출처와 공급망 검증 책임이 불명확해진다.
+
+따라서 로컬 구현만 공개 Docker Image를 제공하는 SeaweedFS의 `weed mini`로 교체한다. SeaweedFS는 S3 API를 제공하고, `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `S3_BUCKET`으로 단일 노드 테스트 환경을 만들 수 있다. Application Port와 AWS SDK v2 Adapter 인터페이스는 변하지 않으므로, AWS 전환 시 Amazon S3 Endpoint·Credential Provider만 교체한다.
+
+- SeaweedFS 공식 Quick Start: [S3 Endpoint·Bucket·Docker 실행](https://github.com/seaweedfs/seaweedfs)
+- AWS SDK v2 공식 문서: [Presigned PUT URL](https://docs.aws.amazon.com/sdk-for-java/latest/developer-guide/examples-s3-presign.html)
