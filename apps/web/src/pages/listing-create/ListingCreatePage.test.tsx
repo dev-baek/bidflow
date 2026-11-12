@@ -10,6 +10,6 @@ describe("ListingCreatePage", () => {
 
     expect(screen.getByRole("alert")).toHaveTextContent("제목은 2자 이상 100자 이하여야 합니다.");
     expect(screen.getByLabelText("상품 제목")).toHaveAttribute("aria-invalid", "true");
-    expect(screen.getByText("이미지는 1장 이상 10장 이하로 등록하세요.")).toBeInTheDocument();
+    expect(screen.getAllByText("이미지는 1장 이상 10장 이하로 등록하세요.")).toHaveLength(2);
   });
 });
