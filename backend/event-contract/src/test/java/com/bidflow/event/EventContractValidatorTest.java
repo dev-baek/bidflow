@@ -54,10 +54,16 @@ class EventContractValidatorTest {
     @Test
     void exposesEveryContractDefinedForTheInitialTopics() {
         assertThat(EventContracts.all())
-                .extracting(EventContract::eventType)
+                .extracting(contract -> contract.topic() + ":" + contract.eventType() + ":" + contract.partitionKeyField())
                 .containsExactlyInAnyOrder(
-                        "BidCommandRequested", "BidAccepted", "BidRejected", "AuctionExtended", "AuctionEnded",
-                        "ListingPublished", "ListingUpdated", "ListingUnpublished");
+                        "bid-command:BidCommandRequested:auctionId",
+                        "bid-event:BidAccepted:auctionId",
+                        "bid-event:BidRejected:auctionId",
+                        "bid-event:AuctionExtended:auctionId",
+                        "bid-event:AuctionEnded:auctionId",
+                        "listing-event:ListingPublished:productId",
+                        "listing-event:ListingUpdated:productId",
+                        "listing-event:ListingUnpublished:productId");
     }
 
     private static EventEnvelope<Map<String, Object>> envelope(Map<String, Object> payload) {
