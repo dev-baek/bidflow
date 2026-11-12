@@ -1,4 +1,5 @@
 dependencies {
+    implementation(platform(libs.spring.boot.dependencies))
     implementation(project(":application"))
     implementation(project(":domain"))
     implementation(project(":event-contract"))
@@ -6,6 +7,8 @@ dependencies {
     implementation(libs.flyway.database.postgresql)
     implementation(libs.aws.sdk.s3)
     implementation(libs.aws.sdk.url.connection.client)
+    implementation("org.springframework:spring-jdbc")
+    implementation("org.springframework:spring-tx")
     runtimeOnly(libs.postgresql)
     testImplementation(libs.testcontainers.postgresql)
     testImplementation(libs.testcontainers.junit.jupiter)
