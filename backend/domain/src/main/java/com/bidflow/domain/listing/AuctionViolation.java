@@ -1,0 +1,15 @@
+package com.bidflow.domain.listing;
+
+public enum AuctionViolation {
+    PRODUCT_NOT_PUBLISHED,
+    STARTING_PRICE_TOO_LOW,
+    STARTS_TOO_SOON,
+    PERIOD_TOO_SHORT,
+    PERIOD_TOO_LONG,
+    REQUIRED_FIELD_MISSING,
+    ILLEGAL_TRANSITION,
+    NOT_STARTED,
+    NOT_ENDED,
+    CANCEL_NOT_OWNER,
+    AUCTION_ALREADY_STARTED
+}
