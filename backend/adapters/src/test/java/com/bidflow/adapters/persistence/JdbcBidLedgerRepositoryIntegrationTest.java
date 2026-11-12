@@ -57,7 +57,7 @@ class JdbcBidLedgerRepositoryIntegrationTest {
     }
 
     @Test
-    void storesOneLedgerAndOneOutboxEventWhenTheSameRequestIsReplayed() {
+    void doesNotDuplicateLedgerOrOutboxEventsWhenTheSameRequestIsReplayed() {
         Fixture fixture = fixture(1L);
         BidSettlementCommand command = acceptedCommand(fixture);
 
