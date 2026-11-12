@@ -18,6 +18,10 @@ spring:
     password: ${BIDFLOW_DATABASE_PASSWORD:bidflow-local-only}
   kafka:
     bootstrap-servers: ${BIDFLOW_KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    consumer:
+      enable-auto-commit: false
+    listener:
+      ack-mode: record
 bidflow:
   storage:
     endpoint: ${BIDFLOW_STORAGE_ENDPOINT:http://localhost:8333}
@@ -25,3 +29,5 @@ bidflow:
     access-key: ${OBJECT_STORAGE_ACCESS_KEY:bidflow-local-access}
     secret-key: ${OBJECT_STORAGE_SECRET_KEY:bidflow-local-secret}
     region: ${BIDFLOW_STORAGE_REGION:us-east-1}
+  search:
+    endpoint: ${BIDFLOW_OPENSEARCH_ENDPOINT:http://localhost:9200}
