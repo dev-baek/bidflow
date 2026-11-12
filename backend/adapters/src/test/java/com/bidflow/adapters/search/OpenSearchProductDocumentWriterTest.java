@@ -10,34 +10,40 @@ import java.net.http.HttpClient;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
 
 class OpenSearchProductDocumentWriterTest {
 
     @Test
-    void upsertsTheCompleteDocumentThroughTheWriteAlias() throws Exception {
+    void upsertsTheSameProductAtTheSameDocumentIdForDuplicateEvents() throws Exception {
         AtomicReference<String> method = new AtomicReference<>();
         AtomicReference<String> path = new AtomicReference<>();
         AtomicReference<String> body = new AtomicReference<>();
+        AtomicInteger requestCount = new AtomicInteger();
         HttpServer server = HttpServer.create(new InetSocketAddress(0), 0);
         server.createContext("/", exchange -> {
             method.set(exchange.getRequestMethod());
             path.set(exchange.getRequestURI().getPath());
             body.set(new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8));
+            requestCount.incrementAndGet();
             exchange.sendResponseHeaders(201, -1);
             exchange.close();
         });
         server.start();
         try {
             UUID productId = UUID.fromString("00000000-0000-0000-0000-000000000001");
-            new OpenSearchProductDocumentWriter(HttpClient.newHttpClient(), URI.create("http://localhost:" + server.getAddress().getPort()))
-                    .upsert(new ProductSearchDocument(
+            OpenSearchProductDocumentWriter writer = new OpenSearchProductDocumentWriter(HttpClient.newHttpClient(), URI.create("http://localhost:" + server.getAddress().getPort()));
+            ProductSearchDocument document = new ProductSearchDocument(
                             productId, UUID.fromString("00000000-0000-0000-0000-000000000002"), "seller-1", "중고 \"카메라\"", "DIGITAL", "GOOD", null,
                             50_000L, 55_000L, "ACTIVE", true,
                             Instant.parse("2026-11-12T00:00:00Z"), Instant.parse("2026-11-12T01:00:00Z"), 1L, 2L,
-                            Instant.parse("2026-11-12T00:10:00Z")));
+                            Instant.parse("2026-11-12T00:10:00Z"));
+            writer.upsert(document);
+            writer.upsert(document);
 
+            assertThat(requestCount.get()).isEqualTo(2);
             assertThat(method.get()).isEqualTo("PUT");
             assertThat(path.get()).isEqualTo("/bidflow-products-write/_doc/" + productId);
             assertThat(body.get()).contains("\"title\":\"중고 \\\"카메라\\\"\"")
