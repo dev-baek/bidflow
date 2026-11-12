@@ -9,6 +9,7 @@ printf '%s\n' \
   "${project}_postgres-data" \
   "${project}_kafka-data" \
   "${project}_redis-data" \
+  "${project}_object-storage-data" \
   "${project}_opensearch-data"
 
 if [ "${CONFIRM_BIDFLOW_RESET:-}" != "$project" ]; then

@@ -33,6 +33,10 @@ env BIDFLOW_DOCKER_BIN="$tmp/docker" \
   BIDFLOW_EXPECTED_SERVICES=postgres,kafka,redis,opensearch \
   BIDFLOW_HEALTH_ATTEMPTS=1 BIDFLOW_HEALTH_INTERVAL_SECONDS=0 sh "$script"
 
+env BIDFLOW_DOCKER_BIN="$tmp/docker" \
+  BIDFLOW_EXPECTED_SERVICES=postgres,kafka,redis,object-storage \
+  BIDFLOW_HEALTH_ATTEMPTS=1 BIDFLOW_HEALTH_INTERVAL_SECONDS=0 sh "$script"
+
 set +e
 env BIDFLOW_DOCKER_BIN="$tmp/docker" FAKE_UNHEALTHY=opensearch \
   BIDFLOW_EXPECTED_SERVICES=postgres,kafka,redis,opensearch \
