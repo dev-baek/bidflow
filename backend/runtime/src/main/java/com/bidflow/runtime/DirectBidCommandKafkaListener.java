@@ -2,6 +2,8 @@ package com.bidflow.runtime;
 
 import com.bidflow.application.bid.BidLedgerRepository;
 import com.bidflow.application.bid.BidSettlementCommand;
+import com.bidflow.application.bid.AutoBidCommand;
+import com.bidflow.application.bid.AutoBidProcessor;
 import com.bidflow.application.bid.DirectBidCommand;
 import com.bidflow.application.bid.DirectBidProcessor;
 import com.bidflow.application.bid.DirectBidResult;
@@ -22,12 +24,14 @@ import org.springframework.stereotype.Component;
 class DirectBidCommandKafkaListener {
     private final ObjectMapper objectMapper;
     private final DirectBidProcessor directBidProcessor;
+    private final AutoBidProcessor autoBidProcessor;
     private final BidLedgerRepository ledger;
     private final Clock clock;
 
-    DirectBidCommandKafkaListener(ObjectMapper objectMapper, DirectBidProcessor directBidProcessor, BidLedgerRepository ledger, Clock clock) {
+    DirectBidCommandKafkaListener(ObjectMapper objectMapper, DirectBidProcessor directBidProcessor, AutoBidProcessor autoBidProcessor, BidLedgerRepository ledger, Clock clock) {
         this.objectMapper = objectMapper;
         this.directBidProcessor = directBidProcessor;
+        this.autoBidProcessor = autoBidProcessor;
         this.ledger = ledger;
         this.clock = clock;
     }
@@ -35,12 +39,14 @@ class DirectBidCommandKafkaListener {
     @KafkaListener(topics = "bid-command", groupId = "bid-settlement")
     void consume(ConsumerRecord<String, String> record) {
         BidCommandPayload payload = parse(record.value());
-        if (!"DIRECT".equals(payload.bidKind())) {
-            throw new IllegalArgumentException("automatic bid commands require the automatic bid processor");
-        }
         Instant now = Instant.now(clock);
-        DirectBidResult result = directBidProcessor.execute(new DirectBidCommand(
-                payload.bidRequestId(), payload.auctionId(), payload.bidderId(), payload.amount(), now));
+        DirectBidResult result = switch (payload.bidKind()) {
+            case "DIRECT" -> directBidProcessor.execute(new DirectBidCommand(
+                    payload.bidRequestId(), payload.auctionId(), payload.bidderId(), payload.amount(), now));
+            case "AUTO_MAX" -> autoBidProcessor.execute(new AutoBidCommand(
+                    payload.bidRequestId(), payload.auctionId(), payload.bidderId(), payload.amount(), now));
+            default -> throw new IllegalArgumentException("unsupported bid kind");
+        };
         ledger.persist(new BidSettlementCommand(
                 payload.bidRequestId(), payload.auctionId(), payload.bidderId(), payload.amount(), result, now, payload.correlationId()));
     }
