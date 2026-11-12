@@ -12,3 +12,14 @@ server:
 spring:
   application:
     name: bidflow
+  datasource:
+    url: ${BIDFLOW_DATABASE_URL:jdbc:postgresql://localhost:15432/bidflow}
+    username: ${BIDFLOW_DATABASE_USER:bidflow}
+    password: ${BIDFLOW_DATABASE_PASSWORD:bidflow-local-only}
+bidflow:
+  storage:
+    endpoint: ${BIDFLOW_STORAGE_ENDPOINT:http://localhost:8333}
+    bucket: ${OBJECT_STORAGE_BUCKET:bidflow-images}
+    access-key: ${OBJECT_STORAGE_ACCESS_KEY:bidflow-local-access}
+    secret-key: ${OBJECT_STORAGE_SECRET_KEY:bidflow-local-secret}
+    region: ${BIDFLOW_STORAGE_REGION:us-east-1}
