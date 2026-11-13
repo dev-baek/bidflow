@@ -64,9 +64,9 @@ public final class JdbcBidLedgerRepository implements BidLedgerRepository {
             }
             int auctionUpdated = jdbc.update("""
                     update auction
-                    set status = 'ACTIVE', current_price = ?, ends_at = ?, version = ?, updated_at = ?
+                    set status = 'ACTIVE', current_price = ?, current_winner_id = ?, ends_at = ?, version = ?, updated_at = ?
                     where auction_id = ? and version = ?
-                    """, command.result().currentPrice(), Timestamp.from(command.result().endsAt()), command.result().version(),
+                    """, command.result().currentPrice(), command.result().winnerId(), Timestamp.from(command.result().endsAt()), command.result().version(),
                     Timestamp.from(command.processedAt()), command.auctionId(), before.version());
             if (auctionUpdated != 1) {
                 throw new IllegalStateException("auction update did not apply");

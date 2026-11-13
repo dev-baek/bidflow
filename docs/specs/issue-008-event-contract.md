@@ -60,7 +60,7 @@ Producer와 Consumer가 독립적으로 개발될 수 있도록 Kafka Topic, 공
 | `bid-event` | `BidAccepted` | `auctionId` | Bid Worker Outbox Publisher | Realtime Projection, Analytics Projection | `bidRequestId`, `auctionId`, `bidderId`, `currentPrice`, `auctionVersion`, `processedAt`, `isHighestBidder` |
 | `bid-event` | `BidRejected` | `auctionId` | Bid Worker Outbox Publisher | Realtime Projection, Analytics Projection | `bidRequestId`, `auctionId`, `bidderId`, `reason`, `auctionVersion`, `processedAt` |
 | `bid-event` | `AuctionExtended` | `auctionId` | Bid Worker Outbox Publisher | Realtime Projection, Search Projection | `auctionId`, `previousEndsAt`, `extendedEndsAt`, `auctionVersion` |
-| `bid-event` | `AuctionEnded` | `auctionId` | Scheduler Outbox Publisher | Realtime Projection, Search Projection, Analytics Projection | `auctionId`, `outcome`, `winnerId`, `finalPrice`, `auctionVersion`, `endedAt` |
+| `bid-event` | `AuctionEnded` | `auctionId` | Scheduler Outbox Publisher | Realtime Projection, Search Projection, Analytics Projection | `auctionId`, `outcome`, `auctionVersion`, `endedAt` (`winnerId`, `finalPrice`는 SOLD일 때만) |
 | `listing-event` | `ListingPublished` | `productId` | Listing Outbox Publisher | Search Projection, Analytics Projection | `productId`, `sellerId`, `title`, `categoryId`, `publishedAt`, `listingVersion` |
 | `listing-event` | `ListingUpdated` | `productId` | Listing Outbox Publisher | Search Projection, Analytics Projection | `productId`, `title`, `categoryId`, `listingVersion`, `updatedAt` |
 | `listing-event` | `ListingUnpublished` | `productId` | Listing Outbox Publisher | Search Projection | `productId`, `listingVersion`, `unpublishedAt` |

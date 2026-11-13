@@ -9,7 +9,7 @@ public final class EventContracts {
             contract("bid-event", "BidAccepted", "auctionId", "bidRequestId", "auctionId", "bidderId", "currentPrice", "auctionVersion", "processedAt", "isHighestBidder"),
             contract("bid-event", "BidRejected", "auctionId", "bidRequestId", "auctionId", "bidderId", "reason", "auctionVersion", "processedAt"),
             contract("bid-event", "AuctionExtended", "auctionId", "auctionId", "previousEndsAt", "extendedEndsAt", "auctionVersion"),
-            contract("bid-event", "AuctionEnded", "auctionId", "auctionId", "outcome", "winnerId", "finalPrice", "auctionVersion", "endedAt"),
+            contract("bid-event", "AuctionEnded", "auctionId", "auctionId", "outcome", "auctionVersion", "endedAt"),
             contract("listing-event", "ListingPublished", "productId", "productId", "sellerId", "title", "categoryId", "publishedAt", "listingVersion"),
             contract("listing-event", "ListingUpdated", "productId", "productId", "title", "categoryId", "listingVersion", "updatedAt"),
             contract("listing-event", "ListingUnpublished", "productId", "productId", "listingVersion", "unpublishedAt")
