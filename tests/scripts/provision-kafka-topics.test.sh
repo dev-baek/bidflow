@@ -27,9 +27,9 @@ EOF
 chmod +x "$tmp/docker"
 
 output=$(env BIDFLOW_DOCKER_BIN="$tmp/docker" sh "$script")
-printf '%s' "$output" | grep -F "Kafka 토픽 정책 적용 완료: bid-command,bid-event,listing-event" >/dev/null
+printf '%s' "$output" | grep -F "Kafka 토픽 정책 적용 완료: bid-command,bid-event,listing-event 및 각 DLT" >/dev/null
 
-for topic in bid-command bid-event listing-event; do
+for topic in bid-command bid-event listing-event bid-command.DLT bid-event.DLT listing-event.DLT; do
   grep -F -- "--create --if-not-exists --topic $topic --partitions 3 --replication-factor 1 --config retention.ms=604800000" "$log" >/dev/null
   grep -F -- "--describe --topic $topic" "$log" >/dev/null
 done
