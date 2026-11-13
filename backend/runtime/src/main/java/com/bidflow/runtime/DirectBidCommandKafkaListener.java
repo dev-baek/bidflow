@@ -3,10 +3,15 @@ package com.bidflow.runtime;
 import com.bidflow.application.bid.BidLedgerRepository;
 import com.bidflow.application.bid.BidSettlementCommand;
 import com.bidflow.application.bid.AutoBidCommand;
+import com.bidflow.application.bid.AutoBidMaximum;
+import com.bidflow.application.bid.AutoBidMaximumRepository;
+import com.bidflow.application.bid.AuctionRecoveryResult;
+import com.bidflow.application.bid.AuctionStateRecoveryService;
 import com.bidflow.application.bid.AutoBidProcessor;
 import com.bidflow.application.bid.DirectBidCommand;
 import com.bidflow.application.bid.DirectBidProcessor;
 import com.bidflow.application.bid.DirectBidResult;
+import com.bidflow.application.bid.DirectBidResultCode;
 import com.bidflow.application.consumer.ConsumerEvent;
 import com.bidflow.application.consumer.ConsumerEventProcessor;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -28,15 +33,20 @@ class DirectBidCommandKafkaListener {
     private final DirectBidProcessor directBidProcessor;
     private final AutoBidProcessor autoBidProcessor;
     private final BidLedgerRepository ledger;
+    private final AutoBidMaximumRepository automaticMaxima;
+    private final AuctionStateRecoveryService recovery;
     private final ConsumerEventProcessor events;
     private final Clock clock;
 
     DirectBidCommandKafkaListener(ObjectMapper objectMapper, DirectBidProcessor directBidProcessor, AutoBidProcessor autoBidProcessor,
-            BidLedgerRepository ledger, ConsumerEventProcessor events, Clock clock) {
+            BidLedgerRepository ledger, AutoBidMaximumRepository automaticMaxima, AuctionStateRecoveryService recovery,
+            ConsumerEventProcessor events, Clock clock) {
         this.objectMapper = objectMapper;
         this.directBidProcessor = directBidProcessor;
         this.autoBidProcessor = autoBidProcessor;
         this.ledger = ledger;
+        this.automaticMaxima = automaticMaxima;
+        this.recovery = recovery;
         this.events = events;
         this.clock = clock;
     }
@@ -50,15 +60,36 @@ class DirectBidCommandKafkaListener {
     }
 
     private void settle(BidCommandPayload payload, Instant now) {
-        DirectBidResult result = switch (payload.bidKind()) {
+        DirectBidResult result = execute(payload, now);
+        if (result.code() == DirectBidResultCode.NOT_ACTIVE) result = recoverAndExecute(payload, now);
+        boolean persisted = ledger.persist(new BidSettlementCommand(
+                payload.bidRequestId(), payload.auctionId(), payload.bidderId(), payload.amount(), result, now, payload.correlationId()));
+        if (persisted && "AUTO_MAX".equals(payload.bidKind()) && result.code() == DirectBidResultCode.ACCEPTED) {
+            automaticMaxima.save(new AutoBidMaximum(payload.auctionId(), payload.bidderId(), payload.amount()));
+        }
+    }
+
+    private DirectBidResult recoverAndExecute(BidCommandPayload payload, Instant now) {
+        AuctionRecoveryResult recovered = recovery.recover(payload.auctionId(), now);
+        if (recovered.ended()) {
+            return new DirectBidResult(DirectBidResultCode.AUCTION_ENDED, recovered.snapshot().currentPrice(),
+                    recovered.snapshot().winnerId(), recovered.snapshot().winnerMaximum(), recovered.snapshot().endsAt(), recovered.snapshot().version());
+        }
+        DirectBidResult retried = execute(payload, now);
+        if (retried.code() == DirectBidResultCode.NOT_ACTIVE) {
+            throw new IllegalStateException("auction state was not restored");
+        }
+        return retried;
+    }
+
+    private DirectBidResult execute(BidCommandPayload payload, Instant now) {
+        return switch (payload.bidKind()) {
             case "DIRECT" -> directBidProcessor.execute(new DirectBidCommand(
                     payload.bidRequestId(), payload.auctionId(), payload.bidderId(), payload.amount(), now));
             case "AUTO_MAX" -> autoBidProcessor.execute(new AutoBidCommand(
                     payload.bidRequestId(), payload.auctionId(), payload.bidderId(), payload.amount(), now));
             default -> throw new IllegalArgumentException("unsupported bid kind");
         };
-        ledger.persist(new BidSettlementCommand(
-                payload.bidRequestId(), payload.auctionId(), payload.bidderId(), payload.amount(), result, now, payload.correlationId()));
     }
 
     private BidCommandPayload parse(String value) {
