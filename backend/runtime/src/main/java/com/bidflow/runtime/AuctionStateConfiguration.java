@@ -1,8 +1,10 @@
 package com.bidflow.runtime;
 
 import com.bidflow.adapters.persistence.RedisAuctionStateRepository;
+import com.bidflow.adapters.persistence.RedisAuctionActiveStateCleaner;
 import com.bidflow.adapters.persistence.RedisAutoBidProcessor;
 import com.bidflow.adapters.persistence.RedisDirectBidProcessor;
+import com.bidflow.application.auction.AuctionActiveStateCleaner;
 import com.bidflow.application.bid.AuctionStateRepository;
 import com.bidflow.application.bid.AutoBidProcessor;
 import com.bidflow.application.bid.DirectBidProcessor;
@@ -25,5 +27,10 @@ class AuctionStateConfiguration {
     @Bean
     AutoBidProcessor autoBidProcessor(StringRedisTemplate redis) {
         return new RedisAutoBidProcessor(redis);
+    }
+
+    @Bean
+    AuctionActiveStateCleaner auctionActiveStateCleaner(StringRedisTemplate redis) {
+        return new RedisAuctionActiveStateCleaner(redis);
     }
 }
