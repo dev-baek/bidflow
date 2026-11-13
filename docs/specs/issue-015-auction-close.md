@@ -1,7 +1,8 @@
-# [Issue #80] PostgreSQL 잠금 기반 경매 종료 사양
+# [Issue #81] 경매 종료·낙찰·보정 처리 사양
 
 - 상태: 제안됨
-- 관련 Issue: [#80 PostgreSQL 잠금 기반 경매 종료 Scheduler 구현](https://github.com/dev-baek/bidflow/issues/80)
+- 관련 Issue: [#81 경매 종료·낙찰·보정 처리 사양 작성](https://github.com/dev-baek/bidflow/issues/81)
+- 구현 Issue: #80 종료 Scheduler, #82 종료 보정 테스트, #83 낙찰·유찰 확정 Consumer, #86 Redis 활성 상태 재구성
 
 ## 1. 목적과 원칙
 
@@ -64,9 +65,63 @@ Scheduler(now)
 | 원자성 | auction·result·outbox 함께 저장 | 버전/DB 오류 시 모두 롤백 |
 | 재실행 | 다음 Polling에서 0건 | 추가 낙찰자·이벤트 없음 |
 
-## 7. 완료 조건
+## 7. 보정·재시도·Redis 정리
+
+### 7.1 지연 Polling과 중복 호출
+
+Scheduler는 정확한 종료 시각에 실행되는 예약기가 아니다. Polling 지연·배포·DB 일시 오류 뒤의 다음 실행이 `ends_at <= now`를 다시 조회해 늦은 종료를 보정한다. 지연 시간은 사용자 화면의 일시적 `ACTIVE` 표시만 만들 수 있으며, 종료 결과·가격·낙찰자를 바꾸지 않는다.
+
+| 관측 상태 | 보정 주체 | 결과 |
+|---|---|---|
+| `ACTIVE`, `ends_at <= now`, 결과 없음 | Scheduler | 잠금 뒤 종료 Transaction 실행 |
+| `ENDED`, `auction_result` 존재 | Scheduler 재실행 | 0건, 상태 불변 |
+| `ENDED`, Outbox 미발행 | Outbox Publisher | 같은 `eventId` 재발행 가능 |
+| 종료 Transaction 롤백 | 다음 Scheduler Polling | 같은 ACTIVE 행을 다시 선택 |
+| Redis에 활성 Key 잔존 | AuctionEnded Consumer/복구 Worker | 해당 `auctionId` Key 삭제 또는 ENDED Snapshot으로 교체 |
+
+`auction_result`가 있으나 `auction.status != ENDED`인 상태는 정상 Transaction으로 만들 수 없다. 운영 점검에서 발견하면 임의 재낙찰하지 않고 PostgreSQL 원장·Outbox를 확인한 뒤 복구 명령으로만 처리한다.
+
+### 7.2 종료 이후 입찰 명령
+
+PostgreSQL `ENDED`가 최종 우선순위다. Redis Key를 아직 정리하지 못한 짧은 구간에 Lua가 승인한 결과가 있어도, 원장 Transaction은 종료된 경매의 버전·상태 검증에서 실패하고 Kafka offset을 커밋하지 않는다. #86 복구 Worker는 해당 경매가 `ENDED`임을 확인해 Redis Key를 제거하고 남은 명령을 `AUCTION_ENDED` 결과로 수렴시킨다. 종료 뒤에는 새 입찰 원장·가격·낙찰자를 만들지 않는다.
+
+### 7.3 낙찰·유찰 Consumer
+
+`AuctionEnded` Consumer는 Outbox event ID를 멱등 키로 사용한다. 다음 효과는 반복되어도 같은 최종 상태여야 한다.
+
+1. Redis 활성 경매 `state`, `auto`, `processed` Key를 제거한다.
+2. Search Projection을 종료 상태로 색인한다.
+3. Realtime Projection이 공개 `auction.ended`를 전파한다.
+
+Consumer가 한 효과 뒤 실패해 이벤트를 다시 받더라도 PostgreSQL 낙찰 결과는 다시 만들지 않으며, Redis 삭제·검색 색인·WebSocket 전파는 멱등하게 허용한다. WebSocket 유실은 Browser REST Snapshot이 보정한다.
+
+### 7.4 자동 연장과 종료 경쟁
+
+승인 입찰의 연장 Transaction과 종료 Scheduler는 같은 `auction` 행을 잠근다. 먼저 커밋한 Transaction의 `ends_at`·`version`이 다음 Transaction의 기준이다.
+
+```text
+연장 먼저 commit → ends_at > now → Scheduler는 종료 대상에서 제외
+종료 먼저 lock/commit → status ENDED → 입찰 원장 Transaction은 상태·version 불일치로 rollback
+```
+
+이 규칙은 종료 직전의 입찰을 조용히 덮어쓰지 않는 대신, 늦게 처리된 명령을 재시도 가능한 실패로 남긴다. Browser의 확정 표시는 항상 PostgreSQL Snapshot과 `AuctionEnded` 이벤트를 따른다.
+
+## 8. T. 보정 검증 추가 기준
+
+| 시나리오 | 기대 결과 |
+|---|---|
+| Scheduler가 1분 늦게 실행 | 한 번의 종료 결과·Outbox 생성 |
+| 같은 종료 명령 반복 | Result·AuctionEnded Outbox 수 1 |
+| 종료 뒤 Outbox Publisher 실패 | DB 종료 상태 불변, 같은 event ID 재발행 |
+| 종료 후 Redis Key 잔존 | Consumer/복구가 Key 제거, 새 승인 원장 없음 |
+| 연장과 종료 동시 실행 | 먼저 잠근 최신 DB 상태에 따라 연장 또는 종료 하나만 확정 |
+| UNSOLD event | `winnerId`, `finalPrice` null, 공개 화면은 유찰만 표시 |
+
+## 9. 완료 조건
 
 - [x] PostgreSQL 최신 종료 시각과 Redis의 책임 경계를 정의했다.
 - [x] 최고 입찰자·낙찰/유찰 데이터 모델을 정의했다.
 - [x] 잠금·결과·Outbox의 원자 Transaction을 정의했다.
 - [x] 자동 연장·다중 Worker·재실행 검증 기준을 정의했다.
+- [x] 지연 Polling·Outbox 재발행·Redis 잔존 상태의 보정 책임을 정의했다.
+- [x] 종료 이후 명령과 연장/종료 경쟁의 최종 우선순위를 정의했다.
