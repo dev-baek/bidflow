@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.bidflow.application.bid.BidLedgerRepository;
 import com.bidflow.application.bid.BidSettlementCommand;
+import com.bidflow.application.auction.AuctionCloseRepository;
 import com.bidflow.application.bid.DirectBidResult;
 import com.bidflow.application.bid.DirectBidResultCode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -70,6 +71,25 @@ class JdbcBidLedgerRepositoryIntegrationTest {
     }
 
     @Test
+    void schedulerDoesNotCloseAnAuctionAtItsOriginalEndTimeAfterAnAcceptedBidExtendedIt() {
+        Instant originalEndsAt = PROCESSED_AT.plusSeconds(240);
+        Fixture fixture = fixture(1L, originalEndsAt);
+        BidSettlementCommand command = acceptedCommand(fixture, originalEndsAt.plusSeconds(300));
+
+        assertThat(repository.persist(command)).isTrue();
+        AuctionCloseRepository closer = new JdbcAuctionCloseRepository(jdbc,
+                new TransactionTemplate(new DataSourceTransactionManager(jdbc.getDataSource())),
+                new ObjectMapper(), UUID::randomUUID);
+
+        assertThat(closer.closeExpired(originalEndsAt, 10)).isZero();
+        assertThat(jdbc.queryForObject("select status from auction where auction_id = ?", String.class, fixture.auctionId())).isEqualTo("ACTIVE");
+        assertThat(jdbc.queryForObject("select ends_at from auction where auction_id = ?", Timestamp.class, fixture.auctionId()).toInstant())
+                .isEqualTo(originalEndsAt.plusSeconds(300));
+        assertThat(jdbc.queryForObject("select count(*) from outbox_event where aggregate_id = ? and event_type = 'AuctionExtended'", Integer.class, fixture.auctionId()))
+                .isEqualTo(1);
+    }
+
+    @Test
     void recordsRejectionWithoutChangingTheAuction() {
         Fixture fixture = fixture(1L);
         BidSettlementCommand command = new BidSettlementCommand(
@@ -99,13 +119,21 @@ class JdbcBidLedgerRepositoryIntegrationTest {
     }
 
     private static BidSettlementCommand acceptedCommand(Fixture fixture) {
+        return acceptedCommand(fixture, PROCESSED_AT.plusSeconds(900));
+    }
+
+    private static BidSettlementCommand acceptedCommand(Fixture fixture, Instant endsAt) {
         return new BidSettlementCommand(
                 fixture.requestId(), fixture.auctionId(), "bidder-2", 13_000L,
-                new DirectBidResult(DirectBidResultCode.ACCEPTED, 13_000L, "bidder-2", 13_000L, PROCESSED_AT.plusSeconds(900), 2L),
+                new DirectBidResult(DirectBidResultCode.ACCEPTED, 13_000L, "bidder-2", 13_000L, endsAt, 2L),
                 PROCESSED_AT, "correlation-1");
     }
 
     private static Fixture fixture(long auctionVersion) {
+        return fixture(auctionVersion, PROCESSED_AT.plusSeconds(600));
+    }
+
+    private static Fixture fixture(long auctionVersion, Instant endsAt) {
         UUID productId = UUID.randomUUID();
         UUID auctionId = UUID.randomUUID();
         UUID requestId = UUID.randomUUID();
@@ -116,7 +144,7 @@ class JdbcBidLedgerRepositoryIntegrationTest {
         jdbc.update("""
                 insert into auction (auction_id, product_id, seller_id, status, starting_price, current_price, starts_at, ends_at, version, created_at, updated_at)
                 values (?, ?, 'seller-1', 'ACTIVE', 1000, 12000, ?, ?, ?, ?, ?)
-                """, auctionId, productId, Timestamp.from(PROCESSED_AT.minusSeconds(600)), Timestamp.from(PROCESSED_AT.plusSeconds(600)), auctionVersion, Timestamp.from(PROCESSED_AT), Timestamp.from(PROCESSED_AT));
+                """, auctionId, productId, Timestamp.from(PROCESSED_AT.minusSeconds(600)), Timestamp.from(endsAt), auctionVersion, Timestamp.from(PROCESSED_AT), Timestamp.from(PROCESSED_AT));
         jdbc.update("""
                 insert into bid_request (bid_request_id, auction_id, bidder_id, bid_kind, amount, status, requested_at, correlation_id)
                 values (?, ?, 'bidder-2', 'DIRECT', 13000, 'RECEIVED', ?, 'correlation-1')
