@@ -101,6 +101,19 @@ class RedisAutoBidProcessorIntegrationTest {
                 .containsExactly(12_000L, "");
     }
 
+    @Test
+    void extendsTheExistingEndTimeForAnAcceptedAutomaticBidNearClosing() {
+        UUID auctionId = UUID.randomUUID();
+        Instant endsAt = NOW.plus(Duration.ofMinutes(4));
+        states().save(new AuctionRedisState(auctionId, AuctionStatus.ACTIVE, 12_000L, "", 12_000L,
+                NOW.minus(Duration.ofMinutes(10)), endsAt, 1L), Duration.ofHours(25));
+
+        var result = processor().execute(new AutoBidCommand(UUID.randomUUID(), auctionId, "bidder-2", 20_000L, NOW));
+
+        assertThat(result.code()).isEqualTo(DirectBidResultCode.ACCEPTED);
+        assertThat(result.endsAt()).isEqualTo(endsAt.plus(Duration.ofMinutes(5)));
+    }
+
     private UUID seedState() {
         UUID auctionId = UUID.randomUUID();
         states().save(new AuctionRedisState(

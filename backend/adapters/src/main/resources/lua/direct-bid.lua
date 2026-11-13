@@ -68,7 +68,7 @@ winnerId = bidderId
 winnerMaximum = amount
 version = version + 1
 if endsAt - now < extensionThresholdMillis then
-  endsAt = now + extensionThresholdMillis
+  endsAt = endsAt + extensionThresholdMillis
 end
 
 redis.call('HSET', KEYS[1],

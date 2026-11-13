@@ -76,7 +76,7 @@ class RedisDirectBidProcessorIntegrationTest {
         var result = processor().execute(new DirectBidCommand(UUID.randomUUID(), auctionId, "bidder-2", 13_000L, NOW));
 
         assertThat(result.code()).isEqualTo(DirectBidResultCode.ACCEPTED);
-        assertThat(result.endsAt()).isEqualTo(NOW.plus(Duration.ofMinutes(5)));
+        assertThat(result.endsAt()).isEqualTo(NOW.plus(Duration.ofMinutes(9)));
     }
 
     @Test
@@ -90,6 +90,20 @@ class RedisDirectBidProcessorIntegrationTest {
 
         assertThat(result.code()).isEqualTo(DirectBidResultCode.ACCEPTED);
         assertThat(result.endsAt()).isEqualTo(endsAt);
+    }
+
+    @Test
+    void permitsAnotherFiveMinuteExtensionWhenTheUpdatedEndTimeAgainHasLessThanFiveMinutesRemaining() {
+        UUID auctionId = UUID.randomUUID();
+        RedisAuctionStateRepository states = states();
+        Instant originalEndsAt = NOW.plus(Duration.ofMinutes(4));
+        states.save(activeState(auctionId, 12_000L, "bidder-1", originalEndsAt), Duration.ofHours(25));
+
+        processor().execute(new DirectBidCommand(UUID.randomUUID(), auctionId, "bidder-2", 13_000L, NOW));
+        var second = processor().execute(new DirectBidCommand(UUID.randomUUID(), auctionId, "bidder-3", 14_000L, NOW.plus(Duration.ofMinutes(5)).plusSeconds(1)));
+
+        assertThat(second.code()).isEqualTo(DirectBidResultCode.ACCEPTED);
+        assertThat(second.endsAt()).isEqualTo(originalEndsAt.plus(Duration.ofMinutes(10)));
     }
 
     @Test

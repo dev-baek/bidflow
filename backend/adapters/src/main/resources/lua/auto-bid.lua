@@ -60,7 +60,7 @@ else
 end
 
 version = version + 1
-if endsAt - now < extensionThresholdMillis then endsAt = now + extensionThresholdMillis end
+if endsAt - now < extensionThresholdMillis then endsAt = endsAt + extensionThresholdMillis end
 redis.call('HSET', KEYS[1], 'status', 'ACTIVE', 'currentPrice', currentPrice, 'winnerId', winnerId, 'winnerMax', winnerMaximum, 'endsAt', endsAt, 'version', version)
 
 return saveResult('ACCEPTED')
