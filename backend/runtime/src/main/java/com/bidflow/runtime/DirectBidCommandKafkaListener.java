@@ -7,6 +7,8 @@ import com.bidflow.application.bid.AutoBidProcessor;
 import com.bidflow.application.bid.DirectBidCommand;
 import com.bidflow.application.bid.DirectBidProcessor;
 import com.bidflow.application.bid.DirectBidResult;
+import com.bidflow.application.consumer.ConsumerEvent;
+import com.bidflow.application.consumer.ConsumerEventProcessor;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.Clock;
@@ -26,13 +28,16 @@ class DirectBidCommandKafkaListener {
     private final DirectBidProcessor directBidProcessor;
     private final AutoBidProcessor autoBidProcessor;
     private final BidLedgerRepository ledger;
+    private final ConsumerEventProcessor events;
     private final Clock clock;
 
-    DirectBidCommandKafkaListener(ObjectMapper objectMapper, DirectBidProcessor directBidProcessor, AutoBidProcessor autoBidProcessor, BidLedgerRepository ledger, Clock clock) {
+    DirectBidCommandKafkaListener(ObjectMapper objectMapper, DirectBidProcessor directBidProcessor, AutoBidProcessor autoBidProcessor,
+            BidLedgerRepository ledger, ConsumerEventProcessor events, Clock clock) {
         this.objectMapper = objectMapper;
         this.directBidProcessor = directBidProcessor;
         this.autoBidProcessor = autoBidProcessor;
         this.ledger = ledger;
+        this.events = events;
         this.clock = clock;
     }
 
@@ -40,6 +45,11 @@ class DirectBidCommandKafkaListener {
     void consume(ConsumerRecord<String, String> record) {
         BidCommandPayload payload = parse(record.value());
         Instant now = Instant.now(clock);
+        events.processIfFirst(new ConsumerEvent("bid-settlement", payload.eventId(), record.topic(), record.partition(), record.offset(), now),
+                () -> settle(payload, now));
+    }
+
+    private void settle(BidCommandPayload payload, Instant now) {
         DirectBidResult result = switch (payload.bidKind()) {
             case "DIRECT" -> directBidProcessor.execute(new DirectBidCommand(
                     payload.bidRequestId(), payload.auctionId(), payload.bidderId(), payload.amount(), now));
@@ -59,6 +69,7 @@ class DirectBidCommandKafkaListener {
             }
             JsonNode payload = envelope.required("payload");
             return new BidCommandPayload(
+                    UUID.fromString(envelope.required("eventId").asText()),
                     UUID.fromString(payload.required("bidRequestId").asText()),
                     UUID.fromString(payload.required("auctionId").asText()),
                     payload.required("bidderId").asText(),
@@ -70,6 +81,6 @@ class DirectBidCommandKafkaListener {
         }
     }
 
-    private record BidCommandPayload(UUID bidRequestId, UUID auctionId, String bidderId, String bidKind, long amount, String correlationId) {
+    private record BidCommandPayload(UUID eventId, UUID bidRequestId, UUID auctionId, String bidderId, String bidKind, long amount, String correlationId) {
     }
 }

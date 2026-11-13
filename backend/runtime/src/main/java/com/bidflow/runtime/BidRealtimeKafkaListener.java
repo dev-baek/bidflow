@@ -4,6 +4,8 @@ import com.bidflow.application.realtime.AuctionRealtimeSnapshot;
 import com.bidflow.application.realtime.AuctionRealtimeSnapshotReader;
 import com.bidflow.application.realtime.RealtimeMessage;
 import com.bidflow.application.realtime.RealtimeMessagePublisher;
+import com.bidflow.application.consumer.ConsumerEvent;
+import com.bidflow.application.consumer.ConsumerEventProcessor;
 import com.bidflow.event.EventContractValidator;
 import com.bidflow.event.EventContracts;
 import com.bidflow.event.EventEnvelope;
@@ -12,6 +14,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.Duration;
+import java.time.Clock;
 import java.time.Instant;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -28,33 +31,43 @@ class BidRealtimeKafkaListener {
     private final ObjectMapper objectMapper;
     private final AuctionRealtimeSnapshotReader snapshots;
     private final RealtimeMessagePublisher publisher;
+    private final ConsumerEventProcessor events;
+    private final Clock clock;
 
-    BidRealtimeKafkaListener(ObjectMapper objectMapper, AuctionRealtimeSnapshotReader snapshots, RealtimeMessagePublisher publisher) {
+    BidRealtimeKafkaListener(ObjectMapper objectMapper, AuctionRealtimeSnapshotReader snapshots, RealtimeMessagePublisher publisher,
+            ConsumerEventProcessor events, Clock clock) {
         this.objectMapper = objectMapper;
         this.snapshots = snapshots;
         this.publisher = publisher;
+        this.events = events;
+        this.clock = clock;
     }
 
     @KafkaListener(topics = "bid-event", groupId = "realtime-projection")
     void consume(ConsumerRecord<String, String> record) {
         EventEnvelope<Map<String, Object>> event = deserialize(record.value());
-        if (!EventEnvelopeValidator.validate(event, Instant.now(), Duration.ofMinutes(1), KNOWN_EVENT_TYPES).isEmpty()
+        if (!EventEnvelopeValidator.validate(event, Instant.now(clock), Duration.ofMinutes(1), KNOWN_EVENT_TYPES).isEmpty()
                 || !EventContractValidator.validate(record.topic(), record.key(), event).isEmpty()) {
             throw new IllegalArgumentException("invalid realtime bid event");
         }
         UUID auctionId = uuid(event.payload(), "auctionId");
         AuctionRealtimeSnapshot snapshot = snapshots.findByAuctionId(auctionId)
                 .orElseThrow(() -> new IllegalStateException("auction snapshot is unavailable"));
+        events.processIfFirst(consumerEvent(record, event), () -> publish(event, snapshot));
+    }
+
+    private void publish(EventEnvelope<Map<String, Object>> event, AuctionRealtimeSnapshot snapshot) {
         switch (event.eventType()) {
-            case "BidAccepted" -> {
-                publishPublic(event, snapshot, "auction.updated");
-                publishBidResult(event, snapshot, "ACCEPTED");
-            }
+            case "BidAccepted" -> { publishPublic(event, snapshot, "auction.updated"); publishBidResult(event, snapshot, "ACCEPTED"); }
             case "BidRejected" -> publishBidResult(event, snapshot, "REJECTED");
             case "AuctionExtended" -> publishPublic(event, snapshot, "auction.updated");
             case "AuctionEnded" -> publishPublic(event, snapshot, "auction.ended");
             default -> throw new IllegalArgumentException("unsupported realtime bid event");
         }
+    }
+
+    private ConsumerEvent consumerEvent(ConsumerRecord<String, String> record, EventEnvelope<?> event) {
+        return new ConsumerEvent("realtime-projection", event.eventId(), record.topic(), record.partition(), record.offset(), Instant.now(clock));
     }
 
     private void publishPublic(EventEnvelope<Map<String, Object>> event, AuctionRealtimeSnapshot snapshot, String type) {

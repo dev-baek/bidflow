@@ -7,8 +7,10 @@ import com.bidflow.application.search.ProductSearchDocument;
 import com.bidflow.application.search.ProductSearchDocumentSource;
 import com.bidflow.application.search.ProductSearchDocumentWriter;
 import com.bidflow.application.search.SearchIndexingService;
+import com.bidflow.application.consumer.ConsumerEventProcessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.Instant;
+import java.time.Clock;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.UUID;
@@ -52,7 +54,8 @@ class SearchIndexingKafkaListenerTest {
             @Override public Optional<ProductSearchDocument> findByProductId(UUID productId) { return Optional.of(document); }
             @Override public Optional<ProductSearchDocument> findByAuctionId(UUID auctionId) { return Optional.of(document); }
         };
-        return new SearchIndexingKafkaListener(new ObjectMapper(), new SearchIndexingService(source, writer));
+        ConsumerEventProcessor passthrough = (event, effect) -> effect.run();
+        return new SearchIndexingKafkaListener(new ObjectMapper(), new SearchIndexingService(source, writer), passthrough, Clock.systemUTC());
     }
 
     private static String validListingPublished() {

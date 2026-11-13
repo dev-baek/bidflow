@@ -1,6 +1,8 @@
 package com.bidflow.runtime;
 
 import com.bidflow.application.auction.AuctionActiveStateCleaner;
+import com.bidflow.application.consumer.ConsumerEvent;
+import com.bidflow.application.consumer.ConsumerEventProcessor;
 import com.bidflow.event.EventContractValidator;
 import com.bidflow.event.EventContracts;
 import com.bidflow.event.EventEnvelope;
@@ -9,6 +11,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.Duration;
+import java.time.Clock;
 import java.time.Instant;
 import java.util.Map;
 import java.util.Set;
@@ -23,21 +26,27 @@ class AuctionEndedKafkaListener {
     private static final Set<String> KNOWN_EVENT_TYPES = EventContracts.all().stream().map(contract -> contract.eventType()).collect(java.util.stream.Collectors.toUnmodifiableSet());
     private final ObjectMapper objectMapper;
     private final AuctionActiveStateCleaner cleaner;
+    private final ConsumerEventProcessor events;
+    private final Clock clock;
 
-    AuctionEndedKafkaListener(ObjectMapper objectMapper, AuctionActiveStateCleaner cleaner) {
+    AuctionEndedKafkaListener(ObjectMapper objectMapper, AuctionActiveStateCleaner cleaner, ConsumerEventProcessor events, Clock clock) {
         this.objectMapper = objectMapper;
         this.cleaner = cleaner;
+        this.events = events;
+        this.clock = clock;
     }
 
     @KafkaListener(topics = "bid-event", groupId = "auction-finalization")
     void consume(ConsumerRecord<String, String> record) {
         EventEnvelope<Map<String, Object>> event = deserialize(record.value());
-        if (!EventEnvelopeValidator.validate(event, Instant.now(), Duration.ofMinutes(1), KNOWN_EVENT_TYPES).isEmpty()
+        if (!EventEnvelopeValidator.validate(event, Instant.now(clock), Duration.ofMinutes(1), KNOWN_EVENT_TYPES).isEmpty()
                 || !EventContractValidator.validate(record.topic(), record.key(), event).isEmpty()) {
             throw new IllegalArgumentException("invalid auction finalization event");
         }
         if (!"AuctionEnded".equals(event.eventType())) return;
-        cleaner.clear(UUID.fromString(String.valueOf(event.payload().get("auctionId"))));
+        UUID auctionId = UUID.fromString(String.valueOf(event.payload().get("auctionId")));
+        events.processIfFirst(new ConsumerEvent("auction-finalization", event.eventId(), record.topic(), record.partition(), record.offset(), Instant.now(clock)),
+                () -> cleaner.clear(auctionId));
     }
 
     private EventEnvelope<Map<String, Object>> deserialize(String value) {

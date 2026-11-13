@@ -2,7 +2,7 @@
 set -eu
 
 docker_bin=${BIDFLOW_DOCKER_BIN:-docker}
-topics="bid-command bid-event listing-event"
+topics="bid-command bid-event listing-event bid-command.DLT bid-event.DLT listing-event.DLT"
 partitions=3
 replication_factor=1
 retention_ms=604800000
@@ -41,4 +41,4 @@ for topic in $topics; do
   verify_topic "$topic"
 done
 
-printf '%s\n' "Kafka 토픽 정책 적용 완료: bid-command,bid-event,listing-event"
+printf '%s\n' "Kafka 토픽 정책 적용 완료: bid-command,bid-event,listing-event 및 각 DLT"

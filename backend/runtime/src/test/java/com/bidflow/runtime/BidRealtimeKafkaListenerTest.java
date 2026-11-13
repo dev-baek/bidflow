@@ -6,9 +6,11 @@ import com.bidflow.application.realtime.AuctionRealtimeSnapshot;
 import com.bidflow.application.realtime.AuctionRealtimeSnapshotReader;
 import com.bidflow.application.realtime.RealtimeMessage;
 import com.bidflow.application.realtime.RealtimeMessagePublisher;
+import com.bidflow.application.consumer.ConsumerEventProcessor;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.Instant;
+import java.time.Clock;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.UUID;
@@ -62,7 +64,8 @@ class BidRealtimeKafkaListenerTest {
     private static BidRealtimeKafkaListener listener(CapturingPublisher publisher) {
         AuctionRealtimeSnapshot snapshot = new AuctionRealtimeSnapshot(AUCTION_ID, 13_000L, Instant.parse("2030-01-01T12:05:00Z"), "ACTIVE", 2L);
         AuctionRealtimeSnapshotReader reader = auctionId -> Optional.of(snapshot);
-        return new BidRealtimeKafkaListener(new ObjectMapper(), reader, publisher);
+        ConsumerEventProcessor passthrough = (event, effect) -> effect.run();
+        return new BidRealtimeKafkaListener(new ObjectMapper(), reader, publisher, passthrough, Clock.systemUTC());
     }
 
     private static ConsumerRecord<String, String> record(String eventType, String payload) {
