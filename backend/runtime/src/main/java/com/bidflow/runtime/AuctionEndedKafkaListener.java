@@ -39,14 +39,16 @@ class AuctionEndedKafkaListener {
     @KafkaListener(topics = "bid-event", groupId = "auction-finalization")
     void consume(ConsumerRecord<String, String> record) {
         EventEnvelope<Map<String, Object>> event = deserialize(record.value());
-        if (!EventEnvelopeValidator.validate(event, Instant.now(clock), Duration.ofMinutes(1), KNOWN_EVENT_TYPES).isEmpty()
-                || !EventContractValidator.validate(record.topic(), record.key(), event).isEmpty()) {
-            throw new IllegalArgumentException("invalid auction finalization event");
+        try (LogContext.Scope ignored = LogContext.kafka(event.correlationId(), record, "auction-finalization", event.eventId().toString())) {
+            if (!EventEnvelopeValidator.validate(event, Instant.now(clock), Duration.ofMinutes(1), KNOWN_EVENT_TYPES).isEmpty()
+                    || !EventContractValidator.validate(record.topic(), record.key(), event).isEmpty()) {
+                throw new IllegalArgumentException("invalid auction finalization event");
+            }
+            if (!"AuctionEnded".equals(event.eventType())) return;
+            UUID auctionId = UUID.fromString(String.valueOf(event.payload().get("auctionId")));
+            events.processIfFirst(new ConsumerEvent("auction-finalization", event.eventId(), record.topic(), record.partition(), record.offset(), Instant.now(clock)),
+                    () -> cleaner.clear(auctionId));
         }
-        if (!"AuctionEnded".equals(event.eventType())) return;
-        UUID auctionId = UUID.fromString(String.valueOf(event.payload().get("auctionId")));
-        events.processIfFirst(new ConsumerEvent("auction-finalization", event.eventId(), record.topic(), record.partition(), record.offset(), Instant.now(clock)),
-                () -> cleaner.clear(auctionId));
     }
 
     private EventEnvelope<Map<String, Object>> deserialize(String value) {

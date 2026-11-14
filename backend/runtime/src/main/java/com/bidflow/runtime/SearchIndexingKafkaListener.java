@@ -39,12 +39,14 @@ class SearchIndexingKafkaListener {
     @KafkaListener(topics = {"listing-event", "bid-event"}, groupId = "search-projection")
     void consume(ConsumerRecord<String, String> record) {
         EventEnvelope<Map<String, Object>> event = deserialize(record.value());
-        if (!EventEnvelopeValidator.validate(event, Instant.now(clock), Duration.ofMinutes(1), KNOWN_EVENT_TYPES).isEmpty()
-                || !EventContractValidator.validate(record.topic(), record.key(), event).isEmpty()) {
-            throw new IllegalArgumentException("invalid search projection event");
+        try (LogContext.Scope ignored = LogContext.kafka(event.correlationId(), record, "search-projection", event.eventId().toString())) {
+            if (!EventEnvelopeValidator.validate(event, Instant.now(clock), Duration.ofMinutes(1), KNOWN_EVENT_TYPES).isEmpty()
+                    || !EventContractValidator.validate(record.topic(), record.key(), event).isEmpty()) {
+                throw new IllegalArgumentException("invalid search projection event");
+            }
+            events.processIfFirst(new ConsumerEvent("search-projection", event.eventId(), record.topic(), record.partition(), record.offset(), Instant.now(clock)),
+                    () -> index(event));
         }
-        events.processIfFirst(new ConsumerEvent("search-projection", event.eventId(), record.topic(), record.partition(), record.offset(), Instant.now(clock)),
-                () -> index(event));
     }
 
     private void index(EventEnvelope<Map<String, Object>> event) {

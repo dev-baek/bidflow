@@ -24,11 +24,35 @@ import java.util.Set;
 import java.util.UUID;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.slf4j.MDC;
 
 class DirectBidCommandKafkaListenerTest {
     private static final UUID EVENT_ID = UUID.fromString("00000000-0000-0000-0000-000000000001");
     private static final UUID REQUEST_ID = UUID.fromString("00000000-0000-0000-0000-000000000002");
     private static final UUID AUCTION_ID = UUID.fromString("00000000-0000-0000-0000-000000000003");
+
+    @AfterEach
+    void clearMdc() {
+        MDC.clear();
+    }
+
+    @Test
+    void scopesKafkaCorrelationAndPositionToOneRecordOnly() {
+        CapturingContextProcessor events = new CapturingContextProcessor();
+        DirectBidCommandKafkaListener listener = new DirectBidCommandKafkaListener(new ObjectMapper(), new CapturingDirectProcessor(),
+                command -> { throw new AssertionError("AUTO_MAX must not run"); }, new CapturingLedger(), maximum -> { }, null,
+                events, Clock.systemUTC());
+
+        listener.consume(new ConsumerRecord<>("bid-command", 2, 11L, AUCTION_ID.toString(), event()));
+
+        assertThat(events.correlationId).isEqualTo("request-1");
+        assertThat(events.topic).isEqualTo("bid-command");
+        assertThat(events.partition).isEqualTo("2");
+        assertThat(events.offset).isEqualTo("11");
+        assertThat(events.consumerGroup).isEqualTo("bid-settlement");
+        assertThat(MDC.getCopyOfContextMap()).isNullOrEmpty();
+    }
 
     @Test
     void settlesTheSameKafkaEventOnlyOnce() {
@@ -100,6 +124,23 @@ class DirectBidCommandKafkaListenerTest {
         private final Set<String> processed = new HashSet<>();
         @Override public void processIfFirst(ConsumerEvent event, Runnable effect) {
             if (processed.add(event.consumerName() + event.eventId())) effect.run();
+        }
+    }
+
+    private static final class CapturingContextProcessor implements ConsumerEventProcessor {
+        private String correlationId;
+        private String topic;
+        private String partition;
+        private String offset;
+        private String consumerGroup;
+
+        @Override public void processIfFirst(ConsumerEvent event, Runnable effect) {
+            correlationId = MDC.get("correlationId");
+            topic = MDC.get("topic");
+            partition = MDC.get("partition");
+            offset = MDC.get("offset");
+            consumerGroup = MDC.get("consumerGroup");
+            effect.run();
         }
     }
 
