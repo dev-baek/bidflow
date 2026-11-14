@@ -22,6 +22,9 @@ import java.util.UUID;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import java.util.Map;
 
 /**
  * Imperative shell for direct bid settlement. An exception escapes this listener, so the configured
@@ -29,6 +32,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 class DirectBidCommandKafkaListener {
+    private static final Logger log = LoggerFactory.getLogger(DirectBidCommandKafkaListener.class);
     private final ObjectMapper objectMapper;
     private final DirectBidProcessor directBidProcessor;
     private final AutoBidProcessor autoBidProcessor;
@@ -54,9 +58,11 @@ class DirectBidCommandKafkaListener {
     @KafkaListener(topics = "bid-command", groupId = "bid-settlement")
     void consume(ConsumerRecord<String, String> record) {
         BidCommandPayload payload = parse(record.value());
-        Instant now = Instant.now(clock);
-        events.processIfFirst(new ConsumerEvent("bid-settlement", payload.eventId(), record.topic(), record.partition(), record.offset(), now),
-                () -> settle(payload, now));
+        try (LogContext.Scope ignored = LogContext.kafka(payload.correlationId(), record, "bid-settlement", payload.eventId().toString())) {
+            Instant now = Instant.now(clock);
+            events.processIfFirst(new ConsumerEvent("bid-settlement", payload.eventId(), record.topic(), record.partition(), record.offset(), now),
+                    () -> settle(payload, now));
+        }
     }
 
     private void settle(BidCommandPayload payload, Instant now) {
@@ -64,6 +70,12 @@ class DirectBidCommandKafkaListener {
         if (result.code() == DirectBidResultCode.NOT_ACTIVE) result = recoverAndExecute(payload, now);
         boolean persisted = ledger.persist(new BidSettlementCommand(
                 payload.bidRequestId(), payload.auctionId(), payload.bidderId(), payload.amount(), result, now, payload.correlationId()));
+        if (persisted) {
+            try (LogContext.Scope ignored = LogContext.fields(Map.of("event", "bid.settled", "bidRequestId", payload.bidRequestId().toString(),
+                    "auctionId", payload.auctionId().toString(), "outcome", result.code().name()))) {
+                log.info("bid settlement completed");
+            }
+        }
         if (persisted && "AUTO_MAX".equals(payload.bidKind()) && result.code() == DirectBidResultCode.ACCEPTED) {
             automaticMaxima.save(new AutoBidMaximum(payload.auctionId(), payload.bidderId(), payload.amount()));
         }

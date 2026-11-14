@@ -46,14 +46,16 @@ class BidRealtimeKafkaListener {
     @KafkaListener(topics = "bid-event", groupId = "realtime-projection")
     void consume(ConsumerRecord<String, String> record) {
         EventEnvelope<Map<String, Object>> event = deserialize(record.value());
-        if (!EventEnvelopeValidator.validate(event, Instant.now(clock), Duration.ofMinutes(1), KNOWN_EVENT_TYPES).isEmpty()
-                || !EventContractValidator.validate(record.topic(), record.key(), event).isEmpty()) {
-            throw new IllegalArgumentException("invalid realtime bid event");
+        try (LogContext.Scope ignored = LogContext.kafka(event.correlationId(), record, "realtime-projection", event.eventId().toString())) {
+            if (!EventEnvelopeValidator.validate(event, Instant.now(clock), Duration.ofMinutes(1), KNOWN_EVENT_TYPES).isEmpty()
+                    || !EventContractValidator.validate(record.topic(), record.key(), event).isEmpty()) {
+                throw new IllegalArgumentException("invalid realtime bid event");
+            }
+            UUID auctionId = uuid(event.payload(), "auctionId");
+            AuctionRealtimeSnapshot snapshot = snapshots.findByAuctionId(auctionId)
+                    .orElseThrow(() -> new IllegalStateException("auction snapshot is unavailable"));
+            events.processIfFirst(consumerEvent(record, event), () -> publish(event, snapshot));
         }
-        UUID auctionId = uuid(event.payload(), "auctionId");
-        AuctionRealtimeSnapshot snapshot = snapshots.findByAuctionId(auctionId)
-                .orElseThrow(() -> new IllegalStateException("auction snapshot is unavailable"));
-        events.processIfFirst(consumerEvent(record, event), () -> publish(event, snapshot));
     }
 
     private void publish(EventEnvelope<Map<String, Object>> event, AuctionRealtimeSnapshot snapshot) {
