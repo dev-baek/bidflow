@@ -45,6 +45,14 @@ resource "terraform_data" "account_and_region_guard" {
   }
 }
 
+module "budget" {
+  source = "../modules/budget"
+
+  budget_notification_emails = var.budget_notification_emails
+  monthly_budget_amount      = var.monthly_budget_amount
+  monthly_budget_currency    = var.monthly_budget_currency
+}
+
 resource "aws_s3_bucket" "terraform_state" {
   bucket = var.state_bucket_name
 
