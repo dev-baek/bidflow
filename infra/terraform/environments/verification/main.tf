@@ -72,6 +72,14 @@ module "private_runtime" {
   vpc_id                            = module.network.vpc_id
 }
 
+module "private_rds" {
+  source = "../../modules/private_rds"
+
+  data_subnet_ids            = module.network.data_subnet_ids
+  name                       = "bidflow-${var.environment}"
+  postgres_security_group_id = module.network.security_group_ids.postgres
+}
+
 resource "terraform_data" "verification_guard" {
   input = {
     account_id = data.aws_caller_identity.current.account_id

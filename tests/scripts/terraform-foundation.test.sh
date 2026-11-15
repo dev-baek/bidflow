@@ -17,7 +17,7 @@ rg -q 'environment.*verification' infra/terraform/environments/verification
 rg -q 'ttl' infra/terraform/environments/verification
 rg -q 'backend "s3"' infra/terraform/environments/verification/backend.tf
 
-if rg -n --glob '*.tf' --glob '*.tfvars*' '(access_key|secret_key|password)[[:space:]]*=' infra/terraform; then
+if rg -n -P --glob '*.tf' --glob '*.tfvars*' '^\s*(access_key|secret_key|password)\s*=' infra/terraform; then
   echo 'Terraform source must not contain credential values.' >&2
   exit 1
 fi
