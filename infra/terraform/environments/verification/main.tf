@@ -16,6 +16,18 @@ data "aws_caller_identity" "current" {}
 
 data "aws_region" "current" {}
 
+data "aws_availability_zones" "available" {
+  state = "available"
+}
+
+module "network" {
+  source = "../../modules/network"
+
+  availability_zones = data.aws_availability_zones.available.names
+  enable_nat_gateway = var.enable_nat_gateway
+  vpc_cidr           = var.vpc_cidr
+}
+
 resource "terraform_data" "verification_guard" {
   input = {
     account_id = data.aws_caller_identity.current.account_id

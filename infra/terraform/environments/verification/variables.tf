@@ -48,3 +48,20 @@ variable "ttl" {
     error_message = "ttl must be a UTC ISO-8601 timestamp, for example 2026-11-15T12:00:00Z."
   }
 }
+
+variable "vpc_cidr" {
+  description = "CIDR block assigned to the short-lived verification VPC."
+  type        = string
+  default     = "10.42.0.0/16"
+
+  validation {
+    condition     = can(cidrnetmask(var.vpc_cidr))
+    error_message = "vpc_cidr must be a valid IPv4 CIDR block."
+  }
+}
+
+variable "enable_nat_gateway" {
+  description = "Enables one NAT Gateway only for a time-boxed AWS verification run."
+  type        = bool
+  default     = false
+}
