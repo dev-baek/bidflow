@@ -64,12 +64,14 @@ module "private_runtime" {
   desired_capacity                  = var.application_desired_capacity
   database_secret_arn               = module.private_rds.master_user_secret_arn
   enable_managed_redis              = var.enable_managed_redis
+  enable_managed_kafka              = var.enable_managed_kafka
   enable_nat_gateway                = var.enable_nat_gateway
   max_size                          = var.application_max_size
   min_size                          = var.application_min_size
   name                              = "bidflow-${var.environment}"
   region                            = var.region
   runtime_secret_arn                = var.application_runtime_secret_arn
+  kafka_bootstrap_brokers           = module.managed_kafka.bootstrap_brokers_sasl_iam
   redis_endpoint                    = module.managed_redis.endpoint
   redis_secret_arn                  = module.managed_redis.secret_arn
   target_group_arn                  = module.application_edge.target_group_arn

@@ -78,6 +78,11 @@ variable "redis_secret_arn" {
   type     = string
   nullable = true
 }
+variable "enable_managed_kafka" { type = bool }
+variable "kafka_bootstrap_brokers" {
+  type     = string
+  nullable = true
+}
 
 variable "enable_nat_gateway" {
   description = "Explicit approval switch for the temporary NAT Gateway required by this first runtime implementation."
