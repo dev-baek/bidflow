@@ -90,6 +90,15 @@ module "managed_redis" {
   redis_security_group_id = module.network.security_group_ids.redis
 }
 
+module "managed_kafka" {
+  source = "../../modules/managed_kafka"
+
+  data_subnet_ids         = module.network.data_subnet_ids
+  enable_managed_kafka    = var.enable_managed_kafka
+  kafka_security_group_id = module.network.security_group_ids.kafka
+  name                    = "bidflow-${var.environment}"
+}
+
 resource "terraform_data" "verification_guard" {
   input = {
     account_id = data.aws_caller_identity.current.account_id
