@@ -17,3 +17,13 @@ output "web_cloudfront_domain_name" {
   description = "Temporary HTTPS domain for the Vite application after CloudFront deployment completes."
   value       = module.web_delivery.cloudfront_domain_name
 }
+
+output "application_ecr_repository_url" {
+  description = "Push the Spring Boot OCI image here, then deploy by immutable digest only."
+  value       = module.application_edge.ecr_repository_url
+}
+
+output "application_alb_dns_name" {
+  description = "Temporary HTTPS endpoint after target registration and readiness checks succeed."
+  value       = module.application_edge.alb_dns_name
+}
