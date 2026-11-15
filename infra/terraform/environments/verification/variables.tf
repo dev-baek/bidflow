@@ -91,3 +91,36 @@ variable "alb_certificate_arn" {
     error_message = "alb_certificate_arn must be an ap-northeast-1 ACM certificate ARN."
   }
 }
+
+variable "application_ami_id" {
+  description = "Pre-baked ARM64 AMI with Docker and AWS CLI for the private runtime."
+  type        = string
+}
+
+variable "application_image" {
+  description = "Immutable ECR application image URI with sha256 digest."
+  type        = string
+}
+
+variable "application_runtime_secret_arn" {
+  description = "Secrets Manager ARN holding the private runtime environment JSON."
+  type        = string
+}
+
+variable "application_min_size" {
+  description = "Minimum ALB-backed runtime instances; two are required for rolling refresh checks."
+  type        = number
+  default     = 2
+}
+
+variable "application_desired_capacity" {
+  description = "Initial ALB-backed runtime instances; two are required for rolling refresh checks."
+  type        = number
+  default     = 2
+}
+
+variable "application_max_size" {
+  description = "Maximum ALB-backed runtime instances during the verification window."
+  type        = number
+  default     = 2
+}

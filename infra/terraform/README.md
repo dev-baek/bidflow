@@ -11,6 +11,7 @@ Terraform은 AWS 검증 환경에만 사용한다. 로컬 개발은 [Docker Comp
 - `modules/budget`: 계정 전체 월간 비용의 80%·100% 실제/예측 알림을 만든다. 기본 한도는 `100000 KRW`지만 apply 전 계정 청구 통화를 확인한다.
 - `modules/web_delivery`: Vite build artifact를 담는 private S3 bucket과 CloudFront OAC를 만든다. CloudFront만 읽을 수 있고, artifact upload와 invalidation은 후속 배포 workflow의 책임이다.
 - `modules/application_edge`: immutable·scan-on-push ECR repository와 public HTTPS ALB/readiness Target Group을 만든다. EC2 Auto Scaling Group은 image digest를 받아 다음 구현 단위에서 연결한다.
+- `modules/private_runtime`: private subnet의 ARM64 EC2 Auto Scaling Group을 immutable ECR digest로 기동한다. 현재 첫 검증 구현은 ECR·Secrets 접근을 위해 `enable_nat_gateway=true`를 명시적으로 요구하며, 해당 비용은 VPC Endpoint 구현 전 승인 대상이다.
 
 ## 실행 전 조건
 

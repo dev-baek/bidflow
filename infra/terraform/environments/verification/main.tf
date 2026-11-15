@@ -53,6 +53,25 @@ module "application_edge" {
   vpc_id                = module.network.vpc_id
 }
 
+module "private_runtime" {
+  source = "../../modules/private_runtime"
+
+  ami_id                            = var.application_ami_id
+  application_image                 = var.application_image
+  application_instance_profile_name = module.iam.application_instance_profile_name
+  application_security_group_id     = module.network.security_group_ids.application
+  application_subnet_ids            = module.network.application_subnet_ids
+  desired_capacity                  = var.application_desired_capacity
+  enable_nat_gateway                = var.enable_nat_gateway
+  max_size                          = var.application_max_size
+  min_size                          = var.application_min_size
+  name                              = "bidflow-${var.environment}"
+  region                            = var.region
+  runtime_secret_arn                = var.application_runtime_secret_arn
+  target_group_arn                  = module.application_edge.target_group_arn
+  vpc_id                            = module.network.vpc_id
+}
+
 resource "terraform_data" "verification_guard" {
   input = {
     account_id = data.aws_caller_identity.current.account_id
