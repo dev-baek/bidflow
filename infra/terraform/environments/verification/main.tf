@@ -63,12 +63,15 @@ module "private_runtime" {
   application_subnet_ids            = module.network.application_subnet_ids
   desired_capacity                  = var.application_desired_capacity
   database_secret_arn               = module.private_rds.master_user_secret_arn
+  enable_managed_redis              = var.enable_managed_redis
   enable_nat_gateway                = var.enable_nat_gateway
   max_size                          = var.application_max_size
   min_size                          = var.application_min_size
   name                              = "bidflow-${var.environment}"
   region                            = var.region
   runtime_secret_arn                = var.application_runtime_secret_arn
+  redis_endpoint                    = module.managed_redis.endpoint
+  redis_secret_arn                  = module.managed_redis.secret_arn
   target_group_arn                  = module.application_edge.target_group_arn
   vpc_id                            = module.network.vpc_id
 }

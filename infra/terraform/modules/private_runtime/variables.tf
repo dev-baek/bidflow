@@ -69,6 +69,16 @@ variable "database_secret_arn" {
   type        = string
 }
 
+variable "enable_managed_redis" { type = bool }
+variable "redis_endpoint" {
+  type     = string
+  nullable = true
+}
+variable "redis_secret_arn" {
+  type     = string
+  nullable = true
+}
+
 variable "enable_nat_gateway" {
   description = "Explicit approval switch for the temporary NAT Gateway required by this first runtime implementation."
   type        = bool
