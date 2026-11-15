@@ -81,3 +81,13 @@ variable "web_asset_prefix" {
   type        = string
   default     = ""
 }
+
+variable "alb_certificate_arn" {
+  description = "ACM certificate ARN in ap-northeast-1 for the verification ALB HTTPS listener."
+  type        = string
+
+  validation {
+    condition     = can(regex("^arn:[^:]+:acm:ap-northeast-1:[0-9]{12}:certificate/[0-9a-f-]+$", var.alb_certificate_arn))
+    error_message = "alb_certificate_arn must be an ap-northeast-1 ACM certificate ARN."
+  }
+}

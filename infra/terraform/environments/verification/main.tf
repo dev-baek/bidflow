@@ -43,6 +43,16 @@ module "web_delivery" {
   bucket_name  = "bidflow-${var.environment}-${data.aws_caller_identity.current.account_id}-web"
 }
 
+module "application_edge" {
+  source = "../../modules/application_edge"
+
+  alb_security_group_id = module.network.security_group_ids.alb
+  certificate_arn       = var.alb_certificate_arn
+  name                  = "bidflow-${var.environment}"
+  public_subnet_ids     = module.network.public_subnet_ids
+  vpc_id                = module.network.vpc_id
+}
+
 resource "terraform_data" "verification_guard" {
   input = {
     account_id = data.aws_caller_identity.current.account_id
