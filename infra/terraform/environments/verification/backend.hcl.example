@@ -1,0 +1,7 @@
+# Copy outside the repository as backend.hcl and replace the example values.
+# The state bucket and lock table come from the bootstrap workspace.
+bucket         = "replace-with-bootstrap-state-bucket"
+key            = "bidflow/verification/terraform.tfstate"
+region         = "ap-northeast-1"
+dynamodb_table = "replace-with-bootstrap-lock-table"
+encrypt        = true
