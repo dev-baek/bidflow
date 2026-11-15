@@ -1,0 +1,6 @@
+.git
+.gradle
+**/build
+apps/web/node_modules
+apps/web/dist
+infra/terraform/**/.terraform
