@@ -39,6 +39,10 @@ printf 'SPRING_DATA_REDIS_HOST=${redis_endpoint}\nSPRING_DATA_REDIS_PORT=6379\nS
 printf 'SPRING_KAFKA_BOOTSTRAP_SERVERS=${kafka_bootstrap_brokers}\nSPRING_KAFKA_PROPERTIES_SECURITY_PROTOCOL=SASL_SSL\nSPRING_KAFKA_PROPERTIES_SASL_MECHANISM=AWS_MSK_IAM\n' >> /etc/bidflow/runtime-complete.env
 %{ endif ~}
 
+%{ if enable_managed_search ~}
+printf 'BIDFLOW_OPENSEARCH_ENDPOINT=https://${opensearch_endpoint}\n' >> /etc/bidflow/runtime-complete.env
+%{ endif ~}
+
 aws ecr get-login-password --region '${region}' | \
   docker login --username AWS --password-stdin '${image_registry}'
 docker pull '${application_image}'

@@ -139,6 +139,23 @@ data "aws_iam_policy_document" "application_runtime" {
     ]
     resources = [local.kafka_group_arn]
   }
+
+  dynamic "statement" {
+    for_each = var.opensearch_domain_arn == null ? [] : [var.opensearch_domain_arn]
+
+    content {
+      sid    = "QueryBidFlowOpenSearch"
+      effect = "Allow"
+      actions = [
+        "es:ESHttpDelete",
+        "es:ESHttpGet",
+        "es:ESHttpHead",
+        "es:ESHttpPost",
+        "es:ESHttpPut",
+      ]
+      resources = ["${statement.value}/*"]
+    }
+  }
 }
 
 resource "aws_iam_role_policy" "application_runtime" {

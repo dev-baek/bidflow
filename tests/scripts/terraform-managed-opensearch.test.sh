@@ -9,4 +9,5 @@ rg -q 'vpc_options' "$module_dir"
 rg -q 'encrypt_at_rest' "$module_dir"
 rg -q 'node_to_node_encryption' "$module_dir"
 rg -q 'enforce_https.*true' "$module_dir"
+rg -q 'output "domain_arn"' "$module_dir/outputs.tf"
 rg -q 'module "managed_opensearch"' infra/terraform/environments/verification/main.tf

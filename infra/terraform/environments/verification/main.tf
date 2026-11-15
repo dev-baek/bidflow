@@ -33,6 +33,7 @@ module "iam" {
 
   account_id               = data.aws_caller_identity.current.account_id
   github_oidc_provider_arn = var.github_oidc_provider_arn
+  opensearch_domain_arn    = module.managed_opensearch.domain_arn
   region                   = var.region
 }
 
@@ -65,6 +66,7 @@ module "private_runtime" {
   database_secret_arn               = module.private_rds.master_user_secret_arn
   enable_managed_redis              = var.enable_managed_redis
   enable_managed_kafka              = var.enable_managed_kafka
+  enable_managed_search             = var.enable_managed_search
   enable_nat_gateway                = var.enable_nat_gateway
   max_size                          = var.application_max_size
   min_size                          = var.application_min_size
@@ -72,6 +74,7 @@ module "private_runtime" {
   region                            = var.region
   runtime_secret_arn                = var.application_runtime_secret_arn
   kafka_bootstrap_brokers           = module.managed_kafka.bootstrap_brokers_sasl_iam
+  opensearch_endpoint               = module.managed_opensearch.endpoint
   redis_endpoint                    = module.managed_redis.endpoint
   redis_secret_arn                  = module.managed_redis.secret_arn
   target_group_arn                  = module.application_edge.target_group_arn

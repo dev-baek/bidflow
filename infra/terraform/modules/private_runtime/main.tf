@@ -11,11 +11,13 @@ resource "aws_launch_template" "application" {
     database_secret_arn     = var.database_secret_arn
     enable_managed_redis    = var.enable_managed_redis
     enable_managed_kafka    = var.enable_managed_kafka
+    enable_managed_search   = var.enable_managed_search
     image_registry          = local.image_registry
     kafka_bootstrap_brokers = var.kafka_bootstrap_brokers
     region                  = var.region
     redis_endpoint          = var.redis_endpoint
     redis_secret_arn        = var.redis_secret_arn
+    opensearch_endpoint     = var.opensearch_endpoint
     runtime_secret_arn      = var.runtime_secret_arn
   }))
 

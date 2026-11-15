@@ -84,6 +84,13 @@ variable "kafka_bootstrap_brokers" {
   nullable = true
 }
 
+variable "enable_managed_search" { type = bool }
+
+variable "opensearch_endpoint" {
+  type     = string
+  nullable = true
+}
+
 variable "enable_nat_gateway" {
   description = "Explicit approval switch for the temporary NAT Gateway required by this first runtime implementation."
   type        = bool
