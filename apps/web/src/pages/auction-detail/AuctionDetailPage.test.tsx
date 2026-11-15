@@ -7,7 +7,7 @@ const detail = { auctionId: "auction-1", title: "카메라", thumbnailObjectKey:
 
 describe("AuctionDetailPage", () => {
   it("renders the PostgreSQL snapshot after its loading state", async () => {
-    const client: ApiClient = { get: async <T,>() => detail as T };
+    const client: ApiClient = { get: async <T,>() => detail as T, post: async <T,>() => detail as T };
     render(<AuctionDetailPage auctionId="auction-1" apiBaseUrl="http://api" client={client} />);
     expect(screen.getByRole("status")).toHaveTextContent("불러오는 중");
     expect(await screen.findByRole("heading", { name: "카메라" })).toBeInTheDocument();
@@ -15,7 +15,7 @@ describe("AuctionDetailPage", () => {
   });
 
   it("shows a distinct not-found state", async () => {
-    const client: ApiClient = { get: async () => { throw new ApiError(404); } };
+    const client: ApiClient = { get: async () => { throw new ApiError(404); }, post: async () => { throw new ApiError(404); } };
     render(<AuctionDetailPage auctionId="missing" apiBaseUrl="http://api" client={client} />);
     await waitFor(() => expect(screen.getByRole("heading", { name: "경매를 찾을 수 없습니다" })).toBeInTheDocument());
   });

@@ -25,4 +25,15 @@ describe("createApiClient", () => {
 
     await expect(client.get("/api/health")).rejects.toEqual(new ApiError(503));
   });
+
+  it("serializes JSON request bodies for command endpoints", async () => {
+    const request = vi.fn(async () => new Response(JSON.stringify({ bidRequestId: "request-1", status: "RECEIVED" }), { status: 202 }));
+    const client = createApiClient("https://api.bidflow.example", request);
+
+    await client.post("/api/v1/auctions/auction-1/bid-requests", { bidKind: "DIRECT", amount: 21000 }, { "Idempotency-Key": "key-1" });
+
+    expect(request).toHaveBeenCalledWith("https://api.bidflow.example/api/v1/auctions/auction-1/bid-requests", expect.objectContaining({
+      method: "POST", body: JSON.stringify({ bidKind: "DIRECT", amount: 21000 }), headers: expect.objectContaining({ "Idempotency-Key": "key-1" }),
+    }));
+  });
 });

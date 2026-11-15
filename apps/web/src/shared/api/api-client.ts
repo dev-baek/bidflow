@@ -1,5 +1,6 @@
 export type ApiClient = Readonly<{
   get<T>(path: string): Promise<T>;
+  post<T>(path: string, body: unknown, headers?: Record<string, string>): Promise<T>;
 }>;
 
 export class ApiError extends Error {
@@ -27,6 +28,15 @@ export function createApiClient(baseUrl: string, request: typeof fetch): ApiClie
         throw new ApiError(response.status);
       }
 
+      return response.json() as Promise<T>;
+    },
+    async post<T>(path: string, body: unknown, headers: Record<string, string> = {}): Promise<T> {
+      const response = await request(joinApiUrl(baseUrl, path), {
+        method: "POST",
+        headers: { accept: "application/json", "content-type": "application/json", ...headers },
+        body: JSON.stringify(body),
+      });
+      if (!response.ok) throw new ApiError(response.status);
       return response.json() as Promise<T>;
     },
   };
