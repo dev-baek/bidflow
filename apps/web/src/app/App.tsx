@@ -1,6 +1,7 @@
 import { RouterProvider } from "react-router-dom";
 import type { RuntimeConfigResult } from "../shared/config/runtime-config";
 import { createAppRouter } from "./create-router";
+import { AuthProvider } from "../features/auth/auth-context";
 
 export type AppProps = Readonly<{
   configResult: RuntimeConfigResult;
@@ -19,5 +20,9 @@ export function App({ configResult }: AppProps) {
     );
   }
 
-  return <RouterProvider router={createAppRouter(configResult.value.apiBaseUrl)} />;
+  return (
+    <AuthProvider>
+      <RouterProvider router={createAppRouter(configResult.value.apiBaseUrl)} />
+    </AuthProvider>
+  );
 }

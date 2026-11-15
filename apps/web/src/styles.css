@@ -159,3 +159,28 @@ h1 {
   cursor: not-allowed;
   opacity: 0.65;
 }
+
+.auth-summary {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin: 24px 0;
+}
+
+.auth-summary p {
+  margin: 0;
+}
+
+.auth-summary button {
+  padding: 8px 12px;
+  border: 1px solid #b9c5d8;
+  border-radius: 8px;
+  background: #fff;
+  color: #3157d5;
+  font: inherit;
+  font-weight: 800;
+}
+
+.auth-card {
+  max-width: 560px;
+}
