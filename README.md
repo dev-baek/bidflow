@@ -64,8 +64,8 @@ make local-up-search
 새 터미널에서 백엔드와 프론트엔드를 실행한다.
 
 ```bash
-# Spring Boot API
-./backend/gradlew -p backend :runtime:bootRun
+# Spring Boot API (로컬 X-Actor-Id adapter 활성화)
+SPRING_PROFILES_ACTIVE=local ./backend/gradlew -p backend :runtime:bootRun
 
 # Vite 개발 서버
 cd apps/web
