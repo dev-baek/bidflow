@@ -99,6 +99,15 @@ module "managed_kafka" {
   name                    = "bidflow-${var.environment}"
 }
 
+module "managed_opensearch" {
+  source = "../../modules/managed_opensearch"
+
+  data_subnet_ids              = module.network.data_subnet_ids
+  enable_managed_search        = var.enable_managed_search
+  name                         = "bidflow-${var.environment}"
+  opensearch_security_group_id = module.network.security_group_ids.opensearch
+}
+
 resource "terraform_data" "verification_guard" {
   input = {
     account_id = data.aws_caller_identity.current.account_id

@@ -136,3 +136,9 @@ variable "enable_managed_kafka" {
   type        = bool
   default     = false
 }
+
+variable "enable_managed_search" {
+  description = "Creates the cost-bearing temporary private OpenSearch domain only after explicit verification approval."
+  type        = bool
+  default     = false
+}
