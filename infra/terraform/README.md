@@ -7,6 +7,7 @@ Terraform은 AWS 검증 환경에만 사용한다. 로컬 개발은 [Docker Comp
 - `bootstrap`: S3 state bucket과 DynamoDB lock table을 만든다. `prevent_destroy`가 적용되어 verification 환경 종료 시에도 남는다.
 - `environments/verification`: 검증용 리소스를 조립한다. account/Region/environment guard, backend 계약과 Network Module을 포함한다.
 - `modules/network`: 두 AZ의 public ALB/application/data subnet과 최소 Security Group을 만든다. NAT Gateway는 `enable_nat_gateway=false`가 기본이며, 활성화해도 application subnet에만 경로를 추가한다.
+- `modules/iam`: GitHub OIDC trust role과 EC2 application instance profile을 분리한다. Runtime은 ECR·S3 image prefix·Secrets Manager·CloudWatch Logs·MSK IAM 인증만 허용하며 PostgreSQL은 Security Group과 Secret 기반 JDBC로 접근한다.
 
 ## 실행 전 조건
 
