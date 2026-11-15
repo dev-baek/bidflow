@@ -14,7 +14,7 @@ import com.bidflow.application.bid.DirectBidResult;
 import com.bidflow.application.bid.DirectBidResultCode;
 import com.bidflow.application.consumer.ConsumerEvent;
 import com.bidflow.application.consumer.ConsumerEventProcessor;
-import com.fasterxml.jackson.databind.JsonNode;
+import com.bidflow.event.EventEnvelope;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.Clock;
 import java.time.Instant;
@@ -33,7 +33,7 @@ import java.util.Map;
 @Component
 class DirectBidCommandKafkaListener {
     private static final Logger log = LoggerFactory.getLogger(DirectBidCommandKafkaListener.class);
-    private final ObjectMapper objectMapper;
+    private final EventEnvelopeJsonCodec codec;
     private final DirectBidProcessor directBidProcessor;
     private final AutoBidProcessor autoBidProcessor;
     private final BidLedgerRepository ledger;
@@ -45,7 +45,7 @@ class DirectBidCommandKafkaListener {
     DirectBidCommandKafkaListener(ObjectMapper objectMapper, DirectBidProcessor directBidProcessor, AutoBidProcessor autoBidProcessor,
             BidLedgerRepository ledger, AutoBidMaximumRepository automaticMaxima, AuctionStateRecoveryService recovery,
             ConsumerEventProcessor events, Clock clock) {
-        this.objectMapper = objectMapper;
+        this.codec = new EventEnvelopeJsonCodec(objectMapper);
         this.directBidProcessor = directBidProcessor;
         this.autoBidProcessor = autoBidProcessor;
         this.ledger = ledger;
@@ -106,22 +106,28 @@ class DirectBidCommandKafkaListener {
 
     private BidCommandPayload parse(String value) {
         try {
-            JsonNode envelope = objectMapper.readTree(value);
-            if (!"BidCommandRequested".equals(envelope.required("eventType").asText())) {
+            EventEnvelope<Map<String, Object>> envelope = codec.deserialize(value);
+            if (!"BidCommandRequested".equals(envelope.eventType())) {
                 throw new IllegalArgumentException("unexpected bid command event");
             }
-            JsonNode payload = envelope.required("payload");
+            Map<String, Object> payload = envelope.payload();
             return new BidCommandPayload(
-                    UUID.fromString(envelope.required("eventId").asText()),
-                    UUID.fromString(payload.required("bidRequestId").asText()),
-                    UUID.fromString(payload.required("auctionId").asText()),
-                    payload.required("bidderId").asText(),
-                    payload.required("bidKind").asText(),
-                    payload.required("amount").asLong(),
-                    envelope.required("correlationId").asText());
+                    envelope.eventId(),
+                    UUID.fromString(required(payload, "bidRequestId")),
+                    UUID.fromString(required(payload, "auctionId")),
+                    required(payload, "bidderId"),
+                    required(payload, "bidKind"),
+                    Long.parseLong(required(payload, "amount")),
+                    envelope.correlationId());
         } catch (Exception exception) {
             throw new IllegalArgumentException("invalid bid command event", exception);
         }
+    }
+
+    private static String required(Map<String, Object> payload, String field) {
+        Object value = payload.get(field);
+        if (value == null) throw new IllegalArgumentException("missing bid command field: " + field);
+        return value.toString();
     }
 
     private record BidCommandPayload(UUID eventId, UUID bidRequestId, UUID auctionId, String bidderId, String bidKind, long amount, String correlationId) {
