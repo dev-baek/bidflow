@@ -130,3 +130,9 @@ variable "enable_managed_redis" {
   type        = bool
   default     = false
 }
+
+variable "enable_managed_kafka" {
+  description = "Creates the cost-bearing temporary MSK Serverless cluster only after explicit verification approval."
+  type        = bool
+  default     = false
+}
