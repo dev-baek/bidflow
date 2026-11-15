@@ -7,3 +7,13 @@ output "application_instance_profile_name" {
   description = "Attach this profile to the Spring Boot EC2 launch template."
   value       = module.iam.application_instance_profile_name
 }
+
+output "web_asset_bucket_name" {
+  description = "Private destination bucket for Vite assets; upload through the deployment workflow only."
+  value       = module.web_delivery.bucket_name
+}
+
+output "web_cloudfront_domain_name" {
+  description = "Temporary HTTPS domain for the Vite application after CloudFront deployment completes."
+  value       = module.web_delivery.cloudfront_domain_name
+}

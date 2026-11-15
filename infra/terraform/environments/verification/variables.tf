@@ -75,3 +75,9 @@ variable "github_oidc_provider_arn" {
     error_message = "github_oidc_provider_arn must identify the GitHub Actions OIDC provider in the verification account."
   }
 }
+
+variable "web_asset_prefix" {
+  description = "Optional immutable Vite release prefix in the private web asset bucket."
+  type        = string
+  default     = ""
+}
