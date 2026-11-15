@@ -62,6 +62,7 @@ module "private_runtime" {
   application_security_group_id     = module.network.security_group_ids.application
   application_subnet_ids            = module.network.application_subnet_ids
   desired_capacity                  = var.application_desired_capacity
+  database_secret_arn               = module.private_rds.master_user_secret_arn
   enable_nat_gateway                = var.enable_nat_gateway
   max_size                          = var.application_max_size
   min_size                          = var.application_min_size

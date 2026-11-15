@@ -7,10 +7,11 @@ resource "aws_launch_template" "application" {
   image_id      = var.ami_id
   instance_type = var.instance_type
   user_data = base64encode(templatefile("${path.module}/user-data.sh.tftpl", {
-    application_image  = var.application_image
-    image_registry     = local.image_registry
-    region             = var.region
-    runtime_secret_arn = var.runtime_secret_arn
+    application_image   = var.application_image
+    database_secret_arn = var.database_secret_arn
+    image_registry      = local.image_registry
+    region              = var.region
+    runtime_secret_arn  = var.runtime_secret_arn
   }))
 
   iam_instance_profile {

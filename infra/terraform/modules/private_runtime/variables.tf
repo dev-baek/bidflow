@@ -64,6 +64,11 @@ variable "runtime_secret_arn" {
   type        = string
 }
 
+variable "database_secret_arn" {
+  description = "RDS-managed PostgreSQL credential secret read only at instance boot."
+  type        = string
+}
+
 variable "enable_nat_gateway" {
   description = "Explicit approval switch for the temporary NAT Gateway required by this first runtime implementation."
   type        = bool
