@@ -65,3 +65,13 @@ variable "enable_nat_gateway" {
   type        = bool
   default     = false
 }
+
+variable "github_oidc_provider_arn" {
+  description = "Existing GitHub Actions OIDC provider ARN in the verification AWS account."
+  type        = string
+
+  validation {
+    condition     = can(regex("^arn:[^:]+:iam::[0-9]{12}:oidc-provider/token.actions.githubusercontent.com$", var.github_oidc_provider_arn))
+    error_message = "github_oidc_provider_arn must identify the GitHub Actions OIDC provider in the verification account."
+  }
+}

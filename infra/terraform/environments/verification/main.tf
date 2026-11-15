@@ -28,6 +28,14 @@ module "network" {
   vpc_cidr           = var.vpc_cidr
 }
 
+module "iam" {
+  source = "../../modules/iam"
+
+  account_id               = data.aws_caller_identity.current.account_id
+  github_oidc_provider_arn = var.github_oidc_provider_arn
+  region                   = var.region
+}
+
 resource "terraform_data" "verification_guard" {
   input = {
     account_id = data.aws_caller_identity.current.account_id
