@@ -1,6 +1,5 @@
 package com.bidflow.runtime;
 
-import com.bidflow.application.realtime.RealtimeMessagePublisher;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -47,11 +46,6 @@ class RealtimeWebSocketConfiguration implements WebSocketMessageBrokerConfigurer
     @Bean
     RedisRealtimeGateway redisRealtimeGateway(RedisConnectionFactory connectionFactory, ObjectMapper objectMapper, org.springframework.messaging.simp.SimpMessagingTemplate messaging) {
         return new RedisRealtimeGateway(connectionFactory, objectMapper, messaging);
-    }
-
-    @Bean
-    RealtimeMessagePublisher realtimeMessagePublisher(RedisRealtimeGateway gateway) {
-        return gateway;
     }
 
     @Bean
