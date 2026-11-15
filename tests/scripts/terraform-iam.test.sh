@@ -18,6 +18,8 @@ rg -q 's3:PutObject' "$module_dir"
 rg -q 'secretsmanager:GetSecretValue' "$module_dir"
 rg -q 'logs:PutLogEvents' "$module_dir"
 rg -q 'kafka-cluster:Connect' "$module_dir"
+rg -q 'es:ESHttp' "$module_dir"
+rg -q 'opensearch_domain_arn' "$module_dir"
 rg -q 'AmazonSSMManagedInstanceCore' "$module_dir"
 
 if rg -n 'AdministratorAccess|"\*"[[:space:]]*$|Action[[:space:]]*=[[:space:]]*"\*"' "$module_dir"; then

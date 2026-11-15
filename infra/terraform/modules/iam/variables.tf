@@ -35,3 +35,10 @@ variable "github_oidc_provider_arn" {
     error_message = "github_oidc_provider_arn must identify the GitHub Actions OIDC provider in the verification account."
   }
 }
+
+variable "opensearch_domain_arn" {
+  description = "Optional private OpenSearch domain ARN that the application runtime may query."
+  type        = string
+  nullable    = true
+  default     = null
+}
