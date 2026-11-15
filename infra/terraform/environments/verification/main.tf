@@ -81,6 +81,15 @@ module "private_rds" {
   postgres_security_group_id = module.network.security_group_ids.postgres
 }
 
+module "managed_redis" {
+  source = "../../modules/managed_redis"
+
+  data_subnet_ids         = module.network.data_subnet_ids
+  enable_managed_redis    = var.enable_managed_redis
+  name                    = "bidflow-${var.environment}"
+  redis_security_group_id = module.network.security_group_ids.redis
+}
+
 resource "terraform_data" "verification_guard" {
   input = {
     account_id = data.aws_caller_identity.current.account_id

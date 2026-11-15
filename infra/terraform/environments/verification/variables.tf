@@ -124,3 +124,9 @@ variable "application_max_size" {
   type        = number
   default     = 2
 }
+
+variable "enable_managed_redis" {
+  description = "Creates the cost-bearing temporary ElastiCache Redis only after explicit verification approval."
+  type        = bool
+  default     = false
+}
