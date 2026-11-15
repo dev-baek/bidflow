@@ -6,6 +6,7 @@ import { NotFoundPage } from "../pages/not-found/NotFoundPage";
 import { LoginPage } from "../pages/auth/LoginPage";
 import { RequireAuthenticated } from "../pages/auth/RequireAuthenticated";
 import { AuctionDetailPage } from "../pages/auction-detail/AuctionDetailPage";
+import { useAuth } from "../features/auth/auth-context";
 
 export function createAppRouter(apiBaseUrl: string) {
   return createBrowserRouter([
@@ -37,5 +38,7 @@ export function createAppRouter(apiBaseUrl: string) {
 
 function AuctionDetailRoute({ apiBaseUrl }: Readonly<{ apiBaseUrl: string }>) {
   const { auctionId } = useParams();
-  return auctionId ? <AuctionDetailPage auctionId={auctionId} apiBaseUrl={apiBaseUrl} /> : <NotFoundPage />;
+  const { state } = useAuth();
+  const localActorId = state.mode === "AUTHENTICATED" && state.provider === "LOCAL" ? state.subject : undefined;
+  return auctionId ? <AuctionDetailPage auctionId={auctionId} apiBaseUrl={apiBaseUrl} localActorId={localActorId} /> : <NotFoundPage />;
 }
