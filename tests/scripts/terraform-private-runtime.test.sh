@@ -18,6 +18,9 @@ rg -q 'health_check_type.*ELB' "$module_dir"
 rg -q 'instance_refresh' "$module_dir"
 rg -q 'application_image' "$module_dir/user-data.sh.tftpl"
 rg -q 'get-secret-value' "$module_dir/user-data.sh.tftpl"
+rg -q 'database_secret_arn' "$module_dir/user-data.sh.tftpl"
+rg -q 'BIDFLOW_DATABASE_URL' "$module_dir/user-data.sh.tftpl"
+rg -q 'jq -r' "$module_dir/user-data.sh.tftpl"
 rg -q 'enable_nat_gateway' "$module_dir"
 rg -q 'module "private_runtime"' infra/terraform/environments/verification/main.tf
 rg -q 'application_autoscaling_group_name' infra/terraform/environments/verification/outputs.tf
