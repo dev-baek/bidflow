@@ -1,8 +1,8 @@
 # [Issue #8] Kafka 토픽과 이벤트 계약 사양
 
-- 상태: 제안됨
+- 상태: 확정 (#52 검증 완료)
 - 작성일: 2026-11-12
-- 관련 Issue: [#8 Kafka 토픽과 이벤트 계약 정의](https://github.com/dev-baek/bidflow/issues/8)
+- 관련 Issue: [#8 Kafka 토픽과 이벤트 계약 정의](https://github.com/dev-baek/bidflow/issues/8), [#52 Kafka 토픽·이벤트 Envelope·호환성 사양 작성](https://github.com/dev-baek/bidflow/issues/52)
 - 선행 결정: [Kafka와 SQS 비교 ADR](./issue-029-kafka-sqs-decision-adr.md)
 - 구현 선행 조건: 이 문서의 PR 병합
 
@@ -142,3 +142,15 @@ Domain과 `event-contract` 모듈의 단위 테스트는 Docker 없이 실행한
 - [x] At-least-once·Outbox·Consumer 멱등 처리 경계가 정의됐다.
 - [x] 로컬 Topic 정책과 AWS 이전 검토 조건이 기록됐다.
 - [x] 호환성·중복·순서·Topic 정책 계약 Test 사례가 정의됐다.
+
+## 9. #52 검증 증적
+
+문서의 공통 Envelope와 Topic·Key·필수 Payload 계약은 `event-contract` 모듈의 순수 함수로 검증한다. 이 검증은 Kafka Broker나 AWS 계정 없이 실행된다.
+
+| 검증 대상 | 증적 |
+|---|---|
+| Envelope 필수 필드·시간 경계 | `EventEnvelopeValidatorTest` |
+| Topic·Key·필수 Payload 계약 | `EventContractValidatorTest` |
+| 실행 명령 | `JAVA_HOME="$(/usr/libexec/java_home -v 21)" ./backend/gradlew --no-daemon -p backend :event-contract:test` |
+
+새 Event Type, Topic, 필수 Payload 또는 `schemaVersion` 정책을 변경할 때는 이 문서와 두 계약 테스트를 같은 PR에서 함께 변경한다. 선택 필드 추가처럼 기존 Consumer가 안전하게 무시할 수 있는 변경만 호환되는 v1 변경으로 인정한다.
