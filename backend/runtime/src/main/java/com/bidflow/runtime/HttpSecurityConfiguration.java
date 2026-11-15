@@ -36,7 +36,7 @@ class LocalHttpSecurityConfiguration {
                 .exceptionHandling(configuration -> configuration.authenticationEntryPoint(errors).accessDeniedHandler(errors))
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/actuator/health/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/v1/listings/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/listings/**", "/api/v1/auctions/**").permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(actorFilter, AnonymousAuthenticationFilter.class)
                 .build();
@@ -75,7 +75,7 @@ class CognitoHttpSecurityConfiguration {
         return http
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/actuator/health/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/v1/listings/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/listings/**", "/api/v1/auctions/**").permitAll()
                         .anyRequest().authenticated())
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
                 .build();

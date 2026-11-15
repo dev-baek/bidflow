@@ -22,7 +22,7 @@
 
 | 경로 | 접근 | 표시 정보 |
 |---|---|---|
-| `/auctions/:auctionId` | 비로그인 조회 가능 | 제목·이미지·현재가·상태·종료 시각·낙찰/유찰 결과 |
+| `/auctions/:auctionId` | 비로그인 조회 가능 | 제목·대표 이미지 key·현재가·상태·종료 시각·낙찰/유찰 결과 |
 | `/auctions/:auctionId` 입찰 영역 | 로그인 필요 | 직접/자동 금액 입력, 접수 상태, **본인의** 요청 결과 |
 
 상세 화면은 REST Snapshot을 최초 상태와 재연결 보정의 기준으로 삼는다. 화면은 다음 상태를 명확히 구분한다.
@@ -55,7 +55,7 @@
 
 | 필드 | 출처 | 공개 여부 |
 |---|---|---|
-| `auctionId`, `title`, `imageUrl`, `currentPrice`, `endsAt`, `status`, `auctionVersion` | `auction` + 상품 원본 | 공개 |
+| `auctionId`, `title`, `thumbnailObjectKey`, `currentPrice`, `endsAt`, `status`, `auctionVersion` | `auction` + 상품 원본 | 공개 |
 | `outcome`, `finalPrice` | 종료된 경우 `auction_result` | 공개 |
 | `winnerId`, `auto_bid_maximum`, `bid_ledger` 상세 | 원장/자동입찰 데이터 | 비공개 |
 
@@ -71,7 +71,7 @@ REST Snapshot은 PostgreSQL에서만 읽는다. Redis 상태가 유실되거나 
 {
   "auctionId": "uuid",
   "title": "camera",
-  "imageUrl": "https://...",
+  "thumbnailObjectKey": "products/seller/image-id",
   "currentPrice": 21000,
   "endsAt": "2030-01-01T12:00:00Z",
   "status": "ACTIVE",
@@ -81,7 +81,7 @@ REST Snapshot은 PostgreSQL에서만 읽는다. Redis 상태가 유실되거나 
 }
 ```
 
-없는 경매는 `404 AUCTION_NOT_FOUND`다. `ENDED` Snapshot은 `outcome`과 `finalPrice`를 포함하며 `winnerId`를 포함하지 않는다.
+없는 경매는 `404 AUCTION_NOT_FOUND`다. `ENDED` Snapshot은 `outcome`과 `finalPrice`를 포함하며 `winnerId`를 포함하지 않는다. `thumbnailObjectKey`를 Browser가 표시 가능한 CDN 또는 서명 URL로 바꾸는 작업은 private bucket 전달 경계를 구현할 때 별도로 처리한다.
 
 ### 4.2 입찰 접수
 
