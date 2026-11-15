@@ -32,3 +32,13 @@ output "application_autoscaling_group_name" {
   description = "ALB-backed private runtime group; use for instance-refresh and SSM verification only."
   value       = module.private_runtime.autoscaling_group_name
 }
+
+output "postgres_endpoint" {
+  description = "Private RDS hostname for the runtime secret assembly step; never expose publicly."
+  value       = module.private_rds.endpoint
+}
+
+output "postgres_master_user_secret_arn" {
+  description = "RDS-managed credential secret ARN; value retrieval is restricted to the EC2 runtime role."
+  value       = module.private_rds.master_user_secret_arn
+}
