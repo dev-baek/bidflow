@@ -10,8 +10,6 @@ import com.bidflow.event.EventContractValidator;
 import com.bidflow.event.EventContracts;
 import com.bidflow.event.EventEnvelope;
 import com.bidflow.event.EventEnvelopeValidator;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.Duration;
 import java.time.Clock;
@@ -29,6 +27,7 @@ import org.springframework.stereotype.Component;
 class BidRealtimeKafkaListener {
     private static final Set<String> KNOWN_EVENT_TYPES = EventContracts.all().stream().map(contract -> contract.eventType()).collect(java.util.stream.Collectors.toUnmodifiableSet());
     private final ObjectMapper objectMapper;
+    private final EventEnvelopeJsonCodec codec;
     private final AuctionRealtimeSnapshotReader snapshots;
     private final RealtimeMessagePublisher publisher;
     private final ConsumerEventProcessor events;
@@ -37,6 +36,7 @@ class BidRealtimeKafkaListener {
     BidRealtimeKafkaListener(ObjectMapper objectMapper, AuctionRealtimeSnapshotReader snapshots, RealtimeMessagePublisher publisher,
             ConsumerEventProcessor events, Clock clock) {
         this.objectMapper = objectMapper;
+        this.codec = new EventEnvelopeJsonCodec(objectMapper);
         this.snapshots = snapshots;
         this.publisher = publisher;
         this.events = events;
@@ -45,7 +45,7 @@ class BidRealtimeKafkaListener {
 
     @KafkaListener(topics = "bid-event", groupId = "realtime-projection")
     void consume(ConsumerRecord<String, String> record) {
-        EventEnvelope<Map<String, Object>> event = deserialize(record.value());
+        EventEnvelope<Map<String, Object>> event = codec.deserialize(record.value());
         try (LogContext.Scope ignored = LogContext.kafka(event.correlationId(), record, "realtime-projection", event.eventId().toString())) {
             if (!EventEnvelopeValidator.validate(event, Instant.now(clock), Duration.ofMinutes(1), KNOWN_EVENT_TYPES).isEmpty()
                     || !EventContractValidator.validate(record.topic(), record.key(), event).isEmpty()) {
@@ -105,17 +105,6 @@ class BidRealtimeKafkaListener {
         payload.put("endsAt", snapshot.endsAt().toString());
         payload.put("status", snapshot.status());
         return payload;
-    }
-
-    private EventEnvelope<Map<String, Object>> deserialize(String value) {
-        try {
-            JsonNode root = objectMapper.readTree(value);
-            return new EventEnvelope<>(UUID.fromString(root.required("eventId").asText()), root.required("eventType").asText(),
-                    root.required("schemaVersion").asInt(), Instant.parse(root.required("occurredAt").asText()),
-                    root.required("correlationId").asText(), objectMapper.convertValue(root.required("payload"), new TypeReference<Map<String, Object>>() {}));
-        } catch (Exception exception) {
-            throw new IllegalArgumentException("invalid bid event", exception);
-        }
     }
 
     private static UUID uuid(Map<String, Object> payload, String field) {

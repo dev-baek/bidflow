@@ -7,8 +7,6 @@ import com.bidflow.event.EventContractValidator;
 import com.bidflow.event.EventContracts;
 import com.bidflow.event.EventEnvelope;
 import com.bidflow.event.EventEnvelopeValidator;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.Duration;
 import java.time.Clock;
@@ -24,13 +22,13 @@ import org.springframework.stereotype.Component;
 @Component
 class AuctionEndedKafkaListener {
     private static final Set<String> KNOWN_EVENT_TYPES = EventContracts.all().stream().map(contract -> contract.eventType()).collect(java.util.stream.Collectors.toUnmodifiableSet());
-    private final ObjectMapper objectMapper;
+    private final EventEnvelopeJsonCodec codec;
     private final AuctionActiveStateCleaner cleaner;
     private final ConsumerEventProcessor events;
     private final Clock clock;
 
     AuctionEndedKafkaListener(ObjectMapper objectMapper, AuctionActiveStateCleaner cleaner, ConsumerEventProcessor events, Clock clock) {
-        this.objectMapper = objectMapper;
+        this.codec = new EventEnvelopeJsonCodec(objectMapper);
         this.cleaner = cleaner;
         this.events = events;
         this.clock = clock;
@@ -38,7 +36,7 @@ class AuctionEndedKafkaListener {
 
     @KafkaListener(topics = "bid-event", groupId = "auction-finalization")
     void consume(ConsumerRecord<String, String> record) {
-        EventEnvelope<Map<String, Object>> event = deserialize(record.value());
+        EventEnvelope<Map<String, Object>> event = codec.deserialize(record.value());
         try (LogContext.Scope ignored = LogContext.kafka(event.correlationId(), record, "auction-finalization", event.eventId().toString())) {
             if (!EventEnvelopeValidator.validate(event, Instant.now(clock), Duration.ofMinutes(1), KNOWN_EVENT_TYPES).isEmpty()
                     || !EventContractValidator.validate(record.topic(), record.key(), event).isEmpty()) {
@@ -51,14 +49,4 @@ class AuctionEndedKafkaListener {
         }
     }
 
-    private EventEnvelope<Map<String, Object>> deserialize(String value) {
-        try {
-            JsonNode root = objectMapper.readTree(value);
-            return new EventEnvelope<>(UUID.fromString(root.required("eventId").asText()), root.required("eventType").asText(),
-                    root.required("schemaVersion").asInt(), Instant.parse(root.required("occurredAt").asText()),
-                    root.required("correlationId").asText(), objectMapper.convertValue(root.required("payload"), new TypeReference<Map<String, Object>>() {}));
-        } catch (Exception exception) {
-            throw new IllegalArgumentException("invalid auction finalization event", exception);
-        }
-    }
 }

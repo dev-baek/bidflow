@@ -14,14 +14,15 @@ import org.springframework.kafka.core.KafkaTemplate;
 class OutboxConfiguration {
     @Bean OutboxRepository outboxRepository(JdbcTemplate jdbc) { return new JdbcOutboxRepository(jdbc); }
     @Bean EventMessagePublisher eventMessagePublisher(KafkaTemplate<String, String> kafka, ObjectMapper objectMapper) {
-        return event -> kafka.send(event.topic(), event.key(), serialize(event, objectMapper)).join();
+        EventEnvelopeJsonCodec codec = new EventEnvelopeJsonCodec(objectMapper);
+        return event -> kafka.send(event.topic(), event.key(), serialize(event, objectMapper, codec)).join();
     }
     @Bean OutboxPublisher outboxPublisher(OutboxRepository repository, EventMessagePublisher publisher) { return new OutboxPublisher(repository, publisher); }
 
-    private static String serialize(com.bidflow.application.outbox.OutboxEvent event, ObjectMapper objectMapper) {
+    private static String serialize(com.bidflow.application.outbox.OutboxEvent event, ObjectMapper objectMapper, EventEnvelopeJsonCodec codec) {
         try {
             var payload = objectMapper.readValue(event.payload(), new TypeReference<java.util.Map<String, Object>>() {});
-            return objectMapper.writeValueAsString(new EventEnvelope<>(
+            return codec.serialize(new EventEnvelope<>(
                     event.eventId(), event.eventType(), 1, event.occurredAt(), event.correlationId(), payload));
         } catch (Exception exception) {
             throw new IllegalStateException("outbox event payload serialization failed", exception);
