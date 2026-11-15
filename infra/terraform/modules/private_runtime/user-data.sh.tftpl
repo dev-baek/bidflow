@@ -35,6 +35,10 @@ redis_auth_token=$(jq -r '.redis_auth_token' /etc/bidflow/redis-secret.json)
 printf 'SPRING_DATA_REDIS_HOST=${redis_endpoint}\nSPRING_DATA_REDIS_PORT=6379\nSPRING_DATA_REDIS_SSL_ENABLED=true\nSPRING_DATA_REDIS_PASSWORD=%s\n' "$redis_auth_token" >> /etc/bidflow/runtime-complete.env
 %{ endif ~}
 
+%{ if enable_managed_kafka ~}
+printf 'SPRING_KAFKA_BOOTSTRAP_SERVERS=${kafka_bootstrap_brokers}\nSPRING_KAFKA_PROPERTIES_SECURITY_PROTOCOL=SASL_SSL\nSPRING_KAFKA_PROPERTIES_SASL_MECHANISM=AWS_MSK_IAM\n' >> /etc/bidflow/runtime-complete.env
+%{ endif ~}
+
 aws ecr get-login-password --region '${region}' | \
   docker login --username AWS --password-stdin '${image_registry}'
 docker pull '${application_image}'
