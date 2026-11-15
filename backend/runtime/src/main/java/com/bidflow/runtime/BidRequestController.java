@@ -2,6 +2,7 @@ package com.bidflow.runtime;
 import com.bidflow.application.bid.*;
 import java.util.UUID;
 import java.util.Map;
+import java.security.Principal;
 import org.springframework.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,12 +17,12 @@ class BidRequestController {
     BidRequestController(BidRequestIdempotencyService service) { this.service = service; }
     @PostMapping("/{auctionId}/bid-requests")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    Response create(@RequestHeader("X-Actor-Id") String actorId, @RequestHeader("Idempotency-Key") String key, @PathVariable UUID auctionId, @RequestBody Request request) {
-        if (actorId.isBlank() || key.isBlank()) throw new IllegalArgumentException("invalid request headers");
+    Response create(Principal actor, @RequestHeader("Idempotency-Key") String key, @PathVariable UUID auctionId, @RequestBody Request request) {
+        if (key.isBlank()) throw new IllegalArgumentException("invalid request headers");
         BidRequestValidation.validate(new BidRequestCommand(auctionId, request.bidKind(), request.amount()));
         String correlationId = MDC.get("correlationId");
         if (correlationId == null) correlationId = java.util.UUID.randomUUID().toString();
-        UUID bidRequestId = service.receive(actorId, key, correlationId, new BidRequestCommand(auctionId, request.bidKind(), request.amount()));
+        UUID bidRequestId = service.receive(actor.getName(), key, correlationId, new BidRequestCommand(auctionId, request.bidKind(), request.amount()));
         try (LogContext.Scope ignored = LogContext.fields(Map.of("event", "bid.request.received", "bidRequestId", bidRequestId.toString(), "auctionId", auctionId.toString(), "outcome", "RECEIVED"))) {
             log.info("bid request received");
         }
