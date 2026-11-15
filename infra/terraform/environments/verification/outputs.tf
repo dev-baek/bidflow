@@ -27,3 +27,8 @@ output "application_alb_dns_name" {
   description = "Temporary HTTPS endpoint after target registration and readiness checks succeed."
   value       = module.application_edge.alb_dns_name
 }
+
+output "application_autoscaling_group_name" {
+  description = "ALB-backed private runtime group; use for instance-refresh and SSM verification only."
+  value       = module.private_runtime.autoscaling_group_name
+}
