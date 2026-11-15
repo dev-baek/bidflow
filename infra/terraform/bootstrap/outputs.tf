@@ -7,3 +7,7 @@ output "lock_table_name" {
   description = "Use this value while the verification backend uses DynamoDB locking."
   value       = aws_dynamodb_table.terraform_lock.name
 }
+
+output "monthly_budget_name" {
+  value = module.budget.monthly_budget_name
+}

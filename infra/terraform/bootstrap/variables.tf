@@ -47,3 +47,20 @@ variable "lock_table_name" {
     error_message = "lock_table_name must not be empty."
   }
 }
+
+variable "monthly_budget_amount" {
+  description = "Monthly account-wide cost ceiling in the account billing currency."
+  type        = string
+  default     = "100000"
+}
+
+variable "monthly_budget_currency" {
+  description = "Billing currency for the monthly cost ceiling. Confirm it against the AWS account before apply."
+  type        = string
+  default     = "KRW"
+}
+
+variable "budget_notification_emails" {
+  description = "Email recipients for AWS Budget notifications. Supply outside version control."
+  type        = list(string)
+}
