@@ -36,6 +36,13 @@ module "iam" {
   region                   = var.region
 }
 
+module "web_delivery" {
+  source = "../../modules/web_delivery"
+
+  asset_prefix = var.web_asset_prefix
+  bucket_name  = "bidflow-${var.environment}-${data.aws_caller_identity.current.account_id}-web"
+}
+
 resource "terraform_data" "verification_guard" {
   input = {
     account_id = data.aws_caller_identity.current.account_id
