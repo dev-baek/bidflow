@@ -23,7 +23,7 @@ export function createAppRouter(apiBaseUrl: string, wsBaseUrl: string) {
       children: [
         {
           path: "/listings/new",
-          element: <ListingCreatePage />,
+          element: <ListingCreateRoute apiBaseUrl={apiBaseUrl} />,
         },
       ],
     },
@@ -34,6 +34,12 @@ export function createAppRouter(apiBaseUrl: string, wsBaseUrl: string) {
       element: <NotFoundPage />,
     },
   ]);
+}
+
+function ListingCreateRoute({ apiBaseUrl }: Readonly<{ apiBaseUrl: string }>) {
+  const { state } = useAuth();
+  const localActorId = state.mode === "AUTHENTICATED" && state.provider === "LOCAL" ? state.subject : undefined;
+  return <ListingCreatePage apiBaseUrl={apiBaseUrl} localActorId={localActorId} />;
 }
 
 function AuctionDetailRoute({ apiBaseUrl, wsBaseUrl }: Readonly<{ apiBaseUrl: string; wsBaseUrl: string }>) {

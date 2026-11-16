@@ -37,6 +37,7 @@ export type ListingFormState = Readonly<{
   idempotencyKey: string;
   draft: ListingDraft;
   errors: ListingErrors;
+  auctionId?: string;
 }>;
 
 export type ListingFormAction =
@@ -46,7 +47,9 @@ export type ListingFormAction =
   | Readonly<{ type: "IMAGE_UPLOAD_COMPLETED"; localId: string; uploadId: string; objectKey: string }>
   | Readonly<{ type: "IMAGE_UPLOAD_FAILED"; localId: string; errorCode: string }>
   | Readonly<{ type: "IMAGE_REMOVED"; localId: string }>
-  | Readonly<{ type: "SUBMIT_REQUESTED"; now: Date }>;
+  | Readonly<{ type: "SUBMIT_REQUESTED"; now: Date }>
+  | Readonly<{ type: "SUBMIT_SUCCEEDED"; auctionId: string }>
+  | Readonly<{ type: "SUBMIT_FAILED" }>;
 
 const initialDraft: ListingDraft = {
   title: "",
@@ -104,6 +107,8 @@ export function listingFormReducer(
         ? { ...state, mode: "SUBMITTING", errors: {} }
         : { ...state, mode: "VALIDATION_ERROR", errors };
     }
+    case "SUBMIT_SUCCEEDED": return { ...state, mode: "SUCCEEDED", auctionId: action.auctionId };
+    case "SUBMIT_FAILED": return { ...state, mode: "SUBMIT_ERROR" };
   }
 }
 
