@@ -106,7 +106,7 @@ User (Cognito subject)
 
 | 상태 | 의미 | 허용 전이 |
 |---|---|---|
-| `SCHEDULED` | 등록 완료, 시작 시각 전 | `ACTIVE`, `CANCELLED` |
+| `SCHEDULED` | 등록 완료, 저장 상태가 아직 `ACTIVE`로 전환되지 않음 | `ACTIVE`, `CANCELLED`, 마감 시 `ENDED`(#228) |
 | `ACTIVE` | 입찰을 받을 수 있는 기간 | `ENDED` |
 | `ENDED` | 종료·낙찰/유찰이 확정됨 | 없음 |
 | `CANCELLED` | 판매자가 시작 전 취소함 | 없음 |
@@ -114,11 +114,13 @@ User (Cognito subject)
 ```text
 SCHEDULED --(now >= startsAt)--> ACTIVE --(now >= endsAt, 종료 확정)--> ENDED
     │
+    ├--(미입찰로 SCHEDULED 유지, now >= endsAt, 종료 확정)--> ENDED
+    │
     └--(판매자 취소, 시작 전)--> CANCELLED
 ```
 
 - `SCHEDULED → ACTIVE`는 `now >= startsAt`일 때의 순수 시간 판정이다. Scheduler 또는 상태 조회 Use Case가 저장소에 반영할 수 있다.
-- `ACTIVE → ENDED`는 `now >= endsAt`와 PostgreSQL 잠금 획득이 모두 필요하다. 상태만 바꾸지 않고 `AuctionResult`와 Outbox를 같은 Transaction으로 기록한다.
+- 저장 상태가 `ACTIVE` 또는 `SCHEDULED`인 경매의 종료에는 `now >= endsAt`와 PostgreSQL 잠금 획득이 모두 필요하다. 미입찰 경매는 별도의 `ACTIVE` 저장을 거치지 않고 유찰된다. 상태만 바꾸지 않고 `AuctionResult`와 Outbox를 같은 Transaction으로 기록한다. 상세 계약은 [종료 사양](./issue-015-auction-close.md)을 따른다.
 - 판매자는 `SCHEDULED`인 자신의 경매만 취소할 수 있다. `startsAt` 이상인 취소 요청은 거절한다.
 - `ENDED`, `CANCELLED` 상태의 가격·기간·상품 연결은 변경할 수 없다.
 - 시작·종료 시각은 항상 UTC `Instant`로 저장·전달한다. 화면은 사용자 시간대로 변환해 표시한다.
@@ -177,7 +179,7 @@ Domain은 아래와 같은 값과 순수 결과만 다룬다. Repository, `Clock
 | 상품 상세 조회 | 공개 | 없음 |
 | 경매 상태 조회 | 공개 | 필요 시 `SCHEDULED → ACTIVE` 전이 반영 |
 | 시작 전 취소 | `sellerId` 일치 | `SCHEDULED → CANCELLED`, Outbox 생성 |
-| 종료 확정 | Scheduler 전용 | `ACTIVE → ENDED`, Result·Outbox를 함께 생성 |
+| 종료 확정 | Scheduler 전용 | `ACTIVE` 또는 `SCHEDULED → ENDED`, Result·Outbox를 함께 생성 |
 
 등록 Transaction은 Product, ProductImage, Auction 및 `ListingPublished` Outbox를 모두 성공시키거나 모두 실패시킨다. HTTP Controller는 입력 변환과 Use Case 호출만 담당한다.
 
@@ -214,7 +216,7 @@ Domain은 아래와 같은 값과 순수 결과만 다룬다. Repository, `Clock
 | 시간 전이 | `now == startsAt`에서 `ACTIVE`, `now == endsAt`에서 종료 가능 | 시작 전 `ACTIVE` 전이, 종료 전 `ENDED` 전이 거절 |
 | 취소 | 시작 전 판매자 취소 수락 | 타인 취소, `now == startsAt` 취소, `ACTIVE` 취소 거절 |
 | 자동 연장 | 4분 59초 남은 승인 입찰은 기존 종료 시각 + 5분 | 정확히 5분, 거절 입찰, 중복 입찰은 미연장 |
-| 결과 확정 | 마지막 유효 입찰이 있으면 `SOLD`, 없으면 `UNSOLD` | `ACTIVE`가 아니거나 종료 전 확정 거절, 이미 Result 있으면 새 Result 미생성 |
+| 결과 확정 | 마지막 유효 입찰이 있으면 `SOLD`, 없으면 `UNSOLD` | 종료 전 확정 거절, 이미 Result 있으면 새 Result 미생성. 저장 상태가 `SCHEDULED`인 변형은 #228의 Scheduler 통합 테스트에서 검증 |
 | 순수성 | 같은 입력은 같은 결과 | 시스템 시각·UUID·Repository·Spring Context 없이 테스트 실행 |
 
 통합 테스트는 #43 이후 PostgreSQL 제약으로도 확인한다. 특히 같은 Product에 `SCHEDULED` 또는 `ACTIVE` Auction을 두 개 만들려는 Transaction은 하나만 성공해야 한다.
