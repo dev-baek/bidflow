@@ -76,7 +76,7 @@ class ListingAuctionSchemaMigrationTest {
             assertThat(indexNames).contains(
                     "uq_auction_open_product",
                     "ix_auction_seller_status_ends_at",
-                    "ix_auction_active_ends_at",
+                    "ix_auction_open_ends_at",
                     "ix_bid_request_auction_requested_at",
                     "ix_outbox_unpublished_occurred_at"
             );

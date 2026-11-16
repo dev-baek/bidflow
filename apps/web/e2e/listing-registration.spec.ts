@@ -7,11 +7,27 @@ const apiBaseUrl = process.env.BIDFLOW_E2E_API_BASE_URL ?? "http://127.0.0.1:808
 test.describe("상품 등록·입찰 Browser 흐름", () => {
   test.skip(!enabled, "BIDFLOW_E2E_BASE_URL로 local,e2e 실행 중인 Vite 주소를 지정해야 합니다.");
 
-  test("로컬 판매자가 이미지를 업로드하고 경매 ID를 받는다", async ({ page, request }) => {
+  test("등록한 경매에 입찰이 없으면 마감에 공개 유찰로 바뀐다", async ({ page, browser, request }) => {
     await setE2eClock(request, "2030-01-01T12:00:00Z");
     const auctionId = await registerAuction(page, "e2e-seller");
 
     await expect(page.getByRole("status")).toContainText(`경매 ID: ${auctionId}`);
+
+    await setE2eClock(request, "2030-01-01T12:29:59Z");
+    const observer = await openBidderPage(browser, auctionId, "e2e-unsold-observer");
+    try {
+      expect(await readAuction(request, auctionId)).toMatchObject({ status: "SCHEDULED", outcome: null });
+
+      await setE2eClock(request, "2030-01-01T12:30:00Z");
+      await expect(observer.page.getByText("ENDED", { exact: true })).toBeVisible({ timeout: 15_000 });
+      await expect(observer.page.getByRole("status")).toHaveText("유찰");
+      await expect(observer.page.getByRole("form", { name: "입찰 요청" })).toHaveCount(0);
+      expect(await readAuction(request, auctionId)).toMatchObject({
+        status: "ENDED", outcome: "UNSOLD", finalPrice: null, endsAt: "2030-01-01T12:30:00Z",
+      });
+    } finally {
+      await observer.context.close();
+    }
   });
 
   test("자동 최대가 경쟁은 마감을 연장하고 새 마감에 공개 낙찰을 확정한다", async ({ page, browser, request }) => {

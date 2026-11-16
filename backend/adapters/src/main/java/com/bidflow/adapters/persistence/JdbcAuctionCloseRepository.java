@@ -36,14 +36,14 @@ public final class JdbcAuctionCloseRepository implements AuctionCloseRepository 
 
     private int closeInTransaction(Instant now, int batchSize) {
         List<ExpiredAuction> auctions = jdbc.query("""
-                select auction_id, current_price, current_winner_id, version
+                select auction_id, status, current_price, current_winner_id, version
                 from auction
-                where status = 'ACTIVE' and ends_at <= ?
+                where status in ('SCHEDULED', 'ACTIVE') and ends_at <= ?
                 order by ends_at
                 for update skip locked
                 limit ?
                 """, (resultSet, rowNum) -> new ExpiredAuction(
-                resultSet.getObject("auction_id", UUID.class), resultSet.getLong("current_price"),
+                resultSet.getObject("auction_id", UUID.class), resultSet.getString("status"), resultSet.getLong("current_price"),
                 resultSet.getString("current_winner_id"), resultSet.getLong("version")), Timestamp.from(now), batchSize);
         for (ExpiredAuction auction : auctions) close(auction, now);
         return auctions.size();
@@ -54,8 +54,8 @@ public final class JdbcAuctionCloseRepository implements AuctionCloseRepository 
         long nextVersion = auction.version() + 1;
         int updated = jdbc.update("""
                 update auction set status = 'ENDED', version = ?, updated_at = ?
-                where auction_id = ? and status = 'ACTIVE' and version = ?
-                """, nextVersion, Timestamp.from(now), auction.auctionId(), auction.version());
+                where auction_id = ? and status = ? and version = ?
+                """, nextVersion, Timestamp.from(now), auction.auctionId(), auction.status(), auction.version());
         if (updated != 1) throw new IllegalStateException("locked auction could not be ended");
         jdbc.update("""
                 insert into auction_result (auction_id, outcome, winner_id, final_price, determined_at)
@@ -84,6 +84,6 @@ public final class JdbcAuctionCloseRepository implements AuctionCloseRepository 
         }
     }
 
-    private record ExpiredAuction(UUID auctionId, long currentPrice, String winnerId, long version) {
+    private record ExpiredAuction(UUID auctionId, String status, long currentPrice, String winnerId, long version) {
     }
 }

@@ -32,6 +32,7 @@ WebSocket handshake는 `bidflow.realtime.allowed-origin-patterns`에 등록된 o
 - Browser의 presign PUT 이미지 업로드
 - 상품·경매 등록
 - 서버가 반환한 경매 ID 표시
+- 입찰이 없는 등록 경매는 마감 직전 `SCHEDULED`를 유지하고, 마감에 새로고침 없이 `유찰`을 표시한다. 공개 REST는 `ENDED / UNSOLD / finalPrice=null`을 반환한다([#228](https://github.com/dev-baek/bidflow/issues/228)).
 - 마감 1분 전, 서로 분리된 Browser context의 자동 최대가(30,000원·20,000원) 요청 접수
 - 첫 승인 입찰 뒤 기존 종료 시각 12:30 UTC에서 12:35 UTC로 정확히 5분 연장된 종료 시각 표시
 - 각 입찰자에게 `/user/queue/bid-results`로 전달되는 개인 정산 결과 표시
@@ -41,4 +42,4 @@ WebSocket handshake는 `bidflow.realtime.allowed-origin-patterns`에 등록된 o
 - 새 마감 12:35 UTC에 두 브라우저가 새로고침 없이 `ENDED`와 공개 낙찰가 21,000원을 표시하고 입찰 폼을 제거하는지 확인
 - 공개 REST가 `ENDED / SOLD`, 최종가 21,000원, 연장된 마감을 반환하는지 확인
 
-대조 경매에는 마감 6분 전 정상 직접 입찰을 넣어 연장 없이 `ACTIVE`를 만든다. 입찰이 없으면 마감 뒤에도 `SCHEDULED`에 남는 결함은 [#228](https://github.com/dev-baek/bidflow/issues/228)로 분리했다. 종료 이후 별도 API 입찰 요청, 검색→상세, 개인 낙찰·패찰(#227) 검증은 이 시나리오 범위가 아니다.
+대조 경매에는 마감 6분 전 정상 직접 입찰을 넣어 연장 없이 `ACTIVE`를 만든다. 종료 이후 별도 API 입찰 요청, 검색→상세, 개인 낙찰·패찰(#227) 검증은 이 시나리오 범위가 아니다.
