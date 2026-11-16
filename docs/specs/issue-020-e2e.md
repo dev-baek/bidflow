@@ -28,7 +28,7 @@
 4. Bidder B가 자동 최대가 20,000원을 제출한다. 두 브라우저는 공개 현재가와 종료 시각을 받고, 최대가·다른 사용자의 식별자는 표시하지 않는다.
 5. Bidder A/B 화면은 각자의 `bid.result`만 수신한다. 공개 `auction.updated`에는 현재가·종료 시각·상태만 포함한다.
 6. 테스트 Clock을 종료 시각 이후로 진행하고 Scheduler Polling을 기다린다.
-7. Seller와 Bidder A는 `ENDED`, `SOLD`, 최종가와 낙찰자/패찰 결과를 확인한다. Bidder B에게 Bidder A의 개인 최대가는 노출되지 않는다.
+7. Seller와 두 입찰자는 동일한 공개 `ENDED / SOLD`와 최종가를 확인한다. Bidder A와 B는 [#227 개인 결과](./issue-227-private-auction-outcome.md)에서 본인의 낙찰과 패찰만 각각 확인한다. 판매자 관리 기능은 범위에 포함하지 않고, 공개 화면이나 상대방에게 입찰자 식별자와 최대가를 노출하지 않는다.
 
 ## 3. D. Fixture·기대 원장 상태
 
@@ -91,6 +91,7 @@ Playwright Chromium
 | E2E-04 | 결과 WebSocket 수신 | 과거 version 이벤트를 추가 전달 | 현재가/종료 시각이 뒤로 가지 않음 |
 | E2E-05 | 활성 경매 | Clock을 종료 시각 뒤로 진행 | Scheduler 뒤 `ENDED/SOLD/21000`, `AuctionEnded` 한 번 |
 | E2E-06 | 종료된 경매 | 새 입찰 요청 | 새 승인 원장·낙찰자·현재가 변경 없음 |
+| E2E-07 | 종료된 낙찰 경매와 두 승인 입찰자 | 인증 주체별 개인 결과를 조회 | A는 `WON`, B는 `LOST`. 공개 결과는 동일하고 승인 입찰이 없는 사용자를 패찰로 표시하지 않음(#227) |
 
 Playwright는 E2E-01~05를 필수로, E2E-06은 API/DB 보조 검증과 함께 수행한다. 색인 반영은 비동기이므로 고정 sleep 대신 제한된 polling으로 Search Projection 상태를 기다린다.
 
