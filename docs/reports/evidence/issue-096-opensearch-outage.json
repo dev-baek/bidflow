@@ -1,0 +1,78 @@
+{
+  "run_id": "e2esearchoutage00dec66c96e24563a4e9a74a8a856e7f",
+  "fixture": {
+    "before": {
+      "productId": "37b91f3f-f056-4519-b1b3-0154fe45d610",
+      "auctionId": "c5a425d5-fb79-451d-a3e7-7dfff5042f13",
+      "status": "SCHEDULED"
+    },
+    "registered_during": {
+      "productId": "f8ef18d4-ad43-495a-ae59-945f543d6f54",
+      "auctionId": "a333d8f2-4975-404e-904a-e325e727b546",
+      "status": "SCHEDULED"
+    },
+    "bid_during": {
+      "bidRequestId": "1a5bb638-ab55-484a-9068-5884523bfd30",
+      "status": "RECEIVED"
+    }
+  },
+  "observed": {
+    "search_before_match": true,
+    "search_during": {
+      "http": 503,
+      "code": "SEARCH_UNAVAILABLE"
+    },
+    "register_during_http": 201,
+    "bid_during_http": 202,
+    "bid_during_public_price": 12000,
+    "postgres": {
+      "bid_status": "ACCEPTED",
+      "ledger_count": 1,
+      "listing_saved": true,
+      "db_current_price": 12000,
+      "listing_event_id": "7789a5ab-d282-4ffa-a082-30ed75aeb09f",
+      "ledger_current_price": 12000,
+      "listing_event_published": true
+    },
+    "dlt": {
+      "topic": "listing-event.DLT",
+      "partition": 2,
+      "offset": 17,
+      "original_event_id": "7789a5ab-d282-4ffa-a082-30ed75aeb09f",
+      "original_topic": "listing-event",
+      "original_partition": 2,
+      "original_offset": 27,
+      "failure_class": "TRANSIENT_EXHAUSTED",
+      "dlt_log_end_offsets_before": [
+        11,
+        5,
+        17
+      ],
+      "dlt_log_end_offsets_after": [
+        11,
+        5,
+        18
+      ]
+    },
+    "restart": {
+      "cluster": "green",
+      "old_match": true,
+      "new_match": false,
+      "search_projection_lag_listing_event": [
+        0,
+        0,
+        0
+      ],
+      "search_projection_lag_bid_event": [
+        0,
+        0,
+        0
+      ],
+      "matching_consumer_event_rows": 0
+    },
+    "reindex": {
+      "indexed_count": 176,
+      "new_match": true
+    }
+  }
+}
