@@ -1,5 +1,5 @@
 import http from "k6/http";
-import { check, fail } from "k6";
+import { check, fail, sleep } from "k6";
 import { Counter, Trend } from "k6/metrics";
 
 const scenario = __ENV.BIDFLOW_LOAD_SCENARIO || "focused";
@@ -29,7 +29,12 @@ export const options = scenario === "focused"
         distributed_steady: {
           executor: "ramping-vus",
           startVUs: 0,
-          stages: [{ duration: "30s", target: 5 }, { duration: "2m", target: 20 }, { duration: "10s", target: 0 }],
+          stages: [
+            { duration: "30s", target: 5 },
+            { duration: "1s", target: 20 },
+            { duration: "2m", target: 20 },
+            { duration: "10s", target: 0 },
+          ],
           exec: "distributed",
         },
       },
@@ -42,6 +47,7 @@ export function focused() {
 
 export function distributed() {
   submit(distributedAuctionIds[(__VU + __ITER) % distributedAuctionIds.length], __VU);
+  sleep(1); // Pace requests so this local baseline does not become an unbounded saturation run.
 }
 
 function submit(auctionId, actorNumber) {
