@@ -24,7 +24,15 @@ WebSocket handshake는 `bidflow.realtime.allowed-origin-patterns`에 등록된 o
 `http://localhost:5173,http://127.0.0.1:5173`이며, 배포 환경에서는 `BIDFLOW_REALTIME_ALLOWED_ORIGIN_PATTERNS`에 실제 웹 origin을 지정한다.
 테스트 Clock API의 기본 주소는 `http://127.0.0.1:8080`이며, 다른 주소를 쓸 때만 `BIDFLOW_E2E_API_BASE_URL`을 지정한다.
 
-`BIDFLOW_E2E_BASE_URL`가 없으면 E2E는 skip되며 성공으로 주장하지 않는다. 실패하면 trace·screenshot·HTML report가 `apps/web/test-results/`에 남는다.
+`BIDFLOW_E2E_BASE_URL`이 없으면 E2E는 건너뛴다. 실패 trace·screenshot은 `apps/web/test-results/`에, HTML 보고서는 `apps/web/playwright-report/`에 남는다.
+
+검색까지 검증하려면 저장소 루트에서 `make local-up` 대신 `make local-up-search`로 OpenSearch와 매핑을 준비한다. 같은 로컬 Spring Boot·Vite를 띄운 뒤 `apps/web`에서 다음과 같이 실행한다.
+
+```sh
+BIDFLOW_E2E_BASE_URL=http://127.0.0.1:5173 BIDFLOW_E2E_SEARCH=1 npm run test:e2e
+```
+
+`BIDFLOW_E2E_SEARCH=1`이 없으면 검색 사례만 건너뛴다. 설정했는데 색인·검색이 동작하지 않으면 테스트는 실패한다.
 
 ## 현재 시나리오
 
@@ -41,5 +49,6 @@ WebSocket handshake는 `bidflow.realtime.allowed-origin-patterns`에 등록된 o
 - 원래 마감 12:30 UTC에 연장되지 않은 대조 경매가 종료될 때까지 공개 REST를 조회하고, 대상 경매는 `ACTIVE`와 21,000원을 유지하는지 확인
 - 새 마감 12:35 UTC에 두 브라우저가 새로고침 없이 `ENDED`와 공개 낙찰가 21,000원을 표시하고 입찰 폼을 제거하는지 확인
 - 공개 REST가 `ENDED / SOLD`, 최종가 21,000원, 연장된 마감을 반환하는지 확인
+- 검색 E2E: 고유 제목으로 상품을 등록하고 검색 API가 같은 경매 ID를 반환할 때까지 제한 시간 내에서 폴링한다. 브라우저에서 실제 검색을 제출하고 제목 링크가 등록한 경매 상세를 여는지, 이동 뒤에도 로그인 상태가 유지되는지 확인한다.
 
-대조 경매에는 마감 6분 전 정상 직접 입찰을 넣어 연장 없이 `ACTIVE`를 만든다. 종료 이후 별도 API 입찰 요청, 검색→상세, 개인 낙찰·패찰(#227) 검증은 이 시나리오 범위가 아니다.
+대조 경매에는 마감 6분 전 정상 직접 입찰을 넣어 연장 없이 `ACTIVE`를 만든다. 종료 이후 별도 API 입찰 요청과 개인 낙찰·패찰(#227) 검증은 이 시나리오 범위가 아니다.
