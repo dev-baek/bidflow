@@ -42,4 +42,4 @@ sh tests/scripts/check-kafka-consumer-lag.test.sh
 
 ## 4. 실제 장애 결과 상태
 
-이 작업 시점에는 `bidflow-local` Compose service와 Spring Boot API가 실행 중이지 않아 실제 장애 주입 결과를 기록하지 않았다. 실행하지 않은 성능·복구 결과를 성공으로 주장하지 않는다. 활성 Fixture와 애플리케이션을 준비한 뒤 #102에 실행 시각, 환경, SQL 정합성, Lag 회복, DLT Header를 추가 기록한다.
+OpenSearch 실제 중단·재시작·재색인 증적은 [#96 OpenSearch 장애·복구 실측](./issue-096-opensearch-recovery.md)에 기록했다. Redis와 Consumer 단독 장애 실측은 별도로 남아 있다.
