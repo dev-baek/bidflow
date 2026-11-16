@@ -127,6 +127,37 @@ class JdbcBidLedgerRepositoryIntegrationTest {
     }
 
     @Test
+    void recordsLateRejectionWithoutChangingTheSoldResult() {
+        Instant endsAt = PROCESSED_AT.plusSeconds(120);
+        Fixture fixture = fixture(1L, endsAt);
+        assertThat(repository.persist(acceptedCommand(fixture, endsAt))).isTrue();
+        AuctionCloseRepository closer = new JdbcAuctionCloseRepository(jdbc,
+                new TransactionTemplate(new DataSourceTransactionManager(jdbc.getDataSource())),
+                new ObjectMapper(), UUID::randomUUID);
+        assertThat(closer.closeExpired(endsAt, 10)).isEqualTo(1);
+
+        UUID lateRequestId = UUID.randomUUID();
+        bidRequests.save("bidder-late", lateRequestId.toString(), "b".repeat(64), "correlation-late", lateRequestId,
+                new BidRequestCommand(fixture.auctionId(), "DIRECT", 35_000L));
+        BidSettlementCommand late = new BidSettlementCommand(
+                lateRequestId, fixture.auctionId(), "bidder-late", 35_000L,
+                new DirectBidResult(DirectBidResultCode.AUCTION_ENDED, 13_000L, "bidder-2", 13_000L, endsAt, 3L),
+                endsAt.plusSeconds(1), "correlation-late");
+
+        assertThat(repository.persist(late)).isTrue();
+        assertThat(jdbc.queryForObject("select status from bid_request where bid_request_id = ?", String.class, lateRequestId))
+                .isEqualTo("REJECTED");
+        assertThat(jdbc.queryForMap("select decision, rejection_reason from bid_ledger where bid_request_id = ?", lateRequestId))
+                .containsEntry("decision", "REJECTED").containsEntry("rejection_reason", "AUCTION_ENDED");
+        assertThat(jdbc.queryForObject("select count(*) from bid_ledger where auction_id = ? and decision = 'ACCEPTED'",
+                Integer.class, fixture.auctionId())).isEqualTo(1);
+        assertThat(jdbc.queryForMap("select status, current_price, version from auction where auction_id = ?", fixture.auctionId()))
+                .containsEntry("status", "ENDED").containsEntry("current_price", 13_000L).containsEntry("version", 3L);
+        assertThat(jdbc.queryForMap("select outcome, winner_id, final_price from auction_result where auction_id = ?", fixture.auctionId()))
+                .containsEntry("outcome", "SOLD").containsEntry("winner_id", "bidder-2").containsEntry("final_price", 13_000L);
+    }
+
+    @Test
     void rollsBackLedgerAndOutboxWhenTheAuctionVersionDoesNotMatchTheLuaResult() {
         Fixture fixture = fixture(2L);
 
