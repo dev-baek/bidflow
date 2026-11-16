@@ -3,6 +3,7 @@
 - 상태: 제안됨
 - 관련 Issue: [#81 경매 종료·낙찰·보정 처리 사양 작성](https://github.com/dev-baek/bidflow/issues/81)
 - 구현 Issue: #80 종료 Scheduler, #82 종료 보정 테스트, #83 낙찰·유찰 확정 Consumer, #86 Redis 활성 상태 재구성
+- 후속 개정: [#228 미입찰 경매 유찰 처리](https://github.com/dev-baek/bidflow/issues/228)
 
 ## 1. 목적과 원칙
 
@@ -10,7 +11,7 @@
 
 ## 2. S. 사용자 결과
 
-`endsAt <= serverTime`인 `ACTIVE` 경매는 다음 Polling 이후 `ENDED`로 보인다. 최고 입찰자가 있으면 낙찰(`SOLD`), 없으면 유찰(`UNSOLD`)이다. Browser는 `AuctionEnded` WebSocket 메시지를 받거나 재연결 뒤 REST Snapshot으로 종료 상태를 확인한다.
+`endsAt <= serverTime`인 미종료 경매(`SCHEDULED` 또는 `ACTIVE`)는 다음 Polling 이후 `ENDED`로 보인다. 최고 입찰자가 있으면 낙찰(`SOLD`), 없으면 유찰(`UNSOLD`)이다. Browser는 실시간 갱신 또는 REST Snapshot으로 결과를 확인한다. 유찰이면 상세에 `유찰`을 표시하고 입찰 폼을 제거한다. 시작가·현재가를 낙찰가로 표시하지 않는다.
 
 ## 3. D. PostgreSQL 상태
 
@@ -23,19 +24,22 @@
 
 `current_winner_id`가 비어 있으면 `UNSOLD`이고, 있으면 `SOLD(current_winner_id, current_price)`다. 승인 입찰 Transaction은 `current_price`, `current_winner_id`, `ends_at`, `version`을 함께 갱신한다.
 
+결과 테이블과 이벤트 구조는 재사용한다. Scheduler의 `ends_at` 부분 인덱스도 두 미종료 상태를 포함하도록 새 마이그레이션에서 맞춘다. 적용된 마이그레이션은 수정하지 않는다.
+
 ## 4. B. 종료 Transaction
 
 ```text
 Scheduler(now)
-  → select ACTIVE where ends_at <= now order by ends_at for update skip locked limit N
+  → select where status in (SCHEDULED, ACTIVE) and ends_at <= now order by ends_at for update skip locked limit N
   → 각 행의 current_winner_id·current_price로 outcome 계산
-  → auction: ACTIVE → ENDED, version + 1
+  → auction: 선택 당시 상태·version 확인 → ENDED, version + 1
   → auction_result insert
   → AuctionEnded Outbox insert
   → commit
 ```
 
 - `FOR UPDATE SKIP LOCKED`로 여러 Scheduler가 같은 경매를 동시에 선택하지 않는다.
+- 등록 직후에는 `SCHEDULED`이고 현재 승인 입찰이 있어야 `ACTIVE`가 저장된다. 마감까지 입찰이 없으면 중간에 `ACTIVE`를 저장할 필요 없이 `SCHEDULED → ENDED / UNSOLD`로 확정한다. `CANCELLED`와 `ENDED`는 선택하지 않는다.
 - 잠금 이후 최신 `ends_at`을 다시 기준으로 사용한다. 자동 연장 Transaction이 먼저 커밋했다면 해당 행은 다음 Polling까지 선택되지 않는다.
 - `auction_result`의 PK와 `AuctionEnded` Outbox 생성은 동일 Transaction에 있다. 재실행은 이미 `ENDED`인 행을 선택하지 않으므로 추가 결과·이벤트를 만들지 않는다.
 - 종료 중 DB 오류가 나면 Transaction 전체가 롤백되고 다음 Polling이 재시도한다.
@@ -59,24 +63,26 @@ Scheduler(now)
 
 | 대상 | 정상 | 경계·장애 |
 |---|---|---|
-| 종료 대상 | `ACTIVE`·`ends_at <= now` 선택 | 연장된 `ends_at > now` 미선택 |
+| 종료 대상 | `SCHEDULED` 또는 `ACTIVE`, 그리고 `ends_at <= now` | 마감 1ms 전·연장된 `ends_at > now`·취소/종료 상태 미선택 |
 | 다중 Worker | 두 Worker 중 한 쪽만 종료 | `SKIP LOCKED`로 중복 Result/Outbox 없음 |
 | 낙찰/유찰 | winner 존재 시 SOLD | winner 없음 시 UNSOLD, null 결과 필드 |
 | 원자성 | auction·result·outbox 함께 저장 | 버전/DB 오류 시 모두 롤백 |
 | 재실행 | 다음 Polling에서 0건 | 추가 낙찰자·이벤트 없음 |
 
+#228은 실제 등록 상태인 `SCHEDULED` fixture를 PostgreSQL 통합 테스트에 추가해 RED를 먼저 기록한다(마감 1ms 전 0건, 같은 경매를 정확히 마감에서 1건 종료, 재실행 0건). 결과와 Outbox 각 한 행, null 낙찰자·최종가를 확인한다. 로컬 Playwright에서는 등록 후 입찰 없이 테스트용 서버 Clock만 진행해 공개 REST의 `ENDED / UNSOLD`와 상세의 `유찰`을 검증한다. 기존 낙찰·자동 연장 E2E도 다시 실행한다. 새 AWS 리소스나 메시지 계약은 필요하지 않다.
+
 ## 7. 보정·재시도·Redis 정리
 
 ### 7.1 지연 Polling과 중복 호출
 
-Scheduler는 정확한 종료 시각에 실행되는 예약기가 아니다. Polling 지연·배포·DB 일시 오류 뒤의 다음 실행이 `ends_at <= now`를 다시 조회해 늦은 종료를 보정한다. 지연 시간은 사용자 화면의 일시적 `ACTIVE` 표시만 만들 수 있으며, 종료 결과·가격·낙찰자를 바꾸지 않는다.
+Scheduler는 정확한 종료 시각에 실행되는 예약기가 아니다. Polling 지연·배포·DB 일시 오류 뒤의 다음 실행이 `ends_at <= now`를 다시 조회해 늦은 종료를 보정한다. 확정 전까지 기존 상태가 잠시 보일 수 있으며, 지연만으로 종료 결과·가격·낙찰자가 바뀌지는 않는다.
 
 | 관측 상태 | 보정 주체 | 결과 |
 |---|---|---|
-| `ACTIVE`, `ends_at <= now`, 결과 없음 | Scheduler | 잠금 뒤 종료 Transaction 실행 |
+| `SCHEDULED` 또는 `ACTIVE`, `ends_at <= now`, 결과 없음 | Scheduler | 잠금 뒤 종료 Transaction 실행 |
 | `ENDED`, `auction_result` 존재 | Scheduler 재실행 | 0건, 상태 불변 |
 | `ENDED`, Outbox 미발행 | Outbox Publisher | 같은 `eventId` 재발행 가능 |
-| 종료 Transaction 롤백 | 다음 Scheduler Polling | 같은 ACTIVE 행을 다시 선택 |
+| 종료 Transaction 롤백 | 다음 Scheduler Polling | 같은 미종료 행을 다시 선택 |
 | Redis에 활성 Key 잔존 | AuctionEnded Consumer/복구 Worker | 해당 `auctionId` Key 삭제 또는 ENDED Snapshot으로 교체 |
 
 `auction_result`가 있으나 `auction.status != ENDED`인 상태는 정상 Transaction으로 만들 수 없다. 운영 점검에서 발견하면 임의 재낙찰하지 않고 PostgreSQL 원장·Outbox를 확인한 뒤 복구 명령으로만 처리한다.
