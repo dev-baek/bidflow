@@ -7,9 +7,7 @@ import com.bidflow.application.storage.PresignUploadCommand;
 import com.bidflow.application.storage.PresignedUpload;
 import com.bidflow.application.storage.StoredObject;
 import java.net.URI;
-import java.time.Clock;
 import java.time.Instant;
-import java.time.ZoneOffset;
 import java.util.Map;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
@@ -18,7 +16,7 @@ class UploadControllerTest {
     @Test
     void createsAnUploadIdOnTheServerAndDoesNotAcceptAnObjectKeyFromTheBrowser() {
         CapturingStorage storage = new CapturingStorage();
-        UploadController controller = new UploadController(storage, Clock.fixed(Instant.parse("2030-01-01T12:00:00Z"), ZoneOffset.UTC));
+        UploadController controller = new UploadController(storage);
 
         UploadController.Response response = controller.presign(() -> "seller-1", new UploadController.Request("image/jpeg", 1024));
 

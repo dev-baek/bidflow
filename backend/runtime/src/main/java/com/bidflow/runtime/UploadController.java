@@ -4,7 +4,6 @@ import com.bidflow.application.storage.ObjectStorage;
 import com.bidflow.application.storage.PresignUploadCommand;
 import com.bidflow.application.storage.PresignedUpload;
 import java.security.Principal;
-import java.time.Clock;
 import java.time.Instant;
 import java.util.Map;
 import java.util.UUID;
@@ -19,11 +18,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/uploads")
 class UploadController {
     private final ObjectStorage storage;
-    private final Clock clock;
 
-    UploadController(ObjectStorage storage, Clock clock) {
+    UploadController(ObjectStorage storage) {
         this.storage = storage;
-        this.clock = clock;
     }
 
     @PostMapping("/presign")
@@ -31,7 +28,7 @@ class UploadController {
     Response presign(Principal actor, @RequestBody Request request) {
         UUID uploadId = UUID.randomUUID();
         PresignedUpload upload = storage.presignUpload(new PresignUploadCommand(actor.getName(), request.contentType(),
-                request.contentLength(), uploadId, Instant.now(clock)));
+                request.contentLength(), uploadId, Instant.now()));
         return new Response(uploadId, upload.objectKey(), upload.uploadUrl().toString(), upload.requiredHeaders(), upload.expiresAt());
     }
 

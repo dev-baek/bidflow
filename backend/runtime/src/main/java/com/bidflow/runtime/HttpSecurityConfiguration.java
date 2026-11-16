@@ -32,6 +32,7 @@ class LocalHttpSecurityConfiguration {
         ApiSecurityErrorHandler errors = new ApiSecurityErrorHandler();
         return http
                 .csrf(AbstractHttpConfigurer::disable)
+                .cors(Customizer.withDefaults())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(configuration -> configuration.authenticationEntryPoint(errors).accessDeniedHandler(errors))
                 .authorizeHttpRequests(authorize -> authorize
