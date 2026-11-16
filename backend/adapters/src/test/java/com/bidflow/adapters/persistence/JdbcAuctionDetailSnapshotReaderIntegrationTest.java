@@ -2,6 +2,7 @@ package com.bidflow.adapters.persistence;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.bidflow.application.auction.PrivateAuctionOutcome;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.UUID;
@@ -50,6 +51,40 @@ class JdbcAuctionDetailSnapshotReaderIntegrationTest {
     @Test
     void returnsEmptyForUnknownAuction() {
         assertThat(reader.findByAuctionId(UUID.randomUUID())).isEmpty();
+    }
+
+    @Test
+    void resolvesOnlyTheViewersAcceptedBidsForTheSameAuction() {
+        UUID auctionId = fixture();
+        jdbc.update("insert into auction_result (auction_id, outcome, winner_id, final_price, determined_at) values (?, 'SOLD', 'secret-winner', 21000, ?)",
+                auctionId, Timestamp.from(NOW));
+        recordBid(auctionId, "secret-winner", true);
+        recordBid(auctionId, "runner-up", true);
+        recordBid(auctionId, "rejected-only", false);
+        recordBid(fixture(), "other-auction-bidder", true);
+
+        var outcomes = new JdbcPrivateAuctionOutcomeReader(jdbc);
+        assertThat(outcomes.findForViewer(auctionId, "secret-winner")).contains(PrivateAuctionOutcome.WON);
+        assertThat(outcomes.findForViewer(auctionId, "runner-up")).contains(PrivateAuctionOutcome.LOST);
+        for (String viewer : new String[] {"rejected-only", "other-auction-bidder", "no-bids"}) {
+            assertThat(outcomes.findForViewer(auctionId, viewer)).contains(PrivateAuctionOutcome.NOT_PARTICIPATED);
+        }
+        assertThat(outcomes.findForViewer(UUID.randomUUID(), "secret-winner")).isEmpty();
+    }
+
+    private static void recordBid(UUID auctionId, String bidder, boolean accepted) {
+        UUID requestId = UUID.randomUUID();
+        String decision = accepted ? "ACCEPTED" : "REJECTED";
+        jdbc.update("""
+                insert into bid_request (bid_request_id, auction_id, bidder_id, bid_kind, amount, status, requested_at, correlation_id)
+                values (?, ?, ?, 'AUTO_MAX', 21000, ?, ?, 'fixture')
+                """, requestId, auctionId, bidder, decision, Timestamp.from(NOW));
+        jdbc.update("""
+                insert into bid_ledger (bid_ledger_id, bid_request_id, auction_id, bidder_id, decision, requested_amount,
+                                        current_price, rejection_reason, decided_at)
+                values (?, ?, ?, ?, ?, 21000, ?, ?, ?)
+                """, UUID.randomUUID(), requestId, auctionId, bidder, decision,
+                accepted ? 21_000L : null, accepted ? null : "AUCTION_ENDED", Timestamp.from(NOW));
     }
 
     private static UUID fixture() {
