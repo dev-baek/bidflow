@@ -1,14 +1,23 @@
-import { useReducer, type ChangeEvent, type FormEvent, type ReactNode } from "react";
+import { useMemo, useReducer, useRef, type ChangeEvent, type FormEvent, type ReactNode } from "react";
 import {
   createListingFormState,
   listingFormReducer,
   type ListingField,
   type ListingImage,
+  validateListingDraft,
 } from "../../features/listing-form/listing-form-state";
+import { createApiClient, type ApiClient } from "../../shared/api/api-client";
 
 export type ListingCreatePageProps = Readonly<{
   now?: () => Date;
+  apiBaseUrl?: string;
+  localActorId?: string;
+  client?: ApiClient;
+  upload?: typeof fetch;
 }>;
+
+type PresignedUpload = Readonly<{ uploadId: string; objectKey: string; uploadUrl: string; requiredHeaders: Record<string, string> }>;
+type ListingResponse = Readonly<{ auctionId: string }>;
 
 const categories = [
   ["DIGITAL", "디지털·가전"],
@@ -25,12 +34,15 @@ const conditionGrades = [
   ["POOR", "사용감 많음"],
 ] as const;
 
-export function ListingCreatePage({ now = () => new Date() }: ListingCreatePageProps) {
+export function ListingCreatePage({ now = () => new Date(), apiBaseUrl = "", localActorId, client, upload = fetch }: ListingCreatePageProps) {
   const [state, dispatch] = useReducer(
     listingFormReducer,
     undefined,
     () => createListingFormState(createIdempotencyKey()),
   );
+  const files = useRef(new Map<string, File>());
+  const defaultClient = useMemo(() => createApiClient(apiBaseUrl, fetch), [apiBaseUrl]);
+  const resolvedClient = client ?? defaultClient;
 
   const changeField = (field: Exclude<ListingField, "images">) => (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     dispatch({ type: "FIELD_CHANGED", field, value: event.target.value });
@@ -44,12 +56,40 @@ export function ListingCreatePage({ now = () => new Date() }: ListingCreatePageP
       size: file.size,
       status: "PENDING",
     }));
+    for (const image of images) {
+      const file = Array.from(event.target.files ?? []).find((candidate) => candidate.name === image.fileName);
+      if (file) files.current.set(image.localId, file);
+    }
     dispatch({ type: "IMAGES_SELECTED", images });
+    if (localActorId) images.forEach((image) => void uploadImage(image.localId, localActorId));
+  };
+
+  const uploadImage = async (localId: string, actorId: string) => {
+    const file = files.current.get(localId);
+    if (!file) return;
+    dispatch({ type: "IMAGE_UPLOAD_STARTED", localId });
+    try {
+      const presigned = await resolvedClient.post<PresignedUpload>("/api/v1/uploads/presign", { contentType: file.type, contentLength: file.size }, { "X-Actor-Id": actorId });
+      const response = await upload(presigned.uploadUrl, { method: "PUT", headers: presigned.requiredHeaders, body: file });
+      if (!response.ok) throw new Error("upload failed");
+      dispatch({ type: "IMAGE_UPLOAD_COMPLETED", localId, uploadId: presigned.uploadId, objectKey: presigned.objectKey });
+    } catch { dispatch({ type: "IMAGE_UPLOAD_FAILED", localId, errorCode: "UPLOAD_FAILED" }); }
   };
 
   const submit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    dispatch({ type: "SUBMIT_REQUESTED", now: now() });
+    const currentNow = now();
+    const errors = validateListingDraft(state.draft, currentNow);
+    dispatch({ type: "SUBMIT_REQUESTED", now: currentNow });
+    if (Object.keys(errors).length > 0 || !localActorId) return;
+    void resolvedClient.post<ListingResponse>("/api/v1/listings", {
+      title: state.draft.title, description: state.draft.description, categoryId: state.draft.categoryId,
+      conditionGrade: state.draft.conditionGrade, startingPrice: Number(state.draft.startingPrice),
+      startsAt: `${state.draft.startsAt}:00Z`, endsAt: `${state.draft.endsAt}:00Z`,
+      images: state.draft.images.map((image) => ({ uploadId: image.uploadId })),
+    }, { "Idempotency-Key": state.idempotencyKey, "X-Actor-Id": localActorId })
+      .then((result) => dispatch({ type: "SUBMIT_SUCCEEDED", auctionId: result.auctionId }))
+      .catch(() => dispatch({ type: "SUBMIT_FAILED" }));
   };
 
   return (
@@ -122,7 +162,9 @@ export function ListingCreatePage({ now = () => new Date() }: ListingCreatePageP
           </FieldError>
         </div>
 
-        {state.mode === "SUBMITTING" ? <p className="field-help">등록 요청을 준비했습니다. API 연결은 다음 작업에서 추가합니다.</p> : null}
+        {state.mode === "SUBMITTING" ? <p className="field-help">등록 요청을 보내는 중입니다.</p> : null}
+        {state.mode === "SUCCEEDED" ? <p role="status">등록했습니다. 경매 ID: {state.auctionId}</p> : null}
+        {state.mode === "SUBMIT_ERROR" ? <p role="alert">등록 요청에 실패했습니다. 다시 시도하세요.</p> : null}
         <button type="submit" disabled={state.mode === "SUBMITTING"}>상품 등록</button>
       </form>
     </main>

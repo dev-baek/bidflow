@@ -136,4 +136,11 @@ describe("listingFormReducer", () => {
     expect(next.idempotencyKey).toBe("request-1");
     expect(next.errors).toEqual({});
   });
+
+  it("records only the returned auction id after a successful registration", () => {
+    const submitting = listingFormReducer(createListingFormState("request-1", validDraft()), { type: "SUBMIT_REQUESTED", now });
+
+    expect(listingFormReducer(submitting, { type: "SUBMIT_SUCCEEDED", auctionId: "auction-1" }))
+      .toMatchObject({ mode: "SUCCEEDED", auctionId: "auction-1", idempotencyKey: "request-1" });
+  });
 });
