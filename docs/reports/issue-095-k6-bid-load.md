@@ -39,4 +39,4 @@ sh tests/scripts/run-k6-bid-load.test.sh
 
 - focused Fixture ID 누락 시 exit 2로 중단한다.
 - focused/distributed 각각 필요한 환경변수와 k6 image·스크립트 경로가 Docker 실행 명령에 전달됨을 Fake Docker로 검증했다.
-- 실제 성능 수치, 정합성 SQL, Consumer Lag 결과는 실행 환경과 Fixture를 준비한 뒤 #102 보고서에 기록한다. 이 PR은 재현 가능한 실행 도구를 제공하며 임의의 개발 데이터를 만들어 수치를 주장하지 않는다.
+- 실제 집중 부하의 성능·정합성·Lag 기준선은 [#19 집중 부하 실측](./issue-019-focused-load-baseline.md)에 기록했다. 이 문서는 실행 도구의 구현 증적이며 분산 실측은 별도로 추적한다.
