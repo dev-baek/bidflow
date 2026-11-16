@@ -5,6 +5,7 @@
 - 관련 Issue: [#59 상품 검색 API와 결과 화면 S/B/T 사양 작성](https://github.com/dev-baek/bidflow/issues/59)
 - 선행 사양: [OpenSearch 상품 색인·재처리](./issue-009-search-indexer.md)
 - 후속 작업: #60 검색 Query, #61 검색 결과 화면, #63 검색 품질·성능 비교
+- 후속 개정: [#10 검색 결과에서 경매 상세로 이동](https://github.com/dev-baek/bidflow/issues/10), 여정 검증 #99
 
 ## 1. 목적과 범위
 
@@ -49,6 +50,8 @@
 
 결과 카드에는 제목, 카테고리, 현재가, 경매 상태, 마감 시각을 표시한다. `thumbnailObjectKey`는 API 응답에 유지하되, 이미지 전달 API가 생기기 전에는 접근 가능한 대체 이미지로 표시한다. 검색 결과가 `searchable=false`이거나 `ENDED`/`CANCELLED`인 경우 Browser에 전달하지 않는다.
 
+경매 ID가 있는 결과의 제목을 키보드로도 열 수 있는 내부 링크로 표시한다. 링크는 `/auctions/{auctionId}`로 이동하며, 전체 페이지를 새로 불러오지 않아 로그인 상태를 보존한다. 기존 색인 문서에 경매 ID가 없으면 결과를 버리지 않고 제목만 표시한다. 상품 ID로 경매 경로를 추측하지 않는다.
+
 ## 3. D. API 데이터 계약
 
 ### 3.1 요청
@@ -77,6 +80,7 @@ GET /api/v1/listings/search?q=camera&categoryId=DIGITAL&status=ACTIVE&minPrice=5
   "items": [
     {
       "productId": "f4b33d2e-6e54-4d61-a57c-48f3d3f28de0",
+      "auctionId": "a045614c-8c21-4eb1-a209-49689dc0d8b1",
       "title": "중고 Camera M4",
       "categoryId": "DIGITAL",
       "thumbnailObjectKey": "products/seller-1/image-1",
@@ -90,6 +94,8 @@ GET /api/v1/listings/search?q=camera&categoryId=DIGITAL&status=ACTIVE&minPrice=5
 ```
 
 `items`는 요청한 정렬 순서를 유지한다. 마지막 페이지·빈 결과는 `nextCursor: null`을 반환한다. `total`은 OpenSearch count 비용과 변화 중인 Projection의 오해를 피하기 위해 반환하지 않는다.
+
+`auctionId`는 새로 색인한 문서에 있는 공개 경매 UUID다. 보강 전 기존 문서는 `null`을 반환한다. `productId`는 문서 ID·정렬·Cursor 기준으로 남는다.
 
 ### 3.3 정렬 계약
 
@@ -140,7 +146,7 @@ Browser URL/Reducer
 
 - Browser Reducer에는 입력값·결과·Cursor·상태만 둔다. `AbortController`, debounce timer, fetch는 효과 경계에 둔다.
 - Backend Query Adapter는 `bidflow-products-read` Alias만 읽는다. 물리 인덱스명과 write Alias를 참조하지 않는다.
-- Query 결과는 Projection 지연을 가질 수 있다. 등록 직후의 강한 일관성은 보장하지 않으며, 등록 성공 화면은 Product ID를 기준으로 별도 이동한다.
+- Query 결과는 Projection 지연을 가질 수 있다. 등록 직후의 강한 일관성은 보장하지 않는다. 경매 ID 추가와 기존 문서 보강 순서는 [색인 사양 §5.3](./issue-009-search-indexer.md)을 따른다.
 
 ## 6. T. 검증 계획
 
@@ -153,6 +159,9 @@ Browser URL/Reducer
 | API 오류 | OpenSearch timeout은 503 코드 반환 | PostgreSQL fallback 호출 없음 |
 | UI Reducer | 입력 변경은 Cursor 초기화, Loading/Results/Empty 전환 | 이전 요청 늦은 응답 무시, 오류 재시도 |
 | 접근성 | 검색어·Filter Label, 결과 수·오류 live region | 키보드로 Filter·다음 결과 버튼 사용 |
+| 상세 링크 | 색인→검색 응답의 `auctionId`가 상세 경로와 일치 | 기존 문서는 제목만 표시, 상품 ID로 대체하지 않음 |
+
+구현은 색인·조회·화면의 실패 테스트부터 확인한다. #99 인수 테스트는 로컬 OpenSearch에서 고유 제목으로 등록한 상품이 검색될 때까지 제한된 폴링으로 기다린 뒤, 실제 제목 링크를 열고 등록 응답의 경매 ID와 상세 화면을 대조한다. OpenSearch를 사용하지 않은 실행은 검색 검증으로 집계하지 않는다. 이 작업에서는 나머지 검색 필터나 입찰 UI를 변경하지 않는다.
 
 ## 7. 완료 조건
 

@@ -39,7 +39,7 @@
 | 읽기 Alias | `bidflow-products-read` | 검색 API만 접근 |
 | 쓰기 Alias | `bidflow-products-write` | Kafka Indexer만 접근 |
 
-처음에는 `v1`에 읽기·쓰기 Alias 모두 연결한다. Mapping 또는 Analyzer 변경은 새 `v{N+1}`을 만들고 PostgreSQL 원본으로 채운 뒤, 하나의 Alias API 요청으로 read/write Alias를 함께 전환한다. Alias 변경은 원자적이므로 클라이언트가 의도하지 않은 인덱스를 보는 순간이 없다. [OpenSearch Alias 문서](https://docs.opensearch.org/latest/im-plugin/index-alias/)
+처음에는 `v1`에 읽기·쓰기 Alias 모두 연결한다. 기존 필드 타입이나 Analyzer 등 호환되지 않는 변경은 새 `v{N+1}`을 만들고 PostgreSQL 원본으로 채운 뒤, 하나의 Alias API 요청으로 read/write Alias를 함께 전환한다. Alias 변경은 원자적이므로 클라이언트가 의도하지 않은 인덱스를 보는 순간이 없다. [OpenSearch Alias 문서](https://docs.opensearch.org/latest/im-plugin/index-alias/)
 
 ### 3.2 `bidflow-products-v1` Mapping
 
@@ -58,6 +58,7 @@
     "dynamic": "strict",
     "properties": {
       "productId":          { "type": "keyword" },
+      "auctionId":          { "type": "keyword", "index": false },
       "sellerId":           { "type": "keyword" },
       "title":              { "type": "text", "analyzer": "standard", "fields": { "sort": { "type": "keyword", "normalizer": "lowercase_normalizer", "ignore_above": 256 } } },
       "categoryId":         { "type": "keyword" },
@@ -80,6 +81,7 @@
 | 필드 | 출처 | 색인 이유 |
 |---|---|---|
 | `productId` | Product PK | 문서 ID·이벤트 멱등 Upsert 기준 |
+| `auctionId` | Projection이 선택한 Auction PK | 공개 상세 링크 생성. 검색·정렬에는 사용하지 않음 |
 | `sellerId` | Product | 운영 점검 및 후속 판매자 Filter. 공개 검색 Filter에는 사용하지 않음 |
 | `title` | Product | 한글·영문 공백 단위의 기본 전문 검색과 제목 정렬 |
 | `categoryId`, `conditionGrade`, `status` | Product·Auction | 정확 Filter |
@@ -133,7 +135,7 @@ OpenSearch Upsert가 실패하면 예외를 전파하고 Offset·처리 기록�
 5. 확인이 끝나면 read/write Alias를 원자적으로 새 인덱스로 전환한다.
 6. 이전 인덱스는 롤백 가능 기간 동안 보존한 뒤 명시적 운영 명령으로 삭제한다.
 
-OpenSearch는 source와 destination이 같은 재색인을 허용하지 않으므로, Mapping 변경·복구에서는 반드시 새 물리 인덱스를 사용한다. [OpenSearch 재색인 문서](https://docs.opensearch.org/latest/im-plugin/reindex-data/)
+OpenSearch 자체의 `_reindex`는 같은 source와 destination을 허용하지 않는다. 인덱스를 교체하는 경우 새 물리 인덱스를 사용한다. PostgreSQL에서 기존 인덱스의 문서를 다시 쓰는 경로는 이 제약과 별개다. [OpenSearch 재색인 문서](https://docs.opensearch.org/latest/im-plugin/reindex-data/)
 
 재색인 중 계속 도착하는 이벤트는 기존 write Alias에 반영될 수 있다. 따라서 Alias 전환 직전, 재색인 시작 시각 이후의 `listing-event`를 새 인덱스에도 재적용하거나 원본의 version을 마지막으로 비교한다. 이 작업은 #58에서 구현·검증한다.
 
@@ -145,6 +147,14 @@ OpenSearch는 source와 destination이 같은 재색인을 허용하지 않으�
 | AWS 검증 | OpenSearch VPC Endpoint | IAM 최소 권한, TLS, 검증 종료 뒤 Terraform destroy |
 
 로컬 인덱스는 개발 데이터로 간주한다. `make local-down`은 컨테이너만 중단하고, 인덱스를 지우는 작업은 `make local-reset` 또는 명시적 삭제 명령으로 한정한다.
+
+### 5.3 경매 상세 링크용 필드 추가 (#10)
+
+1. 새 로컬 인덱스의 초기 Mapping에 `auctionId`를 선언한다. 기존 로컬 인덱스는 Writer 변경 전에 [Update Mappings API](https://docs.opensearch.org/latest/api-reference/index-apis/put-mapping/)로 새 필드만 추가한다. `dynamic: strict`, 기존 필드와 Alias는 유지한다.
+2. Writer는 PostgreSQL 조회 결과인 기존 `ProductSearchDocument.auctionId`를 함께 쓴다. 조회는 해당 필드를 공개 응답에 매핑하되, 기존 문서에 없으면 `null`로 유지한다. 검색 시 PostgreSQL로 추가 조회하지 않는다.
+3. 기존 문서는 등록·입찰 트래픽이 없는 로컬 검증 구간에 기존 PostgreSQL 기반 재색인으로 보강한다. 인덱스나 Docker 볼륨을 삭제하지 않는다. 신규 색인·기존 문서 보강·동일 설정 재실행을 검증한다.
+
+이 변경은 필드 하나를 추가할 뿐 기존 필드 타입이나 분석기를 바꾸지 않는다. 실제 AWS 적용은 이 작업 범위가 아니다.
 
 ## 6. T. 검증 계획
 
