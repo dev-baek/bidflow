@@ -1,0 +1,17 @@
+{
+  "requests": 20,
+  "accepted": 1,
+  "rejected": 19,
+  "pending": 0,
+  "settlement_p50_ms": 840.5,
+  "settlement_p95_ms": 886.47,
+  "settlement_p99_ms": 889.16,
+  "ledger_rows": 20,
+  "duplicate_ledger_rows": 0,
+  "price_regressions": 0,
+  "rejection_reasons": {
+    "BID_TOO_LOW": 19
+  },
+  "current_price": 20000,
+  "winner_matches_ledger": true
+}
