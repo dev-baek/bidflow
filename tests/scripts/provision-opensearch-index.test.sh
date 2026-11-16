@@ -28,6 +28,7 @@ case "\$url" in
     if [ "\${FAKE_INDEX_FAILURE:-}" = "true" ]; then exit 23; fi
     printf '%s' '201'
     ;;
+  */bidflow-products-v1/_mapping) ;;
   */_aliases) ;;
   *) exit 23 ;;
 esac
@@ -43,6 +44,7 @@ grep -F -- "--data-binary @${root}/infra/opensearch/products-aliases.json" "$log
 
 output=$(env BIDFLOW_CURL_BIN="$tmp/curl" FAKE_INDEX_EXISTS=true sh "$script")
 printf '%s' "$output" | grep -F "OpenSearch 상품 인덱스 적용 완료: bidflow-products-v1" >/dev/null
+grep -F -- "-X PUT http://127.0.0.1:9200/bidflow-products-v1/_mapping" "$log" | grep -F '"auctionId"' >/dev/null
 
 set +e
 output=$(env BIDFLOW_CURL_BIN="$tmp/curl" FAKE_INDEX_FAILURE=true sh "$script" 2>&1)

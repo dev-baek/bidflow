@@ -36,13 +36,22 @@ public final class OpenSearchProductSearchReader implements ProductSearchReader 
         Map<String, Object> bool = new LinkedHashMap<>(); bool.put("filter", filters);
         if (!query.keyword().trim().isEmpty()) bool.put("must", List.of(Map.of("match", Map.of("title", query.keyword().trim()))));
         Map<String, Object> body = new LinkedHashMap<>(); body.put("query", Map.of("bool", bool)); body.put("size", query.size()); body.put("sort", sort(query.sort()));
-        body.put("_source", List.of("productId", "title", "categoryId", "thumbnailObjectKey", "currentPrice", "status", "endsAt"));
+        body.put("_source", List.of("productId", "auctionId", "title", "categoryId", "thumbnailObjectKey", "currentPrice", "status", "endsAt"));
         query.cursor().ifPresent(cursor -> body.put("search_after", decodeCursor(query, cursor)));
         return body;
     }
     private SearchListingsPage page(SearchListingsQuery query, JsonNode root) {
         List<SearchListingItem> items = new ArrayList<>(); JsonNode hits = root.path("hits").path("hits"); List<String> lastSort = List.of();
-        for (JsonNode hit : hits) { JsonNode source = hit.path("_source"); items.add(new SearchListingItem(UUID.fromString(source.path("productId").asText()), source.path("title").asText(), source.path("categoryId").asText(), source.path("thumbnailObjectKey").isNull() ? null : source.path("thumbnailObjectKey").asText(), source.path("currentPrice").asLong(), source.path("status").asText(), Instant.parse(source.path("endsAt").asText()))); lastSort = values(hit.path("sort")); }
+        for (JsonNode hit : hits) {
+            JsonNode source = hit.path("_source");
+            String auctionId = source.path("auctionId").asText(null);
+            items.add(new SearchListingItem(UUID.fromString(source.path("productId").asText()),
+                    auctionId == null ? null : UUID.fromString(auctionId), source.path("title").asText(),
+                    source.path("categoryId").asText(), source.path("thumbnailObjectKey").asText(null),
+                    source.path("currentPrice").asLong(), source.path("status").asText(),
+                    Instant.parse(source.path("endsAt").asText())));
+            lastSort = values(hit.path("sort"));
+        }
         return new SearchListingsPage(items, items.size() == query.size() ? Optional.of(encodeCursor(query, lastSort)) : Optional.empty());
     }
     private static Optional<Map<String, Object>> range(Optional<Long> min, Optional<Long> max) { if (min.isEmpty() && max.isEmpty()) return Optional.empty(); Map<String, Object> value = new LinkedHashMap<>(); min.ifPresent(v -> value.put("gte", v)); max.ifPresent(v -> value.put("lte", v)); return Optional.of(value); }

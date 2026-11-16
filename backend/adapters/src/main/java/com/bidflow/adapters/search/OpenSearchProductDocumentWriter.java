@@ -38,6 +38,7 @@ public final class OpenSearchProductDocumentWriter implements ProductSearchDocum
 
     private static String json(ProductSearchDocument document) {
         return "{\"productId\":\"" + document.productId()
+                + "\",\"auctionId\":\"" + document.auctionId()
                 + "\",\"sellerId\":\"" + text(document.sellerId())
                 + "\",\"title\":\"" + text(document.title())
                 + "\",\"categoryId\":\"" + text(document.categoryId())

@@ -22,6 +22,9 @@ case "$response_status" in
       printf '%s\n' "OpenSearch 인덱스 생성 실패: $index" >&2
       exit 1
     fi
+    "$curl_bin" -fsS -X PUT "$endpoint/$index/_mapping" \
+      -H 'Content-Type: application/json' \
+      --data-binary '{"properties":{"auctionId":{"type":"keyword","index":false}}}' >/dev/null
     ;;
   *)
     printf '%s\n' "OpenSearch 인덱스 생성 실패: $index" >&2

@@ -47,6 +47,7 @@ class OpenSearchProductDocumentWriterTest {
             assertThat(method.get()).isEqualTo("PUT");
             assertThat(path.get()).isEqualTo("/bidflow-products-write/_doc/" + productId);
             assertThat(body.get()).contains("\"title\":\"중고 \\\"카메라\\\"\"")
+                    .contains("\"auctionId\":\"" + document.auctionId() + "\"")
                     .contains("\"thumbnailObjectKey\":null")
                     .contains("\"auctionVersion\":2");
         } finally {

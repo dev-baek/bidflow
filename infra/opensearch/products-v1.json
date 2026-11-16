@@ -15,6 +15,7 @@
     "dynamic": "strict",
     "properties": {
       "productId": { "type": "keyword" },
+      "auctionId": { "type": "keyword", "index": false },
       "sellerId": { "type": "keyword" },
       "title": {
         "type": "text",
