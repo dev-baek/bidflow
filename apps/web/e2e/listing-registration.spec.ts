@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import { expect, test, type APIRequestContext, type Browser, type Page } from "@playwright/test";
 
 const enabled = Boolean(process.env.BIDFLOW_E2E_BASE_URL);
@@ -80,6 +81,32 @@ test.describe("상품 등록·입찰 Browser 흐름", () => {
       await bidderB.context.close();
     }
   });
+
+  test("등록한 상품을 OpenSearch로 검색해 실제 경매 상세를 연다", async ({ page, request }) => {
+    test.skip(process.env.BIDFLOW_E2E_SEARCH !== "1", "검색 E2E는 make local-up-search 및 BIDFLOW_E2E_SEARCH=1이 필요합니다.");
+
+    await setE2eClock(request, "2030-01-01T12:00:00Z");
+    const title = `e2ecamera${randomUUID().replaceAll("-", "")}`;
+    const auctionId = await registerAuction(page, "e2e-seller-search", title);
+    const searchUrl = `${apiBaseUrl}/api/v1/listings/search?${new URLSearchParams({ q: title })}`;
+    await expect.poll(async () => {
+      const response = await request.get(searchUrl);
+      if (!response.ok()) return `검색 API HTTP ${response.status()}`;
+      const result: { items: { title: string; auctionId: string | null }[] } = await response.json();
+      return result.items.find(item => item.title === title)?.auctionId;
+    }, { timeout: 15_000, message: "등록한 상품이 검색 API에 올바른 경매 ID로 반영되어야 합니다." }).toBe(auctionId);
+
+    await page.goBack();
+    await page.getByRole("link", { name: "상품 검색 화면 열기" }).click();
+    await page.getByLabel("검색어").fill(title);
+    await page.getByRole("button", { name: "검색", exact: true }).click();
+    const link = page.getByRole("link", { name: title, exact: true });
+    await expect(link).toHaveAttribute("href", `/auctions/${auctionId}`);
+    await link.click();
+    await expect(page).toHaveURL(`${webBaseUrl}/auctions/${auctionId}`);
+    await expect(page.getByRole("heading", { name: title, exact: true })).toBeVisible();
+    await expect(page.getByRole("form", { name: "입찰 요청" })).toBeVisible();
+  });
 });
 
 async function openBidderPage(browser: Browser, auctionId: string, actorId: string) {
@@ -106,14 +133,14 @@ async function submitAutoBid(page: Page, amount: string): Promise<void> {
   await expect(page.getByRole("status")).toContainText("입찰 요청을 접수했습니다. 요청 번호:");
 }
 
-async function registerAuction(page: Page, sellerId: string): Promise<string> {
+async function registerAuction(page: Page, sellerId: string, title = "e2e-camera"): Promise<string> {
   await page.goto("/login");
   await page.getByLabel("로컬 개발자 ID").fill(sellerId);
   await page.getByRole("button", { name: "로컬 로그인" }).click();
   await page.waitForURL("/");
   await page.getByRole("link", { name: "상품 등록 화면 열기" }).click();
 
-  await page.getByLabel("상품 제목").fill("e2e-camera");
+  await page.getByLabel("상품 제목").fill(title);
   await page.getByLabel("상품 설명").fill("Playwright가 등록 흐름을 검증하는 테스트 상품입니다.");
   await page.getByLabel("카테고리").selectOption("DIGITAL");
   await page.getByLabel("상품 상태").selectOption("GOOD");
