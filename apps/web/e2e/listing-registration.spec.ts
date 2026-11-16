@@ -14,10 +14,10 @@ test.describe("상품 등록·입찰 Browser 흐름", () => {
     await expect(page.getByRole("status")).toContainText(`경매 ID: ${auctionId}`);
   });
 
-  test("두 자동 최대가 요청은 개인 결과와 공개 현재가를 분리한다", async ({ page, browser, request }) => {
+  test("마감 임박 자동 최대가 요청은 종료를 연장하고 개인 결과와 공개 현재가를 분리한다", async ({ page, browser, request }) => {
     await setE2eClock(request, "2030-01-01T12:00:00Z");
     const auctionId = await registerAuction(page, "e2e-seller-bid");
-    await setE2eClock(request, "2030-01-01T12:11:00Z");
+    await setE2eClock(request, "2030-01-01T12:29:00Z");
 
     const bidderA = await openBidderPage(browser, auctionId, "e2e-bidder-a");
     const bidderB = await openBidderPage(browser, auctionId, "e2e-bidder-b");
@@ -25,6 +25,7 @@ test.describe("상품 등록·입찰 Browser 흐름", () => {
       await submitAutoBid(bidderA.page, "30000");
       await expect(bidderA.page.getByText("입찰이 승인되었습니다. 현재 최고 입찰자입니다.")).toBeVisible({ timeout: 15_000 });
       await expect(bidderA.page.getByText("11,000원")).toBeVisible({ timeout: 15_000 });
+      await expect(bidderA.page.locator('time[datetime="2030-01-01T12:35:00Z"]')).toBeVisible({ timeout: 15_000 });
 
       await submitAutoBid(bidderB.page, "20000");
       await expect(bidderB.page.getByText("입찰이 승인되었습니다. 현재 최고 입찰자가 아닙니다.")).toBeVisible({ timeout: 15_000 });
