@@ -43,7 +43,7 @@
 상태 reducer는 순수 함수로 유지한다. 입력 이벤트는 `SNAPSHOT_LOADED`, `BID_REQUESTED`, `BID_RECEIVED`, `BID_FAILED`, `REALTIME_RECEIVED`다.
 
 1. 최초 Snapshot이 `ACTIVE`이면 입찰을 허용한다.
-2. `BID_REQUESTED`는 `Idempotency-Key`를 한 번 생성해 요청 완료/실패까지 유지한다.
+2. 첫 제출은 `Idempotency-Key`를 생성한다. 접수 응답을 받지 못해 같은 입력을 다시 제출하면 키를 재사용한다. 접수 성공 후 다시 제출하거나 금액·방식을 바꾸면 새 키를 생성한다. 제출 중에는 입력과 중복 제출을 막고, 재시도 전에 도착한 개인 결과는 접수 응답의 요청 ID와 일치할 때만 적용한다.
 3. `202`는 `RECEIVED`만 표시한다. 현재가를 낙관적으로 변경하지 않는다.
 4. WebSocket 이벤트의 version이 낮으면 무시한다. 같은 version에서는 더 이른 `endsAt`으로 되돌리지 않는다.
 5. WebSocket 연결 오류·재연결 뒤에는 REST Snapshot을 다시 조회해 최종 상태를 보정한다.
