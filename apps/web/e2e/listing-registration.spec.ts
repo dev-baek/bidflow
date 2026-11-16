@@ -1,5 +1,6 @@
 import { randomUUID } from "node:crypto";
-import { expect, test, type APIRequestContext, type Browser, type Page } from "@playwright/test";
+import { expect, test, type APIRequestContext, type Browser, type Page, type WebSocket } from "@playwright/test";
+import { parseBidResultMessage } from "../src/features/auction-realtime/auction-realtime-client";
 
 const enabled = Boolean(process.env.BIDFLOW_E2E_BASE_URL);
 const webBaseUrl = process.env.BIDFLOW_E2E_BASE_URL ?? "http://127.0.0.1:5173";
@@ -31,7 +32,7 @@ test.describe("상품 등록·입찰 Browser 흐름", () => {
     }
   });
 
-  test("자동 최대가 경쟁은 마감을 연장하고 새 마감에 공개 낙찰을 확정한다", async ({ page, browser, request }) => {
+  test("자동 입찰로 확정된 낙찰은 마감 이후 새 입찰로 바뀌지 않는다", async ({ page, browser, request }) => {
     await setE2eClock(request, "2030-01-01T12:00:00Z");
     const auctionId = await registerAuction(page, "e2e-seller-bid");
     const unextendedAuctionId = await registerAuction(page, "e2e-seller-control");
@@ -73,9 +74,32 @@ test.describe("상품 등록·입찰 Browser 흐름", () => {
         await expect(bidder.page.getByRole("status")).toHaveText("낙찰 · 21,000원");
         await expect(bidder.page.getByRole("form", { name: "입찰 요청" })).toHaveCount(0);
       }
-      expect(await readAuction(request, auctionId)).toMatchObject({
+      const closed = await readAuction(request, auctionId);
+      expect(closed).toMatchObject({
         status: "ENDED", outcome: "SOLD", currentPrice: 21_000, finalPrice: 21_000, endsAt: "2030-01-01T12:35:00Z",
       });
+
+      await setE2eClock(request, "2030-01-01T12:35:01Z");
+      const [receipt, rejection] = await Promise.all([
+        request.post(`${apiBaseUrl}/api/v1/auctions/${auctionId}/bid-requests`, {
+          headers: { "X-Actor-Id": "e2e-bidder-b", "Idempotency-Key": randomUUID() },
+          data: { bidKind: "DIRECT", amount: 35_000 },
+        }),
+        bidderB.socket.waitForEvent("framereceived", {
+          timeout: 10_000,
+          predicate: ({ payload }) => {
+            const result = parseBidResultFrame(payload.toString());
+            return result?.auctionId === auctionId && result.decision === "REJECTED";
+          },
+        }),
+      ]);
+      expect(receipt.status()).toBe(202);
+      const acceptedForProcessing = await receipt.json();
+      expect(acceptedForProcessing).toMatchObject({ bidRequestId: expect.any(String), status: "RECEIVED" });
+      expect(parseBidResultFrame(rejection.payload.toString())).toMatchObject({
+        bidRequestId: acceptedForProcessing.bidRequestId, reason: "AUCTION_ENDED", currentPrice: 21_000,
+      });
+      expect(await readAuction(request, auctionId)).toEqual(closed);
     } finally {
       await bidderA.context.close();
       await bidderB.context.close();
@@ -157,8 +181,8 @@ async function openBidderPage(browser: Browser, auctionId: string, actorId: stri
     window.dispatchEvent(new PopStateEvent("popstate"));
   }, auctionId);
   await expect(page.getByRole("heading", { name: "e2e-camera" })).toBeVisible();
-  await subscribed;
-  return { context, page };
+  const socket = await subscribed;
+  return { context, page, socket };
 }
 
 async function submitAutoBid(page: Page, amount: string): Promise<void> {
@@ -221,7 +245,12 @@ async function readAuction(request: APIRequestContext, auctionId: string): Promi
   return response.json();
 }
 
-function waitForAuctionSubscriptions(page: Page, auctionId: string): Promise<void> {
+function parseBidResultFrame(payload: string) {
+  const message = /^MESSAGE\r?\n[\s\S]*?\r?\n\r?\n([^\0]+)\0?$/.exec(payload);
+  return message?.[1] ? parseBidResultMessage(message[1]) : null;
+}
+
+function waitForAuctionSubscriptions(page: Page, auctionId: string): Promise<WebSocket> {
   return new Promise((resolve, reject) => {
     const destinations = new Set<string>();
     const timer = setTimeout(() => reject(new Error("경매 공개·개인 토픽 구독을 확인하지 못했습니다.")), 5_000);
@@ -235,7 +264,7 @@ function waitForAuctionSubscriptions(page: Page, auctionId: string): Promise<voi
         }
         if (destinations.size === 2) {
           clearTimeout(timer);
-          resolve();
+          resolve(socket);
         }
       });
     });
