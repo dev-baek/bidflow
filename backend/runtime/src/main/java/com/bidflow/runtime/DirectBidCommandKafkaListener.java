@@ -32,6 +32,7 @@ import java.util.Map;
  */
 @Component
 class DirectBidCommandKafkaListener {
+    static final String LISTENER_ID = "bid-settlement";
     private static final Logger log = LoggerFactory.getLogger(DirectBidCommandKafkaListener.class);
     private final EventEnvelopeJsonCodec codec;
     private final DirectBidProcessor directBidProcessor;
@@ -55,7 +56,7 @@ class DirectBidCommandKafkaListener {
         this.clock = clock;
     }
 
-    @KafkaListener(topics = "bid-command", groupId = "bid-settlement")
+    @KafkaListener(id = LISTENER_ID, topics = "bid-command", groupId = "bid-settlement")
     void consume(ConsumerRecord<String, String> record) {
         BidCommandPayload payload = parse(record.value());
         try (LogContext.Scope ignored = LogContext.kafka(payload.correlationId(), record, "bid-settlement", payload.eventId().toString())) {
