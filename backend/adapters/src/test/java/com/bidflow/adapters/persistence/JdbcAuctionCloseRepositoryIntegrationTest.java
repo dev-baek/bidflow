@@ -84,12 +84,39 @@ class JdbcAuctionCloseRepositoryIntegrationTest {
                 .containsEntry("outcome", "UNSOLD").containsEntry("winner_id", null).containsEntry("final_price", null);
     }
 
+    @Test
+    void closesAnUnbidScheduledAuctionExactlyAtTheDeadlineWithoutClosingCancelledAuctions() {
+        UUID auctionId = fixture(NOW, null, "SCHEDULED");
+        UUID cancelledId = fixture(NOW, null, "CANCELLED");
+
+        assertThat(firstWorker.closeExpired(NOW.minusMillis(1), 10)).isZero();
+        assertThat(jdbc.queryForObject("select status from auction where auction_id = ?", String.class, auctionId))
+                .isEqualTo("SCHEDULED");
+
+        assertThat(firstWorker.closeExpired(NOW, 10)).isEqualTo(1);
+        assertThat(secondWorker.closeExpired(NOW, 10)).isZero();
+        assertThat(jdbc.queryForMap("select status, version from auction where auction_id = ?", auctionId))
+                .containsEntry("status", "ENDED").containsEntry("version", 5L);
+        assertThat(jdbc.queryForMap("select outcome, winner_id, final_price from auction_result where auction_id = ?", auctionId))
+                .containsEntry("outcome", "UNSOLD").containsEntry("winner_id", null).containsEntry("final_price", null);
+        assertThat(jdbc.queryForObject("select count(*) from outbox_event where aggregate_id = ? and event_type = 'AuctionEnded'", Integer.class, auctionId))
+                .isEqualTo(1);
+        assertThat(jdbc.queryForObject("select status from auction where auction_id = ?", String.class, cancelledId))
+                .isEqualTo("CANCELLED");
+        assertThat(jdbc.queryForObject("select count(*) from auction_result where auction_id = ?", Integer.class, cancelledId))
+                .isZero();
+    }
+
     private static int get(Future<Integer> future) {
         try { return future.get(10, TimeUnit.SECONDS); }
         catch (Exception exception) { throw new IllegalStateException(exception); }
     }
 
     private static UUID fixture(Instant endsAt, String winnerId) {
+        return fixture(endsAt, winnerId, "ACTIVE");
+    }
+
+    private static UUID fixture(Instant endsAt, String winnerId, String status) {
         UUID productId = UUID.randomUUID();
         UUID auctionId = UUID.randomUUID();
         jdbc.update("""
@@ -98,8 +125,8 @@ class JdbcAuctionCloseRepositoryIntegrationTest {
                 """, productId, Timestamp.from(NOW), Timestamp.from(NOW));
         jdbc.update("""
                 insert into auction (auction_id, product_id, seller_id, status, starting_price, current_price, current_winner_id, starts_at, ends_at, version, created_at, updated_at)
-                values (?, ?, 'seller-1', 'ACTIVE', 1000, 13000, ?, ?, ?, 4, ?, ?)
-                """, auctionId, productId, winnerId, Timestamp.from(NOW.minusSeconds(600)), Timestamp.from(endsAt), Timestamp.from(NOW), Timestamp.from(NOW));
+                values (?, ?, 'seller-1', ?, 1000, 13000, ?, ?, ?, 4, ?, ?)
+                """, auctionId, productId, status, winnerId, Timestamp.from(NOW.minusSeconds(600)), Timestamp.from(endsAt), Timestamp.from(NOW), Timestamp.from(NOW));
         return auctionId;
     }
 }
