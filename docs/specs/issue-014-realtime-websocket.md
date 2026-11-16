@@ -36,7 +36,9 @@ Browser는 `bidRequestId`가 일치하는 `bid.result`만 해당 제출 상태�
 
 ### 2.3 재연결
 
-연결 종료 시 1초, 2초, 4초, 8초, 이후 최대 10초 간격으로 재시도한다. 재연결 성공 뒤에는 모든 이전 구독을 다시 등록하고 `RECEIPT` 후 REST Snapshot을 다시 조회한다. Snapshot 조회 실패 시 최근 화면 상태를 확정 상태로 표시하지 않고 재시도 안내를 보여 준다.
+현재 클라이언트는 연결 종료 후 5초 간격으로 재시도한다. 재연결의 STOMP `CONNECTED` 이후 공개·개인 구독을 다시 보내고 공개 경매 REST Snapshot을 조회한다. [Spring simple broker](https://docs.spring.io/spring-framework/reference/6.2/web/websocket/stomp/handle-broker-relay.html)는 구독 `RECEIPT`를 지원하지 않으므로 브로커의 구독 등록 완료까지 보장하거나 유실된 개인 메시지를 재생하지 않는다.
+
+재조회 실패 시 이전 조회 결과임을 표시하고 다시 조회할 수 있게 한다. 늦게 도착한 이전 버전이나 같은 버전의 더 이른 마감·종료 상태 역행으로 기존 화면을 덮지 않는다.
 
 ## 3. D. Browser 계약과 메시지 모델
 
@@ -101,7 +103,7 @@ Destination은 `/user/queue/bid-results`이고, 결과를 낸 사용자에게만
 ### 3.4 REST Snapshot
 
 ```text
-GET /api/auctions/{auctionId}
+GET /api/v1/auctions/{auctionId}
 ```
 
 REST 응답은 `auctionId`, `auctionVersion`, `currentPrice`, `endsAt`, `status`, `serverTime`을 가진다. `serverTime`은 남은 시간 표시를 위한 기준이며 Browser 로컬 시간은 거래 판단에 쓰지 않는다. Browser Reducer는 Snapshot도 WebSocket과 동일하게 더 큰 버전일 때만 적용한다. 종료 상태처럼 같은 버전의 보완 필드는 `status`가 더 종료 쪽 상태일 때만 갱신한다.
