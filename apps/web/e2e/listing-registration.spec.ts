@@ -14,9 +14,18 @@ test.describe("상품 등록·입찰 Browser 흐름", () => {
     await expect(page.getByRole("status")).toContainText(`경매 ID: ${auctionId}`);
   });
 
-  test("마감 임박 자동 최대가 요청은 종료를 연장하고 개인 결과와 공개 현재가를 분리한다", async ({ page, browser, request }) => {
+  test("자동 최대가 경쟁은 마감을 연장하고 새 마감에 공개 낙찰을 확정한다", async ({ page, browser, request }) => {
     await setE2eClock(request, "2030-01-01T12:00:00Z");
     const auctionId = await registerAuction(page, "e2e-seller-bid");
+    const unextendedAuctionId = await registerAuction(page, "e2e-seller-control");
+    await setE2eClock(request, "2030-01-01T12:24:00Z");
+    const controlBid = await request.post(`${apiBaseUrl}/api/v1/auctions/${unextendedAuctionId}/bid-requests`, {
+      headers: { "X-Actor-Id": "e2e-bidder-control", "Idempotency-Key": unextendedAuctionId },
+      data: { bidKind: "DIRECT", amount: 12_000 },
+    });
+    expect(controlBid.status()).toBe(202);
+    await expect.poll(() => readAuction(request, unextendedAuctionId), { timeout: 10_000 })
+      .toMatchObject({ status: "ACTIVE", currentPrice: 12_000, endsAt: "2030-01-01T12:30:00Z" });
     await setE2eClock(request, "2030-01-01T12:29:00Z");
 
     const bidderA = await openBidderPage(browser, auctionId, "e2e-bidder-a");
@@ -32,6 +41,24 @@ test.describe("상품 등록·입찰 Browser 흐름", () => {
       await expect(bidderA.page.getByText("21,000원")).toBeVisible({ timeout: 15_000 });
       await expect(bidderB.page.getByText("21,000원")).toBeVisible({ timeout: 15_000 });
       await expect(bidderB.page.getByText("30,000원")).toHaveCount(0);
+
+      await setE2eClock(request, "2030-01-01T12:30:00Z");
+      // An unextended auction closing proves that the scheduler ran at the original deadline.
+      await expect.poll(() => readAuction(request, unextendedAuctionId), { timeout: 10_000 })
+        .toMatchObject({ status: "ENDED", outcome: "SOLD", finalPrice: 12_000 });
+      expect(await readAuction(request, auctionId)).toMatchObject({
+        status: "ACTIVE", endsAt: "2030-01-01T12:35:00Z", currentPrice: 21_000, outcome: null,
+      });
+
+      await setE2eClock(request, "2030-01-01T12:35:00Z");
+      for (const bidder of [bidderA, bidderB]) {
+        await expect(bidder.page.getByText("ENDED", { exact: true })).toBeVisible({ timeout: 15_000 });
+        await expect(bidder.page.getByRole("status")).toHaveText("낙찰 · 21,000원");
+        await expect(bidder.page.getByRole("form", { name: "입찰 요청" })).toHaveCount(0);
+      }
+      expect(await readAuction(request, auctionId)).toMatchObject({
+        status: "ENDED", outcome: "SOLD", currentPrice: 21_000, finalPrice: 21_000, endsAt: "2030-01-01T12:35:00Z",
+      });
     } finally {
       await bidderA.context.close();
       await bidderB.context.close();
@@ -94,6 +121,12 @@ async function setE2eClock(request: APIRequestContext, instant: string): Promise
     headers: { "X-Actor-Id": "e2e-clock-controller" },
   });
   expect(response.ok(), await response.text()).toBeTruthy();
+}
+
+async function readAuction(request: APIRequestContext, auctionId: string): Promise<unknown> {
+  const response = await request.get(`${apiBaseUrl}/api/v1/auctions/${auctionId}`);
+  await expect(response).toBeOK();
+  return response.json();
 }
 
 function waitForAuctionSubscriptions(page: Page, auctionId: string): Promise<void> {
