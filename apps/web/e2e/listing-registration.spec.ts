@@ -1,4 +1,4 @@
-import { expect, test, type APIRequestContext, type Page } from "@playwright/test";
+import { expect, test, type APIRequestContext, type Browser, type Page } from "@playwright/test";
 
 const enabled = Boolean(process.env.BIDFLOW_E2E_BASE_URL);
 const webBaseUrl = process.env.BIDFLOW_E2E_BASE_URL ?? "http://127.0.0.1:5173";
@@ -14,37 +14,53 @@ test.describe("상품 등록·입찰 Browser 흐름", () => {
     await expect(page.getByRole("status")).toContainText(`경매 ID: ${auctionId}`);
   });
 
-  test("활성 경매에서 자동 최대가 입찰을 접수하고 공개 현재가를 갱신한다", async ({ page, browser, request }) => {
+  test("두 자동 최대가 요청은 개인 결과와 공개 현재가를 분리한다", async ({ page, browser, request }) => {
     await setE2eClock(request, "2030-01-01T12:00:00Z");
     const auctionId = await registerAuction(page, "e2e-seller-bid");
     await setE2eClock(request, "2030-01-01T12:11:00Z");
 
-    const bidderContext = await browser.newContext({ baseURL: webBaseUrl });
-    const bidderPage = await bidderContext.newPage();
+    const bidderA = await openBidderPage(browser, auctionId, "e2e-bidder-a");
+    const bidderB = await openBidderPage(browser, auctionId, "e2e-bidder-b");
     try {
-      await bidderPage.goto("/login");
-      await bidderPage.getByLabel("로컬 개발자 ID").fill("e2e-bidder-a");
-      await bidderPage.getByRole("button", { name: "로컬 로그인" }).click();
-      await bidderPage.waitForURL("/");
-      const subscribed = waitForAuctionSubscription(bidderPage, auctionId);
-      await bidderPage.evaluate((id) => {
-        window.history.pushState({}, "", `/auctions/${id}`);
-        window.dispatchEvent(new PopStateEvent("popstate"));
-      }, auctionId);
+      await submitAutoBid(bidderA.page, "30000");
+      await expect(bidderA.page.getByText("입찰이 승인되었습니다. 현재 최고 입찰자입니다.")).toBeVisible({ timeout: 15_000 });
+      await expect(bidderA.page.getByText("11,000원")).toBeVisible({ timeout: 15_000 });
 
-      await expect(bidderPage.getByRole("heading", { name: "e2e-camera" })).toBeVisible();
-      await subscribed;
-      await bidderPage.getByLabel("입찰 방식").selectOption("AUTO_MAX");
-      await bidderPage.getByLabel("입찰 금액").fill("30000");
-      await bidderPage.getByRole("button", { name: "입찰 요청" }).click();
-
-      await expect(bidderPage.getByRole("status")).toContainText("입찰 요청을 접수했습니다. 요청 번호:");
-      await expect(bidderPage.getByText("11,000원")).toBeVisible({ timeout: 15_000 });
+      await submitAutoBid(bidderB.page, "20000");
+      await expect(bidderB.page.getByText("입찰이 승인되었습니다. 현재 최고 입찰자가 아닙니다.")).toBeVisible({ timeout: 15_000 });
+      await expect(bidderA.page.getByText("21,000원")).toBeVisible({ timeout: 15_000 });
+      await expect(bidderB.page.getByText("21,000원")).toBeVisible({ timeout: 15_000 });
+      await expect(bidderB.page.getByText("30,000원")).toHaveCount(0);
     } finally {
-      await bidderContext.close();
+      await bidderA.context.close();
+      await bidderB.context.close();
     }
   });
 });
+
+async function openBidderPage(browser: Browser, auctionId: string, actorId: string) {
+  const context = await browser.newContext({ baseURL: webBaseUrl });
+  const page = await context.newPage();
+  await page.goto("/login");
+  await page.getByLabel("로컬 개발자 ID").fill(actorId);
+  await page.getByRole("button", { name: "로컬 로그인" }).click();
+  await page.waitForURL("/");
+  const subscribed = waitForAuctionSubscriptions(page, auctionId);
+  await page.evaluate((id) => {
+    window.history.pushState({}, "", `/auctions/${id}`);
+    window.dispatchEvent(new PopStateEvent("popstate"));
+  }, auctionId);
+  await expect(page.getByRole("heading", { name: "e2e-camera" })).toBeVisible();
+  await subscribed;
+  return { context, page };
+}
+
+async function submitAutoBid(page: Page, amount: string): Promise<void> {
+  await page.getByLabel("입찰 방식").selectOption("AUTO_MAX");
+  await page.getByLabel("입찰 금액").fill(amount);
+  await page.getByRole("button", { name: "입찰 요청" }).click();
+  await expect(page.getByRole("status")).toContainText("입찰 요청을 접수했습니다. 요청 번호:");
+}
 
 async function registerAuction(page: Page, sellerId: string): Promise<string> {
   await page.goto("/login");
@@ -79,12 +95,19 @@ async function setE2eClock(request: APIRequestContext, instant: string): Promise
   expect(response.ok(), await response.text()).toBeTruthy();
 }
 
-function waitForAuctionSubscription(page: Page, auctionId: string): Promise<void> {
+function waitForAuctionSubscriptions(page: Page, auctionId: string): Promise<void> {
   return new Promise((resolve, reject) => {
-    const timer = setTimeout(() => reject(new Error("경매 공개 토픽 구독을 확인하지 못했습니다.")), 5_000);
+    const destinations = new Set<string>();
+    const timer = setTimeout(() => reject(new Error("경매 공개·개인 토픽 구독을 확인하지 못했습니다.")), 5_000);
     page.on("websocket", (socket) => {
       socket.on("framesent", (frame) => {
         if (typeof frame.payload === "string" && frame.payload.includes(`destination:/topic/auctions/${auctionId}`)) {
+          destinations.add("public");
+        }
+        if (typeof frame.payload === "string" && frame.payload.includes("destination:/user/queue/bid-results")) {
+          destinations.add("private");
+        }
+        if (destinations.size === 2) {
           clearTimeout(timer);
           resolve();
         }

@@ -32,7 +32,9 @@ WebSocket handshake는 `bidflow.realtime.allowed-origin-patterns`에 등록된 o
 - Browser의 presign PUT 이미지 업로드
 - 상품·경매 등록
 - 서버가 반환한 경매 ID 표시
-- 별도 Browser context의 자동 최대가(30,000원) 요청 접수
-- STOMP 공개 토픽 구독 뒤 비동기 정산 결과인 현재가 11,000원 표시
+- 서로 분리된 Browser context의 자동 최대가(30,000원·20,000원) 요청 접수
+- 각 입찰자에게 `/user/queue/bid-results`로 전달되는 개인 정산 결과 표시
+- STOMP 공개 토픽 구독 뒤 양쪽 화면의 현재가 21,000원 동기화
+- 두 번째 입찰자는 첫 번째 입찰자의 최대가(30,000원)를 화면에서 확인할 수 없음
 
-두 입찰자의 최대가 경쟁, 자동 연장, 종료 확정은 같은 #99 시나리오에 추가한다.
+자동 연장과 종료 확정은 같은 #99 시나리오에 추가한다.
