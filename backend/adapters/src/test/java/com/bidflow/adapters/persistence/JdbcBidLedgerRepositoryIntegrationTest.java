@@ -4,6 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.bidflow.application.bid.BidLedgerRepository;
+import com.bidflow.application.bid.BidRequestCommand;
+import com.bidflow.application.bid.BidRequestRepository;
 import com.bidflow.application.bid.BidSettlementCommand;
 import com.bidflow.application.auction.AuctionCloseRepository;
 import com.bidflow.application.bid.DirectBidResult;
@@ -31,6 +33,7 @@ class JdbcBidLedgerRepositoryIntegrationTest {
 
     private static JdbcTemplate jdbc;
     private static BidLedgerRepository repository;
+    private static BidRequestRepository bidRequests;
 
     @BeforeAll
     static void migrate() {
@@ -40,6 +43,22 @@ class JdbcBidLedgerRepositoryIntegrationTest {
                 POSTGRES.getJdbcUrl(), POSTGRES.getUsername(), POSTGRES.getPassword());
         jdbc = new JdbcTemplate(dataSource);
         repository = new JdbcBidLedgerRepository(jdbc, new TransactionTemplate(new DataSourceTransactionManager(dataSource)), new ObjectMapper(), UUID::randomUUID);
+        bidRequests = new JdbcBidRequestRepository(jdbc, new TransactionTemplate(new DataSourceTransactionManager(dataSource)));
+    }
+
+    @Test
+    void persistsReceivedBidRequestAndCommandOutboxEvent() {
+        Fixture fixture = fixture(1L);
+        UUID requestId = UUID.randomUUID();
+
+        bidRequests.save("bidder-3", "request-key-1", "a".repeat(64), "correlation-2", requestId,
+                new BidRequestCommand(fixture.auctionId(), "AUTO_MAX", 30_000L));
+
+        assertThat(jdbc.queryForMap("select bidder_id, bid_kind, amount, status from bid_request where bid_request_id = ?", requestId))
+                .containsEntry("bidder_id", "bidder-3").containsEntry("bid_kind", "AUTO_MAX")
+                .containsEntry("amount", 30_000L).containsEntry("status", "RECEIVED");
+        assertThat(jdbc.queryForObject("select count(*) from outbox_event where aggregate_id = ? and event_type = 'BidCommandRequested'",
+                Integer.class, fixture.auctionId())).isEqualTo(1);
     }
 
     @Test
