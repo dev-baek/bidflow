@@ -127,6 +127,26 @@ describe("listingFormReducer", () => {
     ]);
   });
 
+  it("keeps an actionable error code when image upload fails", () => {
+    const state = createListingFormState("request-1", validDraft({
+      images: [{
+        localId: "image-1",
+        fileName: "camera.jpg",
+        contentType: "image/jpeg",
+        size: 5,
+        status: "UPLOADING",
+      }],
+    }));
+
+    const next = listingFormReducer(state, {
+      type: "IMAGE_UPLOAD_FAILED",
+      localId: "image-1",
+      errorCode: "PRESIGN_FAILED",
+    });
+
+    expect(next.draft.images[0]).toMatchObject({ status: "FAILED", errorCode: "PRESIGN_FAILED" });
+  });
+
   it("moves a valid completed form to submitting without replacing its idempotency key", () => {
     const state = createListingFormState("request-1", validDraft());
 

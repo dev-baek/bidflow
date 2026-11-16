@@ -70,10 +70,12 @@ export function ListingCreatePage({ now = () => new Date(), apiBaseUrl = "", loc
     dispatch({ type: "IMAGE_UPLOAD_STARTED", localId });
     try {
       const presigned = await resolvedClient.post<PresignedUpload>("/api/v1/uploads/presign", { contentType: file.type, contentLength: file.size }, { "X-Actor-Id": actorId });
-      const response = await upload(presigned.uploadUrl, { method: "PUT", headers: presigned.requiredHeaders, body: file });
-      if (!response.ok) throw new Error("upload failed");
-      dispatch({ type: "IMAGE_UPLOAD_COMPLETED", localId, uploadId: presigned.uploadId, objectKey: presigned.objectKey });
-    } catch { dispatch({ type: "IMAGE_UPLOAD_FAILED", localId, errorCode: "UPLOAD_FAILED" }); }
+      try {
+        const response = await upload(presigned.uploadUrl, { method: "PUT", headers: presigned.requiredHeaders, body: file });
+        if (!response.ok) throw new Error("upload failed");
+        dispatch({ type: "IMAGE_UPLOAD_COMPLETED", localId, uploadId: presigned.uploadId, objectKey: presigned.objectKey });
+      } catch { dispatch({ type: "IMAGE_UPLOAD_FAILED", localId, errorCode: "OBJECT_UPLOAD_FAILED" }); }
+    } catch { dispatch({ type: "IMAGE_UPLOAD_FAILED", localId, errorCode: "PRESIGN_FAILED" }); }
   };
 
   const submit = (event: FormEvent<HTMLFormElement>) => {
@@ -142,7 +144,7 @@ export function ListingCreatePage({ now = () => new Date(), apiBaseUrl = "", loc
           <p className="field-help">JPEG·PNG·WebP, 각 10 MiB 이하, 1~10장</p>
           {state.draft.images.length > 0 ? (
             <ul className="image-list">
-              {state.draft.images.map((image) => <li key={image.localId}>{image.fileName} — {image.status}</li>)}
+              {state.draft.images.map((image) => <li key={image.localId}>{image.fileName} — {image.status}{image.errorCode ? ` (${image.errorCode})` : ""}</li>)}
             </ul>
           ) : null}
         </FieldError>
