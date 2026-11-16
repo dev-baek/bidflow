@@ -71,7 +71,7 @@ test.describe("상품 등록·입찰 Browser 흐름", () => {
       await setE2eClock(request, "2030-01-01T12:35:00Z");
       for (const bidder of [bidderA, bidderB]) {
         await expect(bidder.page.getByText("ENDED", { exact: true })).toBeVisible({ timeout: 15_000 });
-        await expect(bidder.page.getByRole("status")).toHaveText("낙찰 · 21,000원");
+        await expect(bidder.page.getByText("낙찰 · 21,000원", { exact: true })).toBeVisible();
         await expect(bidder.page.getByRole("form", { name: "입찰 요청" })).toHaveCount(0);
       }
       const closed = await readAuction(request, auctionId);
@@ -100,6 +100,21 @@ test.describe("상품 등록·입찰 Browser 흐름", () => {
         bidRequestId: acceptedForProcessing.bidRequestId, reason: "AUCTION_ENDED", currentPrice: 21_000,
       });
       expect(await readAuction(request, auctionId)).toEqual(closed);
+
+      const personal = (viewer: Page) => viewer.getByRole("region", { name: "본인 입찰 결과" });
+      await expect(personal(bidderA.page)).toHaveText("내가 낙찰받았습니다.");
+      await expect(personal(bidderB.page)).toHaveText("패찰했습니다.");
+
+      await showAuctionDetail(page, auctionId);
+      await expect(page.getByText("낙찰 · 21,000원", { exact: true })).toBeVisible();
+      await expect(personal(page)).toHaveText("승인된 입찰 내역이 없습니다.");
+
+      await bidderA.page.reload();
+      await expect(bidderA.page.getByText("낙찰 · 21,000원", { exact: true })).toBeVisible();
+      await expect(personal(bidderA.page)).toHaveCount(0);
+      await signInLocal(bidderA.page, "e2e-bidder-a");
+      await showAuctionDetail(bidderA.page, auctionId);
+      await expect(personal(bidderA.page)).toHaveText("내가 낙찰받았습니다.");
     } finally {
       await bidderA.context.close();
       await bidderB.context.close();
@@ -210,18 +225,26 @@ test.describe("상품 등록·입찰 Browser 흐름", () => {
 async function openBidderPage(browser: Browser, auctionId: string, actorId: string) {
   const context = await browser.newContext({ baseURL: webBaseUrl });
   const page = await context.newPage();
+  await signInLocal(page, actorId);
+  const subscribed = waitForAuctionSubscriptions(page, auctionId);
+  await showAuctionDetail(page, auctionId);
+  const socket = await subscribed;
+  return { context, page, socket };
+}
+
+async function signInLocal(page: Page, actorId: string) {
   await page.goto("/login");
   await page.getByLabel("로컬 개발자 ID").fill(actorId);
   await page.getByRole("button", { name: "로컬 로그인" }).click();
   await page.waitForURL("/");
-  const subscribed = waitForAuctionSubscriptions(page, auctionId);
+}
+
+async function showAuctionDetail(page: Page, auctionId: string) {
   await page.evaluate((id) => {
     window.history.pushState({}, "", `/auctions/${id}`);
     window.dispatchEvent(new PopStateEvent("popstate"));
   }, auctionId);
   await expect(page.getByRole("heading", { name: "e2e-camera" })).toBeVisible();
-  const socket = await subscribed;
-  return { context, page, socket };
 }
 
 async function submitAutoBid(page: Page, amount: string): Promise<void> {
@@ -246,10 +269,7 @@ async function submitDirectBid(page: Page, auctionId: string, amount: string) {
 }
 
 async function registerAuction(page: Page, sellerId: string, title = "e2e-camera"): Promise<string> {
-  await page.goto("/login");
-  await page.getByLabel("로컬 개발자 ID").fill(sellerId);
-  await page.getByRole("button", { name: "로컬 로그인" }).click();
-  await page.waitForURL("/");
+  await signInLocal(page, sellerId);
   await page.getByRole("link", { name: "상품 등록 화면 열기" }).click();
 
   await page.getByLabel("상품 제목").fill(title);

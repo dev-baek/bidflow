@@ -1,5 +1,5 @@
 export type ApiClient = Readonly<{
-  get<T>(path: string): Promise<T>;
+  get<T>(path: string, headers?: Record<string, string>): Promise<T>;
   post<T>(path: string, body: unknown, headers?: Record<string, string>): Promise<T>;
 }>;
 
@@ -19,9 +19,9 @@ export function joinApiUrl(baseUrl: string, path: string): string {
 
 export function createApiClient(baseUrl: string, request: typeof fetch): ApiClient {
   return {
-    async get<T>(path: string): Promise<T> {
+    async get<T>(path: string, headers: Record<string, string> = {}): Promise<T> {
       const response = await request(joinApiUrl(baseUrl, path), {
-        headers: { accept: "application/json" },
+        headers: { accept: "application/json", ...headers },
       });
 
       if (!response.ok) {
