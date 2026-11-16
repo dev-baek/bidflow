@@ -10,7 +10,7 @@
 - `make failure-redis-stop/start`, `make failure-opensearch-stop/start`은 `bidflow-local` Compose Project 안의 `redis`, `opensearch` service만 stop/start한다.
 - Docker volume 제거, `FLUSHALL`, 외부 Compose Project 조작은 수행하지 않는다. `start`는 기존 volume을 유지하므로 재시작 뒤 복구 경로를 관찰할 수 있다.
 - `make consumer-lag`은 `BIDFLOW_CONSUMER_GROUP`을 입력받아 Kafka의 consumer group Lag를 읽기 전용으로 조회한다.
-- Spring Boot가 현재 단일 프로세스라 Consumer만 독립 중단하는 자동화는 제공하지 않는다. 사용자에게 PID·임의 명령 실행을 요구하거나 종료하지 않으며, Consumer 실험은 API/Worker 분리 배포 단위가 준비된 뒤 실행한다.
+- 이 도구에는 Consumer 단독 제어가 없다. API 전체나 임의 PID를 종료하지 않고, 후속 [Consumer 단독 중단 사양](../specs/issue-096-settlement-consumer-outage.md)에 따라 입찰 정산 Listener 하나만 로컬에서 제어한다.
 
 ## 2. 실행 순서
 
