@@ -36,7 +36,7 @@
 | 없음 | 404 안내, 입찰 폼 없음 |
 | 조회/접수 실패 | 오류를 `role="alert"`로 표시하고 마지막 유효 Snapshot은 유지 |
 
-`currentPrice`, `endsAt`, `status`, `auctionVersion`은 공개 정보다. 최고 입찰자 식별자와 자동입찰 최대가는 공개 화면·공개 WebSocket·검색 결과에 절대 포함하지 않는다. 종료된 뒤 본인에게만 낙찰/패찰 결과를 표시하는 세부 정책은 별도 사용자 결과 API에서 다룬다. 이 첫 구현의 공개 상세 화면은 낙찰자 식별자를 표시하지 않는다.
+`currentPrice`, `endsAt`, `status`, `auctionVersion`은 공개 정보다. 최고 입찰자 식별자와 자동입찰 최대가는 공개 화면·공개 WebSocket·검색 결과에 절대 포함하지 않는다. 종료된 뒤 본인에게만 표시하는 낙찰/패찰은 [#227 개인 결과 사양](./issue-227-private-auction-outcome.md)에서 다룬다. 공개 상세는 낙찰자 식별자를 표시하지 않는다.
 
 ### 2.2 Browser 상태 전이
 
