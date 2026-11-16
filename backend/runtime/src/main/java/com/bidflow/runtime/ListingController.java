@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Instant;
+import java.time.Clock;
 import java.util.List;
 import java.util.UUID;
 import java.security.Principal;
@@ -15,12 +16,12 @@ import java.security.Principal;
 @RestController
 @RequestMapping("/api/v1/listings")
 class ListingController {
-    private final ListingRegistrationService service; private final IdentifierGenerator ids;
-    ListingController(ListingRegistrationService service, IdentifierGenerator ids) { this.service = service; this.ids = ids; }
+    private final ListingRegistrationService service; private final IdentifierGenerator ids; private final Clock clock;
+    ListingController(ListingRegistrationService service, IdentifierGenerator ids, Clock clock) { this.service = service; this.ids = ids; this.clock = clock; }
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     ListingResponse create(Principal actor, @RequestHeader("Idempotency-Key") String key, @RequestBody CreateListingRequest request) {
-        ListingRegistrationResult result = service.register(new ListingRegistrationCommand(key, request.title(), request.description(), request.categoryId(), request.conditionGrade(), request.startingPrice(), request.startsAt(), request.endsAt(), request.images().stream().map(ImageRequest::uploadId).toList()), actor.getName(), Instant.now(), ids);
+        ListingRegistrationResult result = service.register(new ListingRegistrationCommand(key, request.title(), request.description(), request.categoryId(), request.conditionGrade(), request.startingPrice(), request.startsAt(), request.endsAt(), request.images().stream().map(ImageRequest::uploadId).toList()), actor.getName(), Instant.now(clock), ids);
         return new ListingResponse(result.productId(), result.auctionId(), result.auctionStatus());
     }
     record CreateListingRequest(String title, String description, String categoryId, String conditionGrade, long startingPrice, Instant startsAt, Instant endsAt, List<ImageRequest> images) {}
