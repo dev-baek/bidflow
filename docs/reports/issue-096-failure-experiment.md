@@ -42,4 +42,4 @@ sh tests/scripts/check-kafka-consumer-lag.test.sh
 
 ## 4. 실제 장애 결과 상태
 
-OpenSearch 실제 중단·재시작·재색인 증적은 [#96 OpenSearch 장애·복구 실측](./issue-096-opensearch-recovery.md)에 기록했다. Redis와 Consumer 단독 장애 실측은 별도로 남아 있다.
+실제 증적은 [OpenSearch 장애·복구](./issue-096-opensearch-recovery.md)와 [Redis 중단·복구](./issue-096-redis-recovery.md)에 기록했다. API 접수를 유지한 Consumer 단독 장애 실측은 별도로 남아 있다.
