@@ -156,6 +156,13 @@ OpenSearch 자체의 `_reindex`는 같은 source와 destination을 허용하지 
 
 이 변경은 필드 하나를 추가할 뿐 기존 필드 타입이나 분석기를 바꾸지 않는다. 실제 AWS 적용은 이 작업 범위가 아니다.
 
+로컬 적용 시 OpenSearch를 기동한 상태에서 `make local-search-index`를 먼저 실행한다. 새 Writer가 포함된 로컬 API를 기동한 뒤 아래 명령으로 기존 문서를 보강한다.
+
+```sh
+curl -fsS -X POST -H 'X-Actor-Id: local-search-reindex' \
+  'http://127.0.0.1:8080/api/internal/search/reindex?pageSize=100'
+```
+
 ## 6. T. 검증 계획
 
 | 구분 | 정상 | 오류·경계 |

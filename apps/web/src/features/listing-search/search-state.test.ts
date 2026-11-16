@@ -5,7 +5,7 @@ describe("searchReducer", () => {
   it("clears prior results and cursor when a filter changes", () => {
     const loaded = searchReducer(createSearchState(), {
       type: "SEARCH_SUCCEEDED",
-      items: [{ productId: "product-1", title: "카메라", categoryId: "DIGITAL", currentPrice: 50000, status: "ACTIVE", endsAt: "2026-11-12T01:00:00Z" }],
+      items: [{ productId: "product-1", auctionId: "auction-1", title: "카메라", categoryId: "DIGITAL", currentPrice: 50000, status: "ACTIVE", endsAt: "2026-11-12T01:00:00Z" }],
       nextCursor: "cursor-1",
     });
 

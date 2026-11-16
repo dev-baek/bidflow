@@ -1,4 +1,4 @@
-export type SearchItem = Readonly<{ productId: string; title: string; categoryId: string; currentPrice: number; status: string; endsAt: string }>;
+export type SearchItem = Readonly<{ productId: string; auctionId: string | null; title: string; categoryId: string; currentPrice: number; status: string; endsAt: string }>;
 export type SearchFilters = Readonly<{ keyword: string; categoryId?: string; status?: string; sort: "RELEVANCE" | "ENDING_SOON" | "PRICE_ASC" | "PRICE_DESC" | "NEWEST" }>;
 export type SearchState = Readonly<{ mode: "IDLE" | "LOADING" | "RESULTS" | "EMPTY" | "ERROR"; filters: SearchFilters; items: readonly SearchItem[]; nextCursor?: string; message?: string }>;
 export type SearchEvent =
