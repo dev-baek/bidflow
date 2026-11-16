@@ -67,7 +67,7 @@ k6는 API 응답 시간과 상태 코드를 JSON summary로 저장한다. 최종
 |---|---|---|---|
 | Redis | 테스트 대상 Redis Container만 stop/start | 입찰 Worker는 offset을 완료하지 않음 | 재시작 뒤 `NOT_ACTIVE` 단일 경매 복구·원장 수렴 |
 | OpenSearch | OpenSearch Container stop/start | 검색 API는 명확한 오류, 입찰·등록 성공 | 재시작 뒤 Consumer 재시도 또는 재색인 |
-| Kafka Consumer | Application Consumer만 중지/재시작 | 접수는 유지, Lag 증가 | 중복 eventId 효과 없이 Lag 0 |
+| Kafka Consumer | [입찰 정산 Listener만 중지/재시작](./issue-096-settlement-consumer-outage.md) | 접수는 유지, Lag 증가 | 중복 eventId 효과 없이 Lag 0 |
 | Kafka DLT | 계약 위반 Event 발행 | 즉시 DLT, 무한 재시도 없음 | 원본 eventId·실패 Header 확인 |
 
 장애 주입은 `make local-up`으로 만든 BidFlow 전용 Compose service만 대상으로 한다. 사용자의 다른 Docker Container, 로컬 데이터베이스, 홈 디렉터리는 건드리지 않는다.
