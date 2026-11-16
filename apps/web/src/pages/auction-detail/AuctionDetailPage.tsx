@@ -1,16 +1,17 @@
-import { useEffect, useMemo, useReducer } from "react";
+import { useCallback, useEffect, useMemo, useReducer } from "react";
 import { ApiError, createApiClient, type ApiClient } from "../../shared/api/api-client";
 import { auctionDetailReducer, createAuctionDetailState, type AuctionDetail } from "../../features/auction-detail/auction-detail-state";
 import { BidRequestForm } from "./BidRequestForm";
+import { subscribeAuctionUpdates } from "../../features/auction-realtime/auction-realtime-client";
 
-export type AuctionDetailPageProps = Readonly<{ auctionId: string; apiBaseUrl: string; client?: ApiClient; localActorId?: string }>;
+export type AuctionDetailPageProps = Readonly<{ auctionId: string; apiBaseUrl: string; wsBaseUrl: string; client?: ApiClient; localActorId?: string }>;
 
-export function AuctionDetailPage({ auctionId, apiBaseUrl, client, localActorId }: AuctionDetailPageProps) {
+export function AuctionDetailPage({ auctionId, apiBaseUrl, wsBaseUrl, client, localActorId }: AuctionDetailPageProps) {
   const [state, dispatch] = useReducer(auctionDetailReducer, undefined, createAuctionDetailState);
   const defaultClient = useMemo(() => createApiClient(apiBaseUrl, fetch), [apiBaseUrl]);
   const resolvedClient = client ?? defaultClient;
 
-  useEffect(() => {
+  const load = useCallback(() => {
     let active = true;
     resolvedClient.get<AuctionDetail>(`/api/v1/auctions/${auctionId}`)
       .then((detail) => { if (active) dispatch({ type: "SNAPSHOT_LOADED", detail }); })
@@ -20,6 +21,10 @@ export function AuctionDetailPage({ auctionId, apiBaseUrl, client, localActorId 
       });
     return () => { active = false; };
   }, [auctionId, resolvedClient]);
+
+  useEffect(() => load(), [load]);
+  useEffect(() => localActorId ? subscribeAuctionUpdates(wsBaseUrl, auctionId, localActorId, () => { load(); }) : undefined,
+    [auctionId, load, localActorId, wsBaseUrl]);
 
   if (state.mode === "LOADING") return <main className="app-shell"><p role="status">경매 정보를 불러오는 중입니다.</p></main>;
   if (state.mode === "NOT_FOUND") return <main className="app-shell"><section className="message-card"><h1>경매를 찾을 수 없습니다</h1></section></main>;

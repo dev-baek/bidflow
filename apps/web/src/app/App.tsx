@@ -22,7 +22,7 @@ export function App({ configResult }: AppProps) {
 
   return (
     <AuthProvider>
-      <RouterProvider router={createAppRouter(configResult.value.apiBaseUrl)} />
+      <RouterProvider router={createAppRouter(configResult.value.apiBaseUrl, configResult.value.wsBaseUrl)} />
     </AuthProvider>
   );
 }
