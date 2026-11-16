@@ -36,6 +36,6 @@ export function AuctionDetailPage({ auctionId, apiBaseUrl, wsBaseUrl, client, lo
     <p className="eyebrow">AUCTION DETAIL</p><h1 id="auction-detail-title">{detail.title}</h1>
     <dl className="auction-summary"><div><dt>현재가</dt><dd>{detail.currentPrice.toLocaleString()}원</dd></div><div><dt>상태</dt><dd>{detail.status}</dd></div><div><dt>종료 시각</dt><dd><time dateTime={detail.endsAt}>{new Date(detail.endsAt).toLocaleString("ko-KR")}</time></dd></div></dl>
     {detail.thumbnailObjectKey ? <p className="field-help">대표 이미지: {detail.thumbnailObjectKey}</p> : null}
-    {detail.status === "ENDED" ? <p role="status">{detail.outcome === "SOLD" ? `낙찰 · ${detail.finalPrice?.toLocaleString()}원` : "유찰"}</p> : localActorId ? <BidRequestForm auctionId={auctionId} actorId={localActorId} client={resolvedClient} settlement={bidResult ? { bidRequestId: bidResult.bidRequestId, decision: bidResult.decision, isHighestBidder: bidResult.isHighestBidder } : undefined} /> : <p className="field-help"><a href="/login">로그인</a> 후 입찰할 수 있습니다.</p>}
+    {detail.status === "ENDED" ? <p role="status">{detail.outcome === "SOLD" ? `낙찰 · ${detail.finalPrice?.toLocaleString()}원` : "유찰"}</p> : localActorId ? <BidRequestForm key={`${auctionId}:${localActorId}`} auctionId={auctionId} actorId={localActorId} client={resolvedClient} settlement={bidResult?.auctionId === auctionId ? bidResult : undefined} /> : <p className="field-help"><a href="/login">로그인</a> 후 입찰할 수 있습니다.</p>}
   </section></main>;
 }

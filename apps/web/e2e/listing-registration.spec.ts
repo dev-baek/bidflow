@@ -82,6 +82,41 @@ test.describe("상품 등록·입찰 Browser 흐름", () => {
     }
   });
 
+  test("직접 입찰 재시도는 같은 요청이고 같은 사용자의 후속 입찰은 새 요청이다", async ({ page, browser, request }) => {
+    await setE2eClock(request, "2030-01-01T12:00:00Z");
+    const auctionId = await registerAuction(page, "e2e-seller-direct");
+    await setE2eClock(request, "2030-01-01T12:20:00Z");
+
+    const actorA = "e2e-direct-a";
+    const bidderA = await openBidderPage(browser, auctionId, actorA);
+    const bidderB = await openBidderPage(browser, auctionId, "e2e-direct-b");
+    try {
+      const first = await submitDirectBid(bidderA.page, auctionId, "12000");
+      await expect(bidderA.page.getByText("입찰이 승인되었습니다. 현재 최고 입찰자입니다.")).toBeVisible({ timeout: 10_000 });
+      await expect(bidderA.page.getByText("12,000원")).toBeVisible({ timeout: 10_000 });
+
+      const replay = await request.post(`${apiBaseUrl}/api/v1/auctions/${auctionId}/bid-requests`, {
+        headers: { "X-Actor-Id": actorA, "Idempotency-Key": first.key },
+        data: { bidKind: "DIRECT", amount: 12_000 },
+      });
+      expect(replay.status()).toBe(202);
+      expect(await replay.json()).toMatchObject({ bidRequestId: first.id });
+
+      await submitDirectBid(bidderB.page, auctionId, "13000");
+      await expect(bidderA.page.getByText("13,000원")).toBeVisible({ timeout: 10_000 });
+
+      const next = await submitDirectBid(bidderA.page, auctionId, "14000");
+      expect(next.id).not.toBe(first.id);
+      expect(next.key).not.toBe(first.key);
+      await expect(bidderA.page.getByText("입찰이 승인되었습니다. 현재 최고 입찰자입니다.")).toBeVisible({ timeout: 10_000 });
+      await expect(bidderA.page.getByText("14,000원")).toBeVisible({ timeout: 10_000 });
+      await expect(bidderB.page.getByText("14,000원")).toBeVisible({ timeout: 10_000 });
+    } finally {
+      await bidderA.context.close();
+      await bidderB.context.close();
+    }
+  });
+
   test("등록한 상품을 OpenSearch로 검색해 실제 경매 상세를 연다", async ({ page, request }) => {
     test.skip(process.env.BIDFLOW_E2E_SEARCH !== "1", "검색 E2E는 make local-up-search 및 BIDFLOW_E2E_SEARCH=1이 필요합니다.");
 
@@ -131,6 +166,20 @@ async function submitAutoBid(page: Page, amount: string): Promise<void> {
   await page.getByLabel("입찰 금액").fill(amount);
   await page.getByRole("button", { name: "입찰 요청" }).click();
   await expect(page.getByRole("status")).toContainText("입찰 요청을 접수했습니다. 요청 번호:");
+}
+
+async function submitDirectBid(page: Page, auctionId: string, amount: string) {
+  await page.getByLabel("입찰 금액").fill(amount);
+  const [response] = await Promise.all([
+    page.waitForResponse(response => new URL(response.url()).pathname === `/api/v1/auctions/${auctionId}/bid-requests`
+      && response.request().method() === "POST"),
+    page.getByRole("button", { name: "입찰 요청" }).click(),
+  ]);
+  expect(response.status()).toBe(202);
+  const key = await response.request().headerValue("idempotency-key");
+  const result: { bidRequestId?: string } = await response.json();
+  if (!key || !result.bidRequestId) throw new Error("직접 입찰의 멱등 키 또는 요청 ID가 누락됐습니다.");
+  return { key, id: result.bidRequestId };
 }
 
 async function registerAuction(page: Page, sellerId: string, title = "e2e-camera"): Promise<string> {

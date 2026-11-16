@@ -4,7 +4,7 @@ export type BidRequestState = Readonly<{ kind: BidKind; amount: string; mode: "E
 export type BidRequestEvent =
   | Readonly<{ type: "KIND_CHANGED"; kind: BidKind }>
   | Readonly<{ type: "AMOUNT_CHANGED"; amount: string }>
-  | Readonly<{ type: "SUBMIT_REQUESTED" }>
+  | Readonly<{ type: "SUBMIT_REQUESTED"; retry?: boolean }>
   | Readonly<{ type: "RECEIVED"; bidRequestId: string }>
   | Readonly<{ type: "SETTLED"; settlement: BidSettlement }>
   | Readonly<{ type: "FAILED" }>;
@@ -14,10 +14,10 @@ export function bidRequestReducer(state: BidRequestState, event: BidRequestEvent
   switch (event.type) {
     case "KIND_CHANGED": return { ...state, kind: event.kind, mode: "EDITING", bidRequestId: undefined, settlement: undefined };
     case "AMOUNT_CHANGED": return { ...state, amount: event.amount, mode: "EDITING", bidRequestId: undefined, settlement: undefined };
-    case "SUBMIT_REQUESTED": return { ...state, mode: "SUBMITTING", settlement: undefined };
+    case "SUBMIT_REQUESTED": return { ...state, mode: "SUBMITTING", bidRequestId: undefined, settlement: event.retry ? state.settlement : undefined };
     case "RECEIVED": return state.settlement?.bidRequestId === event.bidRequestId
       ? { ...state, mode: "SETTLED", bidRequestId: event.bidRequestId }
-      : { ...state, mode: "RECEIVED", bidRequestId: event.bidRequestId };
+      : { ...state, mode: "RECEIVED", bidRequestId: event.bidRequestId, settlement: undefined };
     case "SETTLED": return state.bidRequestId !== undefined && state.bidRequestId !== event.settlement.bidRequestId
       ? state
       : { ...state, settlement: event.settlement, mode: state.bidRequestId === event.settlement.bidRequestId ? "SETTLED" : state.mode };

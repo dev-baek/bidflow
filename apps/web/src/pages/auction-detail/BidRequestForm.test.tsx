@@ -1,5 +1,5 @@
 import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import type { ApiClient } from "../../shared/api/api-client";
 import { BidRequestForm } from "./BidRequestForm";
 
@@ -38,5 +38,32 @@ describe("BidRequestForm", () => {
       settlement={{ bidRequestId: "request-1", decision: "ACCEPTED", isHighestBidder: false }} />);
 
     expect(await form.findByText("입찰이 승인되었습니다. 현재 최고 입찰자가 아닙니다.")).toBeVisible();
+  });
+
+  it("reuses a key after a lost receipt but allocates a new key after successful receipt", async () => {
+    const post = vi.fn()
+      .mockRejectedValueOnce(new TypeError("response lost"))
+      .mockResolvedValueOnce({ bidRequestId: "request-1", status: "RECEIVED" })
+      .mockResolvedValueOnce({ bidRequestId: "request-2", status: "RECEIVED" });
+    const client: ApiClient = { get: async <T,>() => ({} as T), post };
+    const { container, rerender } = render(<BidRequestForm auctionId="auction-1" actorId="local-bidder" client={client} />);
+    const form = within(container);
+    const submit = () => fireEvent.click(form.getByRole("button", { name: "입찰 요청" }));
+    const key = (index: number) => post.mock.calls[index]?.[2]["Idempotency-Key"];
+
+    fireEvent.change(form.getByLabelText("입찰 금액"), { target: { value: "12000" } });
+    submit();
+    expect(await form.findByRole("alert")).toBeVisible();
+    rerender(<BidRequestForm auctionId="auction-1" actorId="local-bidder" client={client}
+      settlement={{ bidRequestId: "request-1", decision: "ACCEPTED", isHighestBidder: true }} />);
+    submit();
+    expect(await form.findByText(/입찰이 승인되었습니다/)).toBeVisible();
+    expect(key(0)).toBeTruthy();
+    expect(key(1)).toBe(key(0));
+
+    submit();
+    expect(await form.findByText(/요청 번호: request-2/)).toBeVisible();
+    expect(key(2)).toBeTruthy();
+    expect(key(2)).not.toBe(key(0));
   });
 });
