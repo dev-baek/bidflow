@@ -1,6 +1,7 @@
 package com.bidflow.runtime;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -18,15 +19,18 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 class RealtimeWebSocketConfiguration implements WebSocketMessageBrokerConfigurer {
     private final WebSocketAuthenticationInterceptor authenticationInterceptor;
     private final ThreadPoolTaskScheduler heartbeatScheduler;
+    private final String[] allowedOriginPatterns;
 
-    RealtimeWebSocketConfiguration(WebSocketAuthenticationInterceptor authenticationInterceptor, ThreadPoolTaskScheduler heartbeatScheduler) {
+    RealtimeWebSocketConfiguration(WebSocketAuthenticationInterceptor authenticationInterceptor, ThreadPoolTaskScheduler heartbeatScheduler,
+            @Value("${bidflow.realtime.allowed-origin-patterns}") String[] allowedOriginPatterns) {
         this.authenticationInterceptor = authenticationInterceptor;
         this.heartbeatScheduler = heartbeatScheduler;
+        this.allowedOriginPatterns = allowedOriginPatterns;
     }
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/ws");
+        registry.addEndpoint("/ws").setAllowedOriginPatterns(allowedOriginPatterns);
     }
 
     @Override
