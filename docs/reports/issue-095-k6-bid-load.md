@@ -9,7 +9,7 @@
 
 - `tests/load/bid-request.js`에 두 k6 시나리오를 분리했다.
   - `focused`: 같은 `BIDFLOW_AUCTION_ID`에 20 VU가 한 번씩 입찰해 경합·순서·원장 정합성을 재현한다.
-  - `distributed`: `BIDFLOW_AUCTION_IDS`의 여러 경매에 5 VU warm-up 30초, 20 VU steady 2분을 적용한다.
+  - `distributed`: `BIDFLOW_AUCTION_IDS`의 여러 경매에 5 VU까지 30초, 20 VU까지 1초 증가 후 2분 유지, 종료 램프 10초를 적용한다. VU별 요청 후 최소 1초 쉬며 재현 가능한 로컬 기준선으로 제한한다.
 - 모든 요청은 VU·iteration별 고유 `Idempotency-Key`, `X-Actor-Id`, `BIDFLOW_RUN_ID`를 사용한다. 재시도로 인한 중복 요청과 별개로 각 부하 요청을 추적할 수 있다.
 - `202 RECEIVED`, 입찰 API P95 300ms, HTTP 실패율 1% 미만을 k6 threshold로 고정하고 JSON summary를 `reports/k6/`에 남긴다.
 - `scripts/run-k6-bid-load.sh`은 로컬 k6 설치 없이 Docker image를 사용한다. 실제 Fixture ID가 없으면 실행 전 종료하며 기존 PostgreSQL/Redis 데이터를 삭제하지 않는다.
@@ -39,4 +39,4 @@ sh tests/scripts/run-k6-bid-load.test.sh
 
 - focused Fixture ID 누락 시 exit 2로 중단한다.
 - focused/distributed 각각 필요한 환경변수와 k6 image·스크립트 경로가 Docker 실행 명령에 전달됨을 Fake Docker로 검증했다.
-- 실제 집중 부하의 성능·정합성·Lag 기준선은 [#19 집중 부하 실측](./issue-019-focused-load-baseline.md)에 기록했다. 이 문서는 실행 도구의 구현 증적이며 분산 실측은 별도로 추적한다.
+- 실제 실측 증적은 [#19 집중 부하](./issue-019-focused-load-baseline.md)와 [#19 분산 부하·Lag](./issue-019-distributed-load-baseline.md)에 기록했다. 이 문서는 실행 도구의 구현 증적이다.

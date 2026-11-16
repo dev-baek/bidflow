@@ -1,0 +1,60 @@
+{
+  "pending": 0,
+  "accepted": 6,
+  "auctions": [
+    {
+      "approved": 1,
+      "received": 423,
+      "auction_id": "018e05d8-3a31-4bfc-a846-187fca90a999",
+      "current_price": 20000,
+      "winner_matches": true
+    },
+    {
+      "approved": 1,
+      "received": 423,
+      "auction_id": "372b7ffc-a129-451f-8171-4a4b5a34d9a5",
+      "current_price": 20000,
+      "winner_matches": true
+    },
+    {
+      "approved": 1,
+      "received": 422,
+      "auction_id": "80109360-3c26-4dac-8b5a-906842ee5c8e",
+      "current_price": 20000,
+      "winner_matches": true
+    },
+    {
+      "approved": 1,
+      "received": 422,
+      "auction_id": "bbe8f610-ec77-4bff-8ccc-44a5e7224e12",
+      "current_price": 20000,
+      "winner_matches": true
+    },
+    {
+      "approved": 1,
+      "received": 424,
+      "auction_id": "c46a12c4-362e-4b5a-9950-fa45ea5b8ea1",
+      "current_price": 20000,
+      "winner_matches": true
+    },
+    {
+      "approved": 1,
+      "received": 421,
+      "auction_id": "f37f19f5-e062-4df8-b4fd-01d87e5fdb21",
+      "current_price": 20000,
+      "winner_matches": true
+    }
+  ],
+  "rejected": 2529,
+  "requests": 2535,
+  "ledger_rows": 2535,
+  "price_regressions": 0,
+  "rejection_reasons": {
+    "SELF_BID": 146,
+    "BID_TOO_LOW": 2383
+  },
+  "settlement_p50_ms": 755.79,
+  "settlement_p95_ms": 1338.53,
+  "settlement_p99_ms": 1774.6,
+  "duplicate_ledger_rows": 0
+}
