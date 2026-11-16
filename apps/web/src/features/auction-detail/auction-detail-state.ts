@@ -12,7 +12,7 @@ export type AuctionDetail = Readonly<{
 
 export type AuctionDetailState =
   | Readonly<{ mode: "LOADING" }>
-  | Readonly<{ mode: "READY"; detail: AuctionDetail }>
+  | Readonly<{ mode: "READY"; detail: AuctionDetail; refreshFailed?: true }>
   | Readonly<{ mode: "NOT_FOUND" }>
   | Readonly<{ mode: "ERROR" }>;
 
@@ -25,10 +25,20 @@ export function createAuctionDetailState(): AuctionDetailState {
   return { mode: "LOADING" };
 }
 
-export function auctionDetailReducer(_: AuctionDetailState, event: AuctionDetailEvent): AuctionDetailState {
+export function auctionDetailReducer(state: AuctionDetailState, event: AuctionDetailEvent): AuctionDetailState {
   switch (event.type) {
-    case "SNAPSHOT_LOADED": return { mode: "READY", detail: event.detail };
+    case "SNAPSHOT_LOADED": {
+      const next = event.detail;
+      if (state.mode === "READY" && state.detail.auctionId === next.auctionId) {
+        const current = state.detail;
+        if (next.auctionVersion < current.auctionVersion) return state;
+        const terminal = current.status === "ENDED" || current.status === "CANCELLED";
+        if (next.auctionVersion === current.auctionVersion
+          && (Date.parse(next.endsAt) < Date.parse(current.endsAt) || (terminal && next.status !== current.status))) return state;
+      }
+      return { mode: "READY", detail: next };
+    }
     case "NOT_FOUND": return { mode: "NOT_FOUND" };
-    case "LOAD_FAILED": return { mode: "ERROR" };
+    case "LOAD_FAILED": return state.mode === "READY" ? { ...state, refreshFailed: true } : { mode: "ERROR" };
   }
 }

@@ -141,6 +141,45 @@ test.describe("상품 등록·입찰 Browser 흐름", () => {
     }
   });
 
+  test("WebSocket 연결을 복구하면 끊긴 사이 놓친 현재가를 REST에서 읽는다", async ({ page, browser, request }) => {
+    await setE2eClock(request, "2030-01-01T12:00:00Z");
+    let offline = false;
+    let disconnect: (() => Promise<void>) | undefined;
+    await page.routeWebSocket("**/ws", socket => {
+      if (offline) return socket.close();
+      socket.connectToServer();
+      disconnect = () => socket.close();
+    });
+    const auctionId = await registerAuction(page, "e2e-reconnect-observer");
+    await setE2eClock(request, "2030-01-01T12:20:00Z");
+    const subscribed = waitForAuctionSubscriptions(page, auctionId);
+    await page.evaluate(id => {
+      window.history.pushState({}, "", `/auctions/${id}`);
+      window.dispatchEvent(new PopStateEvent("popstate"));
+    }, auctionId);
+    await subscribed;
+    await expect(page.getByText("10,000원")).toBeVisible();
+    offline = true;
+    if (!disconnect) throw new Error("관찰 브라우저의 WebSocket을 찾지 못했습니다.");
+    await disconnect();
+
+    const bidder = await openBidderPage(browser, auctionId, "e2e-reconnect-bidder");
+    try {
+      await submitDirectBid(bidder.page, auctionId, "12000");
+      await expect(bidder.page.getByText("12,000원")).toBeVisible({ timeout: 10_000 });
+      await expect(page.getByText("10,000원")).toBeVisible();
+
+      const reloaded = page.waitForResponse(response =>
+        new URL(response.url()).pathname === `/api/v1/auctions/${auctionId}` && response.ok(),
+      { timeout: 12_000 });
+      offline = false;
+      expect(await (await reloaded).json()).toMatchObject({ auctionId, currentPrice: 12_000 });
+      await expect(page.getByText("12,000원")).toBeVisible();
+    } finally {
+      await bidder.context.close();
+    }
+  });
+
   test("등록한 상품을 OpenSearch로 검색해 실제 경매 상세를 연다", async ({ page, request }) => {
     test.skip(process.env.BIDFLOW_E2E_SEARCH !== "1", "검색 E2E는 make local-up-search 및 BIDFLOW_E2E_SEARCH=1이 필요합니다.");
 

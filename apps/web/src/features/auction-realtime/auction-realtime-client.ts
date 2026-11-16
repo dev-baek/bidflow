@@ -36,18 +36,24 @@ export function subscribeAuctionUpdates(
   wsBaseUrl: string,
   auctionId: string,
   localActorId: string,
-  onPublicMessage: () => void,
+  refreshSnapshot: () => void,
   onBidResult: (result: BidResultMessage) => void,
 ): () => void {
+  let connectedBefore = false;
   const client = new Client({
     brokerURL: `${wsBaseUrl}/ws`, reconnectDelay: 5_000,
     connectHeaders: { Authorization: `Bearer ${localActorId}` },
     onConnect: () => {
-      client.subscribe(`/topic/auctions/${auctionId}`, (frame) => { if (parsePublicAuctionMessage(frame.body)) onPublicMessage(); });
+      client.subscribe(`/topic/auctions/${auctionId}`, (frame) => {
+        if (parsePublicAuctionMessage(frame.body)?.auctionId === auctionId) refreshSnapshot();
+      });
       client.subscribe("/user/queue/bid-results", (frame) => {
         const result = parseBidResultMessage(frame.body);
         if (result?.auctionId === auctionId) onBidResult(result);
       });
+      // shortcut: Spring's simple broker has no SUBSCRIBE receipt; revisit if broker-confirmed recovery is required.
+      if (connectedBefore) refreshSnapshot();
+      connectedBefore = true;
     },
   });
   client.activate();

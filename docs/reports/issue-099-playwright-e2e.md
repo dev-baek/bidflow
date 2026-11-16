@@ -36,6 +36,8 @@ BIDFLOW_E2E_BASE_URL=http://127.0.0.1:5173 BIDFLOW_E2E_SEARCH=1 npm run test:e2e
 
 ## 현재 시나리오
 
+[#14](https://github.com/dev-baek/bidflow/issues/14) 연결 복구 테스트는 관찰 브라우저의 WebSocket만 잠시 끊는다. 다른 브라우저가 12,000원 직접 입찰을 확정한 동안 관찰 화면은 10,000원을 유지한다. 이후 다시 연결하면 새로고침 없이 실제 REST 응답과 화면이 12,000원으로 갱신된다. 이전 버전·이전 마감의 늦은 응답 차단은 reducer 테스트로 검증한다.
+
 - 로컬 판매자 로그인
 - Browser의 presign PUT 이미지 업로드
 - 상품·경매 등록
