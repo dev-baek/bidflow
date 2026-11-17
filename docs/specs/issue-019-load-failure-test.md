@@ -3,6 +3,7 @@
 - 상태: 제안됨
 - 관련 Issue: [#94 부하·장애 실험 계획과 성공 기준 작성](https://github.com/dev-baek/bidflow/issues/94)
 - 후속 구현: #95 k6 동시 입찰, #96 Consumer·Redis·OpenSearch 장애 실험, #97 Kafka 선택 검증, #102 결과·회고
+- 결과: [#97 Kafka 선택과 성능·비용 검증](../reports/issue-097-kafka-performance-cost.md)
 
 ## 1. 목적과 범위
 

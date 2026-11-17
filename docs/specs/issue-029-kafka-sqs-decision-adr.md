@@ -4,6 +4,7 @@
 - 작성일: 2026-11-12
 - 관련 Issue: [#29 Kafka와 SQS 비교 ADR 작성](https://github.com/dev-baek/bidflow/issues/29)
 - 상위 사양: [EC2 이벤트 기반 아키텍처와 ADR](./issue-002-architecture-adr.md)
+- 후속 검증: [#97 실제 토픽·그룹, 로컬 실측, SQS FIFO 대안과 비용](../reports/issue-097-kafka-performance-cost.md)
 
 ## 1. 결정
 
