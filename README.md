@@ -4,20 +4,27 @@
 
 BidFlow는 단순한 CRUD 경매 서비스가 아니라 **동시 입찰의 정합성**을 다루는 포트폴리오 프로젝트다. 같은 경매의 입찰 명령은 Kafka에서 순서 있게 소비하고, 활성 경매의 가격 계산은 Redis Lua Script로 원자적으로 수행한다. PostgreSQL은 입찰 원장과 Outbox를 보관하는 최종 사실의 원천이며, Consumer는 멱등 처리로 at-least-once 전달의 중복 효과를 제거한다.
 
+**스택:** React · TypeScript · Vite / Java 21 · Spring Boot / PostgreSQL · Kafka · Redis · OpenSearch · SeaweedFS(S3 호환). AWS 검증 환경은 Terraform으로 정의한다.
+
 ## 현재 구현 범위
 
 | 영역 | 현재 상태 | 설명 |
 |---|---|---|
 | 상품 등록 | 구현됨 | SeaweedFS(S3 호환) presigned upload와 상품·경매 생성 API |
-| 상품 검색 | 구현됨 | 검색 상태 모델과 OpenSearch 파생 인덱스 계약 |
+| 상품 검색 | 구현됨 | OpenSearch 검색·필터와 검색 결과 → 경매 상세 이동 |
 | 입찰 엔진 | 구현됨 | Redis Lua 직접/자동 입찰, 요청 재실행, Redis 복구 |
-| 자동 연장·종료 | 구현됨 | 마감 5분 미만 입찰 시 종료 시각 +5분, 중복 종료 방지 |
+| 자동 연장·종료 | 구현됨 | 마감까지 5분 미만일 때 입찰 승인 시 기존 종료 시각 +5분. 낙찰·유찰 확정, 본인 결과 조회 |
 | Kafka·Outbox | 구현됨 | 경매별 Key, Consumer 멱등성, DLT 계약 |
-| Browser E2E | 진행 전 | 입찰·경매 상세 화면과 테스트 전용 인증/Clock이 선행되어야 함 |
-| k6·장애 실측 | 진행 전 | 실행 스크립트는 준비됐고 Fixture/API를 둔 측정이 남아 있음 |
-| AWS 배포 | 진행 전 | 로컬 Docker 검증 뒤 단기 실행 환경에서만 검증 예정 |
+| Browser E2E | 로컬 검증 | 등록·검색·직접/자동 입찰·연장·낙찰/유찰·재연결 |
+| k6·장애 실험 | 로컬 실측 | 집중/분산 입찰과 정산 Consumer·Redis·OpenSearch 중단 후 복구 |
+| AWS 배포 | 설계·정적 검증 | Terraform과 검증 Runbook 준비. 실제 배포·청구·Destroy 검증은 미실행 |
 
-`구현됨`은 코드와 테스트가 있는 범위다. 성능 수치나 AWS 운영 경험은 실제 실행 결과가 생기기 전까지 주장하지 않는다.
+## 핵심 시연과 결과
+
+마감 1분 전 두 사용자의 자동 입찰이 경쟁하면 기존 마감이 5분 연장된다. 새 마감에 두 화면은 공개 낙찰가 21,000원으로 일치하지만 로그인한 각 사용자는 자신의 낙찰·패찰만 확인한다. [로컬 Browser 시연 재현](docs/reports/issue-099-playwright-e2e.md)
+
+- **분산 입찰:** 경매 6개, 20 VU 유지 구간 2분. 2,535건 모두 접수됐고, 접수 P95는 **41.88ms**, 서버 요청 기록부터 처리 시작까지 P95는 **1,338.53ms**였다. 미처리와 중복 원장은 0건이었다. 최종 DB 커밋이나 브라우저 결과 전달 지연은 측정하지 않았다. [부하 실측](docs/reports/issue-019-distributed-load-baseline.md)
+- **장애 복구:** 정산 Consumer만 멈춰도 입찰 접수는 유지됐고, 재시작 후 대기 3건이 중복 없이 정산됐다. 반면 검색 그룹 Lag가 0이어도 DLT로 이동한 이벤트의 문서는 검색에서 빠졌다. [장애 사례와 회고](docs/reports/issue-102-portfolio-retrospective.md)
 
 ## 핵심 흐름
 
@@ -93,24 +100,26 @@ cd apps/web && npm run test:run
 # 프론트엔드 production build
 cd apps/web && npm run build
 
-# k6 실행 시나리오 준비 상태 확인/실행
+# k6 입찰 부하: 로컬 API와 활성 경매·입찰자 Fixture 필요
 make load-focused
 make load-distributed
 ```
 
-k6는 실제 입찰 Fixture와 API가 준비된 뒤에 실행 결과(JSON, Consumer Lag, SQL 불변식)를 별도 보고서로 기록한다. 측정하지 않은 P95나 TPS를 README에 적지 않는다.
+k6 입력과 실행 방법은 [k6 부하 시나리오](docs/reports/issue-095-k6-bid-load.md), 기존 JSON·SQL·Lag 증적은 [결과·회고](docs/reports/issue-102-portfolio-retrospective.md)에서 확인할 수 있다. Playwright는 [별도 로컬 실행 절차](docs/reports/issue-099-playwright-e2e.md)에 따라 테스트 전용 Clock을 사용한다.
 
 ## 문서 지도
 
 - [Architecture](docs/architecture.md): S/D/B/I/T 책임 경계와 요청·복구 흐름
 - [ADR 인덱스](docs/adr/README.md): 기술 선택, 대안, 전환 조건
 - [제품 범위](docs/specs/issue-001-project-scope.md): 사용자·MVP·성공 기준
-- [포트폴리오 증적 목록](docs/specs/issue-021-portfolio-docs.md): 구현/실측/AWS 검증 상태
-- [부하 테스트 보고서](docs/reports/issue-095-k6-bid-load.md): k6 시나리오와 측정 전제
-- [장애 실험 보고서](docs/reports/issue-096-failure-experiment.md): Redis/OpenSearch 장애 주입 절차
+- [검증 결과·회고](docs/reports/issue-102-portfolio-retrospective.md): 브라우저 시연, 부하·장애 실측, 한계
+- [Kafka/SQS 선택과 비용](docs/reports/issue-097-kafka-performance-cost.md): 기술 대안과 공개 요금 추정
+- [AWS 검증 Runbook](docs/specs/issue-017-aws-deployment.md): 승인·단기 배포·삭제 확인 절차
 
 ## 로드맵과 한계
 
-다음 구현 우선순위는 입찰·경매 상세 Browser 화면, 테스트 전용 인증·Clock, Playwright E2E, 실제 k6·장애 실험이다. AWS는 상시 운영하지 않는다. 로컬 검증을 마친 뒤 Terraform으로 짧게 생성하고, 결과·비용을 기록한 뒤 삭제하는 방식으로 검증한다.
+로컬 20 VU 기준선과 1,000건 어댑터 정합성 테스트는 1,000건 동시 HTTP 부하나 운영 처리량을 보장하지 않는다. 다음 측정 후보는 접수 → DB 확정 → 브라우저 표시까지의 지연과 반복 장애에서의 복구다.
+
+AWS는 상시 운영하지 않는다. 별도 승인 뒤 짧게 생성하고 배포·기능·비용을 확인한 뒤 삭제하는 계획이다. 실제 AWS 계정에서 실행한 결과는 아직 없다.
 
 상세 설계와 증적 상태는 [포트폴리오 문서 구성과 증적 목록](docs/specs/issue-021-portfolio-docs.md)을 기준으로 한다.
