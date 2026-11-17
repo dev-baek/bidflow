@@ -23,6 +23,12 @@ BidFlow는 단순한 CRUD 경매 서비스가 아니라 **동시 입찰의 정�
 
 마감 1분 전 두 사용자의 자동 입찰이 경쟁하면 기존 마감이 5분 연장된다. 새 마감에 두 화면은 공개 낙찰가 21,000원으로 일치하지만 로그인한 각 사용자는 자신의 낙찰·패찰만 확인한다. [로컬 Browser 시연 재현](docs/reports/issue-099-playwright-e2e.md)
 
+같은 테스트 경매를 두 브라우저 세션에서 캡처했다. 공개 가격은 같고, 본인 결과만 다르다.
+
+| 입찰자 A — 낙찰 | 입찰자 B — 패찰 |
+|---|---|
+| ![공개 낙찰가 21,000원과 본인 낙찰 표시](docs/reports/evidence/issue-021-auction-winner.png) | ![공개 낙찰가 21,000원과 본인 패찰 표시](docs/reports/evidence/issue-021-auction-outbid.png) |
+
 - **분산 입찰:** 경매 6개, 20 VU 유지 구간 2분. 2,535건 모두 접수됐고, 접수 P95는 **41.88ms**, 서버 요청 기록부터 처리 시작까지 P95는 **1,338.53ms**였다. 미처리와 중복 원장은 0건이었다. 최종 DB 커밋이나 브라우저 결과 전달 지연은 측정하지 않았다. [부하 실측](docs/reports/issue-019-distributed-load-baseline.md)
 - **장애 복구:** 정산 Consumer만 멈춰도 입찰 접수는 유지됐고, 재시작 후 대기 3건이 중복 없이 정산됐다. 반면 검색 그룹 Lag가 0이어도 DLT로 이동한 이벤트의 문서는 검색에서 빠졌다. [장애 사례와 회고](docs/reports/issue-102-portfolio-retrospective.md)
 

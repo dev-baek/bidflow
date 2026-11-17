@@ -15,7 +15,7 @@ API는 PostgreSQL에 입찰 요청과 Outbox를 함께 저장한 뒤 `202 RECEIV
 2. 두 사용자가 각각 자동 최대가 30,000원과 20,000원을 제출한다. 최대가는 상대에게 공개되지 않는다. 두 화면의 공개 현재가는 21,000원으로 수렴하고, 첫 승인 입찰로 기존 마감 12:30 UTC가 12:35 UTC로 연장된다.
 3. 원래 마감에 대조 경매는 종료되지만 대상 경매는 계속 진행된다. 연장 마감에 두 화면이 새로고침 없이 공개 낙찰가 21,000원을 표시하고, 개인 영역은 낙찰·패찰·비참여를 구분한다. 종료 뒤 새 입찰은 접수될 수 있지만 정산은 `AUCTION_ENDED`로 거절하며 공개 결과는 바뀌지 않는다.
 
-재현: [#99 Browser 실행 절차와 전체 시나리오](issue-099-playwright-e2e.md). 기존 로컬 실행 기록: [검색 → 상세 #234](https://github.com/dev-baek/bidflow/pull/234) · [연장 → 종료 #229](https://github.com/dev-baek/bidflow/pull/229) · [종료 후 거절 #236](https://github.com/dev-baek/bidflow/pull/236) · [개인 결과 #240](https://github.com/dev-baek/bidflow/pull/240). 여러 테스트의 결과를 시연 순서로 묶은 것이며, 단일 실행의 영상이나 캡처를 첨부한 것은 아니다. [자동 연장 테스트](issue-104-auction-extension.md)는 정확히 5분 남았을 때와 같은 요청을 재실행했을 때 연장하지 않는 경계도 다룬다.
+재현: [#99 Browser 실행 절차와 전체 시나리오](issue-099-playwright-e2e.md). 기존 로컬 실행 기록: [검색 → 상세 #234](https://github.com/dev-baek/bidflow/pull/234) · [연장 → 종료 #229](https://github.com/dev-baek/bidflow/pull/229) · [종료 후 거절 #236](https://github.com/dev-baek/bidflow/pull/236) · [개인 결과 #240](https://github.com/dev-baek/bidflow/pull/240). 위 시연 순서는 여러 테스트를 묶은 것이며, [README 화면](../../README.md#핵심-시연과-결과)은 그중 로컬 자동입찰 시나리오의 낙찰·패찰 캡처다. [자동 연장 테스트](issue-104-auction-extension.md)는 정확히 5분 남았을 때와 같은 요청을 재실행했을 때 연장하지 않는 경계도 다룬다.
 
 ## 측정 결과: 무엇을 증명했나
 

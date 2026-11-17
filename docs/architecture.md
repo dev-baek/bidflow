@@ -102,8 +102,8 @@ RDS / MSK / ElastiCache / OpenSearch / S3 ── 관리형 데이터 서비스
 | Domain unit | 입찰가·자동 입찰·5분 연장 경계 | 순수 함수 테스트 |
 | Adapter integration | Redis Lua·PostgreSQL·Kafka 처리 계약 | Testcontainers 기반 테스트 |
 | Consumer recovery | 중복 Event·Redis 유실 뒤 결과 수렴 | `consumer_event`, Redis recovery 테스트 |
-| Load/failure | P95, Lag, 원장 불변식, 장애 전후 복구 | k6·장애 주입 스크립트 준비, 실측 대기 |
-| Browser E2E | 등록→검색→동시 입찰→연장→종료 | 화면·테스트 인증/Clock 선행 후 진행 |
+| Load/failure | 접수·처리 시작 지연, Lag, 원장 불변식, 장애 복구 | [로컬 실측과 한계](reports/issue-102-portfolio-retrospective.md) |
+| Browser E2E | 등록→검색→동시 입찰→연장→종료 | [로컬 실행 절차](reports/issue-099-playwright-e2e.md) · [시연 화면](../README.md#핵심-시연과-결과) |
 
 ## 관련 결정 기록
 
