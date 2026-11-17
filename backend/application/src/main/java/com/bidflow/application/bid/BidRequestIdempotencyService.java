@@ -9,7 +9,11 @@ public final class BidRequestIdempotencyService {
     public BidRequestIdempotencyService(BidRequestRepository repository, Supplier<UUID> ids) { this.repository = repository; this.ids = ids; }
     public UUID receive(String bidderId, String key, String correlationId, BidRequestCommand command) {
         String hash = hash(command);
-        return repository.find(bidderId, key, hash).orElseGet(() -> { UUID id = ids.get(); repository.save(bidderId, key, hash, correlationId, id, command); return id; });
+        return repository.find(bidderId, key, hash).orElseGet(() -> {
+            UUID id = ids.get();
+            if (repository.saveIfAbsent(bidderId, key, hash, correlationId, id, command)) return id;
+            return repository.find(bidderId, key, hash).orElseThrow(BidRequestPayloadMismatchException::new);
+        });
     }
     private static String hash(BidRequestCommand command) { try { return HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest((command.auctionId()+"|"+command.bidKind()+"|"+command.amount()).getBytes(StandardCharsets.UTF_8))); } catch (Exception exception) { throw new IllegalStateException(exception); } }
 }

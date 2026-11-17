@@ -5,6 +5,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.bidflow.application.bid.BidLedgerRepository;
 import com.bidflow.application.bid.BidRequestCommand;
+import com.bidflow.application.bid.BidRequestIdempotencyService;
+import com.bidflow.application.bid.BidRequestPayloadMismatchException;
 import com.bidflow.application.bid.BidRequestRepository;
 import com.bidflow.application.bid.BidSettlementCommand;
 import com.bidflow.application.auction.AuctionCloseRepository;
@@ -13,7 +15,12 @@ import com.bidflow.application.bid.DirectBidResultCode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.UUID;
+import java.util.concurrent.CyclicBarrier;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -51,7 +58,7 @@ class JdbcBidLedgerRepositoryIntegrationTest {
         Fixture fixture = fixture(1L);
         UUID requestId = UUID.randomUUID();
 
-        bidRequests.save("bidder-3", "request-key-1", "a".repeat(64), "correlation-2", requestId,
+        bidRequests.saveIfAbsent("bidder-3", "request-key-1", "a".repeat(64), "correlation-2", requestId,
                 new BidRequestCommand(fixture.auctionId(), "AUTO_MAX", 30_000L));
 
         assertThat(jdbc.queryForMap("select bidder_id, bid_kind, amount, status from bid_request where bid_request_id = ?", requestId))
@@ -59,6 +66,60 @@ class JdbcBidLedgerRepositoryIntegrationTest {
                 .containsEntry("amount", 30_000L).containsEntry("status", "RECEIVED");
         assertThat(jdbc.queryForObject("select count(*) from outbox_event where aggregate_id = ? and event_type = 'BidCommandRequested'",
                 Integer.class, fixture.auctionId())).isEqualTo(1);
+    }
+
+    @Test
+    void concurrentFirstReceiptsAndOneHundredRetriesShareOneRequestAndCommand() throws Exception {
+        Fixture fixture = fixture(1L);
+        String bidder = "bidder-concurrent";
+        String key = fixture.auctionId().toString();
+        var command = new BidRequestCommand(fixture.auctionId(), "DIRECT", 15_000L);
+        var start = new CyclicBarrier(8);
+        var initial = new BidRequestIdempotencyService(bidRequests, () -> {
+            try {
+                // Make every first caller reach the insert after a PostgreSQL lookup miss.
+                start.await(10, TimeUnit.SECONDS);
+                return UUID.randomUUID();
+            } catch (InterruptedException exception) {
+                Thread.currentThread().interrupt();
+                throw new AssertionError(exception);
+            } catch (Exception exception) {
+                throw new AssertionError(exception);
+            }
+        });
+
+        UUID requestId;
+        try (var workers = Executors.newFixedThreadPool(8)) {
+            var receipts = new ArrayList<Future<UUID>>();
+            for (int index = 0; index < 8; index++) {
+                receipts.add(workers.submit(() -> initial.receive(bidder, key, "initial", command)));
+            }
+            requestId = receipts.getFirst().get(15, TimeUnit.SECONDS);
+            for (var receipt : receipts) assertThat(receipt.get(15, TimeUnit.SECONDS)).isEqualTo(requestId);
+
+            var retries = new BidRequestIdempotencyService(bidRequests, UUID::randomUUID);
+            receipts.clear();
+            for (int index = 0; index < 100; index++) {
+                receipts.add(workers.submit(() -> retries.receive(bidder, key, "retry", command)));
+            }
+            for (var receipt : receipts) assertThat(receipt.get(15, TimeUnit.SECONDS)).isEqualTo(requestId);
+        }
+
+        var service = new BidRequestIdempotencyService(bidRequests, UUID::randomUUID);
+        assertThatThrownBy(() -> service.receive(bidder, key, "mismatch",
+                new BidRequestCommand(fixture.auctionId(), "DIRECT", 16_000L)))
+                .isInstanceOf(BidRequestPayloadMismatchException.class);
+        assertThat(jdbc.queryForList("""
+                select bid_request_id, amount, correlation_id from bid_request where bidder_id = ? and idempotency_key = ?
+                """, bidder, key)).hasSize(1).first().satisfies(request -> assertThat(request)
+                .containsEntry("bid_request_id", requestId).containsEntry("amount", 15_000L)
+                .containsEntry("correlation_id", "initial"));
+        assertThat(jdbc.queryForList("""
+                select partition_key, payload->>'bidRequestId' as request_id from outbox_event
+                 where aggregate_id = ? and topic = 'bid-command' and event_type = 'BidCommandRequested'
+                """, fixture.auctionId())).hasSize(1).first().satisfies(event -> assertThat(event)
+                .containsEntry("partition_key", fixture.auctionId().toString())
+                .containsEntry("request_id", requestId.toString()));
     }
 
     @Test
@@ -137,7 +198,7 @@ class JdbcBidLedgerRepositoryIntegrationTest {
         assertThat(closer.closeExpired(endsAt, 10)).isEqualTo(1);
 
         UUID lateRequestId = UUID.randomUUID();
-        bidRequests.save("bidder-late", lateRequestId.toString(), "b".repeat(64), "correlation-late", lateRequestId,
+        bidRequests.saveIfAbsent("bidder-late", lateRequestId.toString(), "b".repeat(64), "correlation-late", lateRequestId,
                 new BidRequestCommand(fixture.auctionId(), "DIRECT", 35_000L));
         BidSettlementCommand late = new BidSettlementCommand(
                 lateRequestId, fixture.auctionId(), "bidder-late", 35_000L,

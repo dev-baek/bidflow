@@ -134,12 +134,21 @@ test.describe("상품 등록·입찰 Browser 흐름", () => {
       await expect(bidderA.page.getByText("입찰이 승인되었습니다. 현재 최고 입찰자입니다.")).toBeVisible({ timeout: 10_000 });
       await expect(bidderA.page.getByText("12,000원")).toBeVisible({ timeout: 10_000 });
 
-      const replay = await request.post(`${apiBaseUrl}/api/v1/auctions/${auctionId}/bid-requests`, {
+      const retry = (amount: number) => request.post(`${apiBaseUrl}/api/v1/auctions/${auctionId}/bid-requests`, {
         headers: { "X-Actor-Id": actorA, "Idempotency-Key": first.key },
-        data: { bidKind: "DIRECT", amount: 12_000 },
+        data: { bidKind: "DIRECT", amount },
       });
-      expect(replay.status()).toBe(202);
-      expect(await replay.json()).toMatchObject({ bidRequestId: first.id });
+      for (let batch = 0; batch < 10; batch++) {
+        const replays = await Promise.all(Array.from({ length: 10 }, () => retry(12_000)));
+        for (const replay of replays) {
+          expect(replay.status()).toBe(202);
+          expect(await replay.json()).toMatchObject({ bidRequestId: first.id, status: "RECEIVED" });
+        }
+      }
+      const conflict = await retry(99_000);
+      expect(conflict.status()).toBe(409);
+      expect(await conflict.json()).toEqual({ code: "IDEMPOTENCY_KEY_PAYLOAD_MISMATCH" });
+      expect(await readAuction(request, auctionId)).toMatchObject({ currentPrice: 12_000 });
 
       await submitDirectBid(bidderB.page, auctionId, "13000");
       await expect(bidderA.page.getByText("13,000원")).toBeVisible({ timeout: 10_000 });

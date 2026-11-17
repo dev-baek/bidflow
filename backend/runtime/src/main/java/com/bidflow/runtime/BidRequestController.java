@@ -31,5 +31,7 @@ class BidRequestController {
     record Request(String bidKind, long amount) {}
     record Response(UUID bidRequestId, String status) {}
     @ExceptionHandler(IllegalArgumentException.class) @ResponseStatus(HttpStatus.BAD_REQUEST) Error invalid() { return new Error("INVALID_BID_REQUEST"); }
+    @ExceptionHandler(BidRequestPayloadMismatchException.class) @ResponseStatus(HttpStatus.CONFLICT)
+    Error payloadMismatch() { return new Error("IDEMPOTENCY_KEY_PAYLOAD_MISMATCH"); }
     record Error(String code) {}
 }
