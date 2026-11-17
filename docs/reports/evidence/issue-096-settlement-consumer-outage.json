@@ -1,0 +1,143 @@
+{
+  "auction_id": "f5421fe0-7af2-43be-9264-30e5d8c52dc1",
+  "server_clock": "2030-01-01T12:20:00Z",
+  "before": {
+    "detail": {
+      "status": "ACTIVE",
+      "currentPrice": 12000,
+      "auctionVersion": 2
+    },
+    "settlement_group": "Stable 1",
+    "search_group": "Stable 1"
+  },
+  "during": {
+    "settlement_group": "Empty 0",
+    "search_group": "Stable 1",
+    "readiness": "UP",
+    "public_detail_unchanged": true,
+    "bids": [
+      {
+        "amount": 13000,
+        "http": 202,
+        "bidRequestId": "bca72b16-b62b-4e98-a8e5-a18a8c64158d",
+        "status": "RECEIVED"
+      },
+      {
+        "amount": 14000,
+        "http": 202,
+        "bidRequestId": "8394f8f2-57c8-4e42-89ea-71118ba165af",
+        "status": "RECEIVED"
+      },
+      {
+        "amount": 15000,
+        "http": 202,
+        "bidRequestId": "c0a0fe01-ec3e-4ce1-94e4-654de54ba5d0",
+        "status": "RECEIVED"
+      }
+    ],
+    "postgres": {
+      "received": 3,
+      "ledger_rows": 0,
+      "published_commands": 3
+    }
+  },
+  "after": {
+    "detail": {
+      "status": "ACTIVE",
+      "currentPrice": 15000,
+      "auctionVersion": 5
+    },
+    "settlement_group": "Stable 1",
+    "search_group": "Stable 1",
+    "start_return_to_first_zero_sample_ms": 5321,
+    "postgres": {
+      "version": 5,
+      "requests": 3,
+      "command_count": 3,
+      "current_price": 15000,
+      "accepted_requests": 3,
+      "accepted_price_sequence": [
+        12000,
+        13000,
+        14000,
+        15000
+      ],
+      "all_have_exactly_one_ledger": true,
+      "settlement_consumer_records": 3,
+      "winner_matches_final_ledger": true
+    },
+    "replay": {
+      "bidRequestId": "c0a0fe01-ec3e-4ce1-94e4-654de54ba5d0",
+      "status": "RECEIVED"
+    }
+  },
+  "kafka": {
+    "columns": [
+      "partition",
+      "consumer_offset",
+      "log_end_offset",
+      "lag"
+    ],
+    "before": [
+      [
+        0,
+        430,
+        430,
+        0
+      ],
+      [
+        1,
+        1735,
+        1735,
+        0
+      ],
+      [
+        2,
+        452,
+        452,
+        0
+      ]
+    ],
+    "during": [
+      [
+        0,
+        430,
+        430,
+        0
+      ],
+      [
+        1,
+        1735,
+        1735,
+        0
+      ],
+      [
+        2,
+        452,
+        455,
+        3
+      ]
+    ],
+    "after": [
+      [
+        0,
+        430,
+        430,
+        0
+      ],
+      [
+        1,
+        1735,
+        1735,
+        0
+      ],
+      [
+        2,
+        455,
+        455,
+        0
+      ]
+    ],
+    "bid_command_dlt_log_end_offset_unchanged": true
+  }
+}
