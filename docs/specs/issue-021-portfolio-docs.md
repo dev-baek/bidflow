@@ -3,6 +3,17 @@
 - 상태: 제안됨
 - 관련 Issue: [#100 포트폴리오 문서 구성과 증적 목록 확정](https://github.com/dev-baek/bidflow/issues/100)
 - 후속 작업: #101 README·아키텍처·ADR 인덱스, #102 결과·회고
+- 결과: [#102 포트폴리오 결과·회고](../reports/issue-102-portfolio-retrospective.md)
+
+## #102 작업 범위
+
+| 영역 | 문서에 반영할 내용 |
+|---|---|
+| S 화면 | #99의 로컬 브라우저 시나리오와 실행 증적을 연결. 이번 작업에서 화면을 바꾸거나 새 시연 영상·이미지를 제작하지 않음. |
+| D DB | 입찰 가격·승자·원장 불변식의 증적과 검증 단위를 연결. 스키마 변경 없음. |
+| B 백엔드 | 접수·처리·복구 경계를 설명하고 실제 실패와 보완을 기록. API·동작 변경 없음. |
+| I 인프라 | 로컬 실행, AWS 설계·정적 검증, 실제 AWS 실행을 구분. 계정 접근·리소스 변경 없음. |
+| T 테스트 | #99 E2E, #19 부하, #96 장애에 연결. 기존 증적을 인용하며 이번 문서 작업에서 새 성능 수치를 만들지 않음. |
 
 ## 1. 포트폴리오 한 문장
 
@@ -31,7 +42,7 @@ BidFlow는 **경매 마감 직전의 동시 입찰을 Kafka 순서와 Redis Lua 
 | 자동 연장 | 5분 미만 승인 시 기존 종료 시각 +5분 | [자동 연장 보고서](../reports/issue-104-auction-extension.md) |
 | 종료/낙찰 | Scheduler가 한 번만 `SOLD/UNSOLD` 확정 | [종료 사양](issue-015-auction-close.md), 종료 Repository 통합 테스트 |
 
-E2E 화면 영상·screenshot은 #99가 실제 Browser 흐름을 통과한 뒤에만 README에 넣는다. 아직 없는 입찰/경매 상세 화면을 “완성 화면”으로 표현하지 않는다.
+[#99 Playwright 실행 문서](../reports/issue-099-playwright-e2e.md)에 로컬 화면 시나리오가 있다. 시연 영상·이미지를 추가할 때는 실제 로컬 실행에서 촬영한 것만 사용한다.
 
 ## 4. D/B. 기술 선택과 면접 답변 근거
 
@@ -52,7 +63,8 @@ E2E 화면 영상·screenshot은 #99가 실제 Browser 흐름을 통과한 뒤�
 
 - Kafka, PostgreSQL, Redis, OpenSearch, SeaweedFS는 로컬 Docker 검증을 기준으로 한다.
 - AWS 검증 환경은 상시 운영하지 않으며, 리소스 생성·삭제 Runbook과 비용 한도가 준비된 뒤에만 짧게 실행한다.
-- k6와 장애 주입 도구는 준비됐지만, 활성 Fixture/API를 둔 실제 측정 결과는 아직 없다.
+- k6 집중·분산 부하와 정산 Consumer·Redis·OpenSearch 중단을 로컬에서 실행했다. [#102 결과·회고](../reports/issue-102-portfolio-retrospective.md)에 수치와 한계를 연결했다.
+- AWS는 Terraform 구성과 로컬 정적 검증까지 기록했다. 실제 배포·Smoke Test·Destroy·청구 결과는 없다.
 
 ### 금지하는 표현
 
@@ -63,7 +75,7 @@ E2E 화면 영상·screenshot은 #99가 실제 Browser 흐름을 통과한 뒤�
 ### 허용하는 표현
 
 - “AWS 이전을 전제로 로컬 Docker에서 계약·복구 경계를 검증하도록 설계했다.”
-- “P95 300ms, Lag 60초 회복은 목표이며 #102에서 환경과 함께 실측을 기록한다.”
+- “로컬 분산 실험에서 접수 P95는 41.88ms였다. 최종 결과의 브라우저 도달 P95는 측정하지 않았다.”
 
 ## 6. T. 증적 연결표
 
@@ -74,10 +86,10 @@ E2E 화면 영상·screenshot은 #99가 실제 Browser 흐름을 통과한 뒤�
 | Redis 유실 복구 | `NOT_ACTIVE → Snapshot 복구 → 재실행` 테스트 | 구현됨 |
 | 자동 연장 | 4:59/5:00/반복 연장 Lua·DB 테스트 | 구현됨 |
 | 종료 단일성 | 다중 Scheduler `SKIP LOCKED` 통합 테스트 | 구현됨 |
-| E2E Browser 흐름 | Playwright trace/screenshot + 원장 검증 | #99 대기 |
-| 부하 P95·Lag 회복 | k6 JSON, SQL 불변식, consumer lag 결과 | 실제 실행 대기 |
-| 장애 복구 실험 | Redis/OpenSearch 전후 상태, DLT Header | 실제 실행 대기 |
-| AWS 비용 | 실행 시간·I/O·저장량·destroy 로그 | AWS 검증 대기 |
+| E2E Browser 흐름 | [#99 시나리오](../reports/issue-099-playwright-e2e.md)·[PR #240 로컬 실행](https://github.com/dev-baek/bidflow/pull/240) | 로컬 실행 증적 있음 |
+| 부하 P95·Lag 회복 | [집중](../reports/issue-019-focused-load-baseline.md)·[분산](../reports/issue-019-distributed-load-baseline.md) k6 JSON, SQL, Kafka Lag | 로컬 실측 |
+| 장애 복구 실험 | [#102 증적 모음](../reports/issue-102-portfolio-retrospective.md#장애에서-배운-것): 정산 Consumer·Redis·OpenSearch | 로컬 실측 |
+| AWS 비용 | [#97 공개 단가 추정](../reports/issue-097-kafka-performance-cost.md); 실제 과금·삭제 로그는 별도 | 추정만 있음 |
 
 ## 7. README 구성 순서
 
@@ -87,7 +99,7 @@ E2E 화면 영상·screenshot은 #99가 실제 Browser 흐름을 통과한 뒤�
 4. 중요한 설계 결정 4개: Outbox, Redis Lua, Kafka Consumer Group, 멱등·복구
 5. 로컬 실행: prerequisites, `make local-up`, frontend/backend 실행, 정리 방법
 6. 테스트 명령과 각 명령이 증명하는 것
-7. 알려진 한계·다음 검증: E2E, 실측 부하·장애, AWS short-lived validation
+7. 알려진 한계·다음 검증: 브라우저까지의 결과 지연, 반복·장기 장애, 승인 후 단기 AWS 검증
 8. ADR·상세 보고서 링크
 
 ## 8. 완료 조건
