@@ -195,30 +195,51 @@ test.describe("상품 등록·입찰 Browser 흐름", () => {
     }
   });
 
-  test("등록한 상품을 OpenSearch로 검색해 실제 경매 상세를 연다", async ({ page, request }) => {
+  test("OpenSearch 복합 필터와 정렬을 적용하고 실제 경매 상세를 연다", async ({ page, request }) => {
     test.skip(process.env.BIDFLOW_E2E_SEARCH !== "1", "검색 E2E는 make local-up-search 및 BIDFLOW_E2E_SEARCH=1이 필요합니다.");
 
     await setE2eClock(request, "2030-01-01T12:00:00Z");
-    const title = `e2ecamera${randomUUID().replaceAll("-", "")}`;
+    const token = `e2ecamera${randomUUID().replaceAll("-", "")}`;
+    const title = `${token} Basic`;
+    const premium = `${token} Premium`;
+    const outside = `${token} Outside`;
     const auctionId = await registerAuction(page, "e2e-seller-search", title);
-    const searchUrl = `${apiBaseUrl}/api/v1/listings/search?${new URLSearchParams({ q: title })}`;
+    const premiumId = await registerAuction(page, "e2e-seller-search", premium, "14000");
+    const outsideId = await registerAuction(page, "e2e-seller-search", outside, "20000");
+    const searchUrl = `${apiBaseUrl}/api/v1/listings/search?${new URLSearchParams({ q: token })}`;
     await expect.poll(async () => {
       const response = await request.get(searchUrl);
       if (!response.ok()) return `검색 API HTTP ${response.status()}`;
       const result: { items: { title: string; auctionId: string | null }[] } = await response.json();
-      return result.items.find(item => item.title === title)?.auctionId;
-    }, { timeout: 15_000, message: "등록한 상품이 검색 API에 올바른 경매 ID로 반영되어야 합니다." }).toBe(auctionId);
+      return result.items.map(item => item.auctionId).sort();
+    }, { timeout: 15_000, message: "필터를 설정하기 전에 세 상품 모두 색인되어야 합니다." }).toEqual([auctionId, premiumId, outsideId].sort());
 
     await page.goBack();
     await page.getByRole("link", { name: "상품 검색 화면 열기" }).click();
-    await page.getByLabel("검색어").fill(title);
+    await page.getByLabel("검색어", { exact: true }).fill(token);
+    await page.getByLabel("카테고리", { exact: true }).selectOption("DIGITAL");
+    await page.getByLabel("경매 상태", { exact: true }).selectOption("SCHEDULED");
+    await page.getByLabel("최소 가격 (원)").fill("10000");
+    await page.getByLabel("최대 가격 (원)").fill("14000");
+    await page.getByLabel("마감 시각 이전 (UTC)").fill("2030-01-01T12:30");
+    await page.getByLabel("정렬", { exact: true }).selectOption("PRICE_DESC");
     await page.getByRole("button", { name: "검색", exact: true }).click();
+    const results = page.getByRole("listitem");
+    await expect(results).toHaveCount(2);
+    await expect(results.nth(0).getByRole("link", { name: premium, exact: true })).toBeVisible();
+    await expect(results.nth(1).getByRole("link", { name: title, exact: true })).toBeVisible();
+    await expect(page.getByRole("link", { name: outside, exact: true })).toHaveCount(0);
     const link = page.getByRole("link", { name: title, exact: true });
     await expect(link).toHaveAttribute("href", `/auctions/${auctionId}`);
     await link.click();
     await expect(page).toHaveURL(`${webBaseUrl}/auctions/${auctionId}`);
     await expect(page.getByRole("heading", { name: title, exact: true })).toBeVisible();
     await expect(page.getByRole("form", { name: "입찰 요청" })).toBeVisible();
+    await page.goBack();
+    await page.reload();
+    await expect(page.getByLabel("최대 가격 (원)")).toHaveValue("14000");
+    await expect(results).toHaveCount(2);
+    await expect(results.nth(0).getByRole("link", { name: premium, exact: true })).toBeVisible();
   });
 });
 
@@ -268,7 +289,7 @@ async function submitDirectBid(page: Page, auctionId: string, amount: string) {
   return { key, id: result.bidRequestId };
 }
 
-async function registerAuction(page: Page, sellerId: string, title = "e2e-camera"): Promise<string> {
+async function registerAuction(page: Page, sellerId: string, title = "e2e-camera", startingPrice = "10000"): Promise<string> {
   await signInLocal(page, sellerId);
   await page.getByRole("link", { name: "상품 등록 화면 열기" }).click();
 
@@ -276,7 +297,7 @@ async function registerAuction(page: Page, sellerId: string, title = "e2e-camera
   await page.getByLabel("상품 설명").fill("Playwright가 등록 흐름을 검증하는 테스트 상품입니다.");
   await page.getByLabel("카테고리").selectOption("DIGITAL");
   await page.getByLabel("상품 상태").selectOption("GOOD");
-  await page.getByLabel("시작가 (원)").fill("10000");
+  await page.getByLabel("시작가 (원)").fill(startingPrice);
   await page.getByLabel("시작 시각 (UTC)").fill("2030-01-01T12:10");
   await page.getByLabel("종료 시각 (UTC)").fill("2030-01-01T12:30");
   await page.getByLabel("이미지").setInputFiles({ name: "camera.png", mimeType: "image/png", buffer: Buffer.from("e2e-image") });
