@@ -1,5 +1,23 @@
 import { describe, expect, it } from "vitest";
-import { createSearchState, searchReducer } from "./search-state";
+import { createSearchState, readSearchFilters, searchParamsFrom, searchReducer } from "./search-state";
+
+describe("search query", () => {
+  it("round-trips filters including a zero bound and converts the deadline to UTC", () => {
+    const filters = { keyword: "  카메라  ", categoryId: "DIGITAL", status: "ACTIVE", minPrice: "0", maxPrice: "0", endsBefore: "2030-01-01T12:30", sort: "NEWEST" };
+    const result = searchParamsFrom(filters);
+    expect(result.params?.get("endsBefore")).toBe("2030-01-01T12:30:00.000Z");
+    expect(result.params?.get("minPrice")).toBe("0");
+    expect(searchParamsFrom(readSearchFilters(result.params!)).params?.toString()).toBe(result.params?.toString());
+  });
+
+  it.each([
+    { minPrice: "-1" }, { maxPrice: "12.5" }, { minPrice: "2", maxPrice: "1" },
+    { minPrice: "9223372036854775808" }, { endsBefore: "2030-02-30T12:30" },
+    { sort: "UNKNOWN" }, { categoryId: "UNKNOWN" }, { status: "ENDED" },
+  ])("rejects invalid condition %j", (filters) => {
+    expect(searchParamsFrom({ ...createSearchState().filters, ...filters })).toHaveProperty("error");
+  });
+});
 
 describe("searchReducer", () => {
   it("clears prior results and cursor when a filter changes", () => {
@@ -9,9 +27,11 @@ describe("searchReducer", () => {
       nextCursor: "cursor-1",
     });
 
-    expect(searchReducer(loaded, { type: "FILTER_CHANGED", field: "keyword", value: "렌즈" })).toMatchObject({
-      mode: "IDLE", items: [], nextCursor: undefined, filters: { keyword: "렌즈" },
+    const edited = searchReducer(loaded, { type: "FILTER_CHANGED", field: "keyword", value: "렌즈" });
+    expect(edited).toMatchObject({
+      mode: "IDLE", items: [], filters: { keyword: "렌즈" },
     });
+    expect(edited.nextCursor).toBeUndefined();
   });
 
   it("shows empty and error states distinctly", () => {

@@ -6,7 +6,7 @@
 - 선행 사양: [OpenSearch 상품 색인·재처리](./issue-009-search-indexer.md)
 - 후속 작업: #60 검색 Query, #61 검색 결과 화면, #63 검색 품질·성능 비교
 - 후속 개정: [#10 검색 상세 링크·MVP 필터 화면](https://github.com/dev-baek/bidflow/issues/10), 여정 검증 #99
-- 필터 화면 개정 상태: 검토 대기. 기존 API를 사용하는 화면·테스트 변경만 대상으로 한다.
+- 필터 화면: 기존 API로 구현. [#10 검증 증적](../reports/issue-099-playwright-e2e.md#현재-시나리오)을 참조한다.
 
 ## 1. 목적과 범위
 
