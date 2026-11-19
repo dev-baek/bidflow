@@ -4,6 +4,7 @@
 - 관련 Issue: [#90 로그·지표·알람·추적 사양 작성](https://github.com/dev-baek/bidflow/issues/90)
 - 후속 구현: #93 구조화 로그와 요청·이벤트 추적, #92 CloudWatch Dashboard·Alarm
 - 상위 사양: [부하·장애 실험 계획](issue-019-load-failure-test.md)
+- Outbox 구간 후속 계약: [실제 DB 저장 시각·배치 대기·Kafka ack 계측](issue-019-outbox-timing.md). 업무 시각과 성능 시계를 구분한다.
 
 ## 1. 목적과 비목적
 
