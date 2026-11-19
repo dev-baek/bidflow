@@ -36,6 +36,8 @@ BIDFLOW_E2E_BASE_URL=http://127.0.0.1:5173 BIDFLOW_E2E_SEARCH=1 npm run test:e2e
 
 ## 현재 시나리오
 
+[#19 브라우저 결과 지연](issue-019-browser-result-latency.md)은 `BIDFLOW_E2E_LATENCY=1`일 때만 별도 실행한다. 두 사용자의 순차 20건을 관측하며, 2초 P95 기준 미달 회차를 실패로 보존한다. 기능 E2E 통과와 지연 목표 달성을 구분한다.
+
 [#14](https://github.com/dev-baek/bidflow/issues/14) 연결 복구 테스트는 관찰 브라우저의 WebSocket만 잠시 끊는다. 다른 브라우저가 12,000원 직접 입찰을 확정한 동안 관찰 화면은 10,000원을 유지한다. 이후 다시 연결하면 새로고침 없이 실제 REST 응답과 화면이 12,000원으로 갱신된다. 이전 버전·이전 마감의 늦은 응답 차단은 reducer 테스트로 검증한다.
 
 - 로컬 판매자 로그인

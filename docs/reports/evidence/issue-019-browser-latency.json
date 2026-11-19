@@ -1,0 +1,191 @@
+{
+  "startedAt": "2026-11-19T05:15:55.534Z",
+  "completedAt": "2026-11-19T05:16:41.192Z",
+  "runId": "414c4232-747f-4ccb-8906-458b6729581c",
+  "auctionId": "0d2b271d-1c93-48de-83ff-15c1d41b39e9",
+  "commit": "73d029aed316cd48c3f2eceafe52e100d724c47d",
+  "chromium": "145.0.7632.6",
+  "completed": 20,
+  "incomplete": 0,
+  "p95WithinTarget": false,
+  "http": {
+    "count": 20,
+    "p50": 52.69416700000147,
+    "p95": 61.520291999997426,
+    "p99": 63.088292000000365
+  },
+  "privateResult": {
+    "count": 20,
+    "p50": 1582.3424169999998,
+    "p95": 2077.144084000007,
+    "p99": 2086.1436659999963
+  },
+  "screen": {
+    "count": 20,
+    "p50": 1938.268167000002,
+    "p95": 2938.426041999999,
+    "p99": 2947.0752920000014
+  },
+  "samples": [
+    {
+      "index": 0,
+      "amount": 11000,
+      "httpMs": 61.520291999997426,
+      "requestId": "d62d5c8b-7047-4bc9-81b7-5ecd7233f70a",
+      "privateMs": 1528.6902919999993,
+      "screenMs": 1965.7814999999973
+    },
+    {
+      "index": 1,
+      "amount": 12000,
+      "httpMs": 45.36012499999924,
+      "requestId": "5baa69b8-2722-48ef-8887-1a3af3cdeb38",
+      "privateMs": 1585.752124999999,
+      "screenMs": 1920.5434590000004
+    },
+    {
+      "index": 2,
+      "amount": 13000,
+      "httpMs": 44.84612500000003,
+      "requestId": "8ebd0ba5-79d2-4c5b-bc63-67ae87e7fdbf",
+      "privateMs": 1685.380583000002,
+      "screenMs": 1928.4172910000016
+    },
+    {
+      "index": 3,
+      "amount": 14000,
+      "httpMs": 54.969249999994645,
+      "requestId": "9862c5c4-28bd-4ddb-a3c8-6aea12b7e7f3",
+      "privateMs": 1765.1467089999933,
+      "screenMs": 1928.5671669999938
+    },
+    {
+      "index": 4,
+      "amount": 15000,
+      "httpMs": 49.62083300000086,
+      "requestId": "bbf67df5-ab10-4515-bc43-5ce9a180a8ce",
+      "privateMs": 1996.443333000003,
+      "screenMs": 2947.0752920000014
+    },
+    {
+      "index": 5,
+      "amount": 16000,
+      "httpMs": 58.943749999998545,
+      "requestId": "c7342873-c2ef-4093-b530-e3c2935d9c8f",
+      "privateMs": 2086.1436659999963,
+      "screenMs": 2937.5592499999984
+    },
+    {
+      "index": 6,
+      "amount": 17000,
+      "httpMs": 55.129124999999476,
+      "requestId": "c8f904cc-e247-4203-82cc-9c4802b34979",
+      "privateMs": 1179.547166999997,
+      "screenMs": 1928.5127500000017
+    },
+    {
+      "index": 7,
+      "amount": 18000,
+      "httpMs": 57.92008299999725,
+      "requestId": "72010478-1e94-4edc-92c9-74aabcd8716f",
+      "privateMs": 1264.3876249999958,
+      "screenMs": 1940.9912919999988
+    },
+    {
+      "index": 8,
+      "amount": 19000,
+      "httpMs": 43.39166700000351,
+      "requestId": "8ab7905a-6db2-422a-8e38-0d9c94a0c0cb",
+      "privateMs": 1321.6676250000019,
+      "screenMs": 1920.9606669999994
+    },
+    {
+      "index": 9,
+      "amount": 20000,
+      "httpMs": 58.8035830000008,
+      "requestId": "edda418b-0f32-46ca-b0a9-381223722be8",
+      "privateMs": 1404.4362499999988,
+      "screenMs": 1938.268167000002
+    },
+    {
+      "index": 10,
+      "amount": 21000,
+      "httpMs": 42.57825000000594,
+      "requestId": "30c19954-7856-4802-8963-42029e6c3b4e",
+      "privateMs": 1492.5935830000017,
+      "screenMs": 1926.6510000000053
+    },
+    {
+      "index": 11,
+      "amount": 22000,
+      "httpMs": 54.15629199999967,
+      "requestId": "607b9116-4467-4632-89bf-4ec618231784",
+      "privateMs": 1582.3424169999998,
+      "screenMs": 1929.136249999996
+    },
+    {
+      "index": 12,
+      "amount": 23000,
+      "httpMs": 45.919332999998005,
+      "requestId": "5e8e7c4f-a8ae-4e94-bd3e-5b91232332eb",
+      "privateMs": 1682.1088329999984,
+      "screenMs": 1926.858874999998
+    },
+    {
+      "index": 13,
+      "amount": 24000,
+      "httpMs": 41.863916000002064,
+      "requestId": "b7096c5d-f67a-48d7-a56b-69e57c344ef6",
+      "privateMs": 1762.0353329999998,
+      "screenMs": 1909.9049159999995
+    },
+    {
+      "index": 14,
+      "amount": 25000,
+      "httpMs": 41.08049999999639,
+      "requestId": "1775e6a6-8cfa-4ee3-80d0-b292db53deeb",
+      "privateMs": 1902.1302089999954,
+      "screenMs": 2921.7036249999946
+    },
+    {
+      "index": 15,
+      "amount": 26000,
+      "httpMs": 46.74791600000026,
+      "requestId": "0ff2355d-5bc6-40bc-8ee3-d4738e493c88",
+      "privateMs": 1979.6120410000003,
+      "screenMs": 2931.1999579999974
+    },
+    {
+      "index": 16,
+      "amount": 27000,
+      "httpMs": 52.69416700000147,
+      "requestId": "bc6c331a-db58-4109-8e4f-4bad7136d0b2",
+      "privateMs": 2077.144084000007,
+      "screenMs": 2938.426041999999
+    },
+    {
+      "index": 17,
+      "amount": 28000,
+      "httpMs": 58.98333299999649,
+      "requestId": "697780da-a96c-421b-afe7-c344c6d2bdfa",
+      "privateMs": 1154.6583329999994,
+      "screenMs": 1949.824708
+    },
+    {
+      "index": 18,
+      "amount": 29000,
+      "httpMs": 54.55183299999044,
+      "requestId": "3029965e-0fcc-4df8-ae53-5773b4d217ac",
+      "privateMs": 1220.1608329999872,
+      "screenMs": 1939.0427079999936
+    },
+    {
+      "index": 19,
+      "amount": 30000,
+      "httpMs": 63.088292000000365,
+      "requestId": "8478294a-1832-4b72-9031-466bee141c15",
+      "privateMs": 1286.1545840000035,
+      "screenMs": 1956.560083999997
+    }
+  ]
+}

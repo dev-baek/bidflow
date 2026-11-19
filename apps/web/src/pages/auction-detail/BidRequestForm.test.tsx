@@ -1,9 +1,33 @@
-import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import type { ApiClient } from "../../shared/api/api-client";
 import { BidRequestForm } from "./BidRequestForm";
 
+afterEach(cleanup);
+
 describe("BidRequestForm", () => {
+  it("clears the previous approval on editing and ignores that request while awaiting a new result", async () => {
+    const post = vi.fn().mockResolvedValueOnce({ bidRequestId: "old", status: "RECEIVED" })
+      .mockResolvedValueOnce({ bidRequestId: "new", status: "RECEIVED" });
+    const client: ApiClient = { get: async <T,>() => ({} as T), post };
+    const { container, rerender } = render(<BidRequestForm auctionId="auction-1" actorId="bidder" client={client} />);
+    const form = within(container);
+    const result = (id: string) => <BidRequestForm auctionId="auction-1" actorId="bidder" client={client}
+      settlement={{ bidRequestId: id, decision: "ACCEPTED", isHighestBidder: true }} />;
+    fireEvent.change(form.getByLabelText("입찰 금액"), { target: { value: "11000" } });
+    fireEvent.click(form.getByRole("button", { name: "입찰 요청" }));
+    await form.findByText(/요청 번호: old/);
+    rerender(result("old"));
+    await form.findByText(/입찰이 승인되었습니다/);
+    fireEvent.change(form.getByLabelText("입찰 금액"), { target: { value: "13000" } });
+    expect(form.queryByText(/입찰이 승인되었습니다/)).not.toBeInTheDocument();
+    fireEvent.click(form.getByRole("button", { name: "입찰 요청" }));
+    await form.findByText(/요청 번호: new/);
+    rerender(result("old"));
+    expect(form.queryByText(/입찰이 승인되었습니다/)).not.toBeInTheDocument();
+    rerender(result("new"));
+    await form.findByText(/입찰이 승인되었습니다/);
+  });
   it("sends an asynchronous direct bid request and shows only its receipt", async () => {
     let receivedRequest: readonly unknown[] = [];
     const post: ApiClient["post"] = async <T,>(path: string, body: unknown, headers?: Record<string, string>) => {
