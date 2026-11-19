@@ -86,6 +86,15 @@ npm install
 npm run dev
 ```
 
+`local`(또는 `local,e2e`)에서는 Outbox 조회 간격이 100ms다. `local`이 없으면 공통 fallback은 1,000ms로 유지된다. [로컬 대조 실험](docs/reports/issue-019-outbox-delay-aba.md)에서 화면 관측 지연이 줄었지만 유휴 조회와 DB CPU 사용은 늘었다. DEBUG 로그는 기본으로 켜지지 않으며, 이 설정을 위해 AWS에서 로컬 인증 프로필을 사용하지 않는다.
+
+로컬에서도 이전 1,000ms 간격을 쓰려면 기존 API를 종료한 뒤 명시적으로 지정한다. 설정 파일 변경만으로 실행 중 프로세스가 바뀌지는 않는다.
+
+```bash
+SPRING_PROFILES_ACTIVE=local ./backend/gradlew -p backend :runtime:bootRun \
+  --args='--bidflow.outbox.fixed-delay-ms=1000'
+```
+
 로컬 서비스를 멈출 때는 다음 명령을 사용한다. `local-reset`은 데이터 볼륨을 초기화하므로 테스트 데이터가 필요 없을 때만 실행한다.
 
 ```bash

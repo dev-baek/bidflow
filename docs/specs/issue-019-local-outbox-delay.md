@@ -1,6 +1,6 @@
 # [Issue #19] 로컬 Outbox 100ms 설정 채택 사양
 
-- 상태: 제안됨 — 승인 후 설정·테스트 구현. 이번 문서 PR에는 동작 변경이 없다.
+- 상태: 사양 승인(#269), [로컬 설정·프로필 테스트·E2E 검증 구현](../reports/issue-019-local-outbox-delay.md). local 기본 100ms, 공통 fallback 1,000ms를 유지하며 초기 E2E 시간 초과 한계도 보고했다.
 - 기존 이슈: [#19 부하·장애 검증](https://github.com/dev-baek/bidflow/issues/19), 관측성 연관: [#18](https://github.com/dev-baek/bidflow/issues/18).
 - 근거: [A1/B/A2 실측](../reports/issue-019-outbox-delay-aba.md), 선행 계약: [간격 대조 실험](issue-019-outbox-delay-experiment.md).
 
