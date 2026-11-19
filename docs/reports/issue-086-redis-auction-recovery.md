@@ -4,6 +4,7 @@
 - Issue: [#86 Redis 활성 경매 상태 재구성 구현](https://github.com/dev-baek/bidflow/issues/86)
 - 사양: [issue-016-failure-recovery.md](../specs/issue-016-failure-recovery.md)
 - 브랜치: `feature/issue-86-redis-auction-recovery`
+- 후속 실제 검증: [#16 단일 경매 Redis 키 유실과 자동입찰 최대가 복구](issue-016-redis-state-loss.md)
 
 ## 1. 구현 결과
 
