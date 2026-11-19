@@ -4,6 +4,7 @@ import { writeFile } from "node:fs/promises";
 import { execFileSync } from "node:child_process";
 import { percentiles } from "../../../scripts/final-settlement.mjs";
 import { matchesObservedBid, observationTimings } from "../../../scripts/browser-result-latency.mjs";
+import { windowMarker } from "../../../scripts/outbox-delay-observation.mjs";
 import { expect, test, type APIRequestContext, type Browser, type Page, type WebSocket } from "@playwright/test";
 import { parseBidResultMessage } from "../src/features/auction-realtime/auction-realtime-client";
 
@@ -179,6 +180,13 @@ test.describe("상품 등록·입찰 Browser 흐름", () => {
     const runId = randomUUID();
     let auctionId: string | undefined;
     let completed = false;
+    let observationOpen = false;
+    const closeObservation = () => {
+      if (observationOpen) {
+        process.stdout.write(windowMarker("bid", "close") + "\n");
+        observationOpen = false;
+      }
+    };
     const contexts: Awaited<ReturnType<typeof openBidderPage>>[] = [];
     const startedAt = new Date().toISOString();
     try {
@@ -201,6 +209,10 @@ test.describe("상품 등록·입찰 Browser 흐름", () => {
           if (result) frames.push({ result, receivedAt: performance.now() });
         };
         bidder.socket.on("framereceived", receive);
+        if (index === 0 && process.env.BIDFLOW_E2E_OBSERVATION === "1") {
+          process.stdout.write(windowMarker("bid", "open") + "\n");
+          observationOpen = true;
+        }
         const start = performance.now();
         const remaining = () => Math.max(1, 10_000 - (performance.now() - start));
         try {
@@ -251,10 +263,12 @@ test.describe("상품 등록·입찰 Browser 흐름", () => {
           throw error;
         } finally { bidder.socket.off("framereceived", receive); }
       }
+      closeObservation();
       expect(await readAuction(request, auctionId)).toMatchObject({ status: "ACTIVE", currentPrice: 30_000, auctionVersion: 21 });
       completed = true;
       expect(percentiles(samples.map(s => s.screenMs!)).p95).toBeLessThanOrEqual(2000);
     } finally {
+      closeObservation();
       const finalSamples = samples.filter(s => s.screenMs !== undefined && !s.error);
       const evidence = { startedAt, completedAt: new Date().toISOString(), runId, auctionId,
         commit: execFileSync("git", ["rev-parse", "HEAD"], { encoding: "utf8" }).trim(),

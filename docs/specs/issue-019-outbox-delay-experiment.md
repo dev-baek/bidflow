@@ -1,6 +1,6 @@
 # [Issue #19] Outbox 조회 간격의 로컬 대조 실험
 
-- 상태: 제안됨 — 문서 PR 승인 후 계측 보완·실행. 이 문서는 성능 개선 결과가 아니다.
+- 상태: 사양 승인(#266), [DEBUG 계측·수집 연결 구현](../reports/issue-019-outbox-delay-implementation.md). A1/B/A2 실측은 다음 단계이며 이 문서는 성능 개선 결과가 아니다.
 - 기존 이슈: [#19 부하·장애 검증](https://github.com/dev-baek/bidflow/issues/19), 관측성 연관: [#18](https://github.com/dev-baek/bidflow/issues/18).
 - 근거: [입찰 20건과 Outbox 실측](../reports/issue-019-outbox-timing-evidence.md). 기본 화면 P95 2,936.95ms, 명령/결과 DB age P95 912ms/1,003ms였다.
 - 유지할 계약: [브라우저 결과 관측](issue-019-browser-result-latency.md), [Outbox 구간 계측](issue-019-outbox-timing.md).
