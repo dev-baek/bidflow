@@ -2,8 +2,6 @@ package com.bidflow.runtime;
 
 import com.bidflow.adapters.persistence.JdbcOutboxRepository;
 import com.bidflow.application.outbox.*;
-import com.bidflow.event.EventEnvelope;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,18 +12,9 @@ import org.springframework.kafka.core.KafkaTemplate;
 class OutboxConfiguration {
     @Bean OutboxRepository outboxRepository(JdbcTemplate jdbc) { return new JdbcOutboxRepository(jdbc); }
     @Bean EventMessagePublisher eventMessagePublisher(KafkaTemplate<String, String> kafka, ObjectMapper objectMapper) {
-        EventEnvelopeJsonCodec codec = new EventEnvelopeJsonCodec(objectMapper);
-        return event -> kafka.send(event.topic(), event.key(), serialize(event, objectMapper, codec)).join();
+        return new KafkaOutboxEventPublisher(kafka, objectMapper, System::nanoTime);
     }
-    @Bean OutboxPublisher outboxPublisher(OutboxRepository repository, EventMessagePublisher publisher) { return new OutboxPublisher(repository, publisher); }
-
-    private static String serialize(com.bidflow.application.outbox.OutboxEvent event, ObjectMapper objectMapper, EventEnvelopeJsonCodec codec) {
-        try {
-            var payload = objectMapper.readValue(event.payload(), new TypeReference<java.util.Map<String, Object>>() {});
-            return codec.serialize(new EventEnvelope<>(
-                    event.eventId(), event.eventType(), 1, event.occurredAt(), event.correlationId(), payload));
-        } catch (Exception exception) {
-            throw new IllegalStateException("outbox event payload serialization failed", exception);
-        }
+    @Bean OutboxPublisher outboxPublisher(OutboxRepository repository, EventMessagePublisher publisher) {
+        return new OutboxPublisher(repository, publisher, System::nanoTime, OutboxTimingLog::publication);
     }
 }

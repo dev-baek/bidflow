@@ -12,7 +12,11 @@ public final class JdbcOutboxRepository implements OutboxRepository {
     private final JdbcTemplate jdbc;
     public JdbcOutboxRepository(JdbcTemplate jdbc) { this.jdbc = jdbc; }
     public List<OutboxEvent> findPending() {
-        return jdbc.query("select event_id,topic,partition_key,correlation_id,event_type,payload::text,occurred_at from outbox_event where published_at is null order by occurred_at limit 100", (rs, row) -> new OutboxEvent(rs.getObject("event_id", UUID.class), rs.getString("topic"), rs.getString("partition_key"), rs.getString("correlation_id"), rs.getString("event_type"), rs.getString("payload"), rs.getTimestamp("occurred_at").toInstant()));
+        return jdbc.query("""
+                select event_id,topic,partition_key,correlation_id,event_type,payload::text,occurred_at,
+                  floor(extract(epoch from statement_timestamp() - enqueued_at) * 1000)::bigint as pending_age_ms
+                from outbox_event where published_at is null order by occurred_at limit 100
+                """, (rs, row) -> new OutboxEvent(rs.getObject("event_id", UUID.class), rs.getString("topic"), rs.getString("partition_key"), rs.getString("correlation_id"), rs.getString("event_type"), rs.getString("payload"), rs.getTimestamp("occurred_at").toInstant(), rs.getObject("pending_age_ms", Long.class)));
     }
     public void markPublished(UUID eventId, Instant publishedAt) { jdbc.update("update outbox_event set published_at = ? where event_id = ? and published_at is null", Timestamp.from(publishedAt), eventId); }
 }
