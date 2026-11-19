@@ -1,6 +1,6 @@
 # [Issue #19] 로컬 최종 정산 관측 지연 측정
 
-- 상태: 검토 대기 — 측정기 구현 전 사양
+- 상태: 사양 승인(#258), 측정기·실패 테스트 구현 및 [로컬 확정 관측 실측](../reports/issue-019-final-settlement-observation.md) 완료. 브라우저 전달은 미측정.
 - 이슈: [#19 부하·장애 검증](https://github.com/dev-baek/bidflow/issues/19)
 - 상위: [부하·장애 성공 기준](issue-019-load-failure-test.md)
 - 기존 결과: [집중 입찰](../reports/issue-019-focused-load-baseline.md) · [분산 입찰](../reports/issue-019-distributed-load-baseline.md)
