@@ -1,6 +1,6 @@
 # [Issue #16] 로컬 단일 검색 이벤트 DLT 재처리
 
-- 상태: 검토 대기 — 구현 전 사양
+- 상태: 사양 승인(#253), 순수 검증·레코드 구성 구현. CLI·감사 기록·실제 재처리는 미완료.
 - 기존 이슈: [#16 중복 이벤트·Consumer 장애·Redis 복구](https://github.com/dev-baek/bidflow/issues/16)
 - 상위 계약: [이벤트 실패·복구](issue-016-failure-recovery.md)
 - 배경: [OpenSearch 장애 실측](../reports/issue-096-opensearch-recovery.md)에서는 DLT 격리 뒤 PostgreSQL 전체 재색인으로 복구했다. DLT의 원본 이벤트를 다시 발행하는 도구와 실측은 아직 없다.
@@ -54,3 +54,10 @@ dry-run·오류는 Kafka/DB 상태를 쓰지 않는다. 실행 모드라도 기�
 구현은 위 경계의 실패 테스트부터 추가한다. 실제 인수 검증은 기존 #96 실험처럼 **새 시험 상품**을 OpenSearch 중단 중 등록해 `TRANSIENT_EXHAUSTED`로 격리한 뒤, 반드시 서비스를 복구하고 수행한다. 기존 DLT 사건을 무단 재사용하거나 전체 재색인으로 성공을 대신하지 않는다. 중단한 OpenSearch는 실험 실패 때에도 다시 시작한다.
 
 보고서에는 기준 commit, DLT/원본/재발행 위치, eventId, dry-run과 execute 결과, 검색 처리 전후, 동일 이벤트 재실행 결과를 남긴다. Kafka 발행 성공·소비 성공·업무 복구를 각각 구분한다. 문서 PR 단계에서는 실제 재처리가 완료됐다고 표시하지 않는다.
+
+## 구현 진행
+
+- `ListingEventReplayPlan.prepare`는 기대 DLT 위치·eventId·필수 단일 헤더와 기존 Envelope/Contract 검증을 수행한다. 알려진 schemaVersion 1과 검색 이벤트 3종만 허용한다.
+- 레코드 key/value는 바이트 배열을 복사해 보존하고, 원본 partition과 진단 위치를 결과로 반환한다. UTF-8 오류·tombstone·1 MiB 초과 payload는 거부한다. 시간과 replay ID는 인자로 받아 I/O 없이 테스트한다.
+- `ListingEventReplayPlanTest` 및 기존 Kafka 실패 분류·검색 Listener 테스트로 정상 구성과 거부 경계를 확인한다. 이 단계의 plan은 Kafka partition 존재 확인이나 발행을 수행하지 않는다.
+- 후속 작업은 loopback 전용 CLI, 정확한 offset 읽기·partition 존재 확인, 기본 dry-run, 감사 JSONL과 명시적 execute, 새 장애 Fixture 복구 실측이다. 이 문서의 전체 완료 또는 #16 완료로 간주하지 않는다.
