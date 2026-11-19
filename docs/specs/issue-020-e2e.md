@@ -3,6 +3,7 @@
 - 상태: 제안됨
 - 관련 Issue: [#98 상품 등록부터 낙찰까지 E2E 시나리오 작성](https://github.com/dev-baek/bidflow/issues/98)
 - 후속 구현: #99 Playwright 핵심 E2E 테스트
+- #19 후속 측정: [로컬 브라우저 결과 관측 지연](issue-019-browser-result-latency.md). 기능 E2E 통과와 성능 표본 수집을 구분한다.
 
 ## 1. 목적과 경계
 
