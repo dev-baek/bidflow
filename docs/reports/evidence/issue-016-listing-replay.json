@@ -1,0 +1,65 @@
+{
+  "commit": "54664aa90471819212f8ff1dd6ed605adf6c9c81",
+  "runId": "replay421c43fab27b44daa9d00ca9fa2c086d",
+  "startedAt": "2026-11-19T00:51:31.801Z",
+  "completedAt": "2026-11-19T00:52:15.365Z",
+  "searchDuring": 503,
+  "fixture": {
+    "productId": "702d670a-2b9e-4d8d-8eb5-eb2b6f118281",
+    "auctionId": "d0e6323a-2306-44fa-b214-f5e3be7973f4",
+    "status": "SCHEDULED",
+    "title": "replay421c43fab27b44daa9d00ca9fa2c086dfailed"
+  },
+  "eventId": "8d47b64e-15bd-481e-b665-99a22e4c5a2e",
+  "dlt": { "partition": 1, "offset": 5 },
+  "isolated": { "consumer_rows": 0, "source_offset": null, "ledger_rows": 0, "outbox_rows": 1 },
+  "beforeReplay": { "status": 200, "body": { "items": [], "nextCursor": null } },
+  "afterDryRun": { "consumer_rows": 0, "source_offset": null, "ledger_rows": 0, "outbox_rows": 1 },
+  "firstAudit": [
+    {
+      "replayId": "3f35a67e-d66d-4821-9f55-95a858c17a6c",
+      "replayedAt": "2026-11-19T00:52:07.583203Z",
+      "operator": "local-replay-evidence", "eventId": "8d47b64e-15bd-481e-b665-99a22e4c5a2e",
+      "dltTopic": "listing-event.DLT", "dltPartition": 1, "dltOffset": 5,
+      "originalTopic": "listing-event", "originalPartition": 1, "originalOffset": 29,
+      "result": "ATTEMPTED"
+    },
+    {
+      "replayId": "3f35a67e-d66d-4821-9f55-95a858c17a6c",
+      "replayedAt": "2026-11-19T00:52:07.583203Z",
+      "operator": "local-replay-evidence", "eventId": "8d47b64e-15bd-481e-b665-99a22e4c5a2e",
+      "dltTopic": "listing-event.DLT", "dltPartition": 1, "dltOffset": 5,
+      "originalTopic": "listing-event", "originalPartition": 1, "originalOffset": 29,
+      "result": "PUBLISHED", "targetTopic": "listing-event", "targetPartition": 1, "targetOffset": 30
+    }
+  ],
+  "afterReplay": {
+    "db": { "consumer_rows": 1, "source_offset": 30, "ledger_rows": 0, "outbox_rows": 1 },
+    "searchStatus": 200, "matchingItems": 1
+  },
+  "secondAudit": [
+    {
+      "replayId": "d6d12be2-2181-4ac7-9b8a-760b8ea3d53a",
+      "replayedAt": "2026-11-19T00:52:11.874746Z",
+      "operator": "local-replay-evidence", "eventId": "8d47b64e-15bd-481e-b665-99a22e4c5a2e",
+      "dltTopic": "listing-event.DLT", "dltPartition": 1, "dltOffset": 5,
+      "originalTopic": "listing-event", "originalPartition": 1, "originalOffset": 29,
+      "result": "ATTEMPTED"
+    },
+    {
+      "replayId": "d6d12be2-2181-4ac7-9b8a-760b8ea3d53a",
+      "replayedAt": "2026-11-19T00:52:11.874746Z",
+      "operator": "local-replay-evidence", "eventId": "8d47b64e-15bd-481e-b665-99a22e4c5a2e",
+      "dltTopic": "listing-event.DLT", "dltPartition": 1, "dltOffset": 5,
+      "originalTopic": "listing-event", "originalPartition": 1, "originalOffset": 29,
+      "result": "PUBLISHED", "targetTopic": "listing-event", "targetPartition": 1, "targetOffset": 31
+    }
+  ],
+  "afterSecondReplay": { "consumer_rows": 1, "source_offset": 30, "ledger_rows": 0, "outbox_rows": 1 },
+  "finalMatchingItems": 1,
+  "postReplayObservation": {
+    "searchProjectionListingPartition1": { "currentOffset": 32, "logEndOffset": 32, "lag": 0 },
+    "originalAndReplayRenderedKeyValuesEqual": true
+  },
+  "dltEndOffsets": { "0": 11, "1": 6, "2": 18 }
+}
