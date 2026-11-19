@@ -1,4 +1,9 @@
 import { randomUUID } from "node:crypto";
+import { performance } from "node:perf_hooks";
+import { writeFile } from "node:fs/promises";
+import { execFileSync } from "node:child_process";
+import { percentiles } from "../../../scripts/final-settlement.mjs";
+import { matchesObservedBid } from "../../../scripts/browser-result-latency.mjs";
 import { expect, test, type APIRequestContext, type Browser, type Page, type WebSocket } from "@playwright/test";
 import { parseBidResultMessage } from "../src/features/auction-realtime/auction-realtime-client";
 
@@ -162,6 +167,82 @@ test.describe("상품 등록·입찰 Browser 흐름", () => {
     } finally {
       await bidderA.context.close();
       await bidderB.context.close();
+    }
+  });
+
+  test("순차 입찰 20건의 개인 결과와 양쪽 화면 관측 지연을 기록한다", async ({ page, browser, request }, testInfo) => {
+    test.skip(process.env.BIDFLOW_E2E_LATENCY !== "1", "BIDFLOW_E2E_LATENCY=1을 지정한 로컬 지연 관측 회차만 실행합니다.");
+    test.setTimeout(120_000);
+    const samples: { index: number; amount: number; requestId?: string; httpMs?: number; privateMs?: number; screenMs?: number; error?: string }[] = [];
+    const runId = randomUUID();
+    let auctionId: string | undefined;
+    let completed = false;
+    const contexts: Awaited<ReturnType<typeof openBidderPage>>[] = [];
+    const startedAt = new Date().toISOString();
+    try {
+      await setE2eClock(request, "2030-01-01T12:00:00Z");
+      auctionId = await registerAuction(page, `latency-seller-${runId}`);
+      await setE2eClock(request, "2030-01-01T12:20:00Z");
+      contexts.push(await openBidderPage(browser, auctionId, `latency-a-${runId}`));
+      contexts.push(await openBidderPage(browser, auctionId, `latency-b-${runId}`));
+      for (let index = 0; index < 20; index++) {
+        const bidder = contexts[index % 2]!;
+        const amount = 11_000 + index * 1_000;
+        const sample: typeof samples[number] = { index, amount };
+        samples.push(sample);
+        const approval = bidder.page.getByText("입찰이 승인되었습니다. 현재 최고 입찰자입니다.", { exact: true });
+        await bidder.page.getByLabel("입찰 금액").fill(String(amount));
+        await expect(approval).toHaveCount(0);
+        const frames: { result: NonNullable<ReturnType<typeof parseBidResultFrame>>; receivedAt: number }[] = [];
+        const receive = ({ payload }: { payload: string | Buffer }) => {
+          const result = parseBidResultFrame(payload.toString());
+          if (result) frames.push({ result, receivedAt: performance.now() });
+        };
+        bidder.socket.on("framereceived", receive);
+        const start = performance.now();
+        const remaining = () => Math.max(1, 10_000 - (performance.now() - start));
+        try {
+          const [response] = await Promise.all([
+            bidder.page.waitForResponse(r => new URL(r.url()).pathname === `/api/v1/auctions/${auctionId}/bid-requests`
+              && r.request().method() === "POST", { timeout: 10_000 }),
+            bidder.page.getByRole("button", { name: "입찰 요청" }).click({ timeout: 10_000 }),
+          ]);
+          const receipt = await response.json();
+          sample.httpMs = performance.now() - start;
+          expect(response.status()).toBe(202);
+          expect(receipt.status).toBe("RECEIVED");
+          expect(receipt.bidRequestId).toMatch(/^[0-9a-f-]{36}$/);
+          expect(samples.slice(0, -1).some(s => s.requestId === receipt.bidRequestId)).toBe(false);
+          sample.requestId = receipt.bidRequestId;
+          await expect.poll(() => frames.some(frame => matchesObservedBid(frame.result,
+            { requestId: sample.requestId, auctionId, amount })), { timeout: remaining() }).toBe(true);
+          sample.privateMs = frames.find(frame => matchesObservedBid(frame.result,
+            { requestId: sample.requestId, auctionId, amount }))!.receivedAt - start;
+          await expect(approval).toBeVisible({ timeout: remaining() });
+          await Promise.all(contexts.map(viewer => expect(viewer.page.getByText(`${amount.toLocaleString("ko-KR")}원`, { exact: true }))
+            .toBeVisible({ timeout: remaining() })));
+          sample.screenMs = performance.now() - start;
+          expect(sample.screenMs).toBeLessThanOrEqual(10_000);
+        } catch (error) {
+          sample.error = "RECEIPT_RESULT_OR_SCREEN_FAILED";
+          throw error;
+        } finally { bidder.socket.off("framereceived", receive); }
+      }
+      expect(await readAuction(request, auctionId)).toMatchObject({ status: "ACTIVE", currentPrice: 30_000, auctionVersion: 21 });
+      completed = true;
+      expect(percentiles(samples.map(s => s.screenMs!)).p95).toBeLessThanOrEqual(2000);
+    } finally {
+      const finalSamples = samples.filter(s => s.screenMs !== undefined && !s.error);
+      const evidence = { startedAt, completedAt: new Date().toISOString(), runId, auctionId,
+        commit: execFileSync("git", ["rev-parse", "HEAD"], { encoding: "utf8" }).trim(),
+        chromium: browser.version(), completed: finalSamples.length, incomplete: 20 - finalSamples.length,
+        p95WithinTarget: completed && percentiles(finalSamples.map(s => s.screenMs!)).p95 <= 2000,
+        http: percentiles(finalSamples.map(s => s.httpMs!)), privateResult: percentiles(finalSamples.map(s => s.privateMs!)),
+        screen: percentiles(finalSamples.map(s => s.screenMs!)), samples };
+      const evidencePath = testInfo.outputPath("browser-result-latency.json");
+      await writeFile(evidencePath, JSON.stringify(evidence, null, 2));
+      await testInfo.attach("browser-result-latency", { path: evidencePath, contentType: "application/json" });
+      await Promise.all(contexts.map(viewer => viewer.context.close()));
     }
   });
 
