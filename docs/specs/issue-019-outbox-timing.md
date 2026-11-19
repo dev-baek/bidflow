@@ -1,6 +1,6 @@
 # [Issue #19/#18] Outbox 지연 구간 계측 사양
 
-- 상태: 검토 대기 — DB migration·계측 구현 전
+- 상태: 사양 승인(#263), [DB migration·구간 계측과 테스트 구현](../reports/issue-019-outbox-timing-implementation.md). 새 브라우저 실측은 미실행.
 - 관련: [#19 지연 검증](https://github.com/dev-baek/bidflow/issues/19), [#18 관측성](https://github.com/dev-baek/bidflow/issues/18)
 - 선행: [동일 요청의 관측 해상도 비교](../reports/issue-019-paired-browser-observation.md), [구조화 로그 계약](issue-018-observability.md)
 
