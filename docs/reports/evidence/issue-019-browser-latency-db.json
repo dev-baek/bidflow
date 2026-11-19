@@ -1,0 +1,30 @@
+{
+  "smoke": {
+    "auctionId": "7d9156e5-18aa-4ec8-b43c-9ebc21ff1497",
+    "currentPrice": 30000,
+    "auctionVersion": 22,
+    "status": "ENDED",
+    "requests": 20,
+    "acceptedRequests": 20,
+    "ledgerRows": 20,
+    "acceptedLedgers": 20,
+    "distinctLedgerRequests": 20,
+    "settlementEvents": 20,
+    "priceRegressions": 0,
+    "winnerMatches": true
+  },
+  "verified": {
+    "auctionId": "0d2b271d-1c93-48de-83ff-15c1d41b39e9",
+    "currentPrice": 30000,
+    "auctionVersion": 21,
+    "status": "ACTIVE",
+    "requests": 20,
+    "acceptedRequests": 20,
+    "ledgerRows": 20,
+    "acceptedLedgers": 20,
+    "distinctLedgerRequests": 20,
+    "settlementEvents": 20,
+    "priceRegressions": 0,
+    "winnerMatches": true
+  }
+}

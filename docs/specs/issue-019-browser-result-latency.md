@@ -1,6 +1,6 @@
 # [Issue #19] 로컬 브라우저 입찰 결과 관측 지연
 
-- 상태: 검토 대기 — E2E 확장 전 사양
+- 상태: 사양 승인(#260), E2E 구현·로컬 측정 완료. [화면 관측 P95 2초 기준은 미달](../reports/issue-019-browser-result-latency.md).
 - 관련: [#19 부하·장애 검증](https://github.com/dev-baek/bidflow/issues/19), [#20 Browser E2E](https://github.com/dev-baek/bidflow/issues/20)
 - 선행: [최종 DB 관측 실측](../reports/issue-019-final-settlement-observation.md), [기존 E2E](issue-020-e2e.md)
 
