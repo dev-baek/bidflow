@@ -1,0 +1,3 @@
+bidflow:
+  outbox:
+    fixed-delay-ms: 100
