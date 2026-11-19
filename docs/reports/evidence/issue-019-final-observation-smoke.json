@@ -1,0 +1,408 @@
+{
+  "startedAt": "2026-11-19T01:15:39.183Z",
+  "valid": true,
+  "commit": "bdaa3cd0625adb122747b347e85c6325b04030d7",
+  "runId": "finalb4f2c70a4df247a799e44501529082af",
+  "auctionId": "d93a7f32-d4d0-4d17-8f68-7b3e99798cec",
+  "productId": "46dea4c5-f2ca-49ae-ba5f-91eb75376c50",
+  "environment": {
+    "node": "v20.19.4",
+    "arch": "arm64",
+    "platform": "darwin",
+    "osRelease": "25.5.0",
+    "cpus": 8,
+    "totalMemoryBytes": 17179869184
+  },
+  "beforeLag": [
+    {
+      "partition": 0,
+      "currentOffset": 440,
+      "endOffset": 440,
+      "lag": 0
+    },
+    {
+      "partition": 1,
+      "currentOffset": 1743,
+      "endOffset": 1743,
+      "lag": 0
+    },
+    {
+      "partition": 2,
+      "currentOffset": 469,
+      "endOffset": 469,
+      "lag": 0
+    }
+  ],
+  "measurement": {
+    "valid": true,
+    "total": 20,
+    "completed": 20,
+    "incomplete": 0,
+    "endedMs": 958.460959,
+    "samples": [
+      {
+        "index": 0,
+        "auctionId": "d93a7f32-d4d0-4d17-8f68-7b3e99798cec",
+        "startedMs": 0.3504170000001068,
+        "httpCompletedMs": 62.90054200000009,
+        "httpLatencyMs": 62.55012499999998,
+        "httpStatus": 202,
+        "id": "09f206c3-8ff4-4469-9632-21ceaec51a48",
+        "finalObservedMs": 645.233792,
+        "finalLatencyMs": 644.8833749999999,
+        "decision": "ACCEPTED",
+        "ledgerCount": 1,
+        "resultCount": 1,
+        "processingStartMs": 367.035
+      },
+      {
+        "index": 1,
+        "auctionId": "d93a7f32-d4d0-4d17-8f68-7b3e99798cec",
+        "startedMs": 3.819834000000128,
+        "httpCompletedMs": 61.649417000000085,
+        "httpLatencyMs": 57.82958299999996,
+        "httpStatus": 202,
+        "id": "58900827-5f74-43ae-b717-0635ea30d28b",
+        "finalObservedMs": 645.233792,
+        "finalLatencyMs": 641.4139579999999,
+        "decision": "REJECTED",
+        "ledgerCount": 1,
+        "resultCount": 1,
+        "processingStartMs": 407.964
+      },
+      {
+        "index": 2,
+        "auctionId": "d93a7f32-d4d0-4d17-8f68-7b3e99798cec",
+        "startedMs": 5.324292000000014,
+        "httpCompletedMs": 65.27595900000006,
+        "httpLatencyMs": 59.95166700000004,
+        "httpStatus": 202,
+        "id": "d91cd4db-784f-4721-8881-131a9b55a405",
+        "finalObservedMs": 958.3518750000003,
+        "finalLatencyMs": 953.0275830000003,
+        "decision": "REJECTED",
+        "ledgerCount": 1,
+        "resultCount": 1,
+        "processingStartMs": 460.802
+      },
+      {
+        "index": 3,
+        "auctionId": "d93a7f32-d4d0-4d17-8f68-7b3e99798cec",
+        "startedMs": 6.670500000000175,
+        "httpCompletedMs": 64.30995900000016,
+        "httpLatencyMs": 57.63945899999999,
+        "httpStatus": 202,
+        "id": "a23886a2-2458-44c8-a5f3-c55b22e35dfa",
+        "finalObservedMs": 645.233792,
+        "finalLatencyMs": 638.5632919999998,
+        "decision": "REJECTED",
+        "ledgerCount": 1,
+        "resultCount": 1,
+        "processingStartMs": 443.274
+      },
+      {
+        "index": 4,
+        "auctionId": "d93a7f32-d4d0-4d17-8f68-7b3e99798cec",
+        "startedMs": 7.539834000000155,
+        "httpCompletedMs": 63.93141700000001,
+        "httpLatencyMs": 56.391582999999855,
+        "httpStatus": 202,
+        "id": "1114cee0-60ac-4cb5-8292-7d866bc82fcd",
+        "finalObservedMs": 645.233792,
+        "finalLatencyMs": 637.6939579999998,
+        "decision": "REJECTED",
+        "ledgerCount": 1,
+        "resultCount": 1,
+        "processingStartMs": 438.605
+      },
+      {
+        "index": 5,
+        "auctionId": "d93a7f32-d4d0-4d17-8f68-7b3e99798cec",
+        "startedMs": 8.097500000000082,
+        "httpCompletedMs": 64.79379200000017,
+        "httpLatencyMs": 56.696292000000085,
+        "httpStatus": 202,
+        "id": "b9d370f3-4baf-4bed-a0e8-91e358ac63b8",
+        "finalObservedMs": 645.233792,
+        "finalLatencyMs": 637.1362919999999,
+        "decision": "REJECTED",
+        "ledgerCount": 1,
+        "resultCount": 1,
+        "processingStartMs": 432.706
+      },
+      {
+        "index": 6,
+        "auctionId": "d93a7f32-d4d0-4d17-8f68-7b3e99798cec",
+        "startedMs": 8.47070900000017,
+        "httpCompletedMs": 63.24587500000007,
+        "httpLatencyMs": 54.7751659999999,
+        "httpStatus": 202,
+        "id": "cedb12b6-66e9-4d94-a184-a4fcad795b10",
+        "finalObservedMs": 645.233792,
+        "finalLatencyMs": 636.7630829999998,
+        "decision": "REJECTED",
+        "ledgerCount": 1,
+        "resultCount": 1,
+        "processingStartMs": 420.076
+      },
+      {
+        "index": 7,
+        "auctionId": "d93a7f32-d4d0-4d17-8f68-7b3e99798cec",
+        "startedMs": 9.014374999999973,
+        "httpCompletedMs": 66.1585,
+        "httpLatencyMs": 57.14412500000003,
+        "httpStatus": 202,
+        "id": "a8720da4-f22d-49f5-96e9-311f25c0e7e4",
+        "finalObservedMs": 645.233792,
+        "finalLatencyMs": 636.219417,
+        "decision": "REJECTED",
+        "ledgerCount": 1,
+        "resultCount": 1,
+        "processingStartMs": 447.372
+      },
+      {
+        "index": 8,
+        "auctionId": "d93a7f32-d4d0-4d17-8f68-7b3e99798cec",
+        "startedMs": 9.723083999999972,
+        "httpCompletedMs": 65.72745900000018,
+        "httpLatencyMs": 56.00437500000021,
+        "httpStatus": 202,
+        "id": "35cc064c-cfb2-4ee7-85e0-a2351ba8fcd6",
+        "finalObservedMs": 645.233792,
+        "finalLatencyMs": 635.510708,
+        "decision": "REJECTED",
+        "ledgerCount": 1,
+        "resultCount": 1,
+        "processingStartMs": 426.362
+      },
+      {
+        "index": 9,
+        "auctionId": "d93a7f32-d4d0-4d17-8f68-7b3e99798cec",
+        "startedMs": 10.25320899999997,
+        "httpCompletedMs": 72.68766700000015,
+        "httpLatencyMs": 62.43445800000018,
+        "httpStatus": 202,
+        "id": "9b2a695a-2eb6-4fc6-9545-5f53be28a225",
+        "finalObservedMs": 958.3518750000003,
+        "finalLatencyMs": 948.0986660000003,
+        "decision": "REJECTED",
+        "ledgerCount": 1,
+        "resultCount": 1,
+        "processingStartMs": 464.426
+      },
+      {
+        "index": 10,
+        "auctionId": "d93a7f32-d4d0-4d17-8f68-7b3e99798cec",
+        "startedMs": 10.963124999999991,
+        "httpCompletedMs": 64.57066700000018,
+        "httpLatencyMs": 53.607542000000194,
+        "httpStatus": 202,
+        "id": "3d297ecd-2eed-4402-92e6-d4921f31596d",
+        "finalObservedMs": 958.3518750000003,
+        "finalLatencyMs": 947.3887500000003,
+        "decision": "REJECTED",
+        "ledgerCount": 1,
+        "resultCount": 1,
+        "processingStartMs": 455.204
+      },
+      {
+        "index": 11,
+        "auctionId": "d93a7f32-d4d0-4d17-8f68-7b3e99798cec",
+        "startedMs": 11.520042000000103,
+        "httpCompletedMs": 71.18016699999998,
+        "httpLatencyMs": 59.66012499999988,
+        "httpStatus": 202,
+        "id": "e22bfb88-95dd-427f-89e8-d66ca0064360",
+        "finalObservedMs": 958.3518750000003,
+        "finalLatencyMs": 946.8318330000002,
+        "decision": "REJECTED",
+        "ledgerCount": 1,
+        "resultCount": 1,
+        "processingStartMs": 468.899
+      },
+      {
+        "index": 12,
+        "auctionId": "d93a7f32-d4d0-4d17-8f68-7b3e99798cec",
+        "startedMs": 11.871041999999989,
+        "httpCompletedMs": 74.37287500000002,
+        "httpLatencyMs": 62.50183300000003,
+        "httpStatus": 202,
+        "id": "d52103fc-68cf-4c51-97b1-db0be5c08483",
+        "finalObservedMs": 958.3518750000003,
+        "finalLatencyMs": 946.4808330000003,
+        "decision": "REJECTED",
+        "ledgerCount": 1,
+        "resultCount": 1,
+        "processingStartMs": 498.309
+      },
+      {
+        "index": 13,
+        "auctionId": "d93a7f32-d4d0-4d17-8f68-7b3e99798cec",
+        "startedMs": 12.223666999999978,
+        "httpCompletedMs": 73.01879200000008,
+        "httpLatencyMs": 60.7951250000001,
+        "httpStatus": 202,
+        "id": "7fd20499-fef6-4db5-a78f-63809d66cbd9",
+        "finalObservedMs": 958.3518750000003,
+        "finalLatencyMs": 946.1282080000003,
+        "decision": "REJECTED",
+        "ledgerCount": 1,
+        "resultCount": 1,
+        "processingStartMs": 503.266
+      },
+      {
+        "index": 14,
+        "auctionId": "d93a7f32-d4d0-4d17-8f68-7b3e99798cec",
+        "startedMs": 12.749834000000192,
+        "httpCompletedMs": 73.33383400000002,
+        "httpLatencyMs": 60.58399999999983,
+        "httpStatus": 202,
+        "id": "05b63aa1-6e63-41b7-9f2d-c1258ca5b457",
+        "finalObservedMs": 958.3518750000003,
+        "finalLatencyMs": 945.6020410000001,
+        "decision": "REJECTED",
+        "ledgerCount": 1,
+        "resultCount": 1,
+        "processingStartMs": 493.424
+      },
+      {
+        "index": 15,
+        "auctionId": "d93a7f32-d4d0-4d17-8f68-7b3e99798cec",
+        "startedMs": 13.454709000000094,
+        "httpCompletedMs": 74.10483399999998,
+        "httpLatencyMs": 60.65012499999989,
+        "httpStatus": 202,
+        "id": "29c65e7d-440b-4efe-b7b3-8b37788424c9",
+        "finalObservedMs": 958.3518750000003,
+        "finalLatencyMs": 944.8971660000002,
+        "decision": "REJECTED",
+        "ledgerCount": 1,
+        "resultCount": 1,
+        "processingStartMs": 489.017
+      },
+      {
+        "index": 16,
+        "auctionId": "d93a7f32-d4d0-4d17-8f68-7b3e99798cec",
+        "startedMs": 14.467125000000124,
+        "httpCompletedMs": 70.47445900000002,
+        "httpLatencyMs": 56.0073339999999,
+        "httpStatus": 202,
+        "id": "46d88833-e4f4-4155-9851-26d8d5080346",
+        "finalObservedMs": 958.3518750000003,
+        "finalLatencyMs": 943.8847500000002,
+        "decision": "REJECTED",
+        "ledgerCount": 1,
+        "resultCount": 1,
+        "processingStartMs": 461.758
+      },
+      {
+        "index": 17,
+        "auctionId": "d93a7f32-d4d0-4d17-8f68-7b3e99798cec",
+        "startedMs": 15.106750000000147,
+        "httpCompletedMs": 73.51608400000009,
+        "httpLatencyMs": 58.409333999999944,
+        "httpStatus": 202,
+        "id": "2080daa7-da7a-46af-ae5e-8dbb4648f7ea",
+        "finalObservedMs": 958.3518750000003,
+        "finalLatencyMs": 943.2451250000001,
+        "decision": "REJECTED",
+        "ledgerCount": 1,
+        "resultCount": 1,
+        "processingStartMs": 475.404
+      },
+      {
+        "index": 18,
+        "auctionId": "d93a7f32-d4d0-4d17-8f68-7b3e99798cec",
+        "startedMs": 15.378917000000001,
+        "httpCompletedMs": 68.15612499999997,
+        "httpLatencyMs": 52.77720799999997,
+        "httpStatus": 202,
+        "id": "5aa98ce0-bd30-4729-8a2d-9f0a5016c97e",
+        "finalObservedMs": 958.3518750000003,
+        "finalLatencyMs": 942.9729580000003,
+        "decision": "REJECTED",
+        "ledgerCount": 1,
+        "resultCount": 1,
+        "processingStartMs": 459.812
+      },
+      {
+        "index": 19,
+        "auctionId": "d93a7f32-d4d0-4d17-8f68-7b3e99798cec",
+        "startedMs": 15.632375000000138,
+        "httpCompletedMs": 73.90579200000002,
+        "httpLatencyMs": 58.27341699999988,
+        "httpStatus": 202,
+        "id": "f515226f-c8a1-4a23-b594-3f265f696493",
+        "finalObservedMs": 958.3518750000003,
+        "finalLatencyMs": 942.7195000000002,
+        "decision": "REJECTED",
+        "ledgerCount": 1,
+        "resultCount": 1,
+        "processingStartMs": 483.75
+      }
+    ],
+    "queries": [
+      {
+        "startedMs": 101.22570900000028,
+        "completedMs": 321.77437499999996,
+        "requestCount": 20
+      },
+      {
+        "startedMs": 423.59516699999995,
+        "completedMs": 645.233792,
+        "requestCount": 20
+      },
+      {
+        "startedMs": 746.798667,
+        "completedMs": 958.3518750000003,
+        "requestCount": 12
+      }
+    ],
+    "maxQueryCompletionGapMs": 323.45941700000003,
+    "http": {
+      "count": 20,
+      "p50": 57.82958299999996,
+      "p95": 62.50183300000003,
+      "p99": 62.55012499999998
+    },
+    "finalObservation": {
+      "count": 20,
+      "p50": 942.9729580000003,
+      "p95": 948.0986660000003,
+      "p99": 953.0275830000003
+    },
+    "decisions": {
+      "accepted": 1,
+      "rejected": 19
+    }
+  },
+  "afterLag": [
+    {
+      "partition": 0,
+      "currentOffset": 440,
+      "endOffset": 440,
+      "lag": 0
+    },
+    {
+      "partition": 1,
+      "currentOffset": 1743,
+      "endOffset": 1743,
+      "lag": 0
+    },
+    {
+      "partition": 2,
+      "currentOffset": 489,
+      "endOffset": 489,
+      "lag": 0
+    }
+  ],
+  "invariants": {
+    "requests": 20,
+    "ledgerRows": 20,
+    "duplicateLedgers": 0,
+    "priceRegressions": 0,
+    "currentPrice": 20000,
+    "winnerMatches": true
+  },
+  "completedAt": "2026-11-19T01:15:43.808Z"
+}

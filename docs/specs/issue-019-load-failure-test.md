@@ -53,6 +53,8 @@ Fixture는 실험마다 새 UUID 접두사 또는 테스트 전용 데이터베�
 
 최종 확정 관측의 후속 계약은 [#19 로컬 최종 정산 지연 측정](issue-019-final-settlement-latency.md)을 따른다. 기존 `processed_at` 차이와 DB 최종 관측·브라우저 전달 지연을 구분한다.
 
+결과: [로컬 최종 정산 관측 실측](../reports/issue-019-final-settlement-observation.md). DB 조회 비용이 포함된 최종 관측값이며, 브라우저 전달 P95 기준을 대신하지 않는다.
+
 ### 4.1 k6 부하 프로필
 
 | 단계 | 부하 | 시간 | 목적 |
