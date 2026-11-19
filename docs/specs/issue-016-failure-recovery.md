@@ -4,6 +4,7 @@
 - 관련 Issue: [#84 이벤트 재시도·격리·상태 복구 사양 작성](https://github.com/dev-baek/bidflow/issues/84)
 - 후속 작업: #85 Consumer eventId 멱등·실패 격리, #86 Redis 활성 경매 상태 재구성
 - #16 후속 사양: [로컬 단일 검색 이벤트 Replay](issue-016-single-event-replay.md). 기존 장애·재색인 실측과 DLT 재발행 검증은 구분한다.
+- 로컬 완료 증적: [단일 경매 키 유실·복구와 #16 조건별 증적](../reports/issue-016-redis-state-loss.md). 전체 캐시 재생·모든 DLT 종류·AWS 복구는 이 결과에 포함하지 않는다.
 
 ## 1. 목적과 원칙
 

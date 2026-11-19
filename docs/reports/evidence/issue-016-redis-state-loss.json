@@ -1,0 +1,164 @@
+{
+  "commit": "a8ccaade3592ac658cf384640b353c66164c7934",
+  "startedAt": "2026-11-19T01:07:53.566Z",
+  "runId": "redisLoss224e5db810cf445b9506d5180e38ac04",
+  "productId": "b6c8ba90-f0e8-4c87-9776-0346dfe0682d",
+  "auctionId": "84cc0fbf-aad7-4173-8666-c092f1f09be5",
+  "bidderA": "redisLoss224e5db810cf445b9506d5180e38ac04a",
+  "bidderB": "redisLoss224e5db810cf445b9506d5180e38ac04b",
+  "bidderC": "redisLoss224e5db810cf445b9506d5180e38ac04c",
+  "dltBefore": "bid-command.DLT:0:0\nbid-command.DLT:1:0\nbid-command.DLT:2:0",
+  "requests": {
+    "a": "7c52488e-f01f-41b8-9357-99c4529c1d8c",
+    "b": "8be94c7e-3942-4006-9d85-2b74621d3e63",
+    "c": "fc668286-ef33-4aea-9f95-9d2177b30fbc"
+  },
+  "before": {
+    "db": {
+      "price": 21000,
+      "winner": "redisLoss224e5db810cf445b9506d5180e38ac04a",
+      "version": 3,
+      "ends_at": "2026-11-19T01:37:53.905+00:00",
+      "status": "ACTIVE",
+      "maxima": {
+        "redisLoss224e5db810cf445b9506d5180e38ac04a": 30000,
+        "redisLoss224e5db810cf445b9506d5180e38ac04b": 20000
+      },
+      "ledger_rows": 2
+    },
+    "redis": {
+      "state": {
+        "status": "ACTIVE",
+        "currentPrice": "21000",
+        "winnerId": "redisLoss224e5db810cf445b9506d5180e38ac04a",
+        "winnerMax": "30000",
+        "startsAt": "1795050413905",
+        "endsAt": "1795052273905",
+        "version": "3"
+      },
+      "maxima": [
+        [
+          "redisLoss224e5db810cf445b9506d5180e38ac04b",
+          20000
+        ],
+        [
+          "redisLoss224e5db810cf445b9506d5180e38ac04a",
+          30000
+        ]
+      ],
+      "processed": 2,
+      "ttls": [
+        88195,
+        88195,
+        88195
+      ]
+    }
+  },
+  "deletedKeys": [
+    "auction:84cc0fbf-aad7-4173-8666-c092f1f09be5:state",
+    "auction:84cc0fbf-aad7-4173-8666-c092f1f09be5:auto",
+    "auction:84cc0fbf-aad7-4173-8666-c092f1f09be5:processed"
+  ],
+  "deletedCount": 3,
+  "afterLoss": {
+    "keysExist": 0,
+    "db": {
+      "price": 21000,
+      "winner": "redisLoss224e5db810cf445b9506d5180e38ac04a",
+      "version": 3,
+      "ends_at": "2026-11-19T01:37:53.905+00:00",
+      "status": "ACTIVE",
+      "maxima": {
+        "redisLoss224e5db810cf445b9506d5180e38ac04a": 30000,
+        "redisLoss224e5db810cf445b9506d5180e38ac04b": 20000
+      },
+      "ledger_rows": 2
+    }
+  },
+  "afterRecovery": {
+    "db": {
+      "price": 26000,
+      "winner": "redisLoss224e5db810cf445b9506d5180e38ac04a",
+      "version": 4,
+      "ends_at": "2026-11-19T01:37:53.905+00:00",
+      "status": "ACTIVE",
+      "maxima": {
+        "redisLoss224e5db810cf445b9506d5180e38ac04a": 30000,
+        "redisLoss224e5db810cf445b9506d5180e38ac04c": 25000,
+        "redisLoss224e5db810cf445b9506d5180e38ac04b": 20000
+      },
+      "ledger_rows": 3
+    },
+    "redis": {
+      "state": {
+        "status": "ACTIVE",
+        "currentPrice": "26000",
+        "winnerId": "redisLoss224e5db810cf445b9506d5180e38ac04a",
+        "winnerMax": "30000",
+        "startsAt": "1795050413905",
+        "endsAt": "1795052273905",
+        "version": "4"
+      },
+      "maxima": [
+        [
+          "redisLoss224e5db810cf445b9506d5180e38ac04b",
+          20000
+        ],
+        [
+          "redisLoss224e5db810cf445b9506d5180e38ac04c",
+          25000
+        ],
+        [
+          "redisLoss224e5db810cf445b9506d5180e38ac04a",
+          30000
+        ]
+      ],
+      "processed": 1,
+      "ttls": [
+        88192,
+        88192,
+        88192
+      ]
+    }
+  },
+  "publicDetail": {
+    "auctionId": "84cc0fbf-aad7-4173-8666-c092f1f09be5",
+    "title": "redisLoss224e5db810cf445b9506d5180e38ac04",
+    "thumbnailObjectKey": null,
+    "currentPrice": 26000,
+    "endsAt": "2026-11-19T01:37:53.905Z",
+    "status": "ACTIVE",
+    "auctionVersion": 4,
+    "outcome": null,
+    "finalPrice": null
+  },
+  "afterRetry": {
+    "price": 26000,
+    "winner": "redisLoss224e5db810cf445b9506d5180e38ac04a",
+    "version": 4,
+    "ends_at": "2026-11-19T01:37:53.905+00:00",
+    "status": "ACTIVE",
+    "maxima": {
+      "redisLoss224e5db810cf445b9506d5180e38ac04a": 30000,
+      "redisLoss224e5db810cf445b9506d5180e38ac04c": 25000,
+      "redisLoss224e5db810cf445b9506d5180e38ac04b": 20000
+    },
+    "ledger_rows": 3
+  },
+  "requestLedgers": [
+    {
+      "bid_request_id": "7c52488e-f01f-41b8-9357-99c4529c1d8c",
+      "rows": 1
+    },
+    {
+      "bid_request_id": "8be94c7e-3942-4006-9d85-2b74621d3e63",
+      "rows": 1
+    },
+    {
+      "bid_request_id": "fc668286-ef33-4aea-9f95-9d2177b30fbc",
+      "rows": 1
+    }
+  ],
+  "dltAfter": "bid-command.DLT:0:0\nbid-command.DLT:1:0\nbid-command.DLT:2:0",
+  "completedAt": "2026-11-19T01:08:04.138Z"
+}
