@@ -6,6 +6,9 @@ tasks.register<JavaExec>("replayListingEvent") {
     description = "Dry-run or explicitly replay one local listing-event DLT record without starting Spring"
     classpath = sourceSets["main"].runtimeClasspath
     mainClass.set("com.bidflow.runtime.ListingEventReplayCli")
+    javaLauncher.set(javaToolchains.launcherFor {
+        languageVersion.set(JavaLanguageVersion.of(21))
+    })
     workingDir = rootProject.projectDir.parentFile
 }
 
