@@ -1,0 +1,13 @@
+{
+  "auctionId": "2e696d34-ce7f-4e30-99f4-0ae1e247a762",
+  "price": 30000,
+  "version": 22,
+  "status": "ENDED",
+  "requests": 20,
+  "acceptedLedgers": 20,
+  "distinctLedgerRequests": 20,
+  "resultEvents": 20,
+  "resultPublishedBeforeOccurred": 20,
+  "priceRegressions": 0,
+  "winnerMatches": true
+}
