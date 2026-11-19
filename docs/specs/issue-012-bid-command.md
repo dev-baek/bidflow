@@ -102,7 +102,7 @@ Controller가 Kafka Producer를 직접 호출하거나, Broker 지연으로 `202
 | 대상 | 정상 | 오류·경계 |
 |---|---|---|
 | 접수 | 202 + `RECEIVED` + Outbox 원자 저장 | 형식 오류는 DB·Outbox 없음 |
-| 멱등 | 동일 Key/payload는 동일 requestId | 같은 Key/다른 payload는 409 |
+| 멱등 | 동시 최초 접수와 후속 재시도 100회는 동일 requestId·접수 행·명령 Outbox 각 1건 | 같은 Key/다른 payload는 409, 기존 행·명령 변경 없음 |
 | Kafka | `auctionId` Key·계약 payload | Outbox 발행 실패 후 재시도 |
 | 조회 | RECEIVED/ACCEPTED/REJECTED 모델 | 타인·없는 ID는 동일 404 |
 | 화면 | 재시도에도 requestId 유지 | 늦은 WebSocket/조회 응답이 최신 상태를 되돌리지 않음 |
@@ -113,3 +113,9 @@ Controller가 Kafka Producer를 직접 호출하거나, Broker 지연으로 `202
 - [x] `bidRequestId`·Idempotency-Key·상태 조회 계약을 정의했다.
 - [x] PostgreSQL Outbox와 Kafka `auctionId` Key 책임을 정의했다.
 - [x] 화면 상태·오류·소유권·멱등 검증 기준을 기록했다.
+
+## 8. #12 검증 증적
+
+- [PostgreSQL 통합 테스트](../../backend/adapters/src/test/java/com/bidflow/adapters/persistence/JdbcBidLedgerRepositoryIntegrationTest.java): 8개 동시 최초 요청이 조회에서 모두 미등록으로 판정된 뒤 INSERT에 진입한다. 이후 재시도 100회까지 같은 ID를 반환하고, 해당 멱등 키의 접수 행과 해당 경매의 `BidCommandRequested` Outbox가 각 한 건인지 확인한다. 최초 저장만 Outbox를 쓴다. Outbox 키는 `auctionId`이고, 다른 payload 충돌은 기존 행을 변경하지 않는다.
+- [로컬 Browser/HTTP 실행](../reports/issue-099-playwright-e2e.md#현재-시나리오): 첫 요청과 동일 키·payload 재시도 100회는 모두 `202`와 같은 ID, 같은 키에 다른 금액은 `409 IDEMPOTENCY_KEY_PAYLOAD_MISMATCH`다. 같은 사용자의 새 입찰은 새 키·새 ID로 처리된다.
+- [집중 입찰 실측](../reports/issue-019-focused-load-baseline.md): 같은 경매의 명령 20건이 `bid-command` 파티션 1에 들어간 것을 로그 끝 차이로 확인했다. 접수 P95는 78.14ms였다. [분산 로컬 실측](../reports/issue-019-distributed-load-baseline.md)의 접수 P95는 41.88ms였다. 해당 로컬 실행의 결과이지 AWS 성능이나 처리·전달 지연의 측정값은 아니다.

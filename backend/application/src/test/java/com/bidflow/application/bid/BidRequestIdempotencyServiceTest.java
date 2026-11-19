@@ -21,9 +21,10 @@ class BidRequestIdempotencyServiceTest {
         private final Map<String, UUID> requests = new HashMap<>();
         private String savedCorrelationId;
         public Optional<UUID> find(String bidder, String key, String hash) { return Optional.ofNullable(requests.get(bidder + key + hash)); }
-        public void save(String bidder, String key, String hash, String correlationId, UUID requestId, BidRequestCommand command) {
+        public boolean saveIfAbsent(String bidder, String key, String hash, String correlationId, UUID requestId, BidRequestCommand command) {
             savedCorrelationId = correlationId;
             requests.put(bidder + key + hash, requestId);
+            return true;
         }
     }
 }
