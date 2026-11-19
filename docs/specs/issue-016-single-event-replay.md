@@ -1,6 +1,6 @@
 # [Issue #16] 로컬 단일 검색 이벤트 DLT 재처리
 
-- 상태: 사양 승인(#253), 순수 검증·레코드 구성 구현. CLI·감사 기록·실제 재처리는 미완료.
+- 상태: 사양 승인(#253), 순수 검증·레코드 구성과 로컬 CLI·감사 기록 구현. 새 장애 Fixture의 실제 재처리는 미검증.
 - 기존 이슈: [#16 중복 이벤트·Consumer 장애·Redis 복구](https://github.com/dev-baek/bidflow/issues/16)
 - 상위 계약: [이벤트 실패·복구](issue-016-failure-recovery.md)
 - 배경: [OpenSearch 장애 실측](../reports/issue-096-opensearch-recovery.md)에서는 DLT 격리 뒤 PostgreSQL 전체 재색인으로 복구했다. DLT의 원본 이벤트를 다시 발행하는 도구와 실측은 아직 없다.
@@ -60,4 +60,24 @@ dry-run·오류는 Kafka/DB 상태를 쓰지 않는다. 실행 모드라도 기�
 - `ListingEventReplayPlan.prepare`는 기대 DLT 위치·eventId·필수 단일 헤더와 기존 Envelope/Contract 검증을 수행한다. 알려진 schemaVersion 1과 검색 이벤트 3종만 허용한다.
 - 레코드 key/value는 바이트 배열을 복사해 보존하고, 원본 partition과 진단 위치를 결과로 반환한다. UTF-8 오류·tombstone·1 MiB 초과 payload는 거부한다. 시간과 replay ID는 인자로 받아 I/O 없이 테스트한다.
 - `ListingEventReplayPlanTest` 및 기존 Kafka 실패 분류·검색 Listener 테스트로 정상 구성과 거부 경계를 확인한다. 이 단계의 plan은 Kafka partition 존재 확인이나 발행을 수행하지 않는다.
-- 후속 작업은 loopback 전용 CLI, 정확한 offset 읽기·partition 존재 확인, 기본 dry-run, 감사 JSONL과 명시적 execute, 새 장애 Fixture 복구 실측이다. 이 문서의 전체 완료 또는 #16 완료로 간주하지 않는다.
+- `ListingEventReplayCli`는 loopback 전용 입력, 직접 assign/seek와 제한된 poll, 원본 partition 존재 확인을 연결한다. 기본 dry-run에는 Producer와 감사 파일을 만들지 않는다. execute는 저장소 밖의 새 파일에 `ATTEMPTED`를 flush/force한 뒤 1회 send하고 ack를 `PUBLISHED`로 기록한다. 전송/후속 감사 실패는 `UNKNOWN`이며 자동 재발행하지 않는다.
+- 후속 작업은 새 장애 Fixture 복구 실측이다. 모의 Kafka Client 기반 테스트를 실제 broker·Consumer·검색 복구 성공으로 간주하지 않으며, #16은 열어 둔다.
+
+## 로컬 실행 방법
+
+저장소 루트에서 실행한다. Spring 서버가 아닌 독립 `JavaExec`이므로 API·Scheduler·Listener를 추가로 띄우지 않는다. Java 21과 실행 중인 로컬 Kafka가 필요하다.
+
+```sh
+# 조회·검증만: 실제 DLT 위치와 기대 eventId를 입력한다.
+./backend/gradlew -p backend :runtime:replayListingEvent \
+  --args='localhost:9092 2 9 18326eec-aa93-4eb1-b1c3-3d23e7de163c operator'
+
+# 원인을 해결하고 dry-run을 확인한 경우에만 명시적으로 발행한다.
+# 예시 경로의 부모 폴더는 먼저 준비하고, 파일은 아직 없어야 한다.
+./backend/gradlew -p backend :runtime:replayListingEvent \
+  --args='localhost:9092 2 9 18326eec-aa93-4eb1-b1c3-3d23e7de163c operator /tmp/bidflow-replay-unique.jsonl --execute'
+```
+
+위 숫자·ID는 사용법 예시이지 실제 재처리 대상으로 승인한 사건이 아니다. 커맨드에 payload·인증정보를 넣지 않는다. 원격 bootstrap·다중 주소·잘못된 인자는 Kafka 생성 전에 거부된다. 정상 broker 메타데이터도 로컬 주소를 광고하는 개발 환경에서만 사용한다.
+
+CLI 실패는 비정상 종료하며 예외 원문 대신 일반 메시지를 출력한다. `ATTEMPTED`만 있거나 `UNKNOWN`이면 전송됐을 수 있으므로 새 명령으로 무조건 재시도하지 않는다. 성공적으로 발행해도 검색 처리 성공 행과 API 응답을 별도로 확인해야 한다. 실제 계정의 AWS 사용은 여전히 범위 밖이다.
