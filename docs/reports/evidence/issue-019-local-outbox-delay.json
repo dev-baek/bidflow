@@ -1,0 +1,1666 @@
+{
+  "environment": {
+    "sourceCommit": "5fbaa979815c7edd0fda6f488dea5645a23665d6",
+    "jarSha256": "5251be8d60c6fc0f3a7afb13415c72e2438713b973a854a54f411009065f08c4",
+    "original": {
+      "pid": 55995,
+      "command": "/Users/baekmingyu/Library/Java/JavaVirtualMachines/ms-21.0.7/Contents/Home/bin/java -jar /Users/baekmingyu/Documents/BidFlow/backend/runtime/build/libs/runtime-0.0.1-SNAPSHOT.jar --spring.profiles.active=local --server.address=127.0.0.1 --bidflow.outbox.fixed-delay-ms=1000 --logging.level.com.bidflow.runtime.OutboxScheduler=INFO"
+    },
+    "intervalEnvironmentOverrideAbsent": true,
+    "applicationJsonAbsent": true,
+    "testRuntime": {
+      "pid": 61040,
+      "command": "/Users/baekmingyu/Library/Java/JavaVirtualMachines/ms-21.0.7/Contents/Home/bin/java -jar /Users/baekmingyu/Documents/BidFlow/backend/runtime/build/libs/runtime-0.0.1-SNAPSHOT.jar --spring.profiles.active=local,e2e --server.address=127.0.0.1",
+      "intervalCliOverrideAbsent": true,
+      "loggingCliOverrideAbsent": true
+    },
+    "restored": {
+      "pid": 61779,
+      "args": [
+        "-jar",
+        "/Users/baekmingyu/Documents/BidFlow/backend/runtime/build/libs/runtime-0.0.1-SNAPSHOT.jar",
+        "--spring.profiles.active=local",
+        "--server.address=127.0.0.1",
+        "--bidflow.outbox.fixed-delay-ms=1000",
+        "--logging.level.com.bidflow.runtime.OutboxScheduler=INFO"
+      ],
+      "health": 200,
+      "verifiedAt": "2026-11-19T07:49:46.592Z"
+    }
+  },
+  "collectedAt": "2026-11-19T07:49:10.768Z",
+  "functionalFirstAttempt": {
+    "passed": 2,
+    "failed": 2,
+    "skipped": 2,
+    "failures": [
+      {
+        "test": "마감 후 공개 유찰",
+        "category": "ENDED_NOT_VISIBLE_WITHIN_15S",
+        "auctionId": "430ec2a3-43a6-488e-9312-aa3064291e6d",
+        "laterDbStatus": "ENDED"
+      },
+      {
+        "test": "자동입찰 선행 제어 입찰",
+        "category": "ACTIVE_PRICE_NOT_OBSERVED_WITHIN_10S",
+        "auctionId": "aeb42276-6a18-47ab-86eb-5df70893afc3",
+        "laterDbDecision": "ACCEPTED",
+        "laterBusinessDecidedAt": "2030-01-01T12:24:00Z"
+      }
+    ]
+  },
+  "rerun": {
+    "passed": 6,
+    "failed": 0,
+    "skipped": 0,
+    "note": "No code or timeout changed; exact cold-start failure cause not established.",
+    "lagBeforeRerun": {
+      "bidSettlement": [
+        0,
+        0,
+        0
+      ],
+      "realtimeProjection": [
+        0,
+        0,
+        0
+      ]
+    }
+  },
+  "browser": {
+    "startedAt": "2026-11-19T07:48:11.994Z",
+    "completedAt": "2026-11-19T07:48:22.744Z",
+    "runId": "096d7e5d-6b6b-40c0-b6ed-efe2fbe27320",
+    "auctionId": "e9becef1-1e39-48e9-8205-1d180dcf69e4",
+    "commit": "5fbaa979815c7edd0fda6f488dea5645a23665d6",
+    "chromium": "145.0.7632.6",
+    "completed": 20,
+    "incomplete": 0,
+    "p95WithinTarget": true,
+    "http": {
+      "count": 20,
+      "p50": 47.59012499999881,
+      "p95": 54.43475000000035,
+      "p99": 55.46654099999796
+    },
+    "privateResult": {
+      "count": 20,
+      "p50": 208.2517919999991,
+      "p95": 262.8557080000028,
+      "p99": 285.26558300000033
+    },
+    "screen": {
+      "count": 20,
+      "p50": 420.1225830000003,
+      "p95": 430.0551660000019,
+      "p99": 435.1627499999995
+    },
+    "samples": [
+      {
+        "index": 0,
+        "amount": 11000,
+        "httpMs": 47.59012499999881,
+        "requestId": "91d8f4b1-1cf4-4c38-9365-b129867e2032",
+        "privateMs": 208.2517919999991,
+        "screenMs": 435.1627499999995,
+        "fineScreenMs": 231.88124999999854,
+        "fineCheckCount": 7,
+        "fineMaxCheckGapMs": 32.27262499999779,
+        "fineAfterPrivateMs": 23.62945799999943,
+        "baselineAfterPrivateMs": 226.9109580000004,
+        "baselineMinusFineMs": 203.28150000000096
+      },
+      {
+        "index": 1,
+        "amount": 12000,
+        "httpMs": 50.296250000003056,
+        "requestId": "de8730d8-e476-43ac-a57b-ec2e5736046d",
+        "privateMs": 202.62629200000083,
+        "screenMs": 422.7852500000008,
+        "fineScreenMs": 215.05495800000062,
+        "fineCheckCount": 7,
+        "fineMaxCheckGapMs": 32.504165999998804,
+        "fineAfterPrivateMs": 12.428665999999794,
+        "baselineAfterPrivateMs": 220.15895799999998,
+        "baselineMinusFineMs": 207.7302920000002
+      },
+      {
+        "index": 2,
+        "amount": 13000,
+        "httpMs": 45.498124999998254,
+        "requestId": "a03ec246-7772-4e7f-9356-0ce7fb980ba4",
+        "privateMs": 186.35733299999993,
+        "screenMs": 407.3252079999984,
+        "fineScreenMs": 213.4286659999998,
+        "fineCheckCount": 7,
+        "fineMaxCheckGapMs": 34.33491700000013,
+        "fineAfterPrivateMs": 27.071332999999868,
+        "baselineAfterPrivateMs": 220.96787499999846,
+        "baselineMinusFineMs": 193.8965419999986
+      },
+      {
+        "index": 3,
+        "amount": 14000,
+        "httpMs": 44.8796250000014,
+        "requestId": "db51db54-a5ed-4e5c-88e0-dd2c396ab0b5",
+        "privateMs": 196.4449999999997,
+        "screenMs": 416.3056660000002,
+        "fineScreenMs": 205.92608299999847,
+        "fineCheckCount": 7,
+        "fineMaxCheckGapMs": 30.852875000000495,
+        "fineAfterPrivateMs": 9.481082999998762,
+        "baselineAfterPrivateMs": 219.8606660000005,
+        "baselineMinusFineMs": 210.37958300000173
+      },
+      {
+        "index": 4,
+        "amount": 15000,
+        "httpMs": 52.17437499999869,
+        "requestId": "50a754f5-4228-4741-95fa-c1e4340542a5",
+        "privateMs": 223.4708329999994,
+        "screenMs": 421.414041,
+        "fineScreenMs": 242.90737499999886,
+        "fineCheckCount": 8,
+        "fineMaxCheckGapMs": 31.60108300000138,
+        "fineAfterPrivateMs": 19.436541999999463,
+        "baselineAfterPrivateMs": 197.9432080000006,
+        "baselineMinusFineMs": 178.50666600000113
+      },
+      {
+        "index": 5,
+        "amount": 16000,
+        "httpMs": 52.495333000002574,
+        "requestId": "aca8c717-c964-483d-9576-0c44349fe767",
+        "privateMs": 218.270708,
+        "screenMs": 430.0551660000019,
+        "fineScreenMs": 239.79008299999987,
+        "fineCheckCount": 8,
+        "fineMaxCheckGapMs": 30.122332999999344,
+        "fineAfterPrivateMs": 21.519374999999854,
+        "baselineAfterPrivateMs": 211.7844580000019,
+        "baselineMinusFineMs": 190.26508300000205
+      },
+      {
+        "index": 6,
+        "amount": 17000,
+        "httpMs": 43.93933300000208,
+        "requestId": "f73247ff-f490-4400-a56d-4c96f90e3e8c",
+        "privateMs": 224.54625000000306,
+        "screenMs": 422.12345800000185,
+        "fineScreenMs": 235.56145800000013,
+        "fineCheckCount": 8,
+        "fineMaxCheckGapMs": 33.40662499999962,
+        "fineAfterPrivateMs": 11.015207999997074,
+        "baselineAfterPrivateMs": 197.5772079999988,
+        "baselineMinusFineMs": 186.56200000000172
+      },
+      {
+        "index": 7,
+        "amount": 18000,
+        "httpMs": 44.24270799999795,
+        "requestId": "a15f554e-fd4e-40bf-b663-116a59d6a3f7",
+        "privateMs": 220.4756669999988,
+        "screenMs": 419.33429199999955,
+        "fineScreenMs": 234.0396249999976,
+        "fineCheckCount": 8,
+        "fineMaxCheckGapMs": 31.01495900000009,
+        "fineAfterPrivateMs": 13.56395799999882,
+        "baselineAfterPrivateMs": 198.85862500000076,
+        "baselineMinusFineMs": 185.29466700000194
+      },
+      {
+        "index": 8,
+        "amount": 19000,
+        "httpMs": 46.23216700000194,
+        "requestId": "5fa05f16-b9cc-469c-aa6f-70335323a49f",
+        "privateMs": 236.55983399999968,
+        "screenMs": 414.489625000002,
+        "fineScreenMs": 262.0937090000007,
+        "fineCheckCount": 9,
+        "fineMaxCheckGapMs": 31.080791999997018,
+        "fineAfterPrivateMs": 25.53387500000099,
+        "baselineAfterPrivateMs": 177.9297910000023,
+        "baselineMinusFineMs": 152.3959160000013
+      },
+      {
+        "index": 9,
+        "amount": 20000,
+        "httpMs": 54.43475000000035,
+        "requestId": "741c92c9-9fdf-4e05-9ae5-9a0eaae1365a",
+        "privateMs": 262.8557080000028,
+        "screenMs": 426.29804200000217,
+        "fineScreenMs": 274.67133300000205,
+        "fineCheckCount": 9,
+        "fineMaxCheckGapMs": 36.02100000000064,
+        "fineAfterPrivateMs": 11.815624999999272,
+        "baselineAfterPrivateMs": 163.4423339999994,
+        "baselineMinusFineMs": 151.62670900000012
+      },
+      {
+        "index": 10,
+        "amount": 21000,
+        "httpMs": 48.35995799999728,
+        "requestId": "37259157-7249-48c2-a246-24fab25a4630",
+        "privateMs": 250.32633299999725,
+        "screenMs": 412.0769169999985,
+        "fineScreenMs": 267.0945419999989,
+        "fineCheckCount": 9,
+        "fineMaxCheckGapMs": 32.56816600000093,
+        "fineAfterPrivateMs": 16.76820900000166,
+        "baselineAfterPrivateMs": 161.75058400000125,
+        "baselineMinusFineMs": 144.9823749999996
+      },
+      {
+        "index": 11,
+        "amount": 22000,
+        "httpMs": 45.867708000001585,
+        "requestId": "d2ab631e-b3cf-47c8-bb2a-5f7624519732",
+        "privateMs": 285.26558300000033,
+        "screenMs": 407.9797080000026,
+        "fineScreenMs": 312.68879200000083,
+        "fineCheckCount": 11,
+        "fineMaxCheckGapMs": 30.451540999998542,
+        "fineAfterPrivateMs": 27.423209000000497,
+        "baselineAfterPrivateMs": 122.71412500000224,
+        "baselineMinusFineMs": 95.29091600000174
+      },
+      {
+        "index": 12,
+        "amount": 23000,
+        "httpMs": 44.47091700000237,
+        "requestId": "26d73f5a-83b3-4303-959a-a7c1474a61b6",
+        "privateMs": 200.78550000000178,
+        "screenMs": 413.4620000000032,
+        "fineScreenMs": 213.85941699999967,
+        "fineCheckCount": 7,
+        "fineMaxCheckGapMs": 37.496124999997846,
+        "fineAfterPrivateMs": 13.073916999997891,
+        "baselineAfterPrivateMs": 212.6765000000014,
+        "baselineMinusFineMs": 199.6025830000035
+      },
+      {
+        "index": 13,
+        "amount": 24000,
+        "httpMs": 51.11650000000009,
+        "requestId": "392be93c-d836-4909-b79c-75d6e0849c98",
+        "privateMs": 197.15941700000258,
+        "screenMs": 425.77912500000093,
+        "fineScreenMs": 212.14379200000258,
+        "fineCheckCount": 7,
+        "fineMaxCheckGapMs": 30.460500000001048,
+        "fineAfterPrivateMs": 14.984375,
+        "baselineAfterPrivateMs": 228.61970799999835,
+        "baselineMinusFineMs": 213.63533299999835
+      },
+      {
+        "index": 14,
+        "amount": 25000,
+        "httpMs": 48.34495799999786,
+        "requestId": "5ba549f9-e6ce-4306-8a31-083067049044",
+        "privateMs": 193.88204199999745,
+        "screenMs": 421.2186249999977,
+        "fineScreenMs": 210.26591700000063,
+        "fineCheckCount": 7,
+        "fineMaxCheckGapMs": 29.549208000000363,
+        "fineAfterPrivateMs": 16.383875000003172,
+        "baselineAfterPrivateMs": 227.33658300000025,
+        "baselineMinusFineMs": 210.95270799999707
+      },
+      {
+        "index": 15,
+        "amount": 26000,
+        "httpMs": 45.69566599999962,
+        "requestId": "113464ca-33c0-437a-91a3-d9ac5b115f7a",
+        "privateMs": 190.43008299999929,
+        "screenMs": 420.1225830000003,
+        "fineScreenMs": 207.2134159999987,
+        "fineCheckCount": 7,
+        "fineMaxCheckGapMs": 30.91149999999834,
+        "fineAfterPrivateMs": 16.783332999999402,
+        "baselineAfterPrivateMs": 229.69250000000102,
+        "baselineMinusFineMs": 212.90916700000162
+      },
+      {
+        "index": 16,
+        "amount": 27000,
+        "httpMs": 49.870333999999275,
+        "requestId": "70c1e1b0-b5f6-4e65-8d45-1d4015d8a100",
+        "privateMs": 194.74324999999953,
+        "screenMs": 424.4832920000008,
+        "fineScreenMs": 211.12145900000178,
+        "fineCheckCount": 7,
+        "fineMaxCheckGapMs": 30.312834000000294,
+        "fineAfterPrivateMs": 16.378209000002244,
+        "baselineAfterPrivateMs": 229.74004200000127,
+        "baselineMinusFineMs": 213.36183299999902
+      },
+      {
+        "index": 17,
+        "amount": 28000,
+        "httpMs": 46.4890000000014,
+        "requestId": "62e06725-8cdb-4e32-a9ca-291d25c74c77",
+        "privateMs": 198.1235830000005,
+        "screenMs": 412.6547500000015,
+        "fineScreenMs": 209.78900000000067,
+        "fineCheckCount": 7,
+        "fineMaxCheckGapMs": 30.15662499999962,
+        "fineAfterPrivateMs": 11.665417000000161,
+        "baselineAfterPrivateMs": 214.531167000001,
+        "baselineMinusFineMs": 202.86575000000084
+      },
+      {
+        "index": 18,
+        "amount": 29000,
+        "httpMs": 55.46654099999796,
+        "requestId": "7e2ea4e9-5e39-4ad4-a41b-55d144652693",
+        "privateMs": 222.04383299999972,
+        "screenMs": 420.4828749999979,
+        "fineScreenMs": 298.3666659999981,
+        "fineCheckCount": 9,
+        "fineMaxCheckGapMs": 50.18512499999997,
+        "fineAfterPrivateMs": 76.32283299999835,
+        "baselineAfterPrivateMs": 198.43904199999815,
+        "baselineMinusFineMs": 122.1162089999998
+      },
+      {
+        "index": 19,
+        "amount": 30000,
+        "httpMs": 50.422332999998616,
+        "requestId": "6995d743-b95a-4c6f-8ce4-cff8564d9efc",
+        "privateMs": 211.81016699999964,
+        "screenMs": 416.9939999999988,
+        "fineScreenMs": 244.90124999999898,
+        "fineCheckCount": 8,
+        "fineMaxCheckGapMs": 34.14112500000192,
+        "fineAfterPrivateMs": 33.091082999999344,
+        "baselineAfterPrivateMs": 205.18383299999914,
+        "baselineMinusFineMs": 172.0927499999998
+      }
+    ],
+    "observation": {
+      "baseline": "Playwright default poll/locator assertions",
+      "fineIntervalsMs": [
+        25
+      ],
+      "pairedOnSameRequest": true
+    },
+    "fineScreen": {
+      "count": 20,
+      "p50": 231.88124999999854,
+      "p95": 298.3666659999981,
+      "p99": 312.68879200000083
+    },
+    "fineAfterPrivate": {
+      "count": 20,
+      "p50": 16.383875000003172,
+      "p95": 33.091082999999344,
+      "p99": 76.32283299999835
+    },
+    "baselineAfterPrivate": {
+      "count": 20,
+      "p50": 211.7844580000019,
+      "p95": 229.69250000000102,
+      "p99": 229.74004200000127
+    }
+  },
+  "db": {
+    "auctionId": "e9becef1-1e39-48e9-8205-1d180dcf69e4",
+    "currentPrice": 30000,
+    "auctionVersion": 21,
+    "status": "ACTIVE",
+    "requests": 20,
+    "acceptedRequests": 20,
+    "ledgerRows": 20,
+    "distinctLedgerRequests": 20,
+    "settlementEvents": 20,
+    "priceRegressions": 0,
+    "winnerMatches": true,
+    "events": [
+      {
+        "eventId": "935ca6c0-3e7f-4608-a4c1-90d8dbf663c4",
+        "eventType": "BidCommandRequested",
+        "requestId": "50a754f5-4228-4741-95fa-c1e4340542a5",
+        "published": true
+      },
+      {
+        "eventId": "b9762e2c-99bc-46b2-983e-8243eec76287",
+        "eventType": "BidCommandRequested",
+        "requestId": "91d8f4b1-1cf4-4c38-9365-b129867e2032",
+        "published": true
+      },
+      {
+        "eventId": "2a1044a6-9bdb-40bf-baa7-cd5abfc93eb2",
+        "eventType": "BidCommandRequested",
+        "requestId": "db51db54-a5ed-4e5c-88e0-dd2c396ab0b5",
+        "published": true
+      },
+      {
+        "eventId": "be56e5c1-81ad-4c3f-8246-b3940445c951",
+        "eventType": "BidCommandRequested",
+        "requestId": "392be93c-d836-4909-b79c-75d6e0849c98",
+        "published": true
+      },
+      {
+        "eventId": "56a9db5b-aaef-40b6-b14f-136b1cc98414",
+        "eventType": "BidCommandRequested",
+        "requestId": "f73247ff-f490-4400-a56d-4c96f90e3e8c",
+        "published": true
+      },
+      {
+        "eventId": "59ec28d5-b2b8-48cf-96ba-a37bc0c6082a",
+        "eventType": "BidCommandRequested",
+        "requestId": "70c1e1b0-b5f6-4e65-8d45-1d4015d8a100",
+        "published": true
+      },
+      {
+        "eventId": "0aed260f-26a5-426f-9f22-9c78dd9a5d1f",
+        "eventType": "BidAccepted",
+        "requestId": "91d8f4b1-1cf4-4c38-9365-b129867e2032",
+        "published": true
+      },
+      {
+        "eventId": "7a32e814-8a40-47df-97aa-6dbed83ffd9a",
+        "eventType": "BidCommandRequested",
+        "requestId": "de8730d8-e476-43ac-a57b-ec2e5736046d",
+        "published": true
+      },
+      {
+        "eventId": "7f17d0a7-5736-4a31-8e54-01fb555c518c",
+        "eventType": "BidAccepted",
+        "requestId": "de8730d8-e476-43ac-a57b-ec2e5736046d",
+        "published": true
+      },
+      {
+        "eventId": "36429aba-b9a8-4b6b-b85a-52ea0e77a688",
+        "eventType": "BidCommandRequested",
+        "requestId": "a03ec246-7772-4e7f-9356-0ce7fb980ba4",
+        "published": true
+      },
+      {
+        "eventId": "c07f034b-fd90-47c9-b602-13fb2d98d704",
+        "eventType": "BidAccepted",
+        "requestId": "a03ec246-7772-4e7f-9356-0ce7fb980ba4",
+        "published": true
+      },
+      {
+        "eventId": "1328b29e-c1fb-4dc2-ace5-bfec0d75867a",
+        "eventType": "BidAccepted",
+        "requestId": "db51db54-a5ed-4e5c-88e0-dd2c396ab0b5",
+        "published": true
+      },
+      {
+        "eventId": "26cc4ee8-de7f-4546-ae96-914c1de1e218",
+        "eventType": "BidAccepted",
+        "requestId": "50a754f5-4228-4741-95fa-c1e4340542a5",
+        "published": true
+      },
+      {
+        "eventId": "7e2c558d-fe8e-4dde-9fcf-01bcb8a28473",
+        "eventType": "BidAccepted",
+        "requestId": "aca8c717-c964-483d-9576-0c44349fe767",
+        "published": true
+      },
+      {
+        "eventId": "4b3577c0-1d50-4f9b-9967-6ade6a9c7ded",
+        "eventType": "BidAccepted",
+        "requestId": "f73247ff-f490-4400-a56d-4c96f90e3e8c",
+        "published": true
+      },
+      {
+        "eventId": "ebbd27ac-0bbc-4fc5-b411-678f30d7db25",
+        "eventType": "BidAccepted",
+        "requestId": "a15f554e-fd4e-40bf-b663-116a59d6a3f7",
+        "published": true
+      },
+      {
+        "eventId": "c2dd0552-f31f-4c58-9148-46d25fabccfd",
+        "eventType": "BidCommandRequested",
+        "requestId": "5fa05f16-b9cc-469c-aa6f-70335323a49f",
+        "published": true
+      },
+      {
+        "eventId": "70bb739c-f8b1-488a-a192-9da473499800",
+        "eventType": "BidAccepted",
+        "requestId": "5fa05f16-b9cc-469c-aa6f-70335323a49f",
+        "published": true
+      },
+      {
+        "eventId": "0639721a-675d-40c1-a5a6-43fbfc637a3f",
+        "eventType": "BidCommandRequested",
+        "requestId": "741c92c9-9fdf-4e05-9ae5-9a0eaae1365a",
+        "published": true
+      },
+      {
+        "eventId": "52a5f254-7d5a-4690-aff8-ef1062f63dc2",
+        "eventType": "BidAccepted",
+        "requestId": "741c92c9-9fdf-4e05-9ae5-9a0eaae1365a",
+        "published": true
+      },
+      {
+        "eventId": "59f85e14-f526-47c9-8f6d-c9983e63a341",
+        "eventType": "BidCommandRequested",
+        "requestId": "aca8c717-c964-483d-9576-0c44349fe767",
+        "published": true
+      },
+      {
+        "eventId": "01131812-7bad-4cc3-8503-b0c813e75dd2",
+        "eventType": "BidCommandRequested",
+        "requestId": "37259157-7249-48c2-a246-24fab25a4630",
+        "published": true
+      },
+      {
+        "eventId": "649d5bda-93a0-4e4c-bb3d-148961b44abd",
+        "eventType": "BidAccepted",
+        "requestId": "37259157-7249-48c2-a246-24fab25a4630",
+        "published": true
+      },
+      {
+        "eventId": "79a403c6-9fd3-434a-bca3-42793e332977",
+        "eventType": "BidCommandRequested",
+        "requestId": "d2ab631e-b3cf-47c8-bb2a-5f7624519732",
+        "published": true
+      },
+      {
+        "eventId": "42536720-0da8-4d36-a584-3aef7f613b5e",
+        "eventType": "BidAccepted",
+        "requestId": "d2ab631e-b3cf-47c8-bb2a-5f7624519732",
+        "published": true
+      },
+      {
+        "eventId": "1b66de14-c15e-490b-9434-604796029ad5",
+        "eventType": "BidCommandRequested",
+        "requestId": "26d73f5a-83b3-4303-959a-a7c1474a61b6",
+        "published": true
+      },
+      {
+        "eventId": "1fc18459-aeac-4c76-8849-37ae71d545ed",
+        "eventType": "BidAccepted",
+        "requestId": "26d73f5a-83b3-4303-959a-a7c1474a61b6",
+        "published": true
+      },
+      {
+        "eventId": "ba53e6db-7f81-40de-8242-411e2f041f6c",
+        "eventType": "BidAccepted",
+        "requestId": "392be93c-d836-4909-b79c-75d6e0849c98",
+        "published": true
+      },
+      {
+        "eventId": "ed70d8ad-814d-4013-a01d-9ed995947b08",
+        "eventType": "BidCommandRequested",
+        "requestId": "5ba549f9-e6ce-4306-8a31-083067049044",
+        "published": true
+      },
+      {
+        "eventId": "4dfbf437-c464-41f0-b83f-c20f27d25782",
+        "eventType": "BidAccepted",
+        "requestId": "5ba549f9-e6ce-4306-8a31-083067049044",
+        "published": true
+      },
+      {
+        "eventId": "c29aaa6e-f82c-4f16-93c4-212eccb67bfb",
+        "eventType": "BidCommandRequested",
+        "requestId": "113464ca-33c0-437a-91a3-d9ac5b115f7a",
+        "published": true
+      },
+      {
+        "eventId": "dfa2416b-bc85-433c-a5bb-4a581f512998",
+        "eventType": "BidAccepted",
+        "requestId": "113464ca-33c0-437a-91a3-d9ac5b115f7a",
+        "published": true
+      },
+      {
+        "eventId": "227645db-1a82-4135-9c24-08fa69227a21",
+        "eventType": "BidAccepted",
+        "requestId": "70c1e1b0-b5f6-4e65-8d45-1d4015d8a100",
+        "published": true
+      },
+      {
+        "eventId": "297bda65-4285-442b-9ff5-caa5c2f01c01",
+        "eventType": "BidCommandRequested",
+        "requestId": "62e06725-8cdb-4e32-a9ca-291d25c74c77",
+        "published": true
+      },
+      {
+        "eventId": "93620a65-7c8b-4e01-ac28-13a2ea955dfc",
+        "eventType": "BidCommandRequested",
+        "requestId": "a15f554e-fd4e-40bf-b663-116a59d6a3f7",
+        "published": true
+      },
+      {
+        "eventId": "ab9eee84-53a5-418b-b1d4-3e0ed242c843",
+        "eventType": "BidAccepted",
+        "requestId": "62e06725-8cdb-4e32-a9ca-291d25c74c77",
+        "published": true
+      },
+      {
+        "eventId": "df7376e9-2e92-4834-a851-cb75b22c3ff0",
+        "eventType": "BidCommandRequested",
+        "requestId": "7e2ea4e9-5e39-4ad4-a41b-55d144652693",
+        "published": true
+      },
+      {
+        "eventId": "72a232c9-6c70-43c5-bf2c-67460c3be5bf",
+        "eventType": "BidAccepted",
+        "requestId": "7e2ea4e9-5e39-4ad4-a41b-55d144652693",
+        "published": true
+      },
+      {
+        "eventId": "6f106bb1-b79e-49e3-b94b-3971c6baa8f5",
+        "eventType": "BidCommandRequested",
+        "requestId": "6995d743-b95a-4c6f-8ce4-cff8564d9efc",
+        "published": true
+      },
+      {
+        "eventId": "5149bdd5-6906-4883-8dbb-c7dd79c5ff2b",
+        "eventType": "BidAccepted",
+        "requestId": "6995d743-b95a-4c6f-8ce4-cff8564d9efc",
+        "published": true
+      }
+    ]
+  },
+  "outbox": {
+    "BidCommandRequested": {
+      "pendingAgeMs": {
+        "count": 20,
+        "p50": 42,
+        "p95": 89,
+        "p99": 101
+      },
+      "batchWaitMs": {
+        "count": 20,
+        "p50": 0.000833,
+        "p95": 0.000958,
+        "p99": 0.001125
+      },
+      "sendAckMs": {
+        "count": 20,
+        "p50": 2.394083,
+        "p95": 6.449,
+        "p99": 6.605791
+      }
+    },
+    "BidAccepted": {
+      "pendingAgeMs": {
+        "count": 20,
+        "p50": 100,
+        "p95": 103,
+        "p99": 104
+      },
+      "batchWaitMs": {
+        "count": 20,
+        "p50": 0.000834,
+        "p95": 0.001542,
+        "p99": 0.001583
+      },
+      "sendAckMs": {
+        "count": 20,
+        "p50": 3.370667,
+        "p95": 8.504917,
+        "p99": 9.461834
+      }
+    }
+  },
+  "logs": [
+    {
+      "event": "event.acknowledged",
+      "eventId": "b9762e2c-99bc-46b2-983e-8243eec76287",
+      "correlationId": "1a76e85a-35c4-4616-9e63-312a5675558e",
+      "topic": "bid-command",
+      "eventType": "BidCommandRequested",
+      "pendingAgeStatus": "VALID",
+      "pendingAgeMs": "42",
+      "sendAckMs": "3.865959",
+      "outcome": "ACKNOWLEDGED",
+      "partition": "1",
+      "offset": "1854"
+    },
+    {
+      "event": "event.published",
+      "eventId": "b9762e2c-99bc-46b2-983e-8243eec76287",
+      "correlationId": "1a76e85a-35c4-4616-9e63-312a5675558e",
+      "topic": "bid-command",
+      "eventType": "BidCommandRequested",
+      "pendingAgeStatus": "VALID",
+      "pendingAgeMs": "42",
+      "batchWaitMs": "7.09E-4",
+      "outcome": "PUBLISHED"
+    },
+    {
+      "event": "event.acknowledged",
+      "eventId": "0aed260f-26a5-426f-9f22-9c78dd9a5d1f",
+      "correlationId": "1a76e85a-35c4-4616-9e63-312a5675558e",
+      "topic": "bid-event",
+      "eventType": "BidAccepted",
+      "pendingAgeStatus": "VALID",
+      "pendingAgeMs": "92",
+      "sendAckMs": "3.370667",
+      "outcome": "ACKNOWLEDGED",
+      "partition": "1",
+      "offset": "1952"
+    },
+    {
+      "event": "event.published",
+      "eventId": "0aed260f-26a5-426f-9f22-9c78dd9a5d1f",
+      "correlationId": "1a76e85a-35c4-4616-9e63-312a5675558e",
+      "topic": "bid-event",
+      "eventType": "BidAccepted",
+      "pendingAgeStatus": "VALID",
+      "pendingAgeMs": "92",
+      "batchWaitMs": "0.001167",
+      "outcome": "PUBLISHED"
+    },
+    {
+      "event": "event.acknowledged",
+      "eventId": "7a32e814-8a40-47df-97aa-6dbed83ffd9a",
+      "correlationId": "0643e9b1-7429-4c84-86f1-3bf0bcdcdaf9",
+      "topic": "bid-command",
+      "eventType": "BidCommandRequested",
+      "pendingAgeStatus": "VALID",
+      "pendingAgeMs": "26",
+      "sendAckMs": "6.605791",
+      "outcome": "ACKNOWLEDGED",
+      "partition": "1",
+      "offset": "1855"
+    },
+    {
+      "event": "event.published",
+      "eventId": "7a32e814-8a40-47df-97aa-6dbed83ffd9a",
+      "correlationId": "0643e9b1-7429-4c84-86f1-3bf0bcdcdaf9",
+      "topic": "bid-command",
+      "eventType": "BidCommandRequested",
+      "pendingAgeStatus": "VALID",
+      "pendingAgeMs": "26",
+      "batchWaitMs": "8.34E-4",
+      "outcome": "PUBLISHED"
+    },
+    {
+      "event": "event.acknowledged",
+      "eventId": "7f17d0a7-5736-4a31-8e54-01fb555c518c",
+      "correlationId": "0643e9b1-7429-4c84-86f1-3bf0bcdcdaf9",
+      "topic": "bid-event",
+      "eventType": "BidAccepted",
+      "pendingAgeStatus": "VALID",
+      "pendingAgeMs": "100",
+      "sendAckMs": "1.974834",
+      "outcome": "ACKNOWLEDGED",
+      "partition": "1",
+      "offset": "1953"
+    },
+    {
+      "event": "event.published",
+      "eventId": "7f17d0a7-5736-4a31-8e54-01fb555c518c",
+      "correlationId": "0643e9b1-7429-4c84-86f1-3bf0bcdcdaf9",
+      "topic": "bid-event",
+      "eventType": "BidAccepted",
+      "pendingAgeStatus": "VALID",
+      "pendingAgeMs": "100",
+      "batchWaitMs": "7.91E-4",
+      "outcome": "PUBLISHED"
+    },
+    {
+      "event": "event.acknowledged",
+      "eventId": "36429aba-b9a8-4b6b-b85a-52ea0e77a688",
+      "correlationId": "d9190014-9da2-46f0-814b-1f8b6a40e97f",
+      "topic": "bid-command",
+      "eventType": "BidCommandRequested",
+      "pendingAgeStatus": "VALID",
+      "pendingAgeMs": "30",
+      "sendAckMs": "2.2375",
+      "outcome": "ACKNOWLEDGED",
+      "partition": "1",
+      "offset": "1856"
+    },
+    {
+      "event": "event.published",
+      "eventId": "36429aba-b9a8-4b6b-b85a-52ea0e77a688",
+      "correlationId": "d9190014-9da2-46f0-814b-1f8b6a40e97f",
+      "topic": "bid-command",
+      "eventType": "BidCommandRequested",
+      "pendingAgeStatus": "VALID",
+      "pendingAgeMs": "30",
+      "batchWaitMs": "9.58E-4",
+      "outcome": "PUBLISHED"
+    },
+    {
+      "event": "event.acknowledged",
+      "eventId": "c07f034b-fd90-47c9-b602-13fb2d98d704",
+      "correlationId": "d9190014-9da2-46f0-814b-1f8b6a40e97f",
+      "topic": "bid-event",
+      "eventType": "BidAccepted",
+      "pendingAgeStatus": "VALID",
+      "pendingAgeMs": "97",
+      "sendAckMs": "2.946834",
+      "outcome": "ACKNOWLEDGED",
+      "partition": "1",
+      "offset": "1954"
+    },
+    {
+      "event": "event.published",
+      "eventId": "c07f034b-fd90-47c9-b602-13fb2d98d704",
+      "correlationId": "d9190014-9da2-46f0-814b-1f8b6a40e97f",
+      "topic": "bid-event",
+      "eventType": "BidAccepted",
+      "pendingAgeStatus": "VALID",
+      "pendingAgeMs": "97",
+      "batchWaitMs": "0.001375",
+      "outcome": "PUBLISHED"
+    },
+    {
+      "event": "event.acknowledged",
+      "eventId": "2a1044a6-9bdb-40bf-baa7-cd5abfc93eb2",
+      "correlationId": "b074f33d-1fbf-4862-a157-40835b5972dc",
+      "topic": "bid-command",
+      "eventType": "BidCommandRequested",
+      "pendingAgeStatus": "VALID",
+      "pendingAgeMs": "43",
+      "sendAckMs": "2.331458",
+      "outcome": "ACKNOWLEDGED",
+      "partition": "1",
+      "offset": "1857"
+    },
+    {
+      "event": "event.published",
+      "eventId": "2a1044a6-9bdb-40bf-baa7-cd5abfc93eb2",
+      "correlationId": "b074f33d-1fbf-4862-a157-40835b5972dc",
+      "topic": "bid-command",
+      "eventType": "BidCommandRequested",
+      "pendingAgeStatus": "VALID",
+      "pendingAgeMs": "43",
+      "batchWaitMs": "8.33E-4",
+      "outcome": "PUBLISHED"
+    },
+    {
+      "event": "event.acknowledged",
+      "eventId": "1328b29e-c1fb-4dc2-ace5-bfec0d75867a",
+      "correlationId": "b074f33d-1fbf-4862-a157-40835b5972dc",
+      "topic": "bid-event",
+      "eventType": "BidAccepted",
+      "pendingAgeStatus": "VALID",
+      "pendingAgeMs": "99",
+      "sendAckMs": "2.607125",
+      "outcome": "ACKNOWLEDGED",
+      "partition": "1",
+      "offset": "1955"
+    },
+    {
+      "event": "event.published",
+      "eventId": "1328b29e-c1fb-4dc2-ace5-bfec0d75867a",
+      "correlationId": "b074f33d-1fbf-4862-a157-40835b5972dc",
+      "topic": "bid-event",
+      "eventType": "BidAccepted",
+      "pendingAgeStatus": "VALID",
+      "pendingAgeMs": "99",
+      "batchWaitMs": "5.83E-4",
+      "outcome": "PUBLISHED"
+    },
+    {
+      "event": "event.acknowledged",
+      "eventId": "935ca6c0-3e7f-4608-a4c1-90d8dbf663c4",
+      "correlationId": "cd222669-43aa-4b80-9a66-a8017a9fcf21",
+      "topic": "bid-command",
+      "eventType": "BidCommandRequested",
+      "pendingAgeStatus": "VALID",
+      "pendingAgeMs": "43",
+      "sendAckMs": "2.573167",
+      "outcome": "ACKNOWLEDGED",
+      "partition": "1",
+      "offset": "1858"
+    },
+    {
+      "event": "event.published",
+      "eventId": "935ca6c0-3e7f-4608-a4c1-90d8dbf663c4",
+      "correlationId": "cd222669-43aa-4b80-9a66-a8017a9fcf21",
+      "topic": "bid-command",
+      "eventType": "BidCommandRequested",
+      "pendingAgeStatus": "VALID",
+      "pendingAgeMs": "43",
+      "batchWaitMs": "7.92E-4",
+      "outcome": "PUBLISHED"
+    },
+    {
+      "event": "event.acknowledged",
+      "eventId": "26cc4ee8-de7f-4546-ae96-914c1de1e218",
+      "correlationId": "cd222669-43aa-4b80-9a66-a8017a9fcf21",
+      "topic": "bid-event",
+      "eventType": "BidAccepted",
+      "pendingAgeStatus": "VALID",
+      "pendingAgeMs": "101",
+      "sendAckMs": "4.144708",
+      "outcome": "ACKNOWLEDGED",
+      "partition": "1",
+      "offset": "1956"
+    },
+    {
+      "event": "event.published",
+      "eventId": "26cc4ee8-de7f-4546-ae96-914c1de1e218",
+      "correlationId": "cd222669-43aa-4b80-9a66-a8017a9fcf21",
+      "topic": "bid-event",
+      "eventType": "BidAccepted",
+      "pendingAgeStatus": "VALID",
+      "pendingAgeMs": "101",
+      "batchWaitMs": "4.58E-4",
+      "outcome": "PUBLISHED"
+    },
+    {
+      "event": "event.acknowledged",
+      "eventId": "59f85e14-f526-47c9-8f6d-c9983e63a341",
+      "correlationId": "3a3d579f-52b5-4b74-aa34-b0c518c7abce",
+      "topic": "bid-command",
+      "eventType": "BidCommandRequested",
+      "pendingAgeStatus": "VALID",
+      "pendingAgeMs": "56",
+      "sendAckMs": "1.808625",
+      "outcome": "ACKNOWLEDGED",
+      "partition": "1",
+      "offset": "1859"
+    },
+    {
+      "event": "event.published",
+      "eventId": "59f85e14-f526-47c9-8f6d-c9983e63a341",
+      "correlationId": "3a3d579f-52b5-4b74-aa34-b0c518c7abce",
+      "topic": "bid-command",
+      "eventType": "BidCommandRequested",
+      "pendingAgeStatus": "VALID",
+      "pendingAgeMs": "56",
+      "batchWaitMs": "7.09E-4",
+      "outcome": "PUBLISHED"
+    },
+    {
+      "event": "event.acknowledged",
+      "eventId": "7e2c558d-fe8e-4dde-9fcf-01bcb8a28473",
+      "correlationId": "3a3d579f-52b5-4b74-aa34-b0c518c7abce",
+      "topic": "bid-event",
+      "eventType": "BidAccepted",
+      "pendingAgeStatus": "VALID",
+      "pendingAgeMs": "101",
+      "sendAckMs": "2.23925",
+      "outcome": "ACKNOWLEDGED",
+      "partition": "1",
+      "offset": "1957"
+    },
+    {
+      "event": "event.published",
+      "eventId": "7e2c558d-fe8e-4dde-9fcf-01bcb8a28473",
+      "correlationId": "3a3d579f-52b5-4b74-aa34-b0c518c7abce",
+      "topic": "bid-event",
+      "eventType": "BidAccepted",
+      "pendingAgeStatus": "VALID",
+      "pendingAgeMs": "101",
+      "batchWaitMs": "0.001125",
+      "outcome": "PUBLISHED"
+    },
+    {
+      "event": "event.acknowledged",
+      "eventId": "56a9db5b-aaef-40b6-b14f-136b1cc98414",
+      "correlationId": "37f5c251-bfef-421f-894c-3e6ac3cf58d2",
+      "topic": "bid-command",
+      "eventType": "BidCommandRequested",
+      "pendingAgeStatus": "VALID",
+      "pendingAgeMs": "60",
+      "sendAckMs": "2.686208",
+      "outcome": "ACKNOWLEDGED",
+      "partition": "1",
+      "offset": "1860"
+    },
+    {
+      "event": "event.published",
+      "eventId": "56a9db5b-aaef-40b6-b14f-136b1cc98414",
+      "correlationId": "37f5c251-bfef-421f-894c-3e6ac3cf58d2",
+      "topic": "bid-command",
+      "eventType": "BidCommandRequested",
+      "pendingAgeStatus": "VALID",
+      "pendingAgeMs": "60",
+      "batchWaitMs": "5.83E-4",
+      "outcome": "PUBLISHED"
+    },
+    {
+      "event": "event.acknowledged",
+      "eventId": "4b3577c0-1d50-4f9b-9967-6ade6a9c7ded",
+      "correlationId": "37f5c251-bfef-421f-894c-3e6ac3cf58d2",
+      "topic": "bid-event",
+      "eventType": "BidAccepted",
+      "pendingAgeStatus": "VALID",
+      "pendingAgeMs": "99",
+      "sendAckMs": "6.032833",
+      "outcome": "ACKNOWLEDGED",
+      "partition": "1",
+      "offset": "1958"
+    },
+    {
+      "event": "event.published",
+      "eventId": "4b3577c0-1d50-4f9b-9967-6ade6a9c7ded",
+      "correlationId": "37f5c251-bfef-421f-894c-3e6ac3cf58d2",
+      "topic": "bid-event",
+      "eventType": "BidAccepted",
+      "pendingAgeStatus": "VALID",
+      "pendingAgeMs": "99",
+      "batchWaitMs": "9.17E-4",
+      "outcome": "PUBLISHED"
+    },
+    {
+      "event": "event.acknowledged",
+      "eventId": "93620a65-7c8b-4e01-ac28-13a2ea955dfc",
+      "correlationId": "0eef63cc-95e9-4f0c-b1d7-a5a37592c56d",
+      "topic": "bid-command",
+      "eventType": "BidCommandRequested",
+      "pendingAgeStatus": "VALID",
+      "pendingAgeMs": "68",
+      "sendAckMs": "2.342416",
+      "outcome": "ACKNOWLEDGED",
+      "partition": "1",
+      "offset": "1861"
+    },
+    {
+      "event": "event.published",
+      "eventId": "93620a65-7c8b-4e01-ac28-13a2ea955dfc",
+      "correlationId": "0eef63cc-95e9-4f0c-b1d7-a5a37592c56d",
+      "topic": "bid-command",
+      "eventType": "BidCommandRequested",
+      "pendingAgeStatus": "VALID",
+      "pendingAgeMs": "68",
+      "batchWaitMs": "7.92E-4",
+      "outcome": "PUBLISHED"
+    },
+    {
+      "event": "event.acknowledged",
+      "eventId": "ebbd27ac-0bbc-4fc5-b411-678f30d7db25",
+      "correlationId": "0eef63cc-95e9-4f0c-b1d7-a5a37592c56d",
+      "topic": "bid-event",
+      "eventType": "BidAccepted",
+      "pendingAgeStatus": "VALID",
+      "pendingAgeMs": "101",
+      "sendAckMs": "1.809042",
+      "outcome": "ACKNOWLEDGED",
+      "partition": "1",
+      "offset": "1959"
+    },
+    {
+      "event": "event.published",
+      "eventId": "ebbd27ac-0bbc-4fc5-b411-678f30d7db25",
+      "correlationId": "0eef63cc-95e9-4f0c-b1d7-a5a37592c56d",
+      "topic": "bid-event",
+      "eventType": "BidAccepted",
+      "pendingAgeStatus": "VALID",
+      "pendingAgeMs": "101",
+      "batchWaitMs": "8.33E-4",
+      "outcome": "PUBLISHED"
+    },
+    {
+      "event": "event.acknowledged",
+      "eventId": "c2dd0552-f31f-4c58-9148-46d25fabccfd",
+      "correlationId": "2c14cbfd-3775-446a-99e6-a6d3fa4bdfaa",
+      "topic": "bid-command",
+      "eventType": "BidCommandRequested",
+      "pendingAgeStatus": "VALID",
+      "pendingAgeMs": "67",
+      "sendAckMs": "3.135708",
+      "outcome": "ACKNOWLEDGED",
+      "partition": "1",
+      "offset": "1862"
+    },
+    {
+      "event": "event.published",
+      "eventId": "c2dd0552-f31f-4c58-9148-46d25fabccfd",
+      "correlationId": "2c14cbfd-3775-446a-99e6-a6d3fa4bdfaa",
+      "topic": "bid-command",
+      "eventType": "BidCommandRequested",
+      "pendingAgeStatus": "VALID",
+      "pendingAgeMs": "67",
+      "batchWaitMs": "8.34E-4",
+      "outcome": "PUBLISHED"
+    },
+    {
+      "event": "event.acknowledged",
+      "eventId": "70bb739c-f8b1-488a-a192-9da473499800",
+      "correlationId": "2c14cbfd-3775-446a-99e6-a6d3fa4bdfaa",
+      "topic": "bid-event",
+      "eventType": "BidAccepted",
+      "pendingAgeStatus": "VALID",
+      "pendingAgeMs": "101",
+      "sendAckMs": "7.006125",
+      "outcome": "ACKNOWLEDGED",
+      "partition": "1",
+      "offset": "1960"
+    },
+    {
+      "event": "event.published",
+      "eventId": "70bb739c-f8b1-488a-a192-9da473499800",
+      "correlationId": "2c14cbfd-3775-446a-99e6-a6d3fa4bdfaa",
+      "topic": "bid-event",
+      "eventType": "BidAccepted",
+      "pendingAgeStatus": "VALID",
+      "pendingAgeMs": "101",
+      "batchWaitMs": "0.001292",
+      "outcome": "PUBLISHED"
+    },
+    {
+      "event": "event.acknowledged",
+      "eventId": "0639721a-675d-40c1-a5a6-43fbfc637a3f",
+      "correlationId": "165d3e86-d022-468b-ab43-f64c8398651e",
+      "topic": "bid-command",
+      "eventType": "BidCommandRequested",
+      "pendingAgeStatus": "VALID",
+      "pendingAgeMs": "74",
+      "sendAckMs": "2.409542",
+      "outcome": "ACKNOWLEDGED",
+      "partition": "1",
+      "offset": "1863"
+    },
+    {
+      "event": "event.published",
+      "eventId": "0639721a-675d-40c1-a5a6-43fbfc637a3f",
+      "correlationId": "165d3e86-d022-468b-ab43-f64c8398651e",
+      "topic": "bid-command",
+      "eventType": "BidCommandRequested",
+      "pendingAgeStatus": "VALID",
+      "pendingAgeMs": "74",
+      "batchWaitMs": "6.25E-4",
+      "outcome": "PUBLISHED"
+    },
+    {
+      "event": "event.acknowledged",
+      "eventId": "52a5f254-7d5a-4690-aff8-ef1062f63dc2",
+      "correlationId": "165d3e86-d022-468b-ab43-f64c8398651e",
+      "topic": "bid-event",
+      "eventType": "BidAccepted",
+      "pendingAgeStatus": "VALID",
+      "pendingAgeMs": "102",
+      "sendAckMs": "6.083958",
+      "outcome": "ACKNOWLEDGED",
+      "partition": "1",
+      "offset": "1961"
+    },
+    {
+      "event": "event.published",
+      "eventId": "52a5f254-7d5a-4690-aff8-ef1062f63dc2",
+      "correlationId": "165d3e86-d022-468b-ab43-f64c8398651e",
+      "topic": "bid-event",
+      "eventType": "BidAccepted",
+      "pendingAgeStatus": "VALID",
+      "pendingAgeMs": "102",
+      "batchWaitMs": "0.001542",
+      "outcome": "PUBLISHED"
+    },
+    {
+      "event": "event.acknowledged",
+      "eventId": "01131812-7bad-4cc3-8503-b0c813e75dd2",
+      "correlationId": "6ae3b854-3152-40c5-9a45-503e36b6931e",
+      "topic": "bid-command",
+      "eventType": "BidCommandRequested",
+      "pendingAgeStatus": "VALID",
+      "pendingAgeMs": "89",
+      "sendAckMs": "2.374416",
+      "outcome": "ACKNOWLEDGED",
+      "partition": "1",
+      "offset": "1864"
+    },
+    {
+      "event": "event.published",
+      "eventId": "01131812-7bad-4cc3-8503-b0c813e75dd2",
+      "correlationId": "6ae3b854-3152-40c5-9a45-503e36b6931e",
+      "topic": "bid-command",
+      "eventType": "BidCommandRequested",
+      "pendingAgeStatus": "VALID",
+      "pendingAgeMs": "89",
+      "batchWaitMs": "8.75E-4",
+      "outcome": "PUBLISHED"
+    },
+    {
+      "event": "event.acknowledged",
+      "eventId": "649d5bda-93a0-4e4c-bb3d-148961b44abd",
+      "correlationId": "6ae3b854-3152-40c5-9a45-503e36b6931e",
+      "topic": "bid-event",
+      "eventType": "BidAccepted",
+      "pendingAgeStatus": "VALID",
+      "pendingAgeMs": "96",
+      "sendAckMs": "3.878167",
+      "outcome": "ACKNOWLEDGED",
+      "partition": "1",
+      "offset": "1962"
+    },
+    {
+      "event": "event.published",
+      "eventId": "649d5bda-93a0-4e4c-bb3d-148961b44abd",
+      "correlationId": "6ae3b854-3152-40c5-9a45-503e36b6931e",
+      "topic": "bid-event",
+      "eventType": "BidAccepted",
+      "pendingAgeStatus": "VALID",
+      "pendingAgeMs": "96",
+      "batchWaitMs": "8.75E-4",
+      "outcome": "PUBLISHED"
+    },
+    {
+      "event": "event.acknowledged",
+      "eventId": "79a403c6-9fd3-434a-bca3-42793e332977",
+      "correlationId": "14bd8e46-cd34-407a-8c63-67c584a50b34",
+      "topic": "bid-command",
+      "eventType": "BidCommandRequested",
+      "pendingAgeStatus": "VALID",
+      "pendingAgeMs": "101",
+      "sendAckMs": "2.539292",
+      "outcome": "ACKNOWLEDGED",
+      "partition": "1",
+      "offset": "1865"
+    },
+    {
+      "event": "event.published",
+      "eventId": "79a403c6-9fd3-434a-bca3-42793e332977",
+      "correlationId": "14bd8e46-cd34-407a-8c63-67c584a50b34",
+      "topic": "bid-command",
+      "eventType": "BidCommandRequested",
+      "pendingAgeStatus": "VALID",
+      "pendingAgeMs": "101",
+      "batchWaitMs": "9.58E-4",
+      "outcome": "PUBLISHED"
+    },
+    {
+      "event": "event.acknowledged",
+      "eventId": "42536720-0da8-4d36-a584-3aef7f613b5e",
+      "correlationId": "14bd8e46-cd34-407a-8c63-67c584a50b34",
+      "topic": "bid-event",
+      "eventType": "BidAccepted",
+      "pendingAgeStatus": "VALID",
+      "pendingAgeMs": "102",
+      "sendAckMs": "7.010834",
+      "outcome": "ACKNOWLEDGED",
+      "partition": "1",
+      "offset": "1963"
+    },
+    {
+      "event": "event.published",
+      "eventId": "42536720-0da8-4d36-a584-3aef7f613b5e",
+      "correlationId": "14bd8e46-cd34-407a-8c63-67c584a50b34",
+      "topic": "bid-event",
+      "eventType": "BidAccepted",
+      "pendingAgeStatus": "VALID",
+      "pendingAgeMs": "102",
+      "batchWaitMs": "0.001583",
+      "outcome": "PUBLISHED"
+    },
+    {
+      "event": "event.acknowledged",
+      "eventId": "1b66de14-c15e-490b-9434-604796029ad5",
+      "correlationId": "51a0b1af-67a0-47b8-a197-7c265a8e953f",
+      "topic": "bid-command",
+      "eventType": "BidCommandRequested",
+      "pendingAgeStatus": "VALID",
+      "pendingAgeMs": "29",
+      "sendAckMs": "2.275042",
+      "outcome": "ACKNOWLEDGED",
+      "partition": "1",
+      "offset": "1866"
+    },
+    {
+      "event": "event.published",
+      "eventId": "1b66de14-c15e-490b-9434-604796029ad5",
+      "correlationId": "51a0b1af-67a0-47b8-a197-7c265a8e953f",
+      "topic": "bid-command",
+      "eventType": "BidCommandRequested",
+      "pendingAgeStatus": "VALID",
+      "pendingAgeMs": "29",
+      "batchWaitMs": "7.92E-4",
+      "outcome": "PUBLISHED"
+    },
+    {
+      "event": "event.acknowledged",
+      "eventId": "1fc18459-aeac-4c76-8849-37ae71d545ed",
+      "correlationId": "51a0b1af-67a0-47b8-a197-7c265a8e953f",
+      "topic": "bid-event",
+      "eventType": "BidAccepted",
+      "pendingAgeStatus": "VALID",
+      "pendingAgeMs": "104",
+      "sendAckMs": "8.504917",
+      "outcome": "ACKNOWLEDGED",
+      "partition": "1",
+      "offset": "1964"
+    },
+    {
+      "event": "event.published",
+      "eventId": "1fc18459-aeac-4c76-8849-37ae71d545ed",
+      "correlationId": "51a0b1af-67a0-47b8-a197-7c265a8e953f",
+      "topic": "bid-event",
+      "eventType": "BidAccepted",
+      "pendingAgeStatus": "VALID",
+      "pendingAgeMs": "104",
+      "batchWaitMs": "6.66E-4",
+      "outcome": "PUBLISHED"
+    },
+    {
+      "event": "event.acknowledged",
+      "eventId": "be56e5c1-81ad-4c3f-8246-b3940445c951",
+      "correlationId": "eaa49992-5c1a-466a-909c-83e870d1f2fd",
+      "topic": "bid-command",
+      "eventType": "BidCommandRequested",
+      "pendingAgeStatus": "VALID",
+      "pendingAgeMs": "36",
+      "sendAckMs": "1.901292",
+      "outcome": "ACKNOWLEDGED",
+      "partition": "1",
+      "offset": "1867"
+    },
+    {
+      "event": "event.published",
+      "eventId": "be56e5c1-81ad-4c3f-8246-b3940445c951",
+      "correlationId": "eaa49992-5c1a-466a-909c-83e870d1f2fd",
+      "topic": "bid-command",
+      "eventType": "BidCommandRequested",
+      "pendingAgeStatus": "VALID",
+      "pendingAgeMs": "36",
+      "batchWaitMs": "5.83E-4",
+      "outcome": "PUBLISHED"
+    },
+    {
+      "event": "event.acknowledged",
+      "eventId": "ba53e6db-7f81-40de-8242-411e2f041f6c",
+      "correlationId": "eaa49992-5c1a-466a-909c-83e870d1f2fd",
+      "topic": "bid-event",
+      "eventType": "BidAccepted",
+      "pendingAgeStatus": "VALID",
+      "pendingAgeMs": "98",
+      "sendAckMs": "3.529917",
+      "outcome": "ACKNOWLEDGED",
+      "partition": "1",
+      "offset": "1965"
+    },
+    {
+      "event": "event.published",
+      "eventId": "ba53e6db-7f81-40de-8242-411e2f041f6c",
+      "correlationId": "eaa49992-5c1a-466a-909c-83e870d1f2fd",
+      "topic": "bid-event",
+      "eventType": "BidAccepted",
+      "pendingAgeStatus": "VALID",
+      "pendingAgeMs": "98",
+      "batchWaitMs": "0.001125",
+      "outcome": "PUBLISHED"
+    },
+    {
+      "event": "event.acknowledged",
+      "eventId": "ed70d8ad-814d-4013-a01d-9ed995947b08",
+      "correlationId": "df0146f6-7f68-42a9-b772-a72659217d39",
+      "topic": "bid-command",
+      "eventType": "BidCommandRequested",
+      "pendingAgeStatus": "VALID",
+      "pendingAgeMs": "28",
+      "sendAckMs": "2.335708",
+      "outcome": "ACKNOWLEDGED",
+      "partition": "1",
+      "offset": "1868"
+    },
+    {
+      "event": "event.published",
+      "eventId": "ed70d8ad-814d-4013-a01d-9ed995947b08",
+      "correlationId": "df0146f6-7f68-42a9-b772-a72659217d39",
+      "topic": "bid-command",
+      "eventType": "BidCommandRequested",
+      "pendingAgeStatus": "VALID",
+      "pendingAgeMs": "28",
+      "batchWaitMs": "8.33E-4",
+      "outcome": "PUBLISHED"
+    },
+    {
+      "event": "event.acknowledged",
+      "eventId": "4dfbf437-c464-41f0-b83f-c20f27d25782",
+      "correlationId": "df0146f6-7f68-42a9-b772-a72659217d39",
+      "topic": "bid-event",
+      "eventType": "BidAccepted",
+      "pendingAgeStatus": "VALID",
+      "pendingAgeMs": "101",
+      "sendAckMs": "2.595334",
+      "outcome": "ACKNOWLEDGED",
+      "partition": "1",
+      "offset": "1966"
+    },
+    {
+      "event": "event.published",
+      "eventId": "4dfbf437-c464-41f0-b83f-c20f27d25782",
+      "correlationId": "df0146f6-7f68-42a9-b772-a72659217d39",
+      "topic": "bid-event",
+      "eventType": "BidAccepted",
+      "pendingAgeStatus": "VALID",
+      "pendingAgeMs": "101",
+      "batchWaitMs": "7.92E-4",
+      "outcome": "PUBLISHED"
+    },
+    {
+      "event": "event.acknowledged",
+      "eventId": "c29aaa6e-f82c-4f16-93c4-212eccb67bfb",
+      "correlationId": "b9947e87-0e17-4367-b90b-a89a1a182fae",
+      "topic": "bid-command",
+      "eventType": "BidCommandRequested",
+      "pendingAgeStatus": "VALID",
+      "pendingAgeMs": "34",
+      "sendAckMs": "2.394083",
+      "outcome": "ACKNOWLEDGED",
+      "partition": "1",
+      "offset": "1869"
+    },
+    {
+      "event": "event.published",
+      "eventId": "c29aaa6e-f82c-4f16-93c4-212eccb67bfb",
+      "correlationId": "b9947e87-0e17-4367-b90b-a89a1a182fae",
+      "topic": "bid-command",
+      "eventType": "BidCommandRequested",
+      "pendingAgeStatus": "VALID",
+      "pendingAgeMs": "34",
+      "batchWaitMs": "0.001125",
+      "outcome": "PUBLISHED"
+    },
+    {
+      "event": "event.acknowledged",
+      "eventId": "dfa2416b-bc85-433c-a5bb-4a581f512998",
+      "correlationId": "b9947e87-0e17-4367-b90b-a89a1a182fae",
+      "topic": "bid-event",
+      "eventType": "BidAccepted",
+      "pendingAgeStatus": "VALID",
+      "pendingAgeMs": "98",
+      "sendAckMs": "3.323917",
+      "outcome": "ACKNOWLEDGED",
+      "partition": "1",
+      "offset": "1967"
+    },
+    {
+      "event": "event.published",
+      "eventId": "dfa2416b-bc85-433c-a5bb-4a581f512998",
+      "correlationId": "b9947e87-0e17-4367-b90b-a89a1a182fae",
+      "topic": "bid-event",
+      "eventType": "BidAccepted",
+      "pendingAgeStatus": "VALID",
+      "pendingAgeMs": "98",
+      "batchWaitMs": "6.25E-4",
+      "outcome": "PUBLISHED"
+    },
+    {
+      "event": "event.acknowledged",
+      "eventId": "59ec28d5-b2b8-48cf-96ba-a37bc0c6082a",
+      "correlationId": "f5ccae60-18be-4378-ace2-fe42ea1bf861",
+      "topic": "bid-command",
+      "eventType": "BidCommandRequested",
+      "pendingAgeStatus": "VALID",
+      "pendingAgeMs": "26",
+      "sendAckMs": "2.133291",
+      "outcome": "ACKNOWLEDGED",
+      "partition": "1",
+      "offset": "1870"
+    },
+    {
+      "event": "event.published",
+      "eventId": "59ec28d5-b2b8-48cf-96ba-a37bc0c6082a",
+      "correlationId": "f5ccae60-18be-4378-ace2-fe42ea1bf861",
+      "topic": "bid-command",
+      "eventType": "BidCommandRequested",
+      "pendingAgeStatus": "VALID",
+      "pendingAgeMs": "26",
+      "batchWaitMs": "8.75E-4",
+      "outcome": "PUBLISHED"
+    },
+    {
+      "event": "event.acknowledged",
+      "eventId": "227645db-1a82-4135-9c24-08fa69227a21",
+      "correlationId": "f5ccae60-18be-4378-ace2-fe42ea1bf861",
+      "topic": "bid-event",
+      "eventType": "BidAccepted",
+      "pendingAgeStatus": "VALID",
+      "pendingAgeMs": "103",
+      "sendAckMs": "3.561708",
+      "outcome": "ACKNOWLEDGED",
+      "partition": "1",
+      "offset": "1968"
+    },
+    {
+      "event": "event.published",
+      "eventId": "227645db-1a82-4135-9c24-08fa69227a21",
+      "correlationId": "f5ccae60-18be-4378-ace2-fe42ea1bf861",
+      "topic": "bid-event",
+      "eventType": "BidAccepted",
+      "pendingAgeStatus": "VALID",
+      "pendingAgeMs": "103",
+      "batchWaitMs": "8.75E-4",
+      "outcome": "PUBLISHED"
+    },
+    {
+      "event": "event.acknowledged",
+      "eventId": "297bda65-4285-442b-9ff5-caa5c2f01c01",
+      "correlationId": "b0ab3bf5-91cd-4677-bd3f-13a1b78c19b0",
+      "topic": "bid-command",
+      "eventType": "BidCommandRequested",
+      "pendingAgeStatus": "VALID",
+      "pendingAgeMs": "30",
+      "sendAckMs": "6.079125",
+      "outcome": "ACKNOWLEDGED",
+      "partition": "1",
+      "offset": "1871"
+    },
+    {
+      "event": "event.published",
+      "eventId": "297bda65-4285-442b-9ff5-caa5c2f01c01",
+      "correlationId": "b0ab3bf5-91cd-4677-bd3f-13a1b78c19b0",
+      "topic": "bid-command",
+      "eventType": "BidCommandRequested",
+      "pendingAgeStatus": "VALID",
+      "pendingAgeMs": "30",
+      "batchWaitMs": "9.17E-4",
+      "outcome": "PUBLISHED"
+    },
+    {
+      "event": "event.acknowledged",
+      "eventId": "ab9eee84-53a5-418b-b1d4-3e0ed242c843",
+      "correlationId": "b0ab3bf5-91cd-4677-bd3f-13a1b78c19b0",
+      "topic": "bid-event",
+      "eventType": "BidAccepted",
+      "pendingAgeStatus": "VALID",
+      "pendingAgeMs": "101",
+      "sendAckMs": "3.333208",
+      "outcome": "ACKNOWLEDGED",
+      "partition": "1",
+      "offset": "1969"
+    },
+    {
+      "event": "event.published",
+      "eventId": "ab9eee84-53a5-418b-b1d4-3e0ed242c843",
+      "correlationId": "b0ab3bf5-91cd-4677-bd3f-13a1b78c19b0",
+      "topic": "bid-event",
+      "eventType": "BidAccepted",
+      "pendingAgeStatus": "VALID",
+      "pendingAgeMs": "101",
+      "batchWaitMs": "7.08E-4",
+      "outcome": "PUBLISHED"
+    },
+    {
+      "event": "event.acknowledged",
+      "eventId": "df7376e9-2e92-4834-a851-cb75b22c3ff0",
+      "correlationId": "a0e9294a-c25f-4baa-aa00-dacd783e94a8",
+      "topic": "bid-command",
+      "eventType": "BidCommandRequested",
+      "pendingAgeStatus": "VALID",
+      "pendingAgeMs": "31",
+      "sendAckMs": "6.449",
+      "outcome": "ACKNOWLEDGED",
+      "partition": "1",
+      "offset": "1872"
+    },
+    {
+      "event": "event.published",
+      "eventId": "df7376e9-2e92-4834-a851-cb75b22c3ff0",
+      "correlationId": "a0e9294a-c25f-4baa-aa00-dacd783e94a8",
+      "topic": "bid-command",
+      "eventType": "BidCommandRequested",
+      "pendingAgeStatus": "VALID",
+      "pendingAgeMs": "31",
+      "batchWaitMs": "7.5E-4",
+      "outcome": "PUBLISHED"
+    },
+    {
+      "event": "event.acknowledged",
+      "eventId": "72a232c9-6c70-43c5-bf2c-67460c3be5bf",
+      "correlationId": "a0e9294a-c25f-4baa-aa00-dacd783e94a8",
+      "topic": "bid-event",
+      "eventType": "BidAccepted",
+      "pendingAgeStatus": "VALID",
+      "pendingAgeMs": "96",
+      "sendAckMs": "9.461834",
+      "outcome": "ACKNOWLEDGED",
+      "partition": "1",
+      "offset": "1970"
+    },
+    {
+      "event": "event.published",
+      "eventId": "72a232c9-6c70-43c5-bf2c-67460c3be5bf",
+      "correlationId": "a0e9294a-c25f-4baa-aa00-dacd783e94a8",
+      "topic": "bid-event",
+      "eventType": "BidAccepted",
+      "pendingAgeStatus": "VALID",
+      "pendingAgeMs": "96",
+      "batchWaitMs": "8.34E-4",
+      "outcome": "PUBLISHED"
+    },
+    {
+      "event": "event.acknowledged",
+      "eventId": "6f106bb1-b79e-49e3-b94b-3971c6baa8f5",
+      "correlationId": "08c434cd-5e11-4f1f-8e29-25c21f2be61e",
+      "topic": "bid-command",
+      "eventType": "BidCommandRequested",
+      "pendingAgeStatus": "VALID",
+      "pendingAgeMs": "48",
+      "sendAckMs": "2.529209",
+      "outcome": "ACKNOWLEDGED",
+      "partition": "1",
+      "offset": "1873"
+    },
+    {
+      "event": "event.published",
+      "eventId": "6f106bb1-b79e-49e3-b94b-3971c6baa8f5",
+      "correlationId": "08c434cd-5e11-4f1f-8e29-25c21f2be61e",
+      "topic": "bid-command",
+      "eventType": "BidCommandRequested",
+      "pendingAgeStatus": "VALID",
+      "pendingAgeMs": "48",
+      "batchWaitMs": "8.33E-4",
+      "outcome": "PUBLISHED"
+    },
+    {
+      "event": "event.acknowledged",
+      "eventId": "5149bdd5-6906-4883-8dbb-c7dd79c5ff2b",
+      "correlationId": "08c434cd-5e11-4f1f-8e29-25c21f2be61e",
+      "topic": "bid-event",
+      "eventType": "BidAccepted",
+      "pendingAgeStatus": "VALID",
+      "pendingAgeMs": "97",
+      "sendAckMs": "1.7985",
+      "outcome": "ACKNOWLEDGED",
+      "partition": "1",
+      "offset": "1971"
+    },
+    {
+      "event": "event.published",
+      "eventId": "5149bdd5-6906-4883-8dbb-c7dd79c5ff2b",
+      "correlationId": "08c434cd-5e11-4f1f-8e29-25c21f2be61e",
+      "topic": "bid-event",
+      "eventType": "BidAccepted",
+      "pendingAgeStatus": "VALID",
+      "pendingAgeMs": "97",
+      "batchWaitMs": "7.5E-4",
+      "outcome": "PUBLISHED"
+    }
+  ],
+  "pollDebugLogsObserved": 0
+}
