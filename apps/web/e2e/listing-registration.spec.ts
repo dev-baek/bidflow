@@ -3,7 +3,7 @@ import { performance } from "node:perf_hooks";
 import { writeFile } from "node:fs/promises";
 import { execFileSync } from "node:child_process";
 import { percentiles } from "../../../scripts/final-settlement.mjs";
-import { matchesObservedBid } from "../../../scripts/browser-result-latency.mjs";
+import { matchesObservedBid, observationTimings } from "../../../scripts/browser-result-latency.mjs";
 import { expect, test, type APIRequestContext, type Browser, type Page, type WebSocket } from "@playwright/test";
 import { parseBidResultMessage } from "../src/features/auction-realtime/auction-realtime-client";
 
@@ -173,7 +173,9 @@ test.describe("상품 등록·입찰 Browser 흐름", () => {
   test("순차 입찰 20건의 개인 결과와 양쪽 화면 관측 지연을 기록한다", async ({ page, browser, request }, testInfo) => {
     test.skip(process.env.BIDFLOW_E2E_LATENCY !== "1", "BIDFLOW_E2E_LATENCY=1을 지정한 로컬 지연 관측 회차만 실행합니다.");
     test.setTimeout(120_000);
-    const samples: { index: number; amount: number; requestId?: string; httpMs?: number; privateMs?: number; screenMs?: number; error?: string }[] = [];
+    const samples: { index: number; amount: number; requestId?: string; httpMs?: number; privateMs?: number; screenMs?: number;
+      fineScreenMs?: number; fineMaxCheckGapMs?: number; fineCheckCount?: number;
+      fineAfterPrivateMs?: number; baselineAfterPrivateMs?: number; baselineMinusFineMs?: number; error?: string }[] = [];
     const runId = randomUUID();
     let auctionId: string | undefined;
     let completed = false;
@@ -214,14 +216,35 @@ test.describe("상품 등록·입찰 Browser 흐름", () => {
           expect(receipt.bidRequestId).toMatch(/^[0-9a-f-]{36}$/);
           expect(samples.slice(0, -1).some(s => s.requestId === receipt.bidRequestId)).toBe(false);
           sample.requestId = receipt.bidRequestId;
-          await expect.poll(() => frames.some(frame => matchesObservedBid(frame.result,
-            { requestId: sample.requestId, auctionId, amount })), { timeout: remaining() }).toBe(true);
+          const hasResult = () => frames.some(frame => matchesObservedBid(frame.result,
+            { requestId: sample.requestId, auctionId, amount }));
+          const prices = contexts.map(viewer => viewer.page.getByText(`${amount.toLocaleString("ko-KR")}원`, { exact: true }));
+          // Paired on the same event: retain the baseline while measuring a finer observation alongside it.
+          const [baselineMs, fine] = await Promise.all([
+            (async () => {
+              await expect.poll(hasResult, { timeout: remaining() }).toBe(true);
+              await expect(approval).toBeVisible({ timeout: remaining() });
+              await Promise.all(prices.map(price => expect(price).toBeVisible({ timeout: remaining() })));
+              return performance.now() - start;
+            })(),
+            (async () => {
+              const checks: number[] = [];
+              await expect.poll(async () => {
+                const ready = hasResult() && (await Promise.all([approval, ...prices].map(locator => locator.isVisible()))).every(Boolean);
+                checks.push(performance.now() - start);
+                return ready;
+              }, { timeout: remaining(), intervals: [25] }).toBe(true);
+              const gaps = checks.slice(1).map((time, index) => time - checks[index]!);
+              return { elapsed: performance.now() - start, count: checks.length, maxGap: gaps.length ? Math.max(...gaps) : null };
+            })(),
+          ]);
           sample.privateMs = frames.find(frame => matchesObservedBid(frame.result,
             { requestId: sample.requestId, auctionId, amount }))!.receivedAt - start;
-          await expect(approval).toBeVisible({ timeout: remaining() });
-          await Promise.all(contexts.map(viewer => expect(viewer.page.getByText(`${amount.toLocaleString("ko-KR")}원`, { exact: true }))
-            .toBeVisible({ timeout: remaining() })));
-          sample.screenMs = performance.now() - start;
+          sample.screenMs = baselineMs;
+          sample.fineScreenMs = fine.elapsed;
+          sample.fineCheckCount = fine.count;
+          sample.fineMaxCheckGapMs = fine.maxGap;
+          Object.assign(sample, observationTimings(sample.privateMs, sample.fineScreenMs, sample.screenMs));
           expect(sample.screenMs).toBeLessThanOrEqual(10_000);
         } catch (error) {
           sample.error = "RECEIPT_RESULT_OR_SCREEN_FAILED";
@@ -239,6 +262,10 @@ test.describe("상품 등록·입찰 Browser 흐름", () => {
         p95WithinTarget: completed && percentiles(finalSamples.map(s => s.screenMs!)).p95 <= 2000,
         http: percentiles(finalSamples.map(s => s.httpMs!)), privateResult: percentiles(finalSamples.map(s => s.privateMs!)),
         screen: percentiles(finalSamples.map(s => s.screenMs!)), samples };
+      Object.assign(evidence, { observation: { baseline: "Playwright default poll/locator assertions", fineIntervalsMs: [25],
+        pairedOnSameRequest: true }, fineScreen: percentiles(finalSamples.map(s => s.fineScreenMs!)),
+        fineAfterPrivate: percentiles(finalSamples.map(s => s.fineAfterPrivateMs!)),
+        baselineAfterPrivate: percentiles(finalSamples.map(s => s.baselineAfterPrivateMs!)) });
       const evidencePath = testInfo.outputPath("browser-result-latency.json");
       await writeFile(evidencePath, JSON.stringify(evidence, null, 2));
       await testInfo.attach("browser-result-latency", { path: evidencePath, contentType: "application/json" });
