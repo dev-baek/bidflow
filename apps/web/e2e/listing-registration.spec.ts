@@ -174,7 +174,7 @@ test.describe("상품 등록·입찰 Browser 흐름", () => {
     test.skip(process.env.BIDFLOW_E2E_LATENCY !== "1", "BIDFLOW_E2E_LATENCY=1을 지정한 로컬 지연 관측 회차만 실행합니다.");
     test.setTimeout(120_000);
     const samples: { index: number; amount: number; requestId?: string; httpMs?: number; privateMs?: number; screenMs?: number;
-      fineScreenMs?: number; fineMaxCheckGapMs?: number; fineCheckCount?: number;
+      fineScreenMs?: number; fineMaxCheckGapMs?: number | null; fineCheckCount?: number;
       fineAfterPrivateMs?: number; baselineAfterPrivateMs?: number; baselineMinusFineMs?: number; error?: string }[] = [];
     const runId = randomUUID();
     let auctionId: string | undefined;
