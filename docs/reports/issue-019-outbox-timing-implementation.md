@@ -36,4 +36,4 @@ Kafka Envelope·schemaVersion·원본 payload·key와 Scheduler 간격은 그대
 
 ## 다음 검증
 
-다음 회차에서 새 시험 경매의 명령/결과 Outbox eventId를 requestId와 연결하고 허용된 로그 필드만 추출한다. 관측 age·배치 대기·ack 시간의 표본 수와 누락/무효 수를 각각 보고한다. 기존 2초 기준 실패는 계측만으로 해결된 것이 아니며 #19/#18은 열린 상태로 둔다. AWS는 사용하지 않았다.
+후속 [새 브라우저 20건 실측](issue-019-outbox-timing-evidence.md)에서 명령/결과 Outbox eventId를 requestId와 연결하고 허용된 로그 필드만 추출했다. 관측 age·배치 대기·ack 시간의 표본 수와 누락/무효 수를 보고했다. 기존 2초 기준 실패는 계측만으로 해결된 것이 아니며 #19/#18은 열린 상태로 둔다. AWS는 사용하지 않았다.
