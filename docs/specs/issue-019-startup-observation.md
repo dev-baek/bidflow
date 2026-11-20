@@ -1,6 +1,6 @@
 # [Issue #19] 로컬 재시작 직후 E2E 시간 초과 관측 사양
 
-- 상태: 제안됨 — 승인 후 수집 연결·테스트·실측.
+- 상태: 사양 승인(#271), [수집기·HTTP probe·reporter 구현 및 fixture 검증](../reports/issue-019-startup-observation-implementation.md). 실제 최대 3회 재시작 관측은 다음 단계다.
 - 관련: [#19 검증](https://github.com/dev-baek/bidflow/issues/19), [#20 E2E](https://github.com/dev-baek/bidflow/issues/20).
 - 근거: [로컬 100ms 검증의 초기 시간 초과](../reports/issue-019-local-outbox-delay.md). 첫 기능 실행은 2개 시간 초과, 사후 DB에서는 종료/승인 반영, 한 번의 재실행은 6개 통과였다.
 
