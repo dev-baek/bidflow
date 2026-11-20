@@ -62,4 +62,4 @@ API 로그는 해당 테스트 JVM의 stdout만 전달한다. 실행자는 기�
 
 실제 Playwright 엔진에서도 합성 사례 2개를 실행했다. 의도한 passed/failed 및 exit 1이 그대로 출력되고 원문 오류/비밀 fixture 문자열이 stdout/stderr에서 제거된 것을 확인했다. 이는 제품 E2E 통과나 콜드 스타트 실측이 아니다. 기존 6개 제품 테스트 로딩, TypeScript build 검사, 프런트 상태/컴포넌트 68개 테스트도 통과했다. Java 코드는 바꾸지 않아 백엔드 전체 검증을 이번에 다시 실행하지 않았다.
 
-병합 후 같은 commit으로 승인된 최대 3회 프로토콜을 실행하고 SQL/동일 eventId 연결을 포함해 보고한다. 초기 원인은 아직 미확정이다. 실행 중 API·DB·볼륨·AWS는 변경하지 않았고 기존 루트 package-lock.json도 제외했다.
+후속 [3회 재시작 관측](issue-019-startup-observation.md)에서 병합한 같은 commit으로 승인된 프로토콜과 SQL/eventId 연결을 검증했다. 초기 원인은 아직 미확정이다. 이 구현 회차에서는 실행 중 API·DB·볼륨·AWS를 변경하지 않았고 기존 루트 package-lock.json도 제외했다.

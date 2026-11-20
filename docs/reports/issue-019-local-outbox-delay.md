@@ -56,4 +56,4 @@ SQL에서 요청·승인 요청·원장·서로 다른 원장 requestId·정산 
 
 기존 데이터 삭제·볼륨 초기화·루트 package-lock.json 변경·AWS 접근은 없었다. 프런트 컴포넌트 테스트는 이번 설정 작업에서 별도 재실행하지 않았고 브라우저 경로로 확인했다. 동시 부하·장기 비용·장애 안전성·초기 시간 초과 원인 확정·AWS 검증을 완료했다고 주장하지 않으며 #19/#18은 열린 상태다.
 
-후속 [재시작 직후 E2E 관측 사양](../specs/issue-019-startup-observation.md)은 기존 readiness나 timeout을 바꾸기 전에 초기 처리 순서를 확인하는 제안이다.
+후속 [관측 사양](../specs/issue-019-startup-observation.md)에 따른 [3회 재시작 실측](issue-019-startup-observation.md)에서는 두 사례 모두 통과했다. 기존 초기 실패의 원인은 여전히 미확정이며 readiness나 timeout은 바꾸지 않았다.
