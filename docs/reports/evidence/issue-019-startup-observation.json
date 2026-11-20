@@ -1,0 +1,1196 @@
+{
+  "metadata": {
+    "sourceCommit": "26b14524683007cbb527d18ec53d4a7ce6fb05aa",
+    "node": "v24.18.0",
+    "jarSha256": "5251be8d60c6fc0f3a7afb13415c72e2438713b973a854a54f411009065f08c4",
+    "startedAt": "2026-11-20T14:00:26.352Z",
+    "runs": [
+      {
+        "round": 1,
+        "startedAt": "2026-11-20T14:00:26.359Z",
+        "testArgs": [
+          "-jar",
+          "/Users/baekmingyu/Documents/BidFlow/backend/runtime/build/libs/runtime-0.0.1-SNAPSHOT.jar",
+          "--spring.profiles.active=local,e2e",
+          "--server.address=127.0.0.1"
+        ],
+        "auctionIds": [
+          "5b54a41a-f986-4f10-8c14-c274ab16677a",
+          "f7127e25-ed80-4bee-b129-1cc1414fac73",
+          "ce34ae91-8ff4-4f86-9b3b-6bfca7a23ded"
+        ],
+        "oldPid": 61779,
+        "apiPid": 83660,
+        "runnerExitCode": 0,
+        "sql": [
+          {
+            "auctionId": "5b54a41a-f986-4f10-8c14-c274ab16677a",
+            "status": "ENDED",
+            "version": 2,
+            "outcome": "UNSOLD",
+            "requests": 0,
+            "ledgerRows": 0,
+            "distinctLedgerRequests": 0,
+            "ledgers": null,
+            "events": [
+  {"eventId":"6fb72330-f620-4ba5-977b-a430ecb137a0","eventType":"AuctionEnded","requestId":null,"published":true}
+]
+          },
+          {
+            "auctionId": "ce34ae91-8ff4-4f86-9b3b-6bfca7a23ded",
+            "status": "ENDED",
+            "version": 3,
+            "outcome": "SOLD",
+            "requests": 1,
+            "ledgerRows": 1,
+            "distinctLedgerRequests": 1,
+            "ledgers": [
+              {
+                "requestId": "add0fd03-0c0c-43ff-be27-120d2706928d",
+                "decision": "ACCEPTED"
+              }
+            ],
+            "events": [
+  {"eventId":"3731cd58-4ba3-4293-b9d7-a188123e3d09","eventType":"AuctionEnded","requestId":null,"published":true},
+  {"eventId":"3a1f447f-9cc0-40ed-a45b-9d468c7186da","eventType":"BidCommandRequested","requestId":"add0fd03-0c0c-43ff-be27-120d2706928d","published":true},
+  {"eventId":"83c9649c-cbd4-4293-8c58-1190de598017","eventType":"BidAccepted","requestId":"add0fd03-0c0c-43ff-be27-120d2706928d","published":true}
+]
+          },
+          {
+            "auctionId": "f7127e25-ed80-4bee-b129-1cc1414fac73",
+            "status": "ENDED",
+            "version": 4,
+            "outcome": "SOLD",
+            "requests": 3,
+            "ledgerRows": 3,
+            "distinctLedgerRequests": 3,
+            "ledgers": [
+              {
+                "requestId": "9ad02a60-c841-48b7-877c-414172ada241",
+                "decision": "ACCEPTED"
+              },
+              {
+                "requestId": "13cef502-965a-47eb-ab00-1f822b2bb7a1",
+                "decision": "ACCEPTED"
+              },
+              {
+                "requestId": "7e01ec7b-0de8-4caf-97a0-ee181ee0a69c",
+                "decision": "REJECTED"
+              }
+            ],
+            "events": [
+  {"eventId":"973b5598-556b-4ea5-ad59-d8519c82cfe3","eventType":"BidCommandRequested","requestId":"13cef502-965a-47eb-ab00-1f822b2bb7a1","published":true},
+  {"eventId":"6a54179d-0d13-465b-ab4e-7e5525d08c07","eventType":"AuctionEnded","requestId":null,"published":true},
+  {"eventId":"93876d63-660b-4ebf-9890-f3b4cf3f1563","eventType":"BidCommandRequested","requestId":"7e01ec7b-0de8-4caf-97a0-ee181ee0a69c","published":true},
+  {"eventId":"3dfe065e-9177-443a-a433-c710334bc659","eventType":"BidCommandRequested","requestId":"9ad02a60-c841-48b7-877c-414172ada241","published":true},
+  {"eventId":"8b1be56b-e695-42cf-8eea-ce05493b1c8a","eventType":"BidAccepted","requestId":"9ad02a60-c841-48b7-877c-414172ada241","published":true},
+  {"eventId":"320cb572-33db-45c6-bd1c-cd0326088e13","eventType":"AuctionExtended","requestId":null,"published":true},
+  {"eventId":"48595ae9-062f-4559-879f-ec77fa0282f2","eventType":"BidAccepted","requestId":"13cef502-965a-47eb-ab00-1f822b2bb7a1","published":true},
+  {"eventId":"d1a64e5d-a144-4e88-9b2b-5efeff0d00b4","eventType":"BidRejected","requestId":"7e01ec7b-0de8-4caf-97a0-ee181ee0a69c","published":true}
+]
+          }
+        ],
+        "sqlCollectedAt": "2026-11-20T14:01:00.742Z",
+        "restored": {
+          "pid": 83872,
+          "args": [
+            "-jar",
+            "/Users/baekmingyu/Documents/BidFlow/backend/runtime/build/libs/runtime-0.0.1-SNAPSHOT.jar",
+            "--spring.profiles.active=local",
+            "--server.address=127.0.0.1",
+            "--bidflow.outbox.fixed-delay-ms=1000",
+            "--logging.level.com.bidflow.runtime.OutboxScheduler=INFO"
+          ],
+          "health": 200,
+          "verifiedAt": "2026-11-20T14:01:19.433Z"
+        },
+        "collectorExitCode": 0,
+        "completedAt": "2026-11-20T14:01:19.444Z"
+      },
+      {
+        "round": 2,
+        "startedAt": "2026-11-20T14:01:19.444Z",
+        "testArgs": [
+          "-jar",
+          "/Users/baekmingyu/Documents/BidFlow/backend/runtime/build/libs/runtime-0.0.1-SNAPSHOT.jar",
+          "--spring.profiles.active=local,e2e",
+          "--server.address=127.0.0.1"
+        ],
+        "auctionIds": [
+          "a65cbfdd-5512-48bc-a168-7f35181ba5d0",
+          "8a100e1c-ac0a-4437-8398-4a7f2b62c17e",
+          "ffe1dec3-e775-48f6-b363-3e10a55021f6"
+        ],
+        "oldPid": 83872,
+        "apiPid": 84125,
+        "runnerExitCode": 0,
+        "sql": [
+          {
+            "auctionId": "8a100e1c-ac0a-4437-8398-4a7f2b62c17e",
+            "status": "ENDED",
+            "version": 4,
+            "outcome": "SOLD",
+            "requests": 3,
+            "ledgerRows": 3,
+            "distinctLedgerRequests": 3,
+            "ledgers": [
+              {
+                "requestId": "d76dd6e3-48e0-4dbd-9432-8e3248ae462b",
+                "decision": "ACCEPTED"
+              },
+              {
+                "requestId": "85ead2a4-7a16-4700-b521-f4ab01260f88",
+                "decision": "ACCEPTED"
+              },
+              {
+                "requestId": "54554f41-300a-4527-a553-5a4defa0c2b9",
+                "decision": "REJECTED"
+              }
+            ],
+            "events": [
+  {"eventId":"1a80621c-42b5-41f6-9883-1386d8dd35a1","eventType":"BidCommandRequested","requestId":"85ead2a4-7a16-4700-b521-f4ab01260f88","published":true},
+  {"eventId":"7183af9f-3816-4355-9d25-cc7f85457225","eventType":"AuctionExtended","requestId":null,"published":true},
+  {"eventId":"57e6472c-d273-44ab-aead-f59cfbf61888","eventType":"BidCommandRequested","requestId":"d76dd6e3-48e0-4dbd-9432-8e3248ae462b","published":true},
+  {"eventId":"2cfb1703-4dd1-4dc5-9a0b-f3feb1e9f3b6","eventType":"BidAccepted","requestId":"d76dd6e3-48e0-4dbd-9432-8e3248ae462b","published":true},
+  {"eventId":"e6bc281a-2c64-424b-b7bc-04fc2d9b95a8","eventType":"BidAccepted","requestId":"85ead2a4-7a16-4700-b521-f4ab01260f88","published":true},
+  {"eventId":"b017a764-b749-4d15-97f6-b58acb362c38","eventType":"AuctionEnded","requestId":null,"published":true},
+  {"eventId":"0ead9061-20e3-417d-ad75-f74f1618fd36","eventType":"BidCommandRequested","requestId":"54554f41-300a-4527-a553-5a4defa0c2b9","published":true},
+  {"eventId":"a3082699-1a60-411e-8ca6-0b24a02fafce","eventType":"BidRejected","requestId":"54554f41-300a-4527-a553-5a4defa0c2b9","published":true}
+]
+          },
+          {
+            "auctionId": "a65cbfdd-5512-48bc-a168-7f35181ba5d0",
+            "status": "ENDED",
+            "version": 2,
+            "outcome": "UNSOLD",
+            "requests": 0,
+            "ledgerRows": 0,
+            "distinctLedgerRequests": 0,
+            "ledgers": null,
+            "events": [
+  {"eventId":"62c018d2-b1d4-459b-8e04-5cde9f453075","eventType":"AuctionEnded","requestId":null,"published":true}
+]
+          },
+          {
+            "auctionId": "ffe1dec3-e775-48f6-b363-3e10a55021f6",
+            "status": "ENDED",
+            "version": 3,
+            "outcome": "SOLD",
+            "requests": 1,
+            "ledgerRows": 1,
+            "distinctLedgerRequests": 1,
+            "ledgers": [
+              {
+                "requestId": "350c8c24-017d-4ccc-911f-ba4edfe437bf",
+                "decision": "ACCEPTED"
+              }
+            ],
+            "events": [
+  {"eventId":"e68ff6d9-bf06-4806-8093-f32e4d29a08a","eventType":"AuctionEnded","requestId":null,"published":true},
+  {"eventId":"b003fc77-ded8-43f5-adae-e1932af07e5d","eventType":"BidCommandRequested","requestId":"350c8c24-017d-4ccc-911f-ba4edfe437bf","published":true},
+  {"eventId":"22bdc741-a0d6-4213-87c5-cc816d412ad8","eventType":"BidAccepted","requestId":"350c8c24-017d-4ccc-911f-ba4edfe437bf","published":true}
+]
+          }
+        ],
+        "sqlCollectedAt": "2026-11-20T14:01:52.668Z",
+        "restored": {
+          "pid": 84370,
+          "args": [
+            "-jar",
+            "/Users/baekmingyu/Documents/BidFlow/backend/runtime/build/libs/runtime-0.0.1-SNAPSHOT.jar",
+            "--spring.profiles.active=local",
+            "--server.address=127.0.0.1",
+            "--bidflow.outbox.fixed-delay-ms=1000",
+            "--logging.level.com.bidflow.runtime.OutboxScheduler=INFO"
+          ],
+          "health": 200,
+          "verifiedAt": "2026-11-20T14:02:11.988Z"
+        },
+        "collectorExitCode": 0,
+        "completedAt": "2026-11-20T14:02:12.010Z"
+      },
+      {
+        "round": 3,
+        "startedAt": "2026-11-20T14:02:12.011Z",
+        "testArgs": [
+          "-jar",
+          "/Users/baekmingyu/Documents/BidFlow/backend/runtime/build/libs/runtime-0.0.1-SNAPSHOT.jar",
+          "--spring.profiles.active=local,e2e",
+          "--server.address=127.0.0.1"
+        ],
+        "auctionIds": [
+          "296f484c-1db0-46dd-89f0-96a7fa49bf56",
+          "84616946-a8e6-4c57-9c1c-33085e6624c0",
+          "16f3047f-9cb1-4571-a283-33102aa1e236"
+        ],
+        "oldPid": 84370,
+        "apiPid": 84628,
+        "runnerExitCode": 0,
+        "sql": [
+          {
+            "auctionId": "16f3047f-9cb1-4571-a283-33102aa1e236",
+            "status": "ENDED",
+            "version": 3,
+            "outcome": "SOLD",
+            "requests": 1,
+            "ledgerRows": 1,
+            "distinctLedgerRequests": 1,
+            "ledgers": [
+              {
+                "requestId": "837559fd-5acd-4b23-9c2a-9b566e007d28",
+                "decision": "ACCEPTED"
+              }
+            ],
+            "events": [
+  {"eventId":"485ec1fa-dc84-4a3b-8455-a1ee5e2ad077","eventType":"BidCommandRequested","requestId":"837559fd-5acd-4b23-9c2a-9b566e007d28","published":true},
+  {"eventId":"5d48e8a7-8471-4306-aa91-93c65c9c7930","eventType":"BidAccepted","requestId":"837559fd-5acd-4b23-9c2a-9b566e007d28","published":true},
+  {"eventId":"2c0a26d5-7980-47ed-b310-cd5a7be71352","eventType":"AuctionEnded","requestId":null,"published":true}
+]
+          },
+          {
+            "auctionId": "296f484c-1db0-46dd-89f0-96a7fa49bf56",
+            "status": "ENDED",
+            "version": 2,
+            "outcome": "UNSOLD",
+            "requests": 0,
+            "ledgerRows": 0,
+            "distinctLedgerRequests": 0,
+            "ledgers": null,
+            "events": [
+  {"eventId":"3fa901a2-a9b9-403a-ab32-b8e68be22f8b","eventType":"AuctionEnded","requestId":null,"published":true}
+]
+          },
+          {
+            "auctionId": "84616946-a8e6-4c57-9c1c-33085e6624c0",
+            "status": "ENDED",
+            "version": 4,
+            "outcome": "SOLD",
+            "requests": 3,
+            "ledgerRows": 3,
+            "distinctLedgerRequests": 3,
+            "ledgers": [
+              {
+                "requestId": "d621c425-4e3e-48b3-8a86-0ebb5697cd93",
+                "decision": "ACCEPTED"
+              },
+              {
+                "requestId": "6157512d-f04d-4beb-ae32-7b0c6916465a",
+                "decision": "ACCEPTED"
+              },
+              {
+                "requestId": "68a0b80a-93af-4f5b-9109-c004d96a6716",
+                "decision": "REJECTED"
+              }
+            ],
+            "events": [
+  {"eventId":"270075f1-6141-4cdb-8819-9915a596472b","eventType":"BidCommandRequested","requestId":"d621c425-4e3e-48b3-8a86-0ebb5697cd93","published":true},
+  {"eventId":"39d9a00b-037f-439c-97d3-2a5ceaf4b56d","eventType":"BidAccepted","requestId":"d621c425-4e3e-48b3-8a86-0ebb5697cd93","published":true},
+  {"eventId":"6ed1097b-e578-4765-bf2f-05f71b165090","eventType":"AuctionExtended","requestId":null,"published":true},
+  {"eventId":"bff01b07-a056-4999-9011-46e003940c2f","eventType":"BidCommandRequested","requestId":"6157512d-f04d-4beb-ae32-7b0c6916465a","published":true},
+  {"eventId":"fb17b775-b1d2-4a89-8c6e-9d79a30e0557","eventType":"BidAccepted","requestId":"6157512d-f04d-4beb-ae32-7b0c6916465a","published":true},
+  {"eventId":"5f2a74eb-4d4f-4a1d-a67c-45b759d6a2c1","eventType":"BidCommandRequested","requestId":"68a0b80a-93af-4f5b-9109-c004d96a6716","published":true},
+  {"eventId":"6b862f84-198d-47dc-897a-c960e4ab7daa","eventType":"BidRejected","requestId":"68a0b80a-93af-4f5b-9109-c004d96a6716","published":true},
+  {"eventId":"0a3d9502-db28-4366-ae89-0f3cb067debd","eventType":"AuctionEnded","requestId":null,"published":true}
+]
+          }
+        ],
+        "sqlCollectedAt": "2026-11-20T14:02:47.959Z",
+        "restored": {
+          "pid": 84915,
+          "args": [
+            "-jar",
+            "/Users/baekmingyu/Documents/BidFlow/backend/runtime/build/libs/runtime-0.0.1-SNAPSHOT.jar",
+            "--spring.profiles.active=local",
+            "--server.address=127.0.0.1",
+            "--bidflow.outbox.fixed-delay-ms=1000",
+            "--logging.level.com.bidflow.runtime.OutboxScheduler=INFO"
+          ],
+          "health": 200,
+          "verifiedAt": "2026-11-20T14:03:06.256Z"
+        },
+        "collectorExitCode": 0,
+        "completedAt": "2026-11-20T14:03:06.315Z"
+      }
+    ],
+    "completedAt": "2026-11-20T14:03:06.316Z",
+    "java": "openjdk version \"21.0.7\" 2025-04-15 LTS\nOpenJDK Runtime Environment Microsoft-11369939 (build 21.0.7+6-LTS)\nOpenJDK 64-Bit Server VM Microsoft-11369939 (build 21.0.7+6-LTS, mixed mode, sharing)",
+    "containers": [
+      "/bidflow-local-postgres-1 409e0518d990b30c58790cde8f7d06a01002c14916fcb3c6ac00ffafbd25b61c postgres:17.5-alpine",
+      "/bidflow-local-kafka-1 89db5b58dac8ce3149fb58be11af69b35adfd5844ff442c67f71fb7ef5936d78 apache/kafka:3.9.1",
+      "/bidflow-local-redis-1 d8f642d61050a4b814395210bbdad1ffde35d62ea1ad1671386b7e27f2e43fa8 redis:7.4.5-alpine",
+      "/bidflow-local-opensearch-1 681ffdc443ee7e324a558acb593f0329c4d166dd8d95f7cc4bef481b2ae16c38 opensearchproject/opensearch:2.19.2",
+      "/bidflow-local-object-storage-1 626beae8def39f56e8ed2704284340b71ca95e7dd6137f7e48ecaafebc546916 chrislusf/seaweedfs:4.38"
+    ],
+    "intervalEnvironmentOverrideAbsent": true,
+    "applicationJsonAbsent": true
+  },
+  "runs": [
+    {
+      "round": 1,
+      "observation": {
+        "startedAt": "2026-11-20T14:00:26.414Z",
+        "valid": true,
+        "records": [
+  {"source":"stdin","line":1,"receivedMs":1026.521166,"kind":"old.exited","data":{"pid":61779}},
+  {"source":"stdin","line":2,"receivedMs":1027.19725,"kind":"api.started","data":{"pid":83660}},
+  {"source":"stdin","line":3,"receivedMs":1059.80675,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":4,"receivedMs":1063.124791,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":5,"receivedMs":1267.109291,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":6,"receivedMs":1268.1553749999998,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":7,"receivedMs":1498.31225,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":8,"receivedMs":1501.146041,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":9,"receivedMs":1701.196125,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":10,"receivedMs":1702.123416,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":11,"receivedMs":1904.361166,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":12,"receivedMs":1905.3413329999998,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":13,"receivedMs":2109.2032910000003,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":14,"receivedMs":2110.6310000000003,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":15,"receivedMs":2313.3909160000003,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":16,"receivedMs":2314.563208,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":17,"receivedMs":2519.8855000000003,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":18,"receivedMs":2521.3097080000002,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":19,"receivedMs":2724.561208,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":20,"receivedMs":2725.821458,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":21,"receivedMs":2929.893708,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":22,"receivedMs":2932.901833,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":23,"receivedMs":3135.54075,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":24,"receivedMs":3137.587833,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":25,"receivedMs":3342.9855000000002,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":26,"receivedMs":3344.428041,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":27,"receivedMs":3547.567875,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":28,"receivedMs":3548.1288750000003,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":29,"receivedMs":3775.2674580000003,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":30,"receivedMs":3775.324541,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":31,"receivedMs":3977.27625,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":32,"receivedMs":3980.055208,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":33,"receivedMs":4183.814082999999,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":34,"receivedMs":4185.364874999999,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":35,"receivedMs":4388.156790999999,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":36,"receivedMs":4389.126208,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":37,"receivedMs":4592.004625,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":38,"receivedMs":4593.036749999999,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":39,"receivedMs":4795.389125,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":40,"receivedMs":4798.24425,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":41,"receivedMs":5002.5828329999995,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":42,"receivedMs":5002.666958,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":43,"receivedMs":5205.126832999999,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":44,"receivedMs":5206.189665999999,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":45,"receivedMs":5410.866375,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":46,"receivedMs":5412.343416,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":47,"receivedMs":5613.9105,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":48,"receivedMs":5615.9340409999995,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":49,"receivedMs":5817.594416,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":50,"receivedMs":5818.3375829999995,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":51,"receivedMs":6023.452332999999,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":52,"receivedMs":6023.488041,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":53,"receivedMs":6241.765958,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":54,"receivedMs":6249.392166,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":55,"receivedMs":6451.336208,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":56,"receivedMs":6452.3330829999995,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":57,"receivedMs":6655.5629579999995,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":58,"receivedMs":6656.639499999999,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":59,"receivedMs":6864.010958,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":60,"receivedMs":6864.042708,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":61,"receivedMs":7065.156290999999,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":62,"receivedMs":7066.489165999999,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":63,"receivedMs":7292.651290999999,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":64,"receivedMs":7292.688,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":65,"receivedMs":7494.868791,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":66,"receivedMs":7495.893375,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":67,"receivedMs":7698.13375,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":68,"receivedMs":7698.427791,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":69,"receivedMs":7905.6182499999995,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":70,"receivedMs":7906.442625,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":71,"receivedMs":8122.503916,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":72,"receivedMs":8130.843124999999,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":73,"receivedMs":8333.643791,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":74,"receivedMs":8334.912291,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":75,"receivedMs":8543.73275,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":76,"receivedMs":8543.767666,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":77,"receivedMs":8746.192874999999,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":78,"receivedMs":8747.127208,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":79,"receivedMs":8949.46525,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":80,"receivedMs":8950.462791,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":81,"receivedMs":9159.740541,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":82,"receivedMs":9160.891749999999,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":83,"receivedMs":9367.353291,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":84,"receivedMs":9373.102332999999,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":85,"receivedMs":9581.340708,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":86,"receivedMs":9581.501957999999,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":87,"receivedMs":9789.401249999999,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":88,"receivedMs":9789.430624999999,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":89,"receivedMs":9993.324499999999,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":90,"receivedMs":9996.101,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":91,"receivedMs":10200.417333,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":92,"receivedMs":10201.472375,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":93,"receivedMs":10406.54825,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":94,"receivedMs":10408.885666,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":95,"receivedMs":10610.820875,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":96,"receivedMs":10613.094541,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":97,"receivedMs":10815.468791,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":98,"receivedMs":10816.168083,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":99,"receivedMs":11018.528041,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":100,"receivedMs":11019.334208,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":101,"receivedMs":11224.392458,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":102,"receivedMs":11225.052666,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":103,"receivedMs":11426.450416,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":104,"receivedMs":11427.280875,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":105,"receivedMs":11632.884166,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":106,"receivedMs":11633.882708,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":107,"receivedMs":11838.329833,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":108,"receivedMs":11839.345291,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":109,"receivedMs":12041.28575,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":110,"receivedMs":12043.0585,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":111,"receivedMs":12245.401333,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":112,"receivedMs":12246.129375,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":113,"receivedMs":13451.745125,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"TIMEOUT"}},
+  {"source":"stdin","line":114,"receivedMs":13544.351666,"kind":"probe","data":{"endpoint":"readiness","httpStatus":503,"status":"OUT_OF_SERVICE"}},
+  {"source":"stdin","line":115,"receivedMs":13772.925583,"kind":"probe","data":{"endpoint":"health","httpStatus":503,"status":"DOWN"}},
+  {"source":"stdin","line":116,"receivedMs":13774.779916,"kind":"kafka","data":{"group":"bid-settlement","action":"assigned","partitions":[{"topic":"bid-command","partition":0},{"topic":"bid-command","partition":1},{"topic":"bid-command","partition":2}]}},
+  {"source":"stdin","line":117,"receivedMs":13778.592166,"kind":"kafka","data":{"group":"auction-finalization","action":"assigned","partitions":[{"topic":"bid-event","partition":0},{"topic":"bid-event","partition":1},{"topic":"bid-event","partition":2}]}},
+  {"source":"stdin","line":118,"receivedMs":13779.691125,"kind":"kafka","data":{"group":"search-projection","action":"assigned","partitions":[{"topic":"bid-event","partition":0},{"topic":"bid-event","partition":1},{"topic":"bid-event","partition":2},{"topic":"listing-event","partition":0},{"topic":"listing-event","partition":1},{"topic":"listing-event","partition":2}]}},
+  {"source":"stdin","line":119,"receivedMs":13789.426833,"kind":"probe","data":{"endpoint":"readiness","httpStatus":503,"status":"OUT_OF_SERVICE"}},
+  {"source":"stdin","line":120,"receivedMs":13796.919333,"kind":"kafka","data":{"group":"realtime-projection","action":"assigned","partitions":[{"topic":"bid-event","partition":0},{"topic":"bid-event","partition":1},{"topic":"bid-event","partition":2}]}},
+  {"source":"stdin","line":121,"receivedMs":14022.991915999999,"kind":"probe","data":{"endpoint":"health","httpStatus":200,"status":"UP"}},
+  {"source":"stdin","line":122,"receivedMs":14037.290125,"kind":"probe","data":{"endpoint":"readiness","httpStatus":200,"status":"UP"}},
+  {"source":"stdin","line":123,"receivedMs":17546.433791000003,"kind":"test.begin","data":{"caseId":"unsold"}},
+  {"source":"stdin","line":124,"receivedMs":21465.539208000002,"kind":"auction","data":{"auctionId":"5b54a41a-f986-4f10-8c14-c274ab16677a"}},
+  {"source":"stdin","line":125,"receivedMs":21552.602666000003,"kind":"outbox","data":{"@timestamp":"2026-11-20T23:00:47.96447+09:00","event":"event.acknowledged","eventId":"932fac6e-1bae-48b8-8a6e-8589977d7429","correlationId":"9894e62e-db7d-4741-92b6-cfad9ab8085d","topic":"listing-event","eventType":"ListingPublished","pendingAgeStatus":"VALID","pendingAgeMs":"49","sendAckMs":"202.944333","outcome":"ACKNOWLEDGED","partition":"2","offset":"54"}},
+  {"source":"stdin","line":126,"receivedMs":21560.729458,"kind":"outbox","data":{"@timestamp":"2026-11-20T23:00:47.970046+09:00","event":"event.published","eventId":"932fac6e-1bae-48b8-8a6e-8589977d7429","correlationId":"9894e62e-db7d-4741-92b6-cfad9ab8085d","topic":"listing-event","eventType":"ListingPublished","pendingAgeStatus":"VALID","pendingAgeMs":"49","batchWaitMs":"0.007125","outcome":"PUBLISHED"}},
+  {"source":"stdin","line":127,"receivedMs":23387.552625,"kind":"outbox","data":{"@timestamp":"2026-11-20T23:00:49.799536+09:00","event":"event.acknowledged","eventId":"ccc84d01-25bb-420b-bd11-f424aadfc6c1","correlationId":"f923a01c-40f8-4033-aee5-222aa8c163f0","topic":"bid-event","eventType":"AuctionEnded","pendingAgeStatus":"VALID","pendingAgeMs":"57","sendAckMs":"32.9355","outcome":"ACKNOWLEDGED","partition":"1","offset":"1972"}},
+  {"source":"stdin","line":128,"receivedMs":23417.74175,"kind":"outbox","data":{"@timestamp":"2026-11-20T23:00:49.830308+09:00","event":"event.published","eventId":"ccc84d01-25bb-420b-bd11-f424aadfc6c1","correlationId":"f923a01c-40f8-4033-aee5-222aa8c163f0","topic":"bid-event","eventType":"AuctionEnded","pendingAgeStatus":"VALID","pendingAgeMs":"57","batchWaitMs":"0.002916","outcome":"PUBLISHED"}},
+  {"source":"stdin","line":129,"receivedMs":23450.461083000002,"kind":"outbox","data":{"@timestamp":"2026-11-20T23:00:49.861849+09:00","event":"event.acknowledged","eventId":"c44c9978-17b3-4564-ad9f-f5ee0dbb134d","correlationId":"e9becef1-1e39-48e9-8205-1d180dcf69e4","topic":"bid-event","eventType":"AuctionEnded","pendingAgeStatus":"VALID","pendingAgeMs":"51","sendAckMs":"30.815958","outcome":"ACKNOWLEDGED","partition":"1","offset":"1973"}},
+  {"source":"stdin","line":130,"receivedMs":23485.997083000002,"kind":"outbox","data":{"@timestamp":"2026-11-20T23:00:49.89715+09:00","event":"event.published","eventId":"c44c9978-17b3-4564-ad9f-f5ee0dbb134d","correlationId":"e9becef1-1e39-48e9-8205-1d180dcf69e4","topic":"bid-event","eventType":"AuctionEnded","pendingAgeStatus":"VALID","pendingAgeMs":"51","batchWaitMs":"64.507958","outcome":"PUBLISHED"}},
+  {"source":"stdin","line":131,"receivedMs":23569.212416000002,"kind":"outbox","data":{"@timestamp":"2026-11-20T23:00:49.980745+09:00","event":"event.acknowledged","eventId":"a04001c8-6fc4-42d1-8102-3df8ff26b70b","correlationId":"8a489645-3e0f-46c1-a903-99869427fe2a","topic":"bid-event","eventType":"AuctionEnded","pendingAgeStatus":"VALID","pendingAgeMs":"44","sendAckMs":"82.618125","outcome":"ACKNOWLEDGED","partition":"2","offset":"659"}},
+  {"source":"stdin","line":132,"receivedMs":23593.11125,"kind":"outbox","data":{"@timestamp":"2026-11-20T23:00:50.005425+09:00","event":"event.published","eventId":"a04001c8-6fc4-42d1-8102-3df8ff26b70b","correlationId":"8a489645-3e0f-46c1-a903-99869427fe2a","topic":"bid-event","eventType":"AuctionEnded","pendingAgeStatus":"VALID","pendingAgeMs":"44","batchWaitMs":"131.491583","outcome":"PUBLISHED"}},
+  {"source":"stdin","line":133,"receivedMs":23610.826833000003,"kind":"outbox","data":{"@timestamp":"2026-11-20T23:00:50.02255+09:00","event":"event.acknowledged","eventId":"d58847d9-e25d-4d8b-b283-441ff2319556","correlationId":"6e2c5d9d-0676-4ea5-a2ce-df00b4ca0cc1","topic":"bid-event","eventType":"AuctionEnded","pendingAgeStatus":"VALID","pendingAgeMs":"39","sendAckMs":"16.311416","outcome":"ACKNOWLEDGED","partition":"0","offset":"621"}},
+  {"source":"stdin","line":134,"receivedMs":23657.369541,"kind":"outbox","data":{"@timestamp":"2026-11-20T23:00:50.059861+09:00","event":"event.published","eventId":"d58847d9-e25d-4d8b-b283-441ff2319556","correlationId":"6e2c5d9d-0676-4ea5-a2ce-df00b4ca0cc1","topic":"bid-event","eventType":"AuctionEnded","pendingAgeStatus":"VALID","pendingAgeMs":"39","batchWaitMs":"239.594791","outcome":"PUBLISHED"}},
+  {"source":"stdin","line":135,"receivedMs":23695.227416,"kind":"outbox","data":{"@timestamp":"2026-11-20T23:00:50.106087+09:00","event":"event.acknowledged","eventId":"71b9b8e5-b8ca-4460-a26d-750cef59763b","correlationId":"cedaa1d9-b1a1-497c-b4fa-29aa0dd8fb69","topic":"bid-event","eventType":"AuctionEnded","pendingAgeStatus":"VALID","pendingAgeMs":"29","sendAckMs":"45.21125","outcome":"ACKNOWLEDGED","partition":"1","offset":"1974"}},
+  {"source":"stdin","line":136,"receivedMs":23713.761916000003,"kind":"outbox","data":{"@timestamp":"2026-11-20T23:00:50.125872+09:00","event":"event.published","eventId":"71b9b8e5-b8ca-4460-a26d-750cef59763b","correlationId":"cedaa1d9-b1a1-497c-b4fa-29aa0dd8fb69","topic":"bid-event","eventType":"AuctionEnded","pendingAgeStatus":"VALID","pendingAgeMs":"29","batchWaitMs":"294.243","outcome":"PUBLISHED"}},
+  {"source":"stdin","line":137,"receivedMs":23726.098916000003,"kind":"outbox","data":{"@timestamp":"2026-11-20T23:00:50.13828+09:00","event":"event.acknowledged","eventId":"1b1f6e5e-bd44-4949-a300-12f41fa87b06","correlationId":"3f0c6924-9d8f-4d3c-b4da-ab2410fa5904","topic":"bid-event","eventType":"AuctionEnded","pendingAgeStatus":"VALID","pendingAgeMs":"20","sendAckMs":"11.662625","outcome":"ACKNOWLEDGED","partition":"2","offset":"660"}},
+  {"source":"stdin","line":138,"receivedMs":23744.659375000003,"kind":"outbox","data":{"@timestamp":"2026-11-20T23:00:50.152605+09:00","event":"event.published","eventId":"1b1f6e5e-bd44-4949-a300-12f41fa87b06","correlationId":"3f0c6924-9d8f-4d3c-b4da-ab2410fa5904","topic":"bid-event","eventType":"AuctionEnded","pendingAgeStatus":"VALID","pendingAgeMs":"20","batchWaitMs":"360.055291","outcome":"PUBLISHED"}},
+  {"source":"stdin","line":139,"receivedMs":23750.061416,"kind":"outbox","data":{"@timestamp":"2026-11-20T23:00:50.162369+09:00","event":"event.acknowledged","eventId":"6fb72330-f620-4ba5-977b-a430ecb137a0","correlationId":"5b54a41a-f986-4f10-8c14-c274ab16677a","topic":"bid-event","eventType":"AuctionEnded","pendingAgeStatus":"VALID","pendingAgeMs":"16","sendAckMs":"9.151125","outcome":"ACKNOWLEDGED","partition":"0","offset":"622"}},
+  {"source":"stdin","line":140,"receivedMs":23757.169416,"kind":"outbox","data":{"@timestamp":"2026-11-20T23:00:50.168087+09:00","event":"event.published","eventId":"6fb72330-f620-4ba5-977b-a430ecb137a0","correlationId":"5b54a41a-f986-4f10-8c14-c274ab16677a","topic":"bid-event","eventType":"AuctionEnded","pendingAgeStatus":"VALID","pendingAgeMs":"16","batchWaitMs":"386.682458","outcome":"PUBLISHED"}},
+  {"source":"stdin","line":141,"receivedMs":24880.721166000003,"kind":"test.end","data":{"caseId":"unsold","status":"passed","durationMs":5780}},
+  {"source":"stdin","line":142,"receivedMs":24880.825958,"kind":"test.begin","data":{"caseId":"auto-finalization"}},
+  {"source":"stdin","line":143,"receivedMs":26079.652708,"kind":"outbox","data":{"@timestamp":"2026-11-20T23:00:52.490493+09:00","event":"event.acknowledged","eventId":"4547bf92-0869-4ab7-a9ea-d42e22e03b0e","correlationId":"fdda607d-6da9-4cfb-b189-63e8b1d289a8","topic":"listing-event","eventType":"ListingPublished","pendingAgeStatus":"VALID","pendingAgeMs":"7","sendAckMs":"18.192041","outcome":"ACKNOWLEDGED","partition":"0","offset":"47"}},
+  {"source":"stdin","line":144,"receivedMs":26084.865291000002,"kind":"outbox","data":{"@timestamp":"2026-11-20T23:00:52.497128+09:00","event":"event.published","eventId":"4547bf92-0869-4ab7-a9ea-d42e22e03b0e","correlationId":"fdda607d-6da9-4cfb-b189-63e8b1d289a8","topic":"listing-event","eventType":"ListingPublished","pendingAgeStatus":"VALID","pendingAgeMs":"7","batchWaitMs":"0.002209","outcome":"PUBLISHED"}},
+  {"source":"stdin","line":145,"receivedMs":26136.309583000002,"kind":"auction","data":{"auctionId":"f7127e25-ed80-4bee-b129-1cc1414fac73"}},
+  {"source":"stdin","line":146,"receivedMs":27078.318375000003,"kind":"outbox","data":{"@timestamp":"2026-11-20T23:00:53.489898+09:00","event":"event.acknowledged","eventId":"afa0d8d5-c82f-47fa-847e-20564cbe8592","correlationId":"615b9a3d-4cbb-4fa1-b8f5-a2643c05ab19","topic":"listing-event","eventType":"ListingPublished","pendingAgeStatus":"VALID","pendingAgeMs":"83","sendAckMs":"4.256458","outcome":"ACKNOWLEDGED","partition":"2","offset":"55"}},
+  {"source":"stdin","line":147,"receivedMs":27080.215958,"kind":"outbox","data":{"@timestamp":"2026-11-20T23:00:53.493108+09:00","event":"event.published","eventId":"afa0d8d5-c82f-47fa-847e-20564cbe8592","correlationId":"615b9a3d-4cbb-4fa1-b8f5-a2643c05ab19","topic":"listing-event","eventType":"ListingPublished","pendingAgeStatus":"VALID","pendingAgeMs":"83","batchWaitMs":"0.001333","outcome":"PUBLISHED"}},
+  {"source":"stdin","line":148,"receivedMs":27087.048875,"kind":"auction","data":{"auctionId":"ce34ae91-8ff4-4f86-9b3b-6bfca7a23ded"}},
+  {"source":"stdin","line":149,"receivedMs":27192.131125,"kind":"outbox","data":{"@timestamp":"2026-11-20T23:00:53.604415+09:00","event":"event.acknowledged","eventId":"3a1f447f-9cc0-40ed-a45b-9d468c7186da","correlationId":"ea56f869-03f5-4474-bdf5-2f938fc10660","topic":"bid-command","eventType":"BidCommandRequested","pendingAgeStatus":"VALID","pendingAgeMs":"56","sendAckMs":"7.351458","outcome":"ACKNOWLEDGED","partition":"2","offset":"560"}},
+  {"source":"stdin","line":150,"receivedMs":27197.2975,"kind":"outbox","data":{"@timestamp":"2026-11-20T23:00:53.609786+09:00","event":"event.published","eventId":"3a1f447f-9cc0-40ed-a45b-9d468c7186da","correlationId":"ea56f869-03f5-4474-bdf5-2f938fc10660","topic":"bid-command","eventType":"BidCommandRequested","pendingAgeStatus":"VALID","pendingAgeMs":"56","batchWaitMs":"9.16E-4","outcome":"PUBLISHED"}},
+  {"source":"stdin","line":151,"receivedMs":27310.41375,"kind":"settlement","data":{"eventId":"3a1f447f-9cc0-40ed-a45b-9d468c7186da","bidRequestId":"add0fd03-0c0c-43ff-be27-120d2706928d","auctionId":"ce34ae91-8ff4-4f86-9b3b-6bfca7a23ded","outcome":"ACCEPTED"}},
+  {"source":"stdin","line":152,"receivedMs":27481.218291,"kind":"outbox","data":{"@timestamp":"2026-11-20T23:00:53.866152+09:00","event":"event.acknowledged","eventId":"83c9649c-cbd4-4293-8c58-1190de598017","correlationId":"ea56f869-03f5-4474-bdf5-2f938fc10660","topic":"bid-event","eventType":"BidAccepted","pendingAgeStatus":"VALID","pendingAgeMs":"103","sendAckMs":"36.700292","outcome":"ACKNOWLEDGED","partition":"2","offset":"661"}},
+  {"source":"stdin","line":153,"receivedMs":27489.352166,"kind":"outbox","data":{"@timestamp":"2026-11-20T23:00:53.894605+09:00","event":"event.published","eventId":"83c9649c-cbd4-4293-8c58-1190de598017","correlationId":"ea56f869-03f5-4474-bdf5-2f938fc10660","topic":"bid-event","eventType":"BidAccepted","pendingAgeStatus":"VALID","pendingAgeMs":"103","batchWaitMs":"0.002958","outcome":"PUBLISHED"}},
+  {"source":"stdin","line":154,"receivedMs":29355.215166,"kind":"outbox","data":{"@timestamp":"2026-11-20T23:00:55.764731+09:00","event":"event.acknowledged","eventId":"3dfe065e-9177-443a-a433-c710334bc659","correlationId":"cde7ae9a-cd97-45f0-b586-a9938a8b7f28","topic":"bid-command","eventType":"BidCommandRequested","pendingAgeStatus":"VALID","pendingAgeMs":"14","sendAckMs":"17.649875","outcome":"ACKNOWLEDGED","partition":"2","offset":"561"}},
+  {"source":"stdin","line":155,"receivedMs":29360.411125000002,"kind":"outbox","data":{"@timestamp":"2026-11-20T23:00:55.772669+09:00","event":"event.published","eventId":"3dfe065e-9177-443a-a433-c710334bc659","correlationId":"cde7ae9a-cd97-45f0-b586-a9938a8b7f28","topic":"bid-command","eventType":"BidCommandRequested","pendingAgeStatus":"VALID","pendingAgeMs":"14","batchWaitMs":"0.003208","outcome":"PUBLISHED"}},
+  {"source":"stdin","line":156,"receivedMs":29394.213708000003,"kind":"settlement","data":{"eventId":"3dfe065e-9177-443a-a433-c710334bc659","bidRequestId":"9ad02a60-c841-48b7-877c-414172ada241","auctionId":"f7127e25-ed80-4bee-b129-1cc1414fac73","outcome":"ACCEPTED"}},
+  {"source":"stdin","line":157,"receivedMs":29476.884166,"kind":"outbox","data":{"@timestamp":"2026-11-20T23:00:55.888622+09:00","event":"event.acknowledged","eventId":"8b1be56b-e695-42cf-8eea-ce05493b1c8a","correlationId":"cde7ae9a-cd97-45f0-b586-a9938a8b7f28","topic":"bid-event","eventType":"BidAccepted","pendingAgeStatus":"VALID","pendingAgeMs":"76","sendAckMs":"7.910708","outcome":"ACKNOWLEDGED","partition":"2","offset":"662"}},
+  {"source":"stdin","line":158,"receivedMs":29482.217,"kind":"outbox","data":{"@timestamp":"2026-11-20T23:00:55.89428+09:00","event":"event.published","eventId":"8b1be56b-e695-42cf-8eea-ce05493b1c8a","correlationId":"cde7ae9a-cd97-45f0-b586-a9938a8b7f28","topic":"bid-event","eventType":"BidAccepted","pendingAgeStatus":"VALID","pendingAgeMs":"76","batchWaitMs":"0.001333","outcome":"PUBLISHED"}},
+  {"source":"stdin","line":159,"receivedMs":29487.442875,"kind":"outbox","data":{"@timestamp":"2026-11-20T23:00:55.899744+09:00","event":"event.acknowledged","eventId":"320cb572-33db-45c6-bd1c-cd0326088e13","correlationId":"cde7ae9a-cd97-45f0-b586-a9938a8b7f28","topic":"bid-event","eventType":"AuctionExtended","pendingAgeStatus":"VALID","pendingAgeMs":"73","sendAckMs":"4.760916","outcome":"ACKNOWLEDGED","partition":"2","offset":"663"}},
+  {"source":"stdin","line":160,"receivedMs":29494.346625000002,"kind":"outbox","data":{"@timestamp":"2026-11-20T23:00:55.905986+09:00","event":"event.published","eventId":"320cb572-33db-45c6-bd1c-cd0326088e13","correlationId":"cde7ae9a-cd97-45f0-b586-a9938a8b7f28","topic":"bid-event","eventType":"AuctionExtended","pendingAgeStatus":"VALID","pendingAgeMs":"73","batchWaitMs":"14.285291","outcome":"PUBLISHED"}},
+  {"source":"stdin","line":161,"receivedMs":29720.945666000003,"kind":"outbox","data":{"@timestamp":"2026-11-20T23:00:56.133245+09:00","event":"event.acknowledged","eventId":"973b5598-556b-4ea5-ad59-d8519c82cfe3","correlationId":"7fa76e50-af8e-43ea-9ee1-5eba88f264f6","topic":"bid-command","eventType":"BidCommandRequested","pendingAgeStatus":"VALID","pendingAgeMs":"42","sendAckMs":"8.44025","outcome":"ACKNOWLEDGED","partition":"2","offset":"562"}},
+  {"source":"stdin","line":162,"receivedMs":29724.939041,"kind":"outbox","data":{"@timestamp":"2026-11-20T23:00:56.137248+09:00","event":"event.published","eventId":"973b5598-556b-4ea5-ad59-d8519c82cfe3","correlationId":"7fa76e50-af8e-43ea-9ee1-5eba88f264f6","topic":"bid-command","eventType":"BidCommandRequested","pendingAgeStatus":"VALID","pendingAgeMs":"42","batchWaitMs":"0.002584","outcome":"PUBLISHED"}},
+  {"source":"stdin","line":163,"receivedMs":29741.847625000002,"kind":"settlement","data":{"eventId":"973b5598-556b-4ea5-ad59-d8519c82cfe3","bidRequestId":"13cef502-965a-47eb-ab00-1f822b2bb7a1","auctionId":"f7127e25-ed80-4bee-b129-1cc1414fac73","outcome":"ACCEPTED"}},
+  {"source":"stdin","line":164,"receivedMs":29841.308,"kind":"outbox","data":{"@timestamp":"2026-11-20T23:00:56.253437+09:00","event":"event.acknowledged","eventId":"48595ae9-062f-4559-879f-ec77fa0282f2","correlationId":"7fa76e50-af8e-43ea-9ee1-5eba88f264f6","topic":"bid-event","eventType":"BidAccepted","pendingAgeStatus":"VALID","pendingAgeMs":"93","sendAckMs":"4.7125","outcome":"ACKNOWLEDGED","partition":"2","offset":"664"}},
+  {"source":"stdin","line":165,"receivedMs":29851.090875,"kind":"outbox","data":{"@timestamp":"2026-11-20T23:00:56.262998+09:00","event":"event.published","eventId":"48595ae9-062f-4559-879f-ec77fa0282f2","correlationId":"7fa76e50-af8e-43ea-9ee1-5eba88f264f6","topic":"bid-event","eventType":"BidAccepted","pendingAgeStatus":"VALID","pendingAgeMs":"93","batchWaitMs":"0.002875","outcome":"PUBLISHED"}},
+  {"source":"stdin","line":166,"receivedMs":30489.430708,"kind":"outbox","data":{"@timestamp":"2026-11-20T23:00:56.901831+09:00","event":"event.acknowledged","eventId":"3731cd58-4ba3-4293-b9d7-a188123e3d09","correlationId":"ce34ae91-8ff4-4f86-9b3b-6bfca7a23ded","topic":"bid-event","eventType":"AuctionEnded","pendingAgeStatus":"VALID","pendingAgeMs":"74","sendAckMs":"3.003584","outcome":"ACKNOWLEDGED","partition":"2","offset":"665"}},
+  {"source":"stdin","line":167,"receivedMs":30491.732041000003,"kind":"outbox","data":{"@timestamp":"2026-11-20T23:00:56.904644+09:00","event":"event.published","eventId":"3731cd58-4ba3-4293-b9d7-a188123e3d09","correlationId":"ce34ae91-8ff4-4f86-9b3b-6bfca7a23ded","topic":"bid-event","eventType":"AuctionEnded","pendingAgeStatus":"VALID","pendingAgeMs":"74","batchWaitMs":"5.42E-4","outcome":"PUBLISHED"}},
+  {"source":"stdin","line":168,"receivedMs":31458.700083,"kind":"outbox","data":{"@timestamp":"2026-11-20T23:00:57.870361+09:00","event":"event.acknowledged","eventId":"6a54179d-0d13-465b-ab4e-7e5525d08c07","correlationId":"f7127e25-ed80-4bee-b129-1cc1414fac73","topic":"bid-event","eventType":"AuctionEnded","pendingAgeStatus":"VALID","pendingAgeMs":"31","sendAckMs":"4.859167","outcome":"ACKNOWLEDGED","partition":"2","offset":"666"}},
+  {"source":"stdin","line":169,"receivedMs":31464.2935,"kind":"outbox","data":{"@timestamp":"2026-11-20T23:00:57.87665+09:00","event":"event.published","eventId":"6a54179d-0d13-465b-ab4e-7e5525d08c07","correlationId":"f7127e25-ed80-4bee-b129-1cc1414fac73","topic":"bid-event","eventType":"AuctionEnded","pendingAgeStatus":"VALID","pendingAgeMs":"31","batchWaitMs":"0.00225","outcome":"PUBLISHED"}},
+  {"source":"stdin","line":170,"receivedMs":32529.667375,"kind":"outbox","data":{"@timestamp":"2026-11-20T23:00:58.940717+09:00","event":"event.acknowledged","eventId":"93876d63-660b-4ebf-9890-f3b4cf3f1563","correlationId":"4818a6de-e20e-40cd-ad7c-ca06a36750aa","topic":"bid-command","eventType":"BidCommandRequested","pendingAgeStatus":"VALID","pendingAgeMs":"47","sendAckMs":"2.388041","outcome":"ACKNOWLEDGED","partition":"2","offset":"563"}},
+  {"source":"stdin","line":171,"receivedMs":32530.647583,"kind":"outbox","data":{"@timestamp":"2026-11-20T23:00:58.943502+09:00","event":"event.published","eventId":"93876d63-660b-4ebf-9890-f3b4cf3f1563","correlationId":"4818a6de-e20e-40cd-ad7c-ca06a36750aa","topic":"bid-command","eventType":"BidCommandRequested","pendingAgeStatus":"VALID","pendingAgeMs":"47","batchWaitMs":"9.59E-4","outcome":"PUBLISHED"}},
+  {"source":"stdin","line":172,"receivedMs":32539.922708000002,"kind":"settlement","data":{"eventId":"93876d63-660b-4ebf-9890-f3b4cf3f1563","bidRequestId":"7e01ec7b-0de8-4caf-97a0-ee181ee0a69c","auctionId":"f7127e25-ed80-4bee-b129-1cc1414fac73","outcome":"AUCTION_ENDED"}},
+  {"source":"stdin","line":173,"receivedMs":32697.690666000002,"kind":"outbox","data":{"@timestamp":"2026-11-20T23:00:59.109418+09:00","event":"event.acknowledged","eventId":"d1a64e5d-a144-4e88-9b2b-5efeff0d00b4","correlationId":"4818a6de-e20e-40cd-ad7c-ca06a36750aa","topic":"bid-event","eventType":"BidRejected","pendingAgeStatus":"VALID","pendingAgeMs":"150","sendAckMs":"4.859083","outcome":"ACKNOWLEDGED","partition":"2","offset":"667"}},
+  {"source":"stdin","line":174,"receivedMs":32701.710750000002,"kind":"outbox","data":{"@timestamp":"2026-11-20T23:00:59.113958+09:00","event":"event.published","eventId":"d1a64e5d-a144-4e88-9b2b-5efeff0d00b4","correlationId":"4818a6de-e20e-40cd-ad7c-ca06a36750aa","topic":"bid-event","eventType":"BidRejected","pendingAgeStatus":"VALID","pendingAgeMs":"150","batchWaitMs":"0.002125","outcome":"PUBLISHED"}},
+  {"source":"stdin","line":175,"receivedMs":33940.021666,"kind":"test.end","data":{"caseId":"auto-finalization","status":"passed","durationMs":9046}},
+  {"source":"stdin","line":176,"receivedMs":34093.964625,"kind":"runner.exit","data":{"code":0}},
+  {"source":"stdin","line":177,"receivedMs":39350.947333000004,"kind":"kafka","data":{"group":"search-projection","action":"revoked","partitions":[{"topic":"bid-event","partition":0},{"topic":"bid-event","partition":1},{"topic":"bid-event","partition":2},{"topic":"listing-event","partition":0},{"topic":"listing-event","partition":1},{"topic":"listing-event","partition":2}]}},
+  {"source":"stdin","line":178,"receivedMs":39351.019375,"kind":"kafka","data":{"group":"auction-finalization","action":"revoked","partitions":[{"topic":"bid-event","partition":0},{"topic":"bid-event","partition":1},{"topic":"bid-event","partition":2}]}},
+  {"source":"stdin","line":179,"receivedMs":39351.026291,"kind":"kafka","data":{"group":"bid-settlement","action":"revoked","partitions":[{"topic":"bid-command","partition":0},{"topic":"bid-command","partition":1},{"topic":"bid-command","partition":2}]}},
+  {"source":"stdin","line":180,"receivedMs":39351.031208,"kind":"kafka","data":{"group":"realtime-projection","action":"revoked","partitions":[{"topic":"bid-event","partition":0},{"topic":"bid-event","partition":1},{"topic":"bid-event","partition":2}]}},
+  {"source":"stdin","line":181,"receivedMs":40344.960458,"kind":"api.stopped","data":{"pid":83660}},
+  {"source":"stdin","line":182,"receivedMs":53022.020541,"kind":"restored","data":{"pid":83872}}
+],
+        "summary": {
+          "testsPassed": true,
+          "allCasesExecuted": true,
+          "firstHealthUpMs": 14022.991915999999,
+          "firstReadinessUpMs": 14037.290125,
+          "cases": [
+            {
+              "caseId": "unsold",
+              "beginMs": 17546.433791000003,
+              "auctionIds": [
+                "5b54a41a-f986-4f10-8c14-c274ab16677a"
+              ],
+              "endMs": 24880.721166000003,
+              "status": "passed",
+              "runnerDurationMs": 5780
+            },
+            {
+              "caseId": "auto-finalization",
+              "beginMs": 24880.825958,
+              "auctionIds": [
+                "f7127e25-ed80-4bee-b129-1cc1414fac73",
+                "ce34ae91-8ff4-4f86-9b3b-6bfca7a23ded"
+              ],
+              "endMs": 33940.021666,
+              "status": "passed",
+              "runnerDurationMs": 9046
+            }
+          ],
+          "exitCode": 0,
+          "unparsedAssignments": 0,
+          "kafka": {
+            "bid-settlement": {
+              "firstNonEmptyAssignmentMs": 13774.779916,
+              "events": [
+  {"receivedMs":13774.779916,"group":"bid-settlement","action":"assigned","partitions":[{"topic":"bid-command","partition":0},{"topic":"bid-command","partition":1},{"topic":"bid-command","partition":2}]},
+  {"receivedMs":39351.026291,"group":"bid-settlement","action":"revoked","partitions":[{"topic":"bid-command","partition":0},{"topic":"bid-command","partition":1},{"topic":"bid-command","partition":2}]}
+]
+            },
+            "realtime-projection": {
+              "firstNonEmptyAssignmentMs": 13796.919333,
+              "events": [
+  {"receivedMs":13796.919333,"group":"realtime-projection","action":"assigned","partitions":[{"topic":"bid-event","partition":0},{"topic":"bid-event","partition":1},{"topic":"bid-event","partition":2}]},
+  {"receivedMs":39351.031208,"group":"realtime-projection","action":"revoked","partitions":[{"topic":"bid-event","partition":0},{"topic":"bid-event","partition":1},{"topic":"bid-event","partition":2}]}
+]
+            },
+            "auction-finalization": {
+              "firstNonEmptyAssignmentMs": 13778.592166,
+              "events": [
+  {"receivedMs":13778.592166,"group":"auction-finalization","action":"assigned","partitions":[{"topic":"bid-event","partition":0},{"topic":"bid-event","partition":1},{"topic":"bid-event","partition":2}]},
+  {"receivedMs":39351.019375,"group":"auction-finalization","action":"revoked","partitions":[{"topic":"bid-event","partition":0},{"topic":"bid-event","partition":1},{"topic":"bid-event","partition":2}]}
+]
+            },
+            "search-projection": {
+              "firstNonEmptyAssignmentMs": 13779.691125,
+              "events": [
+  {"receivedMs":13779.691125,"group":"search-projection","action":"assigned","partitions":[{"topic":"bid-event","partition":0},{"topic":"bid-event","partition":1},{"topic":"bid-event","partition":2},{"topic":"listing-event","partition":0},{"topic":"listing-event","partition":1},{"topic":"listing-event","partition":2}]},
+  {"receivedMs":39350.947333000004,"group":"search-projection","action":"revoked","partitions":[{"topic":"bid-event","partition":0},{"topic":"bid-event","partition":1},{"topic":"bid-event","partition":2},{"topic":"listing-event","partition":0},{"topic":"listing-event","partition":1},{"topic":"listing-event","partition":2}]}
+]
+            }
+          }
+        },
+        "completedAt": "2026-11-20T14:01:19.436Z"
+      },
+      "timeline": {
+        "healthMs": 12995.794666,
+        "readinessMs": 13010.092875,
+        "firstTestBeginMs": 16519.236541000002,
+        "readinessToFirstTestMs": 3509.1436660000036,
+        "assignments": {
+          "bid-settlement": 12747.582666,
+          "realtime-projection": 12769.722083,
+          "auction-finalization": 12751.394916000001,
+          "search-projection": 12752.493875
+        },
+        "cases": [
+          {
+            "caseId": "unsold",
+            "status": "passed",
+            "beginMs": 16519.236541000002,
+            "endMs": 23853.523916000002,
+            "runnerDurationMs": 5780,
+            "auctionIds": [
+              "5b54a41a-f986-4f10-8c14-c274ab16677a"
+            ]
+          },
+          {
+            "caseId": "auto-finalization",
+            "status": "passed",
+            "beginMs": 23853.628708,
+            "endMs": 32912.824416,
+            "runnerDurationMs": 9046,
+            "auctionIds": [
+              "f7127e25-ed80-4bee-b129-1cc1414fac73",
+              "ce34ae91-8ff4-4f86-9b3b-6bfca7a23ded"
+            ]
+          }
+        ]
+      },
+      "mapped": [
+  {"auctionId":"ce34ae91-8ff4-4f86-9b3b-6bfca7a23ded","requestId":"add0fd03-0c0c-43ff-be27-120d2706928d","decision":"ACCEPTED","commandEventId":"3a1f447f-9cc0-40ed-a45b-9d468c7186da","resultEventId":"83c9649c-cbd4-4293-8c58-1190de598017","commandAckReceivedMs":26164.933875,"settlementReceivedMs":26283.2165,"resultAckReceivedMs":26454.021041},
+  {"auctionId":"f7127e25-ed80-4bee-b129-1cc1414fac73","requestId":"9ad02a60-c841-48b7-877c-414172ada241","decision":"ACCEPTED","commandEventId":"3dfe065e-9177-443a-a433-c710334bc659","resultEventId":"8b1be56b-e695-42cf-8eea-ce05493b1c8a","commandAckReceivedMs":28328.017916,"settlementReceivedMs":28367.016458000002,"resultAckReceivedMs":28449.686916},
+  {"auctionId":"f7127e25-ed80-4bee-b129-1cc1414fac73","requestId":"13cef502-965a-47eb-ab00-1f822b2bb7a1","decision":"ACCEPTED","commandEventId":"973b5598-556b-4ea5-ad59-d8519c82cfe3","resultEventId":"48595ae9-062f-4559-879f-ec77fa0282f2","commandAckReceivedMs":28693.748416000002,"settlementReceivedMs":28714.650375,"resultAckReceivedMs":28814.11075},
+  {"auctionId":"f7127e25-ed80-4bee-b129-1cc1414fac73","requestId":"7e01ec7b-0de8-4caf-97a0-ee181ee0a69c","decision":"REJECTED","commandEventId":"93876d63-660b-4ebf-9890-f3b4cf3f1563","resultEventId":"d1a64e5d-a144-4e88-9b2b-5efeff0d00b4","commandAckReceivedMs":31502.470125,"settlementReceivedMs":31512.725458,"resultAckReceivedMs":31670.493416}
+],
+      "matchedOutboxLogs": 24,
+      "settlementLogs": 4
+    },
+    {
+      "round": 2,
+      "observation": {
+        "startedAt": "2026-11-20T14:01:19.503Z",
+        "valid": true,
+        "records": [
+  {"source":"stdin","line":1,"receivedMs":1014.0198750000001,"kind":"old.exited","data":{"pid":83872}},
+  {"source":"stdin","line":2,"receivedMs":1014.666542,"kind":"api.started","data":{"pid":84125}},
+  {"source":"stdin","line":3,"receivedMs":1016.225458,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":4,"receivedMs":1017.375958,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":5,"receivedMs":1221.3302079999999,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":6,"receivedMs":1222.043625,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":7,"receivedMs":1497.789167,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":8,"receivedMs":1508.233583,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":9,"receivedMs":1691.031417,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":10,"receivedMs":1691.481458,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":11,"receivedMs":1895.685,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":12,"receivedMs":1896.145542,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":13,"receivedMs":2100.9898749999998,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":14,"receivedMs":2104.156958,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":15,"receivedMs":2306.097667,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":16,"receivedMs":2306.575625,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":17,"receivedMs":2509.349167,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":18,"receivedMs":2510.4880829999997,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":19,"receivedMs":2712.124542,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":20,"receivedMs":2713.222167,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":21,"receivedMs":2916.703083,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":22,"receivedMs":2921.826042,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":23,"receivedMs":3123.251125,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":24,"receivedMs":3123.687625,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":25,"receivedMs":3327.935958,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":26,"receivedMs":3328.968458,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":27,"receivedMs":3534.758583,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":28,"receivedMs":3541.999625,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":29,"receivedMs":3745.5505,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":30,"receivedMs":3747.9935419999997,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":31,"receivedMs":3950.02225,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":32,"receivedMs":3952.074375,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":33,"receivedMs":4154.660583,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":34,"receivedMs":4155.156,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":35,"receivedMs":4357.260792,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":36,"receivedMs":4358.118792,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":37,"receivedMs":4561.465792,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":38,"receivedMs":4562.2258329999995,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":39,"receivedMs":4766.191333,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":40,"receivedMs":4767.214375,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":41,"receivedMs":4969.71075,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":42,"receivedMs":4970.553667,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":43,"receivedMs":5178.951292,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":44,"receivedMs":5180.115167,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":45,"receivedMs":5382.8920419999995,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":46,"receivedMs":5383.4061249999995,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":47,"receivedMs":5585.632,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":48,"receivedMs":5586.293625,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":49,"receivedMs":5789.193833,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":50,"receivedMs":5791.499375,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":51,"receivedMs":5996.438083,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":52,"receivedMs":5997.400875,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":53,"receivedMs":6205.078708,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":54,"receivedMs":6206.784667,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":55,"receivedMs":6410.503083,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":56,"receivedMs":6413.4005,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":57,"receivedMs":6621.980667,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":58,"receivedMs":6624.366792,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":59,"receivedMs":6836.741417,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":60,"receivedMs":6836.7850419999995,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":61,"receivedMs":7034.10375,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":62,"receivedMs":7036.071208,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":63,"receivedMs":7240.961375,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":64,"receivedMs":7242.953042,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":65,"receivedMs":7446.57225,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":66,"receivedMs":7449.75475,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":67,"receivedMs":7654.881792,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":68,"receivedMs":7655.388458,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":69,"receivedMs":7859.285792,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":70,"receivedMs":7860.263458,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":71,"receivedMs":8068.5713749999995,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":72,"receivedMs":8068.632875,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":73,"receivedMs":8273.449667,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":74,"receivedMs":8274.550792,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":75,"receivedMs":8478.70325,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":76,"receivedMs":8479.7045,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":77,"receivedMs":8684.435875,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":78,"receivedMs":8685.150583,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":79,"receivedMs":8890.252625,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":80,"receivedMs":8891.904333,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":81,"receivedMs":9094.590625,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":82,"receivedMs":9095.608042,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":83,"receivedMs":9298.974791999999,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":84,"receivedMs":9299.816333,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":85,"receivedMs":9511.56975,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":86,"receivedMs":9512.455833,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":87,"receivedMs":9722.014167,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":88,"receivedMs":9722.883083,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":89,"receivedMs":9923.941917,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":90,"receivedMs":9924.417374999999,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":91,"receivedMs":10126.956542,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":92,"receivedMs":10127.929333,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":93,"receivedMs":10382.029583,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":94,"receivedMs":10384.059333,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":95,"receivedMs":10586.75725,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":96,"receivedMs":10588.54525,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":97,"receivedMs":10801.790542,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":98,"receivedMs":10802.842542,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":99,"receivedMs":11005.873417,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":100,"receivedMs":11006.593083,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":101,"receivedMs":11209.820667,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":102,"receivedMs":11210.910125,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":103,"receivedMs":11413.462792,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":104,"receivedMs":11415.865333,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":105,"receivedMs":11631.350333,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":106,"receivedMs":11631.384958,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":107,"receivedMs":11833.733875,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":108,"receivedMs":11841.366083,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":109,"receivedMs":13045.275875,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"TIMEOUT"}},
+  {"source":"stdin","line":110,"receivedMs":13118.355207999999,"kind":"probe","data":{"endpoint":"readiness","httpStatus":503,"status":"OUT_OF_SERVICE"}},
+  {"source":"stdin","line":111,"receivedMs":13364.010583,"kind":"probe","data":{"endpoint":"health","httpStatus":200,"status":"UP"}},
+  {"source":"stdin","line":112,"receivedMs":13380.062667,"kind":"probe","data":{"endpoint":"readiness","httpStatus":200,"status":"UP"}},
+  {"source":"stdin","line":113,"receivedMs":13539.880833,"kind":"kafka","data":{"group":"bid-settlement","action":"assigned","partitions":[{"topic":"bid-command","partition":0},{"topic":"bid-command","partition":1},{"topic":"bid-command","partition":2}]}},
+  {"source":"stdin","line":114,"receivedMs":13540.595833,"kind":"kafka","data":{"group":"search-projection","action":"assigned","partitions":[{"topic":"bid-event","partition":0},{"topic":"bid-event","partition":1},{"topic":"bid-event","partition":2},{"topic":"listing-event","partition":0},{"topic":"listing-event","partition":1},{"topic":"listing-event","partition":2}]}},
+  {"source":"stdin","line":115,"receivedMs":13541.986167,"kind":"kafka","data":{"group":"auction-finalization","action":"assigned","partitions":[{"topic":"bid-event","partition":0},{"topic":"bid-event","partition":1},{"topic":"bid-event","partition":2}]}},
+  {"source":"stdin","line":116,"receivedMs":13542.033083,"kind":"kafka","data":{"group":"realtime-projection","action":"assigned","partitions":[{"topic":"bid-event","partition":0},{"topic":"bid-event","partition":1},{"topic":"bid-event","partition":2}]}},
+  {"source":"stdin","line":117,"receivedMs":17216.330708,"kind":"test.begin","data":{"caseId":"unsold"}},
+  {"source":"stdin","line":118,"receivedMs":20583.010208,"kind":"auction","data":{"auctionId":"a65cbfdd-5512-48bc-a168-7f35181ba5d0"}},
+  {"source":"stdin","line":119,"receivedMs":21045.288,"kind":"outbox","data":{"@timestamp":"2026-11-20T23:01:40.54272+09:00","event":"event.acknowledged","eventId":"7798b7cb-7afc-4173-bba3-6297e6c4e8cd","correlationId":"f77f44d9-577c-40a4-be37-72947a327c14","topic":"listing-event","eventType":"ListingPublished","pendingAgeStatus":"VALID","pendingAgeMs":"46","sendAckMs":"456.345541","outcome":"ACKNOWLEDGED","partition":"1","offset":"42"}},
+  {"source":"stdin","line":120,"receivedMs":21169.569124999998,"kind":"outbox","data":{"@timestamp":"2026-11-20T23:01:40.65355+09:00","event":"event.published","eventId":"7798b7cb-7afc-4173-bba3-6297e6c4e8cd","correlationId":"f77f44d9-577c-40a4-be37-72947a327c14","topic":"listing-event","eventType":"ListingPublished","pendingAgeStatus":"VALID","pendingAgeMs":"46","batchWaitMs":"0.008584","outcome":"PUBLISHED"}},
+  {"source":"stdin","line":121,"receivedMs":22579.058667,"kind":"outbox","data":{"@timestamp":"2026-11-20T23:01:42.080956+09:00","event":"event.acknowledged","eventId":"62c018d2-b1d4-459b-8e04-5cde9f453075","correlationId":"a65cbfdd-5512-48bc-a168-7f35181ba5d0","topic":"bid-event","eventType":"AuctionEnded","pendingAgeStatus":"VALID","pendingAgeMs":"62","sendAckMs":"15.382834","outcome":"ACKNOWLEDGED","partition":"0","offset":"623"}},
+  {"source":"stdin","line":122,"receivedMs":22587.313333,"kind":"outbox","data":{"@timestamp":"2026-11-20T23:01:42.089686+09:00","event":"event.published","eventId":"62c018d2-b1d4-459b-8e04-5cde9f453075","correlationId":"a65cbfdd-5512-48bc-a168-7f35181ba5d0","topic":"bid-event","eventType":"AuctionEnded","pendingAgeStatus":"VALID","pendingAgeMs":"62","batchWaitMs":"0.003417","outcome":"PUBLISHED"}},
+  {"source":"stdin","line":123,"receivedMs":23046.18,"kind":"test.end","data":{"caseId":"unsold","status":"passed","durationMs":4784}},
+  {"source":"stdin","line":124,"receivedMs":23046.329917,"kind":"test.begin","data":{"caseId":"auto-finalization"}},
+  {"source":"stdin","line":125,"receivedMs":24417.334208,"kind":"auction","data":{"auctionId":"8a100e1c-ac0a-4437-8398-4a7f2b62c17e"}},
+  {"source":"stdin","line":126,"receivedMs":24457.180958,"kind":"outbox","data":{"@timestamp":"2026-11-20T23:01:43.959075+09:00","event":"event.acknowledged","eventId":"e69357cd-16ae-4dde-9fc5-ffdfb27ab608","correlationId":"0bdd5fe1-9191-437a-9bd0-190dc4737955","topic":"listing-event","eventType":"ListingPublished","pendingAgeStatus":"VALID","pendingAgeMs":"91","sendAckMs":"13.181","outcome":"ACKNOWLEDGED","partition":"2","offset":"56"}},
+  {"source":"stdin","line":127,"receivedMs":24459.886167,"kind":"outbox","data":{"@timestamp":"2026-11-20T23:01:43.962343+09:00","event":"event.published","eventId":"e69357cd-16ae-4dde-9fc5-ffdfb27ab608","correlationId":"0bdd5fe1-9191-437a-9bd0-190dc4737955","topic":"listing-event","eventType":"ListingPublished","pendingAgeStatus":"VALID","pendingAgeMs":"91","batchWaitMs":"0.00275","outcome":"PUBLISHED"}},
+  {"source":"stdin","line":128,"receivedMs":25278.581667,"kind":"outbox","data":{"@timestamp":"2026-11-20T23:01:44.779539+09:00","event":"event.acknowledged","eventId":"4a305a7f-706c-4787-aab8-3d5f32bc9b35","correlationId":"09fd785e-e11f-400b-a477-e91ab62dbd33","topic":"listing-event","eventType":"ListingPublished","pendingAgeStatus":"VALID","pendingAgeMs":"21","sendAckMs":"7.973833","outcome":"ACKNOWLEDGED","partition":"2","offset":"57"}},
+  {"source":"stdin","line":129,"receivedMs":25285.307583,"kind":"outbox","data":{"@timestamp":"2026-11-20T23:01:44.78781+09:00","event":"event.published","eventId":"4a305a7f-706c-4787-aab8-3d5f32bc9b35","correlationId":"09fd785e-e11f-400b-a477-e91ab62dbd33","topic":"listing-event","eventType":"ListingPublished","pendingAgeStatus":"VALID","pendingAgeMs":"21","batchWaitMs":"0.003","outcome":"PUBLISHED"}},
+  {"source":"stdin","line":130,"receivedMs":25338.127583,"kind":"auction","data":{"auctionId":"ffe1dec3-e775-48f6-b363-3e10a55021f6"}},
+  {"source":"stdin","line":131,"receivedMs":25400.71525,"kind":"outbox","data":{"@timestamp":"2026-11-20T23:01:44.902927+09:00","event":"event.acknowledged","eventId":"b003fc77-ded8-43f5-adae-e1932af07e5d","correlationId":"a347cf1f-2293-4e38-afdf-d4527d1752f5","topic":"bid-command","eventType":"BidCommandRequested","pendingAgeStatus":"VALID","pendingAgeMs":"2","sendAckMs":"9.89","outcome":"ACKNOWLEDGED","partition":"0","offset":"547"}},
+  {"source":"stdin","line":132,"receivedMs":25404.717583,"kind":"outbox","data":{"@timestamp":"2026-11-20T23:01:44.907113+09:00","event":"event.published","eventId":"b003fc77-ded8-43f5-adae-e1932af07e5d","correlationId":"a347cf1f-2293-4e38-afdf-d4527d1752f5","topic":"bid-command","eventType":"BidCommandRequested","pendingAgeStatus":"VALID","pendingAgeMs":"2","batchWaitMs":"8.33E-4","outcome":"PUBLISHED"}},
+  {"source":"stdin","line":133,"receivedMs":25526.562875,"kind":"settlement","data":{"eventId":"b003fc77-ded8-43f5-adae-e1932af07e5d","bidRequestId":"350c8c24-017d-4ccc-911f-ba4edfe437bf","auctionId":"ffe1dec3-e775-48f6-b363-3e10a55021f6","outcome":"ACCEPTED"}},
+  {"source":"stdin","line":134,"receivedMs":25635.5385,"kind":"outbox","data":{"@timestamp":"2026-11-20T23:01:45.134296+09:00","event":"event.acknowledged","eventId":"22bdc741-a0d6-4213-87c5-cc816d412ad8","correlationId":"a347cf1f-2293-4e38-afdf-d4527d1752f5","topic":"bid-event","eventType":"BidAccepted","pendingAgeStatus":"VALID","pendingAgeMs":"95","sendAckMs":"6.029084","outcome":"ACKNOWLEDGED","partition":"0","offset":"624"}},
+  {"source":"stdin","line":135,"receivedMs":25637.826042,"kind":"outbox","data":{"@timestamp":"2026-11-20T23:01:45.139578+09:00","event":"event.published","eventId":"22bdc741-a0d6-4213-87c5-cc816d412ad8","correlationId":"a347cf1f-2293-4e38-afdf-d4527d1752f5","topic":"bid-event","eventType":"BidAccepted","pendingAgeStatus":"VALID","pendingAgeMs":"95","batchWaitMs":"0.001541","outcome":"PUBLISHED"}},
+  {"source":"stdin","line":136,"receivedMs":27547.006957999998,"kind":"outbox","data":{"@timestamp":"2026-11-20T23:01:47.049224+09:00","event":"event.acknowledged","eventId":"57e6472c-d273-44ab-aead-f59cfbf61888","correlationId":"27b698a1-0f40-481a-b6fe-721343fcc8bc","topic":"bid-command","eventType":"BidCommandRequested","pendingAgeStatus":"VALID","pendingAgeMs":"20","sendAckMs":"10.763333","outcome":"ACKNOWLEDGED","partition":"0","offset":"548"}},
+  {"source":"stdin","line":137,"receivedMs":27552.742958,"kind":"outbox","data":{"@timestamp":"2026-11-20T23:01:47.054799+09:00","event":"event.published","eventId":"57e6472c-d273-44ab-aead-f59cfbf61888","correlationId":"27b698a1-0f40-481a-b6fe-721343fcc8bc","topic":"bid-command","eventType":"BidCommandRequested","pendingAgeStatus":"VALID","pendingAgeMs":"20","batchWaitMs":"0.001834","outcome":"PUBLISHED"}},
+  {"source":"stdin","line":138,"receivedMs":27594.322458,"kind":"settlement","data":{"eventId":"57e6472c-d273-44ab-aead-f59cfbf61888","bidRequestId":"d76dd6e3-48e0-4dbd-9432-8e3248ae462b","auctionId":"8a100e1c-ac0a-4437-8398-4a7f2b62c17e","outcome":"ACCEPTED"}},
+  {"source":"stdin","line":139,"receivedMs":27665.175708,"kind":"outbox","data":{"@timestamp":"2026-11-20T23:01:47.167275+09:00","event":"event.acknowledged","eventId":"7183af9f-3816-4355-9d25-cc7f85457225","correlationId":"27b698a1-0f40-481a-b6fe-721343fcc8bc","topic":"bid-event","eventType":"AuctionExtended","pendingAgeStatus":"VALID","pendingAgeMs":"65","sendAckMs":"4.500375","outcome":"ACKNOWLEDGED","partition":"0","offset":"625"}},
+  {"source":"stdin","line":140,"receivedMs":27670.606833,"kind":"outbox","data":{"@timestamp":"2026-11-20T23:01:47.173028+09:00","event":"event.published","eventId":"7183af9f-3816-4355-9d25-cc7f85457225","correlationId":"27b698a1-0f40-481a-b6fe-721343fcc8bc","topic":"bid-event","eventType":"AuctionExtended","pendingAgeStatus":"VALID","pendingAgeMs":"65","batchWaitMs":"0.001458","outcome":"PUBLISHED"}},
+  {"source":"stdin","line":141,"receivedMs":27675.603,"kind":"outbox","data":{"@timestamp":"2026-11-20T23:01:47.177654+09:00","event":"event.acknowledged","eventId":"2cfb1703-4dd1-4dc5-9a0b-f3feb1e9f3b6","correlationId":"27b698a1-0f40-481a-b6fe-721343fcc8bc","topic":"bid-event","eventType":"BidAccepted","pendingAgeStatus":"VALID","pendingAgeMs":"66","sendAckMs":"4.198","outcome":"ACKNOWLEDGED","partition":"0","offset":"626"}},
+  {"source":"stdin","line":142,"receivedMs":27691.568417,"kind":"outbox","data":{"@timestamp":"2026-11-20T23:01:47.194012+09:00","event":"event.published","eventId":"2cfb1703-4dd1-4dc5-9a0b-f3feb1e9f3b6","correlationId":"27b698a1-0f40-481a-b6fe-721343fcc8bc","topic":"bid-event","eventType":"BidAccepted","pendingAgeStatus":"VALID","pendingAgeMs":"66","batchWaitMs":"10.742583","outcome":"PUBLISHED"}},
+  {"source":"stdin","line":143,"receivedMs":28124.93875,"kind":"outbox","data":{"@timestamp":"2026-11-20T23:01:47.627075+09:00","event":"event.acknowledged","eventId":"1a80621c-42b5-41f6-9883-1386d8dd35a1","correlationId":"51a359b9-e285-4af3-8b36-6febaccaa5b8","topic":"bid-command","eventType":"BidCommandRequested","pendingAgeStatus":"VALID","pendingAgeMs":"40","sendAckMs":"3.840166","outcome":"ACKNOWLEDGED","partition":"0","offset":"549"}},
+  {"source":"stdin","line":144,"receivedMs":28127.904292,"kind":"outbox","data":{"@timestamp":"2026-11-20T23:01:47.630451+09:00","event":"event.published","eventId":"1a80621c-42b5-41f6-9883-1386d8dd35a1","correlationId":"51a359b9-e285-4af3-8b36-6febaccaa5b8","topic":"bid-command","eventType":"BidCommandRequested","pendingAgeStatus":"VALID","pendingAgeMs":"40","batchWaitMs":"0.001625","outcome":"PUBLISHED"}},
+  {"source":"stdin","line":145,"receivedMs":28140.104167,"kind":"settlement","data":{"eventId":"1a80621c-42b5-41f6-9883-1386d8dd35a1","bidRequestId":"85ead2a4-7a16-4700-b521-f4ab01260f88","auctionId":"8a100e1c-ac0a-4437-8398-4a7f2b62c17e","outcome":"ACCEPTED"}},
+  {"source":"stdin","line":146,"receivedMs":28243.743333,"kind":"outbox","data":{"@timestamp":"2026-11-20T23:01:47.744313+09:00","event":"event.acknowledged","eventId":"e6bc281a-2c64-424b-b7bc-04fc2d9b95a8","correlationId":"51a359b9-e285-4af3-8b36-6febaccaa5b8","topic":"bid-event","eventType":"BidAccepted","pendingAgeStatus":"VALID","pendingAgeMs":"97","sendAckMs":"4.566417","outcome":"ACKNOWLEDGED","partition":"0","offset":"627"}},
+  {"source":"stdin","line":147,"receivedMs":28249.884292,"kind":"outbox","data":{"@timestamp":"2026-11-20T23:01:47.752298+09:00","event":"event.published","eventId":"e6bc281a-2c64-424b-b7bc-04fc2d9b95a8","correlationId":"51a359b9-e285-4af3-8b36-6febaccaa5b8","topic":"bid-event","eventType":"BidAccepted","pendingAgeStatus":"VALID","pendingAgeMs":"97","batchWaitMs":"0.001167","outcome":"PUBLISHED"}},
+  {"source":"stdin","line":148,"receivedMs":28689.824083,"kind":"outbox","data":{"@timestamp":"2026-11-20T23:01:48.191708+09:00","event":"event.acknowledged","eventId":"e68ff6d9-bf06-4806-8093-f32e4d29a08a","correlationId":"ffe1dec3-e775-48f6-b363-3e10a55021f6","topic":"bid-event","eventType":"AuctionEnded","pendingAgeStatus":"VALID","pendingAgeMs":"87","sendAckMs":"8.453041","outcome":"ACKNOWLEDGED","partition":"0","offset":"628"}},
+  {"source":"stdin","line":149,"receivedMs":28694.760917,"kind":"outbox","data":{"@timestamp":"2026-11-20T23:01:48.196917+09:00","event":"event.published","eventId":"e68ff6d9-bf06-4806-8093-f32e4d29a08a","correlationId":"ffe1dec3-e775-48f6-b363-3e10a55021f6","topic":"bid-event","eventType":"AuctionEnded","pendingAgeStatus":"VALID","pendingAgeMs":"87","batchWaitMs":"0.003375","outcome":"PUBLISHED"}},
+  {"source":"stdin","line":150,"receivedMs":29671.325042,"kind":"outbox","data":{"@timestamp":"2026-11-20T23:01:49.165756+09:00","event":"event.acknowledged","eventId":"b017a764-b749-4d15-97f6-b58acb362c38","correlationId":"8a100e1c-ac0a-4437-8398-4a7f2b62c17e","topic":"bid-event","eventType":"AuctionEnded","pendingAgeStatus":"VALID","pendingAgeMs":"32","sendAckMs":"8.468208","outcome":"ACKNOWLEDGED","partition":"0","offset":"629"}},
+  {"source":"stdin","line":151,"receivedMs":29677.40975,"kind":"outbox","data":{"@timestamp":"2026-11-20T23:01:49.179766+09:00","event":"event.published","eventId":"b017a764-b749-4d15-97f6-b58acb362c38","correlationId":"8a100e1c-ac0a-4437-8398-4a7f2b62c17e","topic":"bid-event","eventType":"AuctionEnded","pendingAgeStatus":"VALID","pendingAgeMs":"32","batchWaitMs":"0.002291","outcome":"PUBLISHED"}},
+  {"source":"stdin","line":152,"receivedMs":31250.518125,"kind":"outbox","data":{"@timestamp":"2026-11-20T23:01:50.751187+09:00","event":"event.acknowledged","eventId":"0ead9061-20e3-417d-ad75-f74f1618fd36","correlationId":"a3884d79-bae0-4f03-afa3-c83b12f258ee","topic":"bid-command","eventType":"BidCommandRequested","pendingAgeStatus":"VALID","pendingAgeMs":"403","sendAckMs":"8.128708","outcome":"ACKNOWLEDGED","partition":"0","offset":"550"}},
+  {"source":"stdin","line":153,"receivedMs":31261.077875,"kind":"outbox","data":{"@timestamp":"2026-11-20T23:01:50.761665+09:00","event":"event.published","eventId":"0ead9061-20e3-417d-ad75-f74f1618fd36","correlationId":"a3884d79-bae0-4f03-afa3-c83b12f258ee","topic":"bid-command","eventType":"BidCommandRequested","pendingAgeStatus":"VALID","pendingAgeMs":"403","batchWaitMs":"0.002042","outcome":"PUBLISHED"}},
+  {"source":"stdin","line":154,"receivedMs":31299.770542,"kind":"settlement","data":{"eventId":"0ead9061-20e3-417d-ad75-f74f1618fd36","bidRequestId":"54554f41-300a-4527-a553-5a4defa0c2b9","auctionId":"8a100e1c-ac0a-4437-8398-4a7f2b62c17e","outcome":"AUCTION_ENDED"}},
+  {"source":"stdin","line":155,"receivedMs":31371.015167,"kind":"outbox","data":{"@timestamp":"2026-11-20T23:01:50.873106+09:00","event":"event.acknowledged","eventId":"a3082699-1a60-411e-8ca6-0b24a02fafce","correlationId":"a3884d79-bae0-4f03-afa3-c83b12f258ee","topic":"bid-event","eventType":"BidRejected","pendingAgeStatus":"VALID","pendingAgeMs":"66","sendAckMs":"3.912959","outcome":"ACKNOWLEDGED","partition":"0","offset":"630"}},
+  {"source":"stdin","line":156,"receivedMs":31375.10675,"kind":"outbox","data":{"@timestamp":"2026-11-20T23:01:50.877017+09:00","event":"event.published","eventId":"a3082699-1a60-411e-8ca6-0b24a02fafce","correlationId":"a3884d79-bae0-4f03-afa3-c83b12f258ee","topic":"bid-event","eventType":"BidRejected","pendingAgeStatus":"VALID","pendingAgeMs":"66","batchWaitMs":"0.001083","outcome":"PUBLISHED"}},
+  {"source":"stdin","line":157,"receivedMs":32751.980958,"kind":"test.end","data":{"caseId":"auto-finalization","status":"passed","durationMs":9691}},
+  {"source":"stdin","line":158,"receivedMs":32930.977208,"kind":"runner.exit","data":{"code":0}},
+  {"source":"stdin","line":159,"receivedMs":38197.020167,"kind":"kafka","data":{"group":"bid-settlement","action":"revoked","partitions":[{"topic":"bid-command","partition":0},{"topic":"bid-command","partition":1},{"topic":"bid-command","partition":2}]}},
+  {"source":"stdin","line":160,"receivedMs":38197.088333,"kind":"kafka","data":{"group":"search-projection","action":"revoked","partitions":[{"topic":"bid-event","partition":0},{"topic":"bid-event","partition":1},{"topic":"bid-event","partition":2},{"topic":"listing-event","partition":0},{"topic":"listing-event","partition":1},{"topic":"listing-event","partition":2}]}},
+  {"source":"stdin","line":161,"receivedMs":38197.204958,"kind":"kafka","data":{"group":"auction-finalization","action":"revoked","partitions":[{"topic":"bid-event","partition":0},{"topic":"bid-event","partition":1},{"topic":"bid-event","partition":2}]}},
+  {"source":"stdin","line":162,"receivedMs":38197.216625,"kind":"kafka","data":{"group":"realtime-projection","action":"revoked","partitions":[{"topic":"bid-event","partition":0},{"topic":"bid-event","partition":1},{"topic":"bid-event","partition":2}]}},
+  {"source":"stdin","line":163,"receivedMs":38930.956917,"kind":"api.stopped","data":{"pid":84125}},
+  {"source":"stdin","line":164,"receivedMs":52488.598083,"kind":"restored","data":{"pid":84370}}
+],
+        "summary": {
+          "testsPassed": true,
+          "allCasesExecuted": true,
+          "firstHealthUpMs": 13364.010583,
+          "firstReadinessUpMs": 13380.062667,
+          "cases": [
+            {
+              "caseId": "unsold",
+              "beginMs": 17216.330708,
+              "auctionIds": [
+                "a65cbfdd-5512-48bc-a168-7f35181ba5d0"
+              ],
+              "endMs": 23046.18,
+              "status": "passed",
+              "runnerDurationMs": 4784
+            },
+            {
+              "caseId": "auto-finalization",
+              "beginMs": 23046.329917,
+              "auctionIds": [
+                "8a100e1c-ac0a-4437-8398-4a7f2b62c17e",
+                "ffe1dec3-e775-48f6-b363-3e10a55021f6"
+              ],
+              "endMs": 32751.980958,
+              "status": "passed",
+              "runnerDurationMs": 9691
+            }
+          ],
+          "exitCode": 0,
+          "unparsedAssignments": 0,
+          "kafka": {
+            "bid-settlement": {
+              "firstNonEmptyAssignmentMs": 13539.880833,
+              "events": [
+  {"receivedMs":13539.880833,"group":"bid-settlement","action":"assigned","partitions":[{"topic":"bid-command","partition":0},{"topic":"bid-command","partition":1},{"topic":"bid-command","partition":2}]},
+  {"receivedMs":38197.020167,"group":"bid-settlement","action":"revoked","partitions":[{"topic":"bid-command","partition":0},{"topic":"bid-command","partition":1},{"topic":"bid-command","partition":2}]}
+]
+            },
+            "realtime-projection": {
+              "firstNonEmptyAssignmentMs": 13542.033083,
+              "events": [
+  {"receivedMs":13542.033083,"group":"realtime-projection","action":"assigned","partitions":[{"topic":"bid-event","partition":0},{"topic":"bid-event","partition":1},{"topic":"bid-event","partition":2}]},
+  {"receivedMs":38197.216625,"group":"realtime-projection","action":"revoked","partitions":[{"topic":"bid-event","partition":0},{"topic":"bid-event","partition":1},{"topic":"bid-event","partition":2}]}
+]
+            },
+            "auction-finalization": {
+              "firstNonEmptyAssignmentMs": 13541.986167,
+              "events": [
+  {"receivedMs":13541.986167,"group":"auction-finalization","action":"assigned","partitions":[{"topic":"bid-event","partition":0},{"topic":"bid-event","partition":1},{"topic":"bid-event","partition":2}]},
+  {"receivedMs":38197.204958,"group":"auction-finalization","action":"revoked","partitions":[{"topic":"bid-event","partition":0},{"topic":"bid-event","partition":1},{"topic":"bid-event","partition":2}]}
+]
+            },
+            "search-projection": {
+              "firstNonEmptyAssignmentMs": 13540.595833,
+              "events": [
+  {"receivedMs":13540.595833,"group":"search-projection","action":"assigned","partitions":[{"topic":"bid-event","partition":0},{"topic":"bid-event","partition":1},{"topic":"bid-event","partition":2},{"topic":"listing-event","partition":0},{"topic":"listing-event","partition":1},{"topic":"listing-event","partition":2}]},
+  {"receivedMs":38197.088333,"group":"search-projection","action":"revoked","partitions":[{"topic":"bid-event","partition":0},{"topic":"bid-event","partition":1},{"topic":"bid-event","partition":2},{"topic":"listing-event","partition":0},{"topic":"listing-event","partition":1},{"topic":"listing-event","partition":2}]}
+]
+            }
+          }
+        },
+        "completedAt": "2026-11-20T14:02:11.995Z"
+      },
+      "timeline": {
+        "healthMs": 12349.344040999998,
+        "readinessMs": 12365.396125,
+        "firstTestBeginMs": 16201.664166,
+        "readinessToFirstTestMs": 3836.268041000001,
+        "assignments": {
+          "bid-settlement": 12525.214290999998,
+          "realtime-projection": 12527.366541,
+          "auction-finalization": 12527.319624999998,
+          "search-projection": 12525.929290999999
+        },
+        "cases": [
+          {
+            "caseId": "unsold",
+            "status": "passed",
+            "beginMs": 16201.664166,
+            "endMs": 22031.513458,
+            "runnerDurationMs": 4784,
+            "auctionIds": [
+              "a65cbfdd-5512-48bc-a168-7f35181ba5d0"
+            ]
+          },
+          {
+            "caseId": "auto-finalization",
+            "status": "passed",
+            "beginMs": 22031.663375,
+            "endMs": 31737.314416,
+            "runnerDurationMs": 9691,
+            "auctionIds": [
+              "8a100e1c-ac0a-4437-8398-4a7f2b62c17e",
+              "ffe1dec3-e775-48f6-b363-3e10a55021f6"
+            ]
+          }
+        ]
+      },
+      "mapped": [
+  {"auctionId":"8a100e1c-ac0a-4437-8398-4a7f2b62c17e","requestId":"d76dd6e3-48e0-4dbd-9432-8e3248ae462b","decision":"ACCEPTED","commandEventId":"57e6472c-d273-44ab-aead-f59cfbf61888","resultEventId":"2cfb1703-4dd1-4dc5-9a0b-f3feb1e9f3b6","commandAckReceivedMs":26532.340416,"settlementReceivedMs":26579.655916,"resultAckReceivedMs":26660.936458},
+  {"auctionId":"8a100e1c-ac0a-4437-8398-4a7f2b62c17e","requestId":"85ead2a4-7a16-4700-b521-f4ab01260f88","decision":"ACCEPTED","commandEventId":"1a80621c-42b5-41f6-9883-1386d8dd35a1","resultEventId":"e6bc281a-2c64-424b-b7bc-04fc2d9b95a8","commandAckReceivedMs":27110.272208000002,"settlementReceivedMs":27125.437625000002,"resultAckReceivedMs":27229.076791},
+  {"auctionId":"8a100e1c-ac0a-4437-8398-4a7f2b62c17e","requestId":"54554f41-300a-4527-a553-5a4defa0c2b9","decision":"REJECTED","commandEventId":"0ead9061-20e3-417d-ad75-f74f1618fd36","resultEventId":"a3082699-1a60-411e-8ca6-0b24a02fafce","commandAckReceivedMs":30235.851583,"settlementReceivedMs":30285.104,"resultAckReceivedMs":30356.348625000002},
+  {"auctionId":"ffe1dec3-e775-48f6-b363-3e10a55021f6","requestId":"350c8c24-017d-4ccc-911f-ba4edfe437bf","decision":"ACCEPTED","commandEventId":"b003fc77-ded8-43f5-adae-e1932af07e5d","resultEventId":"22bdc741-a0d6-4213-87c5-cc816d412ad8","commandAckReceivedMs":24386.048708000002,"settlementReceivedMs":24511.896333,"resultAckReceivedMs":24620.871958}
+],
+      "matchedOutboxLogs": 24,
+      "settlementLogs": 4
+    },
+    {
+      "round": 3,
+      "observation": {
+        "startedAt": "2026-11-20T14:02:12.202Z",
+        "valid": true,
+        "records": [
+  {"source":"stdin","line":1,"receivedMs":805.906792,"kind":"old.exited","data":{"pid":84370}},
+  {"source":"stdin","line":2,"receivedMs":806.859875,"kind":"api.started","data":{"pid":84628}},
+  {"source":"stdin","line":3,"receivedMs":808.165583,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":4,"receivedMs":808.747875,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":5,"receivedMs":1011.3927920000001,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":6,"receivedMs":1013.1634999999999,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":7,"receivedMs":1215.8147079999999,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":8,"receivedMs":1216.769667,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":9,"receivedMs":1419.081875,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":10,"receivedMs":1419.317833,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":11,"receivedMs":1661.497833,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":12,"receivedMs":1663.803375,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":13,"receivedMs":1869.69675,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":14,"receivedMs":1870.446333,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":15,"receivedMs":2078.327333,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":16,"receivedMs":2080.3135420000003,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":17,"receivedMs":2282.3453750000003,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":18,"receivedMs":2283.21275,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":19,"receivedMs":2484.974,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":20,"receivedMs":2486.207625,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":21,"receivedMs":2689.3944170000004,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":22,"receivedMs":2690.2831250000004,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":23,"receivedMs":2901.622792,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":24,"receivedMs":2901.6837920000003,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":25,"receivedMs":3103.508667,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":26,"receivedMs":3104.053792,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":27,"receivedMs":3326.4677500000003,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":28,"receivedMs":3331.334792,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":29,"receivedMs":3532.2607500000004,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":30,"receivedMs":3535.386417,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":31,"receivedMs":3746.0138330000004,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":32,"receivedMs":3747.5771670000004,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":33,"receivedMs":3952.3565830000002,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":34,"receivedMs":3952.391042,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":35,"receivedMs":4157.7580419999995,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":36,"receivedMs":4158.278582999999,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":37,"receivedMs":4361.709542,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":38,"receivedMs":4362.233875,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":39,"receivedMs":4569.849832999999,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":40,"receivedMs":4569.913833,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":41,"receivedMs":4771.671458,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":42,"receivedMs":4772.769582999999,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":43,"receivedMs":4994.108208,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":44,"receivedMs":4994.254542,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":45,"receivedMs":5201.944082999999,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":46,"receivedMs":5202.881542,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":47,"receivedMs":5408.781042,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":48,"receivedMs":5411.264208,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":49,"receivedMs":5614.478333,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":50,"receivedMs":5614.5293329999995,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":51,"receivedMs":5815.740707999999,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":52,"receivedMs":5816.918667,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":53,"receivedMs":6029.56925,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":54,"receivedMs":6029.69875,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":55,"receivedMs":6236.353042,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":56,"receivedMs":6237.08075,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":57,"receivedMs":6441.097083,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":58,"receivedMs":6443.042208,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":59,"receivedMs":6651.747083,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":60,"receivedMs":6651.801417,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":61,"receivedMs":6859.820417,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":62,"receivedMs":6860.038791999999,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":63,"receivedMs":7069.003083,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":64,"receivedMs":7069.584207999999,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":65,"receivedMs":7278.514458,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":66,"receivedMs":7278.538875,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":67,"receivedMs":7495.966417,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":68,"receivedMs":7498.420333,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":69,"receivedMs":7887.318125,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":70,"receivedMs":7893.830875,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":71,"receivedMs":8099.074791999999,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":72,"receivedMs":8099.104917,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":73,"receivedMs":8304.352417,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":74,"receivedMs":8306.5815,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":75,"receivedMs":8509.935083,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":76,"receivedMs":8515.685125,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":77,"receivedMs":8737.409708000001,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":78,"receivedMs":8739.507292,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":79,"receivedMs":8942.350375,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":80,"receivedMs":8945.355125,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":81,"receivedMs":9158.965417000001,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":82,"receivedMs":9301.030833,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":83,"receivedMs":9500.445958,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":84,"receivedMs":9514.122292,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":85,"receivedMs":9718.704083,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":86,"receivedMs":9719.392333,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":87,"receivedMs":9929.017125,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":88,"receivedMs":9929.708583000001,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":89,"receivedMs":10132.144833,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":90,"receivedMs":10133.132833000001,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":91,"receivedMs":10335.032208,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":92,"receivedMs":10336.082917000002,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":93,"receivedMs":10539.748333000001,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":94,"receivedMs":10540.360125000001,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":95,"receivedMs":10743.351250000002,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":96,"receivedMs":10744.788375,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":97,"receivedMs":10960.890042,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":98,"receivedMs":10964.277167,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":99,"receivedMs":11166.382875000001,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":100,"receivedMs":11166.718542,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":101,"receivedMs":11380.605458,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":102,"receivedMs":11381.458708,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":103,"receivedMs":11584.658417,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":104,"receivedMs":11585.281333,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":105,"receivedMs":11787.970125,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":106,"receivedMs":11788.602167000001,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":107,"receivedMs":11991.738042,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":108,"receivedMs":12012.937458,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":109,"receivedMs":12216.428458,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":110,"receivedMs":12217.972125,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":111,"receivedMs":12422.190333,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":112,"receivedMs":12422.526542000001,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":113,"receivedMs":12624.651875000001,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":114,"receivedMs":12626.033125,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":115,"receivedMs":12830.416708,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":116,"receivedMs":12832.484958000001,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":117,"receivedMs":13041.678,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":118,"receivedMs":13042.833833,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":119,"receivedMs":13245.423917,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":120,"receivedMs":13245.927292,"kind":"probe","data":{"endpoint":"readiness","httpStatus":null,"status":null,"error":"CONNECTION_FAILED"}},
+  {"source":"stdin","line":121,"receivedMs":14447.967,"kind":"probe","data":{"endpoint":"health","httpStatus":null,"status":null,"error":"TIMEOUT"}},
+  {"source":"stdin","line":122,"receivedMs":14551.379833,"kind":"probe","data":{"endpoint":"readiness","httpStatus":503,"status":"OUT_OF_SERVICE"}},
+  {"source":"stdin","line":123,"receivedMs":14880.929792,"kind":"probe","data":{"endpoint":"health","httpStatus":503,"status":"DOWN"}},
+  {"source":"stdin","line":124,"receivedMs":14894.585417,"kind":"probe","data":{"endpoint":"readiness","httpStatus":503,"status":"OUT_OF_SERVICE"}},
+  {"source":"stdin","line":125,"receivedMs":15151.965,"kind":"probe","data":{"endpoint":"health","httpStatus":503,"status":"OUT_OF_SERVICE"}},
+  {"source":"stdin","line":126,"receivedMs":15170.661167,"kind":"probe","data":{"endpoint":"readiness","httpStatus":200,"status":"UP"}},
+  {"source":"stdin","line":127,"receivedMs":15560.571042000001,"kind":"kafka","data":{"group":"search-projection","action":"assigned","partitions":[{"topic":"bid-event","partition":0},{"topic":"bid-event","partition":1},{"topic":"bid-event","partition":2},{"topic":"listing-event","partition":0},{"topic":"listing-event","partition":1},{"topic":"listing-event","partition":2}]}},
+  {"source":"stdin","line":128,"receivedMs":15562.549458000001,"kind":"kafka","data":{"group":"realtime-projection","action":"assigned","partitions":[{"topic":"bid-event","partition":0},{"topic":"bid-event","partition":1},{"topic":"bid-event","partition":2}]}},
+  {"source":"stdin","line":129,"receivedMs":15565.312708000001,"kind":"kafka","data":{"group":"bid-settlement","action":"assigned","partitions":[{"topic":"bid-command","partition":0},{"topic":"bid-command","partition":1},{"topic":"bid-command","partition":2}]}},
+  {"source":"stdin","line":130,"receivedMs":15565.354667000001,"kind":"kafka","data":{"group":"auction-finalization","action":"assigned","partitions":[{"topic":"bid-event","partition":0},{"topic":"bid-event","partition":1},{"topic":"bid-event","partition":2}]}},
+  {"source":"stdin","line":131,"receivedMs":18644.725167,"kind":"test.begin","data":{"caseId":"unsold"}},
+  {"source":"stdin","line":132,"receivedMs":24596.82075,"kind":"auction","data":{"auctionId":"296f484c-1db0-46dd-89f0-96a7fa49bf56"}},
+  {"source":"stdin","line":133,"receivedMs":24926.48225,"kind":"outbox","data":{"@timestamp":"2026-11-20T23:02:37.107852+09:00","event":"event.acknowledged","eventId":"6114187d-f4fb-42eb-9f67-8248415d6206","correlationId":"e738c237-cc36-41fb-988b-961dc772206c","topic":"listing-event","eventType":"ListingPublished","pendingAgeStatus":"VALID","pendingAgeMs":"7","sendAckMs":"485.255834","outcome":"ACKNOWLEDGED","partition":"2","offset":"58"}},
+  {"source":"stdin","line":134,"receivedMs":24932.745,"kind":"outbox","data":{"@timestamp":"2026-11-20T23:02:37.133107+09:00","event":"event.published","eventId":"6114187d-f4fb-42eb-9f67-8248415d6206","correlationId":"e738c237-cc36-41fb-988b-961dc772206c","topic":"listing-event","eventType":"ListingPublished","pendingAgeStatus":"VALID","pendingAgeMs":"7","batchWaitMs":"0.007042","outcome":"PUBLISHED"}},
+  {"source":"stdin","line":135,"receivedMs":26036.152333,"kind":"outbox","data":{"@timestamp":"2026-11-20T23:02:38.237533+09:00","event":"event.acknowledged","eventId":"3fa901a2-a9b9-403a-ab32-b8e68be22f8b","correlationId":"296f484c-1db0-46dd-89f0-96a7fa49bf56","topic":"bid-event","eventType":"AuctionEnded","pendingAgeStatus":"VALID","pendingAgeMs":"67","sendAckMs":"7.12725","outcome":"ACKNOWLEDGED","partition":"0","offset":"631"}},
+  {"source":"stdin","line":136,"receivedMs":26039.299167,"kind":"outbox","data":{"@timestamp":"2026-11-20T23:02:38.240685+09:00","event":"event.published","eventId":"3fa901a2-a9b9-403a-ab32-b8e68be22f8b","correlationId":"296f484c-1db0-46dd-89f0-96a7fa49bf56","topic":"bid-event","eventType":"AuctionEnded","pendingAgeStatus":"VALID","pendingAgeMs":"67","batchWaitMs":"0.001834","outcome":"PUBLISHED"}},
+  {"source":"stdin","line":137,"receivedMs":26417.174083,"kind":"test.end","data":{"caseId":"unsold","status":"passed","durationMs":5029}},
+  {"source":"stdin","line":138,"receivedMs":26417.76325,"kind":"test.begin","data":{"caseId":"auto-finalization"}},
+  {"source":"stdin","line":139,"receivedMs":27654.667917,"kind":"outbox","data":{"@timestamp":"2026-11-20T23:02:39.857412+09:00","event":"event.acknowledged","eventId":"bbcd27f8-17e1-46b6-8763-32a3e9bf981e","correlationId":"ddd540cd-fce5-4512-81e4-11753b5ddf0f","topic":"listing-event","eventType":"ListingPublished","pendingAgeStatus":"VALID","pendingAgeMs":"59","sendAckMs":"3.9095","outcome":"ACKNOWLEDGED","partition":"1","offset":"43"}},
+  {"source":"stdin","line":140,"receivedMs":27660.6895,"kind":"outbox","data":{"@timestamp":"2026-11-20T23:02:39.863609+09:00","event":"event.published","eventId":"bbcd27f8-17e1-46b6-8763-32a3e9bf981e","correlationId":"ddd540cd-fce5-4512-81e4-11753b5ddf0f","topic":"listing-event","eventType":"ListingPublished","pendingAgeStatus":"VALID","pendingAgeMs":"59","batchWaitMs":"8.33E-4","outcome":"PUBLISHED"}},
+  {"source":"stdin","line":141,"receivedMs":27683.354667,"kind":"auction","data":{"auctionId":"84616946-a8e6-4c57-9c1c-33085e6624c0"}},
+  {"source":"stdin","line":142,"receivedMs":28421.203,"kind":"outbox","data":{"@timestamp":"2026-11-20T23:02:40.623753+09:00","event":"event.acknowledged","eventId":"892f3f2c-8469-4e73-82ab-9771b3bfcc77","correlationId":"5c56c608-6bec-4640-aeec-720c620c5be1","topic":"listing-event","eventType":"ListingPublished","pendingAgeStatus":"VALID","pendingAgeMs":"9","sendAckMs":"5.949917","outcome":"ACKNOWLEDGED","partition":"1","offset":"44"}},
+  {"source":"stdin","line":143,"receivedMs":28425.670667000002,"kind":"outbox","data":{"@timestamp":"2026-11-20T23:02:40.628192+09:00","event":"event.published","eventId":"892f3f2c-8469-4e73-82ab-9771b3bfcc77","correlationId":"5c56c608-6bec-4640-aeec-720c620c5be1","topic":"listing-event","eventType":"ListingPublished","pendingAgeStatus":"VALID","pendingAgeMs":"9","batchWaitMs":"0.002583","outcome":"PUBLISHED"}},
+  {"source":"stdin","line":144,"receivedMs":28497.362417,"kind":"auction","data":{"auctionId":"16f3047f-9cb1-4571-a283-33102aa1e236"}},
+  {"source":"stdin","line":145,"receivedMs":28650.208167,"kind":"outbox","data":{"@timestamp":"2026-11-20T23:02:40.853095+09:00","event":"event.acknowledged","eventId":"485ec1fa-dc84-4a3b-8455-a1ee5e2ad077","correlationId":"321cc42c-df14-4958-9199-5e2cc45eb5a2","topic":"bid-command","eventType":"BidCommandRequested","pendingAgeStatus":"VALID","pendingAgeMs":"107","sendAckMs":"7.337709","outcome":"ACKNOWLEDGED","partition":"2","offset":"564"}},
+  {"source":"stdin","line":146,"receivedMs":28652.964417,"kind":"outbox","data":{"@timestamp":"2026-11-20T23:02:40.856043+09:00","event":"event.published","eventId":"485ec1fa-dc84-4a3b-8455-a1ee5e2ad077","correlationId":"321cc42c-df14-4958-9199-5e2cc45eb5a2","topic":"bid-command","eventType":"BidCommandRequested","pendingAgeStatus":"VALID","pendingAgeMs":"107","batchWaitMs":"0.002166","outcome":"PUBLISHED"}},
+  {"source":"stdin","line":147,"receivedMs":28803.670917,"kind":"settlement","data":{"eventId":"485ec1fa-dc84-4a3b-8455-a1ee5e2ad077","bidRequestId":"837559fd-5acd-4b23-9c2a-9b566e007d28","auctionId":"16f3047f-9cb1-4571-a283-33102aa1e236","outcome":"ACCEPTED"}},
+  {"source":"stdin","line":148,"receivedMs":28885.947542,"kind":"outbox","data":{"@timestamp":"2026-11-20T23:02:41.088239+09:00","event":"event.acknowledged","eventId":"5d48e8a7-8471-4306-aa91-93c65c9c7930","correlationId":"321cc42c-df14-4958-9199-5e2cc45eb5a2","topic":"bid-event","eventType":"BidAccepted","pendingAgeStatus":"VALID","pendingAgeMs":"73","sendAckMs":"15.477833","outcome":"ACKNOWLEDGED","partition":"2","offset":"668"}},
+  {"source":"stdin","line":149,"receivedMs":28904.585208,"kind":"outbox","data":{"@timestamp":"2026-11-20T23:02:41.106067+09:00","event":"event.published","eventId":"5d48e8a7-8471-4306-aa91-93c65c9c7930","correlationId":"321cc42c-df14-4958-9199-5e2cc45eb5a2","topic":"bid-event","eventType":"BidAccepted","pendingAgeStatus":"VALID","pendingAgeMs":"73","batchWaitMs":"0.002584","outcome":"PUBLISHED"}},
+  {"source":"stdin","line":150,"receivedMs":30963.744208,"kind":"outbox","data":{"@timestamp":"2026-11-20T23:02:43.166346+09:00","event":"event.acknowledged","eventId":"270075f1-6141-4cdb-8819-9915a596472b","correlationId":"31ac07ad-960c-43b8-a7e0-4b0ebd7efed9","topic":"bid-command","eventType":"BidCommandRequested","pendingAgeStatus":"VALID","pendingAgeMs":"104","sendAckMs":"5.670417","outcome":"ACKNOWLEDGED","partition":"1","offset":"1874"}},
+  {"source":"stdin","line":151,"receivedMs":30978.004958,"kind":"outbox","data":{"@timestamp":"2026-11-20T23:02:43.180613+09:00","event":"event.published","eventId":"270075f1-6141-4cdb-8819-9915a596472b","correlationId":"31ac07ad-960c-43b8-a7e0-4b0ebd7efed9","topic":"bid-command","eventType":"BidCommandRequested","pendingAgeStatus":"VALID","pendingAgeMs":"104","batchWaitMs":"0.001334","outcome":"PUBLISHED"}},
+  {"source":"stdin","line":152,"receivedMs":31010.140625,"kind":"settlement","data":{"eventId":"270075f1-6141-4cdb-8819-9915a596472b","bidRequestId":"d621c425-4e3e-48b3-8a86-0ebb5697cd93","auctionId":"84616946-a8e6-4c57-9c1c-33085e6624c0","outcome":"ACCEPTED"}},
+  {"source":"stdin","line":153,"receivedMs":31093.960958,"kind":"outbox","data":{"@timestamp":"2026-11-20T23:02:43.296195+09:00","event":"event.acknowledged","eventId":"39d9a00b-037f-439c-97d3-2a5ceaf4b56d","correlationId":"31ac07ad-960c-43b8-a7e0-4b0ebd7efed9","topic":"bid-event","eventType":"BidAccepted","pendingAgeStatus":"VALID","pendingAgeMs":"81","sendAckMs":"6.15525","outcome":"ACKNOWLEDGED","partition":"1","offset":"1975"}},
+  {"source":"stdin","line":154,"receivedMs":31105.156875,"kind":"outbox","data":{"@timestamp":"2026-11-20T23:02:43.308008+09:00","event":"event.published","eventId":"39d9a00b-037f-439c-97d3-2a5ceaf4b56d","correlationId":"31ac07ad-960c-43b8-a7e0-4b0ebd7efed9","topic":"bid-event","eventType":"BidAccepted","pendingAgeStatus":"VALID","pendingAgeMs":"81","batchWaitMs":"0.0015","outcome":"PUBLISHED"}},
+  {"source":"stdin","line":155,"receivedMs":31116.842,"kind":"outbox","data":{"@timestamp":"2026-11-20T23:02:43.319765+09:00","event":"event.acknowledged","eventId":"6ed1097b-e578-4765-bf2f-05f71b165090","correlationId":"31ac07ad-960c-43b8-a7e0-4b0ebd7efed9","topic":"bid-event","eventType":"AuctionExtended","pendingAgeStatus":"VALID","pendingAgeMs":"77","sendAckMs":"11.277375","outcome":"ACKNOWLEDGED","partition":"1","offset":"1976"}},
+  {"source":"stdin","line":156,"receivedMs":31147.679292,"kind":"outbox","data":{"@timestamp":"2026-11-20T23:02:43.332484+09:00","event":"event.published","eventId":"6ed1097b-e578-4765-bf2f-05f71b165090","correlationId":"31ac07ad-960c-43b8-a7e0-4b0ebd7efed9","topic":"bid-event","eventType":"AuctionExtended","pendingAgeStatus":"VALID","pendingAgeMs":"77","batchWaitMs":"18.655042","outcome":"PUBLISHED"}},
+  {"source":"stdin","line":157,"receivedMs":31472.7265,"kind":"outbox","data":{"@timestamp":"2026-11-20T23:02:43.675495+09:00","event":"event.acknowledged","eventId":"bff01b07-a056-4999-9011-46e003940c2f","correlationId":"5874dbcb-509b-4941-8ce9-9613b61d77cd","topic":"bid-command","eventType":"BidCommandRequested","pendingAgeStatus":"VALID","pendingAgeMs":"54","sendAckMs":"5.2305","outcome":"ACKNOWLEDGED","partition":"1","offset":"1875"}},
+  {"source":"stdin","line":158,"receivedMs":31474.800542,"kind":"outbox","data":{"@timestamp":"2026-11-20T23:02:43.677836+09:00","event":"event.published","eventId":"bff01b07-a056-4999-9011-46e003940c2f","correlationId":"5874dbcb-509b-4941-8ce9-9613b61d77cd","topic":"bid-command","eventType":"BidCommandRequested","pendingAgeStatus":"VALID","pendingAgeMs":"54","batchWaitMs":"0.001375","outcome":"PUBLISHED"}},
+  {"source":"stdin","line":159,"receivedMs":31483.894708,"kind":"settlement","data":{"eventId":"bff01b07-a056-4999-9011-46e003940c2f","bidRequestId":"6157512d-f04d-4beb-ae32-7b0c6916465a","auctionId":"84616946-a8e6-4c57-9c1c-33085e6624c0","outcome":"ACCEPTED"}},
+  {"source":"stdin","line":160,"receivedMs":31587.503042,"kind":"outbox","data":{"@timestamp":"2026-11-20T23:02:43.78991+09:00","event":"event.acknowledged","eventId":"fb17b775-b1d2-4a89-8c6e-9d79a30e0557","correlationId":"5874dbcb-509b-4941-8ce9-9613b61d77cd","topic":"bid-event","eventType":"BidAccepted","pendingAgeStatus":"VALID","pendingAgeMs":"95","sendAckMs":"7.477375","outcome":"ACKNOWLEDGED","partition":"1","offset":"1977"}},
+  {"source":"stdin","line":161,"receivedMs":31592.9215,"kind":"outbox","data":{"@timestamp":"2026-11-20T23:02:43.794935+09:00","event":"event.published","eventId":"fb17b775-b1d2-4a89-8c6e-9d79a30e0557","correlationId":"5874dbcb-509b-4941-8ce9-9613b61d77cd","topic":"bid-event","eventType":"BidAccepted","pendingAgeStatus":"VALID","pendingAgeMs":"95","batchWaitMs":"0.001666","outcome":"PUBLISHED"}},
+  {"source":"stdin","line":162,"receivedMs":32122.352292,"kind":"outbox","data":{"@timestamp":"2026-11-20T23:02:44.323747+09:00","event":"event.acknowledged","eventId":"2c0a26d5-7980-47ed-b310-cd5a7be71352","correlationId":"16f3047f-9cb1-4571-a283-33102aa1e236","topic":"bid-event","eventType":"AuctionEnded","pendingAgeStatus":"VALID","pendingAgeMs":"57","sendAckMs":"3.596541","outcome":"ACKNOWLEDGED","partition":"2","offset":"669"}},
+  {"source":"stdin","line":163,"receivedMs":32128.540667,"kind":"outbox","data":{"@timestamp":"2026-11-20T23:02:44.331344+09:00","event":"event.published","eventId":"2c0a26d5-7980-47ed-b310-cd5a7be71352","correlationId":"16f3047f-9cb1-4571-a283-33102aa1e236","topic":"bid-event","eventType":"AuctionEnded","pendingAgeStatus":"VALID","pendingAgeMs":"57","batchWaitMs":"0.002625","outcome":"PUBLISHED"}},
+  {"source":"stdin","line":164,"receivedMs":33081.537583,"kind":"outbox","data":{"@timestamp":"2026-11-20T23:02:45.283968+09:00","event":"event.acknowledged","eventId":"0a3d9502-db28-4366-ae89-0f3cb067debd","correlationId":"84616946-a8e6-4c57-9c1c-33085e6624c0","topic":"bid-event","eventType":"AuctionEnded","pendingAgeStatus":"VALID","pendingAgeMs":"2","sendAckMs":"3.462917","outcome":"ACKNOWLEDGED","partition":"1","offset":"1978"}},
+  {"source":"stdin","line":165,"receivedMs":33089.450042,"kind":"outbox","data":{"@timestamp":"2026-11-20T23:02:45.292073+09:00","event":"event.published","eventId":"0a3d9502-db28-4366-ae89-0f3cb067debd","correlationId":"84616946-a8e6-4c57-9c1c-33085e6624c0","topic":"bid-event","eventType":"AuctionEnded","pendingAgeStatus":"VALID","pendingAgeMs":"2","batchWaitMs":"0.002292","outcome":"PUBLISHED"}},
+  {"source":"stdin","line":166,"receivedMs":33529.523666999994,"kind":"outbox","data":{"@timestamp":"2026-11-20T23:02:45.732347+09:00","event":"event.acknowledged","eventId":"5f2a74eb-4d4f-4a1d-a67c-45b759d6a2c1","correlationId":"e61a82c2-9a25-4a75-bf6e-f5150e484f91","topic":"bid-command","eventType":"BidCommandRequested","pendingAgeStatus":"VALID","pendingAgeMs":"9","sendAckMs":"2.839917","outcome":"ACKNOWLEDGED","partition":"1","offset":"1876"}},
+  {"source":"stdin","line":167,"receivedMs":33534.5,"kind":"outbox","data":{"@timestamp":"2026-11-20T23:02:45.737157+09:00","event":"event.published","eventId":"5f2a74eb-4d4f-4a1d-a67c-45b759d6a2c1","correlationId":"e61a82c2-9a25-4a75-bf6e-f5150e484f91","topic":"bid-command","eventType":"BidCommandRequested","pendingAgeStatus":"VALID","pendingAgeMs":"9","batchWaitMs":"0.001458","outcome":"PUBLISHED"}},
+  {"source":"stdin","line":168,"receivedMs":33550.181458,"kind":"settlement","data":{"eventId":"5f2a74eb-4d4f-4a1d-a67c-45b759d6a2c1","bidRequestId":"68a0b80a-93af-4f5b-9109-c004d96a6716","auctionId":"84616946-a8e6-4c57-9c1c-33085e6624c0","outcome":"AUCTION_ENDED"}},
+  {"source":"stdin","line":169,"receivedMs":33643.885917,"kind":"outbox","data":{"@timestamp":"2026-11-20T23:02:45.846163+09:00","event":"event.acknowledged","eventId":"6b862f84-198d-47dc-897a-c960e4ab7daa","correlationId":"e61a82c2-9a25-4a75-bf6e-f5150e484f91","topic":"bid-event","eventType":"BidRejected","pendingAgeStatus":"VALID","pendingAgeMs":"88","sendAckMs":"4.589917","outcome":"ACKNOWLEDGED","partition":"1","offset":"1979"}},
+  {"source":"stdin","line":170,"receivedMs":33648.618833,"kind":"outbox","data":{"@timestamp":"2026-11-20T23:02:45.850359+09:00","event":"event.published","eventId":"6b862f84-198d-47dc-897a-c960e4ab7daa","correlationId":"e61a82c2-9a25-4a75-bf6e-f5150e484f91","topic":"bid-event","eventType":"BidRejected","pendingAgeStatus":"VALID","pendingAgeMs":"88","batchWaitMs":"0.002625","outcome":"PUBLISHED"}},
+  {"source":"stdin","line":171,"receivedMs":35209.923041999995,"kind":"test.end","data":{"caseId":"auto-finalization","status":"passed","durationMs":8772}},
+  {"source":"stdin","line":172,"receivedMs":35396.999832999994,"kind":"runner.exit","data":{"code":0}},
+  {"source":"stdin","line":173,"receivedMs":40785.090417,"kind":"kafka","data":{"group":"bid-settlement","action":"revoked","partitions":[{"topic":"bid-command","partition":0},{"topic":"bid-command","partition":1},{"topic":"bid-command","partition":2}]}},
+  {"source":"stdin","line":174,"receivedMs":40785.140957999996,"kind":"kafka","data":{"group":"search-projection","action":"revoked","partitions":[{"topic":"bid-event","partition":0},{"topic":"bid-event","partition":1},{"topic":"bid-event","partition":2},{"topic":"listing-event","partition":0},{"topic":"listing-event","partition":1},{"topic":"listing-event","partition":2}]}},
+  {"source":"stdin","line":175,"receivedMs":40785.161582999994,"kind":"kafka","data":{"group":"auction-finalization","action":"revoked","partitions":[{"topic":"bid-event","partition":0},{"topic":"bid-event","partition":1},{"topic":"bid-event","partition":2}]}},
+  {"source":"stdin","line":176,"receivedMs":40785.354667,"kind":"kafka","data":{"group":"realtime-projection","action":"revoked","partitions":[{"topic":"bid-event","partition":0},{"topic":"bid-event","partition":1},{"topic":"bid-event","partition":2}]}},
+  {"source":"stdin","line":177,"receivedMs":41774.635417,"kind":"api.stopped","data":{"pid":84628}},
+  {"source":"stdin","line":178,"receivedMs":54059.707458,"kind":"restored","data":{"pid":84915}}
+],
+        "summary": {
+          "testsPassed": true,
+          "allCasesExecuted": true,
+          "firstHealthUpMs": null,
+          "firstReadinessUpMs": 15170.661167,
+          "cases": [
+            {
+              "caseId": "unsold",
+              "beginMs": 18644.725167,
+              "auctionIds": [
+                "296f484c-1db0-46dd-89f0-96a7fa49bf56"
+              ],
+              "endMs": 26417.174083,
+              "status": "passed",
+              "runnerDurationMs": 5029
+            },
+            {
+              "caseId": "auto-finalization",
+              "beginMs": 26417.76325,
+              "auctionIds": [
+                "84616946-a8e6-4c57-9c1c-33085e6624c0",
+                "16f3047f-9cb1-4571-a283-33102aa1e236"
+              ],
+              "endMs": 35209.923041999995,
+              "status": "passed",
+              "runnerDurationMs": 8772
+            }
+          ],
+          "exitCode": 0,
+          "unparsedAssignments": 0,
+          "kafka": {
+            "bid-settlement": {
+              "firstNonEmptyAssignmentMs": 15565.312708000001,
+              "events": [
+  {"receivedMs":15565.312708000001,"group":"bid-settlement","action":"assigned","partitions":[{"topic":"bid-command","partition":0},{"topic":"bid-command","partition":1},{"topic":"bid-command","partition":2}]},
+  {"receivedMs":40785.090417,"group":"bid-settlement","action":"revoked","partitions":[{"topic":"bid-command","partition":0},{"topic":"bid-command","partition":1},{"topic":"bid-command","partition":2}]}
+]
+            },
+            "realtime-projection": {
+              "firstNonEmptyAssignmentMs": 15562.549458000001,
+              "events": [
+  {"receivedMs":15562.549458000001,"group":"realtime-projection","action":"assigned","partitions":[{"topic":"bid-event","partition":0},{"topic":"bid-event","partition":1},{"topic":"bid-event","partition":2}]},
+  {"receivedMs":40785.354667,"group":"realtime-projection","action":"revoked","partitions":[{"topic":"bid-event","partition":0},{"topic":"bid-event","partition":1},{"topic":"bid-event","partition":2}]}
+]
+            },
+            "auction-finalization": {
+              "firstNonEmptyAssignmentMs": 15565.354667000001,
+              "events": [
+  {"receivedMs":15565.354667000001,"group":"auction-finalization","action":"assigned","partitions":[{"topic":"bid-event","partition":0},{"topic":"bid-event","partition":1},{"topic":"bid-event","partition":2}]},
+  {"receivedMs":40785.161582999994,"group":"auction-finalization","action":"revoked","partitions":[{"topic":"bid-event","partition":0},{"topic":"bid-event","partition":1},{"topic":"bid-event","partition":2}]}
+]
+            },
+            "search-projection": {
+              "firstNonEmptyAssignmentMs": 15560.571042000001,
+              "events": [
+  {"receivedMs":15560.571042000001,"group":"search-projection","action":"assigned","partitions":[{"topic":"bid-event","partition":0},{"topic":"bid-event","partition":1},{"topic":"bid-event","partition":2},{"topic":"listing-event","partition":0},{"topic":"listing-event","partition":1},{"topic":"listing-event","partition":2}]},
+  {"receivedMs":40785.140957999996,"group":"search-projection","action":"revoked","partitions":[{"topic":"bid-event","partition":0},{"topic":"bid-event","partition":1},{"topic":"bid-event","partition":2},{"topic":"listing-event","partition":0},{"topic":"listing-event","partition":1},{"topic":"listing-event","partition":2}]}
+]
+            }
+          }
+        },
+        "completedAt": "2026-11-20T14:03:06.291Z"
+      },
+      "timeline": {
+        "healthMs": null,
+        "readinessMs": 14363.801292,
+        "firstTestBeginMs": 17837.865292000002,
+        "readinessToFirstTestMs": 3474.0640000000003,
+        "assignments": {
+          "bid-settlement": 14758.452833000001,
+          "realtime-projection": 14755.689583000001,
+          "auction-finalization": 14758.494792000001,
+          "search-projection": 14753.711167000001
+        },
+        "cases": [
+          {
+            "caseId": "unsold",
+            "status": "passed",
+            "beginMs": 17837.865292000002,
+            "endMs": 25610.314208000003,
+            "runnerDurationMs": 5029,
+            "auctionIds": [
+              "296f484c-1db0-46dd-89f0-96a7fa49bf56"
+            ]
+          },
+          {
+            "caseId": "auto-finalization",
+            "status": "passed",
+            "beginMs": 25610.903375,
+            "endMs": 34403.06316699999,
+            "runnerDurationMs": 8772,
+            "auctionIds": [
+              "84616946-a8e6-4c57-9c1c-33085e6624c0",
+              "16f3047f-9cb1-4571-a283-33102aa1e236"
+            ]
+          }
+        ]
+      },
+      "mapped": [
+  {"auctionId":"16f3047f-9cb1-4571-a283-33102aa1e236","requestId":"837559fd-5acd-4b23-9c2a-9b566e007d28","decision":"ACCEPTED","commandEventId":"485ec1fa-dc84-4a3b-8455-a1ee5e2ad077","resultEventId":"5d48e8a7-8471-4306-aa91-93c65c9c7930","commandAckReceivedMs":27843.348292000002,"settlementReceivedMs":27996.811042,"resultAckReceivedMs":28079.087667000003},
+  {"auctionId":"84616946-a8e6-4c57-9c1c-33085e6624c0","requestId":"d621c425-4e3e-48b3-8a86-0ebb5697cd93","decision":"ACCEPTED","commandEventId":"270075f1-6141-4cdb-8819-9915a596472b","resultEventId":"39d9a00b-037f-439c-97d3-2a5ceaf4b56d","commandAckReceivedMs":30156.884333,"settlementReceivedMs":30203.28075,"resultAckReceivedMs":30287.101083},
+  {"auctionId":"84616946-a8e6-4c57-9c1c-33085e6624c0","requestId":"6157512d-f04d-4beb-ae32-7b0c6916465a","decision":"ACCEPTED","commandEventId":"bff01b07-a056-4999-9011-46e003940c2f","resultEventId":"fb17b775-b1d2-4a89-8c6e-9d79a30e0557","commandAckReceivedMs":30665.866625000002,"settlementReceivedMs":30677.034833,"resultAckReceivedMs":30780.643167000002},
+  {"auctionId":"84616946-a8e6-4c57-9c1c-33085e6624c0","requestId":"68a0b80a-93af-4f5b-9109-c004d96a6716","decision":"REJECTED","commandEventId":"5f2a74eb-4d4f-4a1d-a67c-45b759d6a2c1","resultEventId":"6b862f84-198d-47dc-897a-c960e4ab7daa","commandAckReceivedMs":32722.663791999996,"settlementReceivedMs":32743.321583,"resultAckReceivedMs":32837.026042}
+],
+      "matchedOutboxLogs": 24,
+      "settlementLogs": 4
+    }
+  ],
+  "conclusion": "NOT_REPRODUCED_IN_THREE_OBSERVED_RESTARTS"
+}
