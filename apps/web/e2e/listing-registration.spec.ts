@@ -439,6 +439,9 @@ async function registerAuction(page: Page, sellerId: string, title = "e2e-camera
   await expect(status).toContainText("경매 ID:");
   const match = (await status.textContent())?.match(/경매 ID: ([0-9a-f-]{36})/);
   if (!match?.[1]) throw new Error("등록 성공 응답에서 경매 ID를 찾을 수 없습니다.");
+  if (process.env.BIDFLOW_E2E_STARTUP_OBSERVATION === "1") {
+    process.stdout.write(JSON.stringify({ startupObservation: "auction", auctionId: match[1] }) + "\n");
+  }
   return match[1];
 }
 
