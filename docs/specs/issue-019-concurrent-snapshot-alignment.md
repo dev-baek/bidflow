@@ -1,14 +1,14 @@
 # 동시 입찰 관측의 개인 판정과 최신 snapshot 구분
 
-- 상태: 제안됨. 문서 승인 전에는 판정 코드나 서버 동작을 바꾸지 않는다.
+- 상태: #279 승인. 동시 판정·SQL 구분을 TDD로 구현하고 [새 smoke와 정식 10회 실측](../reports/issue-019-concurrent-snapshot-fix.md)을 완료했다. 서버 동작과 기존 실패 증적은 변경하지 않았다.
 - 기존 이슈: [#19](https://github.com/dev-baek/bidflow/issues/19).
 - 선행: [동시 관측 사양](issue-019-concurrent-browser-latency.md), [실패 smoke와 진단](../reports/issue-019-concurrent-smoke-failure.md), [기존 WebSocket 계약](issue-014-realtime-websocket.md)의 D/I.
 
-## 수정 이유와 결정 제안
+## 수정 이유와 결정
 
 첫 실제 smoke에서 두 입찰 모두 승인됐지만 관측기는 INVALID_RESULT로 실패했다. 개인 bid.result의 decision은 요청별 결과이고 currentPrice·auctionVersion은 Projection이 읽은 최신 DB snapshot이다. 기존 관측기는 이 두 시점이 항상 같다고 가정해 A의 11,000원 승인에도 snapshot 가격이 11,000원이어야 한다고 요구했다.
 
-기존 WebSocket 계약은 과거 이벤트를 소비할 때 더 최신 snapshot을 보낼 수 있도록 정의한다. **서버 메시지를 과거 상태로 바꾸지 않고, 관측 판정에서 요청별 정산 사실과 최신 snapshot을 분리**하는 방향을 제안한다. P95 2초, 총 10회/20건, 동시성 조건, 기존 실패 보존은 그대로다.
+기존 WebSocket 계약은 과거 이벤트를 소비할 때 더 최신 snapshot을 보낼 수 있도록 정의한다. **서버 메시지를 과거 상태로 바꾸지 않고, 관측 판정에서 요청별 정산 사실과 최신 snapshot을 분리**한다. P95 2초, 총 10회/20건, 동시성 조건, 기존 실패 보존은 그대로다.
 
 ## S. 화면 완료 기준
 

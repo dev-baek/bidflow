@@ -1,0 +1,1441 @@
+{
+  "sourceCommit": "3335cc5ef6dd38dc168040174f7135f0c3733409",
+  "startedAt": "2026-11-21T03:58:28.277Z",
+  "completedAt": "2026-11-21T03:59:22.463Z",
+  "environment": {
+    "node": "v24.18.0",
+    "arch": "arm64",
+    "os": "25.5.0",
+    "cpuCount": 8,
+    "memoryBytes": 17179869184,
+    "model": "Mac15,12",
+    "java": "openjdk 21.0.7 2025-04-15 LTS\nOpenJDK Runtime Environment Microsoft-11369939 (build 21.0.7+6-LTS)\nOpenJDK 64-Bit Server VM Microsoft-11369939 (build 21.0.7+6-LTS, mixed mode, sharing)",
+    "docker": "27.5.1 8 8217858048"
+  },
+  "infrastructure": [
+    "/bidflow-local-postgres-1 healthy",
+    "/bidflow-local-kafka-1 healthy",
+    "/bidflow-local-redis-1 healthy",
+    "/bidflow-local-object-storage-1 healthy"
+  ],
+  "runtime": {
+    "original": {
+      "pid": 26722,
+      "profiles": [
+        "local"
+      ],
+      "fixedDelayMs": 1000,
+      "logging": "INFO",
+      "jarSha256": "5251be8d60c6fc0f3a7afb13415c72e2438713b973a854a54f411009065f08c4",
+      "fullyStopped": true
+    },
+    "experiment": {
+      "pid": 34583,
+      "profiles": [
+        "local",
+        "e2e"
+      ],
+      "fixedDelayMs": 100,
+      "delayOverride": false,
+      "localConfig": "bidflow:\n  outbox:\n    fixed-delay-ms: 100",
+      "logging": "INFO",
+      "jarSha256": "34f4192967bf4a9ddd75150dcf87e26e67dd67af8957c330a1b358aeae23d898",
+      "fullyStopped": true,
+      "viteInitiallyRunning": false,
+      "viteFullyStopped": true,
+      "environmentOverridesRemoved": true
+    },
+    "restoration": {
+      "pid": 35007,
+      "profiles": [
+        "local"
+      ],
+      "fixedDelayMs": 1000,
+      "logging": "INFO",
+      "verified": true
+    }
+  },
+  "automaticRetry": false,
+  "trials": [
+    {
+      "label": "smoke",
+      "exitCode": 0,
+      "startedAt": "2026-11-21T03:58:35.503Z",
+      "completedAt": "2026-11-21T03:58:43.961Z",
+      "beforeLag": [
+        {
+          "partition": 0,
+          "currentOffset": 551,
+          "endOffset": 551,
+          "lag": 0
+        },
+        {
+          "partition": 1,
+          "currentOffset": 1879,
+          "endOffset": 1879,
+          "lag": 0
+        },
+        {
+          "partition": 2,
+          "currentOffset": 565,
+          "endOffset": 565,
+          "lag": 0
+        }
+      ],
+      "afterLag": [
+        {
+          "partition": 0,
+          "currentOffset": 551,
+          "endOffset": 551,
+          "lag": 0
+        },
+        {
+          "partition": 1,
+          "currentOffset": 1879,
+          "endOffset": 1879,
+          "lag": 0
+        },
+        {
+          "partition": 2,
+          "currentOffset": 567,
+          "endOffset": 567,
+          "lag": 0
+        }
+      ],
+      "measurement": {
+        "valid": false,
+        "sqlVerified": true,
+        "observationValid": false,
+        "p95WithinTarget": false,
+        "total": 20,
+        "completed": 2,
+        "incomplete": 18,
+        "unexecutedRounds": 9,
+        "nonconcurrentRounds": 0,
+        "distinct": true,
+        "screen": {
+          "count": 2,
+          "p50": 442.6546250000001,
+          "p95": 444.73020799999995,
+          "p99": 444.73020799999995
+        },
+        "privateResult": {
+          "count": 2,
+          "p50": 245.82937500000025,
+          "p95": 270.4601669999993,
+          "p99": 270.4601669999993
+        },
+        "http": {
+          "count": 2,
+          "p50": 74.61566700000003,
+          "p95": 76.38737499999934,
+          "p99": 76.38737499999934
+        },
+        "decisions": {
+          "accepted": 1,
+          "rejected": 1
+        },
+        "smoke": true,
+        "smokeVerified": true,
+        "runId": "bc7033a5-58de-41f4-90bb-149e8a581858",
+        "startedAt": "2026-11-21T03:58:40.007Z",
+        "completedAt": "2026-11-21T03:58:43.829Z",
+        "phase": "SQL",
+        "commit": "3335cc5ef6dd38dc168040174f7135f0c3733409",
+        "node": "v24.18.0",
+        "chromium": "145.0.7632.6",
+        "fixtures": [
+          {
+            "index": 0,
+            "auctionId": "801b1b5b-bfed-4d02-8269-2a917470a4f5"
+          }
+        ],
+        "sqlChecks": [
+          {
+            "index": 0,
+            "valid": true,
+            "accepted": 1,
+            "rejected": 1,
+            "requestCount": 2,
+            "ledgerCount": 2,
+            "resultCount": 2,
+            "settlements": [
+              {
+                "bidder": "A",
+                "requestId": "c1d9482c-2c61-43c4-8e99-ef12a9d76d8b",
+                "decision": "REJECTED",
+                "settlementVersion": 2,
+                "ledgerPrice": null,
+                "eventPrice": null,
+                "snapshotVersion": 2,
+                "snapshotPrice": 12000
+              },
+              {
+                "bidder": "B",
+                "requestId": "a391833b-0c62-4a30-b4a5-7b8add762b11",
+                "decision": "ACCEPTED",
+                "settlementVersion": 2,
+                "ledgerPrice": 12000,
+                "eventPrice": 12000,
+                "snapshotVersion": 2,
+                "snapshotPrice": 12000
+              }
+            ]
+          }
+        ],
+        "collectionErrors": [],
+        "observations": [
+          {
+            "index": 0,
+            "auctionId": "801b1b5b-bfed-4d02-8269-2a917470a4f5",
+            "receipts": [
+              {
+                "bidder": "A",
+                "amount": 11000,
+                "startedMs": 3.9180420000002414,
+                "postMs": 46.934792000000016,
+                "httpCompletedMs": 80.30541699999958,
+                "httpStatus": 202,
+                "receiptStatus": "RECEIVED",
+                "requestId": "c1d9482c-2c61-43c4-8e99-ef12a9d76d8b"
+              },
+              {
+                "bidder": "B",
+                "amount": 12000,
+                "startedMs": 5.9936250000000655,
+                "postMs": 46.83716699999968,
+                "httpCompletedMs": 80.6092920000001,
+                "httpStatus": 202,
+                "receiptStatus": "RECEIVED",
+                "requestId": "a391833b-0c62-4a30-b4a5-7b8add762b11"
+              }
+            ],
+            "frames": [
+              {
+                "bidder": "B",
+                "receivedMs": 251.82300000000032,
+                "result": {
+                  "type": "bid.result",
+                  "bidRequestId": "a391833b-0c62-4a30-b4a5-7b8add762b11",
+                  "auctionId": "801b1b5b-bfed-4d02-8269-2a917470a4f5",
+                  "auctionVersion": 2,
+                  "decision": "ACCEPTED",
+                  "reason": null,
+                  "currentPrice": 12000,
+                  "isHighestBidder": true
+                }
+              },
+              {
+                "bidder": "A",
+                "receivedMs": 274.3782089999995,
+                "result": {
+                  "type": "bid.result",
+                  "bidRequestId": "c1d9482c-2c61-43c4-8e99-ef12a9d76d8b",
+                  "auctionId": "801b1b5b-bfed-4d02-8269-2a917470a4f5",
+                  "auctionVersion": 2,
+                  "decision": "REJECTED",
+                  "reason": "BID_TOO_LOW",
+                  "currentPrice": 12000,
+                  "isHighestBidder": false
+                }
+              }
+            ],
+            "screen": {
+              "completedMs": 448.6482500000002,
+              "prices": [
+                12000,
+                12000
+              ],
+              "decisions": [
+                {
+                  "bidder": "A",
+                  "decision": "REJECTED"
+                },
+                {
+                  "bidder": "B",
+                  "decision": "ACCEPTED"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "label": "formal",
+      "exitCode": 0,
+      "startedAt": "2026-11-21T03:58:45.362Z",
+      "completedAt": "2026-11-21T03:59:13.270Z",
+      "beforeLag": [
+        {
+          "partition": 0,
+          "currentOffset": 551,
+          "endOffset": 551,
+          "lag": 0
+        },
+        {
+          "partition": 1,
+          "currentOffset": 1879,
+          "endOffset": 1879,
+          "lag": 0
+        },
+        {
+          "partition": 2,
+          "currentOffset": 567,
+          "endOffset": 567,
+          "lag": 0
+        }
+      ],
+      "afterLag": [
+        {
+          "partition": 0,
+          "currentOffset": 567,
+          "endOffset": 567,
+          "lag": 0
+        },
+        {
+          "partition": 1,
+          "currentOffset": 1881,
+          "endOffset": 1881,
+          "lag": 0
+        },
+        {
+          "partition": 2,
+          "currentOffset": 569,
+          "endOffset": 569,
+          "lag": 0
+        }
+      ],
+      "measurement": {
+        "valid": true,
+        "sqlVerified": true,
+        "observationValid": true,
+        "p95WithinTarget": true,
+        "total": 20,
+        "completed": 20,
+        "incomplete": 0,
+        "unexecutedRounds": 0,
+        "nonconcurrentRounds": 0,
+        "distinct": true,
+        "screen": {
+          "count": 20,
+          "p50": 419.94616700000006,
+          "p95": 443.32679099999996,
+          "p99": 444.7467080000001
+        },
+        "privateResult": {
+          "count": 20,
+          "p50": 228.24154200000066,
+          "p95": 301.3553750000028,
+          "p99": 318.882916999999
+        },
+        "http": {
+          "count": 20,
+          "p50": 53.622709000000214,
+          "p95": 76.00199999999995,
+          "p99": 78.80670800000007
+        },
+        "decisions": {
+          "accepted": 15,
+          "rejected": 5
+        },
+        "smoke": false,
+        "smokeVerified": false,
+        "runId": "aa6ce5f7-9ef7-4618-b3df-ee2b0d34dfb5",
+        "startedAt": "2026-11-21T03:58:49.155Z",
+        "completedAt": "2026-11-21T03:59:12.989Z",
+        "phase": "SQL",
+        "commit": "3335cc5ef6dd38dc168040174f7135f0c3733409",
+        "node": "v24.18.0",
+        "chromium": "145.0.7632.6",
+        "fixtures": [
+          {
+            "index": 0,
+            "auctionId": "ca724973-d6b8-427c-a61a-f132f191878a"
+          },
+          {
+            "index": 1,
+            "auctionId": "f9e96554-25cc-4535-9dea-c4d90a38a5b3"
+          },
+          {
+            "index": 2,
+            "auctionId": "071165a1-1ea4-4b35-bc04-27130cf3c5e0"
+          },
+          {
+            "index": 3,
+            "auctionId": "5270b349-d0c0-4aef-a950-c777b157f5db"
+          },
+          {
+            "index": 4,
+            "auctionId": "db412aec-91e8-4baf-ae83-7cd233d1b6d4"
+          },
+          {
+            "index": 5,
+            "auctionId": "34ea52a4-3183-4409-886a-6904a680842a"
+          },
+          {
+            "index": 6,
+            "auctionId": "7ece26d1-1335-4350-8bca-e354285a55b5"
+          },
+          {
+            "index": 7,
+            "auctionId": "f0aec9ec-9b76-4c8e-b429-f1634b63cd55"
+          },
+          {
+            "index": 8,
+            "auctionId": "8bf5eb1c-0103-4947-a118-306612643cd8"
+          },
+          {
+            "index": 9,
+            "auctionId": "510a05ed-d888-4004-8134-9f6faafc78ad"
+          }
+        ],
+        "sqlChecks": [
+          {
+            "index": 0,
+            "valid": true,
+            "accepted": 1,
+            "rejected": 1,
+            "requestCount": 2,
+            "ledgerCount": 2,
+            "resultCount": 2,
+            "settlements": [
+              {
+                "bidder": "A",
+                "requestId": "5e4dbd86-94f9-4a30-b70b-e7ec096baaf0",
+                "decision": "REJECTED",
+                "settlementVersion": 2,
+                "ledgerPrice": null,
+                "eventPrice": null,
+                "snapshotVersion": 2,
+                "snapshotPrice": 12000
+              },
+              {
+                "bidder": "B",
+                "requestId": "01989ce5-1cc4-4ce3-8bf3-26f9a234ae3c",
+                "decision": "ACCEPTED",
+                "settlementVersion": 2,
+                "ledgerPrice": 12000,
+                "eventPrice": 12000,
+                "snapshotVersion": 2,
+                "snapshotPrice": 12000
+              }
+            ]
+          },
+          {
+            "index": 1,
+            "valid": true,
+            "accepted": 2,
+            "rejected": 0,
+            "requestCount": 2,
+            "ledgerCount": 2,
+            "resultCount": 2,
+            "settlements": [
+              {
+                "bidder": "A",
+                "requestId": "0ec4eb2a-a3a6-4929-b128-a360abfd7169",
+                "decision": "ACCEPTED",
+                "settlementVersion": 2,
+                "ledgerPrice": 11000,
+                "eventPrice": 11000,
+                "snapshotVersion": 3,
+                "snapshotPrice": 12000
+              },
+              {
+                "bidder": "B",
+                "requestId": "ee0d42cc-0630-4f8e-8afe-79f409bc2b45",
+                "decision": "ACCEPTED",
+                "settlementVersion": 3,
+                "ledgerPrice": 12000,
+                "eventPrice": 12000,
+                "snapshotVersion": 3,
+                "snapshotPrice": 12000
+              }
+            ]
+          },
+          {
+            "index": 2,
+            "valid": true,
+            "accepted": 2,
+            "rejected": 0,
+            "requestCount": 2,
+            "ledgerCount": 2,
+            "resultCount": 2,
+            "settlements": [
+              {
+                "bidder": "A",
+                "requestId": "736feb8c-a7b6-497f-94a2-469df470f292",
+                "decision": "ACCEPTED",
+                "settlementVersion": 2,
+                "ledgerPrice": 11000,
+                "eventPrice": 11000,
+                "snapshotVersion": 3,
+                "snapshotPrice": 12000
+              },
+              {
+                "bidder": "B",
+                "requestId": "d91f345e-86f8-42a9-bd51-ea9f09d2d02f",
+                "decision": "ACCEPTED",
+                "settlementVersion": 3,
+                "ledgerPrice": 12000,
+                "eventPrice": 12000,
+                "snapshotVersion": 3,
+                "snapshotPrice": 12000
+              }
+            ]
+          },
+          {
+            "index": 3,
+            "valid": true,
+            "accepted": 1,
+            "rejected": 1,
+            "requestCount": 2,
+            "ledgerCount": 2,
+            "resultCount": 2,
+            "settlements": [
+              {
+                "bidder": "A",
+                "requestId": "a6a021c7-ee1b-4e25-b4e6-a2badeb42d71",
+                "decision": "REJECTED",
+                "settlementVersion": 2,
+                "ledgerPrice": null,
+                "eventPrice": null,
+                "snapshotVersion": 2,
+                "snapshotPrice": 12000
+              },
+              {
+                "bidder": "B",
+                "requestId": "a601ed74-4d21-4bb7-b523-338f75152469",
+                "decision": "ACCEPTED",
+                "settlementVersion": 2,
+                "ledgerPrice": 12000,
+                "eventPrice": 12000,
+                "snapshotVersion": 2,
+                "snapshotPrice": 12000
+              }
+            ]
+          },
+          {
+            "index": 4,
+            "valid": true,
+            "accepted": 1,
+            "rejected": 1,
+            "requestCount": 2,
+            "ledgerCount": 2,
+            "resultCount": 2,
+            "settlements": [
+              {
+                "bidder": "A",
+                "requestId": "9df8d7d3-44cf-4345-b7f1-097b9c6a4690",
+                "decision": "REJECTED",
+                "settlementVersion": 2,
+                "ledgerPrice": null,
+                "eventPrice": null,
+                "snapshotVersion": 2,
+                "snapshotPrice": 12000
+              },
+              {
+                "bidder": "B",
+                "requestId": "aaf571b9-aeea-439a-9828-8f732f6dcf5e",
+                "decision": "ACCEPTED",
+                "settlementVersion": 2,
+                "ledgerPrice": 12000,
+                "eventPrice": 12000,
+                "snapshotVersion": 2,
+                "snapshotPrice": 12000
+              }
+            ]
+          },
+          {
+            "index": 5,
+            "valid": true,
+            "accepted": 2,
+            "rejected": 0,
+            "requestCount": 2,
+            "ledgerCount": 2,
+            "resultCount": 2,
+            "settlements": [
+              {
+                "bidder": "A",
+                "requestId": "6d9f3ccb-2dde-454b-9f84-bef816ddc019",
+                "decision": "ACCEPTED",
+                "settlementVersion": 2,
+                "ledgerPrice": 11000,
+                "eventPrice": 11000,
+                "snapshotVersion": 3,
+                "snapshotPrice": 12000
+              },
+              {
+                "bidder": "B",
+                "requestId": "e64353e8-8462-44c0-9ca7-10618d3af938",
+                "decision": "ACCEPTED",
+                "settlementVersion": 3,
+                "ledgerPrice": 12000,
+                "eventPrice": 12000,
+                "snapshotVersion": 3,
+                "snapshotPrice": 12000
+              }
+            ]
+          },
+          {
+            "index": 6,
+            "valid": true,
+            "accepted": 1,
+            "rejected": 1,
+            "requestCount": 2,
+            "ledgerCount": 2,
+            "resultCount": 2,
+            "settlements": [
+              {
+                "bidder": "A",
+                "requestId": "ebcdf446-87e6-418f-90fb-215b67fbe38c",
+                "decision": "REJECTED",
+                "settlementVersion": 2,
+                "ledgerPrice": null,
+                "eventPrice": null,
+                "snapshotVersion": 2,
+                "snapshotPrice": 12000
+              },
+              {
+                "bidder": "B",
+                "requestId": "775984fa-1947-491b-9294-d692be4082b5",
+                "decision": "ACCEPTED",
+                "settlementVersion": 2,
+                "ledgerPrice": 12000,
+                "eventPrice": 12000,
+                "snapshotVersion": 2,
+                "snapshotPrice": 12000
+              }
+            ]
+          },
+          {
+            "index": 7,
+            "valid": true,
+            "accepted": 1,
+            "rejected": 1,
+            "requestCount": 2,
+            "ledgerCount": 2,
+            "resultCount": 2,
+            "settlements": [
+              {
+                "bidder": "A",
+                "requestId": "86e2d4f3-a8a3-4fe0-b569-d4da742e95c1",
+                "decision": "REJECTED",
+                "settlementVersion": 2,
+                "ledgerPrice": null,
+                "eventPrice": null,
+                "snapshotVersion": 2,
+                "snapshotPrice": 12000
+              },
+              {
+                "bidder": "B",
+                "requestId": "056033b7-f292-4d33-b55a-a4d95d1d4bf1",
+                "decision": "ACCEPTED",
+                "settlementVersion": 2,
+                "ledgerPrice": 12000,
+                "eventPrice": 12000,
+                "snapshotVersion": 2,
+                "snapshotPrice": 12000
+              }
+            ]
+          },
+          {
+            "index": 8,
+            "valid": true,
+            "accepted": 2,
+            "rejected": 0,
+            "requestCount": 2,
+            "ledgerCount": 2,
+            "resultCount": 2,
+            "settlements": [
+              {
+                "bidder": "A",
+                "requestId": "07280a72-11d2-4bd1-b396-8e721bd07fe0",
+                "decision": "ACCEPTED",
+                "settlementVersion": 2,
+                "ledgerPrice": 11000,
+                "eventPrice": 11000,
+                "snapshotVersion": 3,
+                "snapshotPrice": 12000
+              },
+              {
+                "bidder": "B",
+                "requestId": "fde73cfd-e4fb-491d-a14b-5f588f94b499",
+                "decision": "ACCEPTED",
+                "settlementVersion": 3,
+                "ledgerPrice": 12000,
+                "eventPrice": 12000,
+                "snapshotVersion": 3,
+                "snapshotPrice": 12000
+              }
+            ]
+          },
+          {
+            "index": 9,
+            "valid": true,
+            "accepted": 2,
+            "rejected": 0,
+            "requestCount": 2,
+            "ledgerCount": 2,
+            "resultCount": 2,
+            "settlements": [
+              {
+                "bidder": "A",
+                "requestId": "354813bf-9552-4dac-964a-0417a26d5c9a",
+                "decision": "ACCEPTED",
+                "settlementVersion": 2,
+                "ledgerPrice": 11000,
+                "eventPrice": 11000,
+                "snapshotVersion": 3,
+                "snapshotPrice": 12000
+              },
+              {
+                "bidder": "B",
+                "requestId": "7c7f5083-723f-4fc8-a4c0-e94303839f72",
+                "decision": "ACCEPTED",
+                "settlementVersion": 3,
+                "ledgerPrice": 12000,
+                "eventPrice": 12000,
+                "snapshotVersion": 3,
+                "snapshotPrice": 12000
+              }
+            ]
+          }
+        ],
+        "collectionErrors": [],
+        "observations": [
+          {
+            "index": 0,
+            "auctionId": "ca724973-d6b8-427c-a61a-f132f191878a",
+            "receipts": [
+              {
+                "bidder": "A",
+                "amount": 11000,
+                "startedMs": 5.852124999999887,
+                "postMs": 56.89691700000003,
+                "httpCompletedMs": 84.65883299999996,
+                "httpStatus": 202,
+                "receiptStatus": "RECEIVED",
+                "requestId": "5e4dbd86-94f9-4a30-b70b-e7ec096baaf0"
+              },
+              {
+                "bidder": "B",
+                "amount": 12000,
+                "startedMs": 7.272042000000056,
+                "postMs": 56.956666999999925,
+                "httpCompletedMs": 83.27404200000001,
+                "httpStatus": 202,
+                "receiptStatus": "RECEIVED",
+                "requestId": "01989ce5-1cc4-4ce3-8bf3-26f9a234ae3c"
+              }
+            ],
+            "frames": [
+              {
+                "bidder": "B",
+                "receivedMs": 218.8985419999999,
+                "result": {
+                  "type": "bid.result",
+                  "bidRequestId": "01989ce5-1cc4-4ce3-8bf3-26f9a234ae3c",
+                  "auctionId": "ca724973-d6b8-427c-a61a-f132f191878a",
+                  "auctionVersion": 2,
+                  "decision": "ACCEPTED",
+                  "reason": null,
+                  "currentPrice": 12000,
+                  "isHighestBidder": true
+                }
+              },
+              {
+                "bidder": "A",
+                "receivedMs": 228.57608299999993,
+                "result": {
+                  "type": "bid.result",
+                  "bidRequestId": "5e4dbd86-94f9-4a30-b70b-e7ec096baaf0",
+                  "auctionId": "ca724973-d6b8-427c-a61a-f132f191878a",
+                  "auctionVersion": 2,
+                  "decision": "REJECTED",
+                  "reason": "BID_TOO_LOW",
+                  "currentPrice": 12000,
+                  "isHighestBidder": false
+                }
+              }
+            ],
+            "screen": {
+              "completedMs": 450.598833,
+              "prices": [
+                12000,
+                12000
+              ],
+              "decisions": [
+                {
+                  "bidder": "A",
+                  "decision": "REJECTED"
+                },
+                {
+                  "bidder": "B",
+                  "decision": "ACCEPTED"
+                }
+              ]
+            }
+          },
+          {
+            "index": 1,
+            "auctionId": "f9e96554-25cc-4535-9dea-c4d90a38a5b3",
+            "receipts": [
+              {
+                "bidder": "A",
+                "amount": 11000,
+                "startedMs": 1.1155410000001211,
+                "postMs": 34.72966600000018,
+                "httpCompletedMs": 54.738250000000335,
+                "httpStatus": 202,
+                "receiptStatus": "RECEIVED",
+                "requestId": "0ec4eb2a-a3a6-4929-b128-a360abfd7169"
+              },
+              {
+                "bidder": "B",
+                "amount": 12000,
+                "startedMs": 2.483165999999983,
+                "postMs": 34.55425000000014,
+                "httpCompletedMs": 54.24479100000008,
+                "httpStatus": 202,
+                "receiptStatus": "RECEIVED",
+                "requestId": "ee0d42cc-0630-4f8e-8afe-79f409bc2b45"
+              }
+            ],
+            "frames": [
+              {
+                "bidder": "A",
+                "receivedMs": 208.81395800000064,
+                "result": {
+                  "type": "bid.result",
+                  "bidRequestId": "0ec4eb2a-a3a6-4929-b128-a360abfd7169",
+                  "auctionId": "f9e96554-25cc-4535-9dea-c4d90a38a5b3",
+                  "auctionVersion": 3,
+                  "decision": "ACCEPTED",
+                  "reason": null,
+                  "currentPrice": 12000,
+                  "isHighestBidder": true
+                }
+              },
+              {
+                "bidder": "B",
+                "receivedMs": 230.72470800000065,
+                "result": {
+                  "type": "bid.result",
+                  "bidRequestId": "ee0d42cc-0630-4f8e-8afe-79f409bc2b45",
+                  "auctionId": "f9e96554-25cc-4535-9dea-c4d90a38a5b3",
+                  "auctionVersion": 3,
+                  "decision": "ACCEPTED",
+                  "reason": null,
+                  "currentPrice": 12000,
+                  "isHighestBidder": true
+                }
+              }
+            ],
+            "screen": {
+              "completedMs": 423.47850000000017,
+              "prices": [
+                12000,
+                12000
+              ],
+              "decisions": [
+                {
+                  "bidder": "A",
+                  "decision": "ACCEPTED"
+                },
+                {
+                  "bidder": "B",
+                  "decision": "ACCEPTED"
+                }
+              ]
+            }
+          },
+          {
+            "index": 2,
+            "auctionId": "071165a1-1ea4-4b35-bc04-27130cf3c5e0",
+            "receipts": [
+              {
+                "bidder": "A",
+                "amount": 11000,
+                "startedMs": 1.0168340000000171,
+                "postMs": 21.694541999999274,
+                "httpCompletedMs": 42.069541999999274,
+                "httpStatus": 202,
+                "receiptStatus": "RECEIVED",
+                "requestId": "736feb8c-a7b6-497f-94a2-469df470f292"
+              },
+              {
+                "bidder": "B",
+                "amount": 12000,
+                "startedMs": 2.1700000000000728,
+                "postMs": 33.275666999999885,
+                "httpCompletedMs": 50.660167,
+                "httpStatus": 202,
+                "receiptStatus": "RECEIVED",
+                "requestId": "d91f345e-86f8-42a9-bd51-ea9f09d2d02f"
+              }
+            ],
+            "frames": [
+              {
+                "bidder": "A",
+                "receivedMs": 236.94974999999977,
+                "result": {
+                  "type": "bid.result",
+                  "bidRequestId": "736feb8c-a7b6-497f-94a2-469df470f292",
+                  "auctionId": "071165a1-1ea4-4b35-bc04-27130cf3c5e0",
+                  "auctionVersion": 3,
+                  "decision": "ACCEPTED",
+                  "reason": null,
+                  "currentPrice": 12000,
+                  "isHighestBidder": true
+                }
+              },
+              {
+                "bidder": "B",
+                "receivedMs": 265.59241699999984,
+                "result": {
+                  "type": "bid.result",
+                  "bidRequestId": "d91f345e-86f8-42a9-bd51-ea9f09d2d02f",
+                  "auctionId": "071165a1-1ea4-4b35-bc04-27130cf3c5e0",
+                  "auctionVersion": 3,
+                  "decision": "ACCEPTED",
+                  "reason": null,
+                  "currentPrice": 12000,
+                  "isHighestBidder": true
+                }
+              }
+            ],
+            "screen": {
+              "completedMs": 418.84479199999987,
+              "prices": [
+                12000,
+                12000
+              ],
+              "decisions": [
+                {
+                  "bidder": "A",
+                  "decision": "ACCEPTED"
+                },
+                {
+                  "bidder": "B",
+                  "decision": "ACCEPTED"
+                }
+              ]
+            }
+          },
+          {
+            "index": 3,
+            "auctionId": "5270b349-d0c0-4aef-a950-c777b157f5db",
+            "receipts": [
+              {
+                "bidder": "A",
+                "amount": 11000,
+                "startedMs": 1.1662079999987327,
+                "postMs": 38.996665999999095,
+                "httpCompletedMs": 59.58041599999888,
+                "httpStatus": 202,
+                "receiptStatus": "RECEIVED",
+                "requestId": "a6a021c7-ee1b-4e25-b4e6-a2badeb42d71"
+              },
+              {
+                "bidder": "B",
+                "amount": 12000,
+                "startedMs": 2.218790999999328,
+                "postMs": 38.950707999998485,
+                "httpCompletedMs": 59.377457999999024,
+                "httpStatus": 202,
+                "receiptStatus": "RECEIVED",
+                "requestId": "a601ed74-4d21-4bb7-b523-338f75152469"
+              }
+            ],
+            "frames": [
+              {
+                "bidder": "B",
+                "receivedMs": 279.01454099999864,
+                "result": {
+                  "type": "bid.result",
+                  "bidRequestId": "a601ed74-4d21-4bb7-b523-338f75152469",
+                  "auctionId": "5270b349-d0c0-4aef-a950-c777b157f5db",
+                  "auctionVersion": 2,
+                  "decision": "ACCEPTED",
+                  "reason": null,
+                  "currentPrice": 12000,
+                  "isHighestBidder": true
+                }
+              },
+              {
+                "bidder": "A",
+                "receivedMs": 292.6987079999999,
+                "result": {
+                  "type": "bid.result",
+                  "bidRequestId": "a6a021c7-ee1b-4e25-b4e6-a2badeb42d71",
+                  "auctionId": "5270b349-d0c0-4aef-a950-c777b157f5db",
+                  "auctionVersion": 2,
+                  "decision": "REJECTED",
+                  "reason": "BID_TOO_LOW",
+                  "currentPrice": 12000,
+                  "isHighestBidder": false
+                }
+              }
+            ],
+            "screen": {
+              "completedMs": 425.43029099999876,
+              "prices": [
+                12000,
+                12000
+              ],
+              "decisions": [
+                {
+                  "bidder": "A",
+                  "decision": "REJECTED"
+                },
+                {
+                  "bidder": "B",
+                  "decision": "ACCEPTED"
+                }
+              ]
+            }
+          },
+          {
+            "index": 4,
+            "auctionId": "db412aec-91e8-4baf-ae83-7cd233d1b6d4",
+            "receipts": [
+              {
+                "bidder": "A",
+                "amount": 11000,
+                "startedMs": 0.9682499999998981,
+                "postMs": 36.5167079999992,
+                "httpCompletedMs": 68.06612499999937,
+                "httpStatus": 202,
+                "receiptStatus": "RECEIVED",
+                "requestId": "9df8d7d3-44cf-4345-b7f1-097b9c6a4690"
+              },
+              {
+                "bidder": "B",
+                "amount": 12000,
+                "startedMs": 2.0177919999987353,
+                "postMs": 36.46679199999926,
+                "httpCompletedMs": 70.1900829999995,
+                "httpStatus": 202,
+                "receiptStatus": "RECEIVED",
+                "requestId": "aaf571b9-aeea-439a-9828-8f732f6dcf5e"
+              }
+            ],
+            "frames": [
+              {
+                "bidder": "B",
+                "receivedMs": 294.7865419999998,
+                "result": {
+                  "type": "bid.result",
+                  "bidRequestId": "aaf571b9-aeea-439a-9828-8f732f6dcf5e",
+                  "auctionId": "db412aec-91e8-4baf-ae83-7cd233d1b6d4",
+                  "auctionVersion": 2,
+                  "decision": "ACCEPTED",
+                  "reason": null,
+                  "currentPrice": 12000,
+                  "isHighestBidder": true
+                }
+              },
+              {
+                "bidder": "A",
+                "receivedMs": 319.8511669999989,
+                "result": {
+                  "type": "bid.result",
+                  "bidRequestId": "9df8d7d3-44cf-4345-b7f1-097b9c6a4690",
+                  "auctionId": "db412aec-91e8-4baf-ae83-7cd233d1b6d4",
+                  "auctionVersion": 2,
+                  "decision": "REJECTED",
+                  "reason": "BID_TOO_LOW",
+                  "currentPrice": 12000,
+                  "isHighestBidder": false
+                }
+              }
+            ],
+            "screen": {
+              "completedMs": 436.4556250000005,
+              "prices": [
+                12000,
+                12000
+              ],
+              "decisions": [
+                {
+                  "bidder": "A",
+                  "decision": "REJECTED"
+                },
+                {
+                  "bidder": "B",
+                  "decision": "ACCEPTED"
+                }
+              ]
+            }
+          },
+          {
+            "index": 5,
+            "auctionId": "34ea52a4-3183-4409-886a-6904a680842a",
+            "receipts": [
+              {
+                "bidder": "A",
+                "amount": 11000,
+                "startedMs": 1.06920799999898,
+                "postMs": 39.09191699999974,
+                "httpCompletedMs": 56.851416999999856,
+                "httpStatus": 202,
+                "receiptStatus": "RECEIVED",
+                "requestId": "6d9f3ccb-2dde-454b-9f84-bef816ddc019"
+              },
+              {
+                "bidder": "B",
+                "amount": 12000,
+                "startedMs": 2.106667000000016,
+                "postMs": 39.12654199999997,
+                "httpCompletedMs": 57.21970799999872,
+                "httpStatus": 202,
+                "receiptStatus": "RECEIVED",
+                "requestId": "e64353e8-8462-44c0-9ca7-10618d3af938"
+              }
+            ],
+            "frames": [
+              {
+                "bidder": "A",
+                "receivedMs": 270.8289169999989,
+                "result": {
+                  "type": "bid.result",
+                  "bidRequestId": "6d9f3ccb-2dde-454b-9f84-bef816ddc019",
+                  "auctionId": "34ea52a4-3183-4409-886a-6904a680842a",
+                  "auctionVersion": 3,
+                  "decision": "ACCEPTED",
+                  "reason": null,
+                  "currentPrice": 12000,
+                  "isHighestBidder": true
+                }
+              },
+              {
+                "bidder": "B",
+                "receivedMs": 288.78137499999866,
+                "result": {
+                  "type": "bid.result",
+                  "bidRequestId": "e64353e8-8462-44c0-9ca7-10618d3af938",
+                  "auctionId": "34ea52a4-3183-4409-886a-6904a680842a",
+                  "auctionVersion": 3,
+                  "decision": "ACCEPTED",
+                  "reason": null,
+                  "currentPrice": 12000,
+                  "isHighestBidder": true
+                }
+              }
+            ],
+            "screen": {
+              "completedMs": 421.01537499999904,
+              "prices": [
+                12000,
+                12000
+              ],
+              "decisions": [
+                {
+                  "bidder": "A",
+                  "decision": "ACCEPTED"
+                },
+                {
+                  "bidder": "B",
+                  "decision": "ACCEPTED"
+                }
+              ]
+            }
+          },
+          {
+            "index": 6,
+            "auctionId": "7ece26d1-1335-4350-8bca-e354285a55b5",
+            "receipts": [
+              {
+                "bidder": "A",
+                "amount": 11000,
+                "startedMs": 0.9835000000020955,
+                "postMs": 33.717749999999796,
+                "httpCompletedMs": 49.63204200000109,
+                "httpStatus": 202,
+                "receiptStatus": "RECEIVED",
+                "requestId": "ebcdf446-87e6-418f-90fb-215b67fbe38c"
+              },
+              {
+                "bidder": "B",
+                "amount": 12000,
+                "startedMs": 2.1679170000024897,
+                "postMs": 33.680208000001585,
+                "httpCompletedMs": 49.81958300000042,
+                "httpStatus": 202,
+                "receiptStatus": "RECEIVED",
+                "requestId": "775984fa-1947-491b-9294-d692be4082b5"
+              }
+            ],
+            "frames": [
+              {
+                "bidder": "B",
+                "receivedMs": 208.6317080000008,
+                "result": {
+                  "type": "bid.result",
+                  "bidRequestId": "775984fa-1947-491b-9294-d692be4082b5",
+                  "auctionId": "7ece26d1-1335-4350-8bca-e354285a55b5",
+                  "auctionVersion": 2,
+                  "decision": "ACCEPTED",
+                  "reason": null,
+                  "currentPrice": 12000,
+                  "isHighestBidder": true
+                }
+              },
+              {
+                "bidder": "A",
+                "receivedMs": 220.1460420000003,
+                "result": {
+                  "type": "bid.result",
+                  "bidRequestId": "ebcdf446-87e6-418f-90fb-215b67fbe38c",
+                  "auctionId": "7ece26d1-1335-4350-8bca-e354285a55b5",
+                  "auctionVersion": 2,
+                  "decision": "REJECTED",
+                  "reason": "BID_TOO_LOW",
+                  "currentPrice": 12000,
+                  "isHighestBidder": false
+                }
+              }
+            ],
+            "screen": {
+              "completedMs": 415.1735829999998,
+              "prices": [
+                12000,
+                12000
+              ],
+              "decisions": [
+                {
+                  "bidder": "A",
+                  "decision": "REJECTED"
+                },
+                {
+                  "bidder": "B",
+                  "decision": "ACCEPTED"
+                }
+              ]
+            }
+          },
+          {
+            "index": 7,
+            "auctionId": "f0aec9ec-9b76-4c8e-b429-f1634b63cd55",
+            "receipts": [
+              {
+                "bidder": "A",
+                "amount": 11000,
+                "startedMs": 1.0606669999979204,
+                "postMs": 40.92333299999882,
+                "httpCompletedMs": 62.4832499999975,
+                "httpStatus": 202,
+                "receiptStatus": "RECEIVED",
+                "requestId": "86e2d4f3-a8a3-4fe0-b569-d4da742e95c1"
+              },
+              {
+                "bidder": "B",
+                "amount": 12000,
+                "startedMs": 2.1501250000001164,
+                "postMs": 40.95874999999796,
+                "httpCompletedMs": 61.48304199999984,
+                "httpStatus": 202,
+                "receiptStatus": "RECEIVED",
+                "requestId": "056033b7-f292-4d33-b55a-a4d95d1d4bf1"
+              }
+            ],
+            "frames": [
+              {
+                "bidder": "B",
+                "receivedMs": 288.95879199999763,
+                "result": {
+                  "type": "bid.result",
+                  "bidRequestId": "056033b7-f292-4d33-b55a-a4d95d1d4bf1",
+                  "auctionId": "f0aec9ec-9b76-4c8e-b429-f1634b63cd55",
+                  "auctionVersion": 2,
+                  "decision": "ACCEPTED",
+                  "reason": null,
+                  "currentPrice": 12000,
+                  "isHighestBidder": true
+                }
+              },
+              {
+                "bidder": "A",
+                "receivedMs": 302.41604200000074,
+                "result": {
+                  "type": "bid.result",
+                  "bidRequestId": "86e2d4f3-a8a3-4fe0-b569-d4da742e95c1",
+                  "auctionId": "f0aec9ec-9b76-4c8e-b429-f1634b63cd55",
+                  "auctionVersion": 2,
+                  "decision": "REJECTED",
+                  "reason": "BID_TOO_LOW",
+                  "currentPrice": 12000,
+                  "isHighestBidder": false
+                }
+              }
+            ],
+            "screen": {
+              "completedMs": 426.81304199999795,
+              "prices": [
+                12000,
+                12000
+              ],
+              "decisions": [
+                {
+                  "bidder": "A",
+                  "decision": "REJECTED"
+                },
+                {
+                  "bidder": "B",
+                  "decision": "ACCEPTED"
+                }
+              ]
+            }
+          },
+          {
+            "index": 8,
+            "auctionId": "8bf5eb1c-0103-4947-a118-306612643cd8",
+            "receipts": [
+              {
+                "bidder": "A",
+                "amount": 11000,
+                "startedMs": 0.9996670000000449,
+                "postMs": 27.33416700000089,
+                "httpCompletedMs": 41.31533300000228,
+                "httpStatus": 202,
+                "receiptStatus": "RECEIVED",
+                "requestId": "07280a72-11d2-4bd1-b396-8e721bd07fe0"
+              },
+              {
+                "bidder": "B",
+                "amount": 12000,
+                "startedMs": 2.092791999999463,
+                "postMs": 27.374500000001717,
+                "httpCompletedMs": 42.31379200000083,
+                "httpStatus": 202,
+                "receiptStatus": "RECEIVED",
+                "requestId": "fde73cfd-e4fb-491d-a14b-5f588f94b499"
+              }
+            ],
+            "frames": [
+              {
+                "bidder": "A",
+                "receivedMs": 202.85645800000202,
+                "result": {
+                  "type": "bid.result",
+                  "bidRequestId": "07280a72-11d2-4bd1-b396-8e721bd07fe0",
+                  "auctionId": "8bf5eb1c-0103-4947-a118-306612643cd8",
+                  "auctionVersion": 3,
+                  "decision": "ACCEPTED",
+                  "reason": null,
+                  "currentPrice": 12000,
+                  "isHighestBidder": true
+                }
+              },
+              {
+                "bidder": "B",
+                "receivedMs": 219.15062500000204,
+                "result": {
+                  "type": "bid.result",
+                  "bidRequestId": "fde73cfd-e4fb-491d-a14b-5f588f94b499",
+                  "auctionId": "8bf5eb1c-0103-4947-a118-306612643cd8",
+                  "auctionVersion": 3,
+                  "decision": "ACCEPTED",
+                  "reason": null,
+                  "currentPrice": 12000,
+                  "isHighestBidder": true
+                }
+              }
+            ],
+            "screen": {
+              "completedMs": 412.42420800000036,
+              "prices": [
+                12000,
+                12000
+              ],
+              "decisions": [
+                {
+                  "bidder": "A",
+                  "decision": "ACCEPTED"
+                },
+                {
+                  "bidder": "B",
+                  "decision": "ACCEPTED"
+                }
+              ]
+            }
+          },
+          {
+            "index": 9,
+            "auctionId": "510a05ed-d888-4004-8134-9f6faafc78ad",
+            "receipts": [
+              {
+                "bidder": "A",
+                "amount": 11000,
+                "startedMs": 1.025792000000365,
+                "postMs": 20.62449999999808,
+                "httpCompletedMs": 34.41337500000009,
+                "httpStatus": 202,
+                "receiptStatus": "RECEIVED",
+                "requestId": "354813bf-9552-4dac-964a-0417a26d5c9a"
+              },
+              {
+                "bidder": "B",
+                "amount": 12000,
+                "startedMs": 2.110291999997571,
+                "postMs": 39.554416999999376,
+                "httpCompletedMs": 53.13274999999703,
+                "httpStatus": 202,
+                "receiptStatus": "RECEIVED",
+                "requestId": "7c7f5083-723f-4fc8-a4c0-e94303839f72"
+              }
+            ],
+            "frames": [
+              {
+                "bidder": "A",
+                "receivedMs": 190.0722919999971,
+                "result": {
+                  "type": "bid.result",
+                  "bidRequestId": "354813bf-9552-4dac-964a-0417a26d5c9a",
+                  "auctionId": "510a05ed-d888-4004-8134-9f6faafc78ad",
+                  "auctionVersion": 3,
+                  "decision": "ACCEPTED",
+                  "reason": null,
+                  "currentPrice": 12000,
+                  "isHighestBidder": true
+                }
+              },
+              {
+                "bidder": "B",
+                "receivedMs": 205.1403339999997,
+                "result": {
+                  "type": "bid.result",
+                  "bidRequestId": "7c7f5083-723f-4fc8-a4c0-e94303839f72",
+                  "auctionId": "510a05ed-d888-4004-8134-9f6faafc78ad",
+                  "auctionVersion": 3,
+                  "decision": "ACCEPTED",
+                  "reason": null,
+                  "currentPrice": 12000,
+                  "isHighestBidder": true
+                }
+              }
+            ],
+            "screen": {
+              "completedMs": 420.4049589999995,
+              "prices": [
+                12000,
+                12000
+              ],
+              "decisions": [
+                {
+                  "bidder": "A",
+                  "decision": "ACCEPTED"
+                },
+                {
+                  "bidder": "B",
+                  "decision": "ACCEPTED"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
