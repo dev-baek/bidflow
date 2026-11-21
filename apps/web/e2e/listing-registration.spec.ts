@@ -59,12 +59,12 @@ test.describe("상품 등록·입찰 Browser 흐름", () => {
     const bidderB = await openBidderPage(browser, auctionId, "e2e-bidder-b");
     try {
       await submitAutoBid(bidderA.page, "30000");
-      await expect(bidderA.page.getByText("입찰이 승인되었습니다. 현재 최고 입찰자입니다.")).toBeVisible({ timeout: 15_000 });
+      await expect(bidderA.page.getByText("입찰이 승인되었습니다. 이 요청 처리 당시 최고 입찰자였습니다.")).toBeVisible({ timeout: 15_000 });
       await expect(bidderA.page.getByText("11,000원")).toBeVisible({ timeout: 15_000 });
       await expect(bidderA.page.locator('time[datetime="2030-01-01T12:35:00Z"]')).toBeVisible({ timeout: 15_000 });
 
       await submitAutoBid(bidderB.page, "20000");
-      await expect(bidderB.page.getByText("입찰이 승인되었습니다. 현재 최고 입찰자가 아닙니다.")).toBeVisible({ timeout: 15_000 });
+      await expect(bidderB.page.getByText("입찰이 승인되었습니다. 이 요청 처리 당시 최고 입찰자가 아니었습니다.")).toBeVisible({ timeout: 15_000 });
       await expect(bidderA.page.getByText("21,000원")).toBeVisible({ timeout: 15_000 });
       await expect(bidderB.page.getByText("21,000원")).toBeVisible({ timeout: 15_000 });
       await expect(bidderB.page.getByText("30,000원")).toHaveCount(0);
@@ -140,7 +140,7 @@ test.describe("상품 등록·입찰 Browser 흐름", () => {
     const bidderB = await openBidderPage(browser, auctionId, "e2e-direct-b");
     try {
       const first = await submitDirectBid(bidderA.page, auctionId, "12000");
-      await expect(bidderA.page.getByText("입찰이 승인되었습니다. 현재 최고 입찰자입니다.")).toBeVisible({ timeout: 10_000 });
+      await expect(bidderA.page.getByText("입찰이 승인되었습니다. 이 요청 처리 당시 최고 입찰자였습니다.")).toBeVisible({ timeout: 10_000 });
       await expect(bidderA.page.getByText("12,000원")).toBeVisible({ timeout: 10_000 });
 
       const retry = (amount: number) => request.post(`${apiBaseUrl}/api/v1/auctions/${auctionId}/bid-requests`, {
@@ -161,11 +161,14 @@ test.describe("상품 등록·입찰 Browser 흐름", () => {
 
       await submitDirectBid(bidderB.page, auctionId, "13000");
       await expect(bidderA.page.getByText("13,000원")).toBeVisible({ timeout: 10_000 });
+      await expect(bidderB.page.getByText("13,000원")).toBeVisible({ timeout: 10_000 });
+      await expect(bidderA.page.getByText("입찰이 승인되었습니다. 이 요청 처리 당시 최고 입찰자였습니다.", { exact: true })).toBeVisible();
+      await expect(bidderA.page.getByText(/현재 최고 입찰자/)).toHaveCount(0);
 
       const next = await submitDirectBid(bidderA.page, auctionId, "14000");
       expect(next.id).not.toBe(first.id);
       expect(next.key).not.toBe(first.key);
-      await expect(bidderA.page.getByText("입찰이 승인되었습니다. 현재 최고 입찰자입니다.")).toBeVisible({ timeout: 10_000 });
+      await expect(bidderA.page.getByText("입찰이 승인되었습니다. 이 요청 처리 당시 최고 입찰자였습니다.")).toBeVisible({ timeout: 10_000 });
       await expect(bidderA.page.getByText("14,000원")).toBeVisible({ timeout: 10_000 });
       await expect(bidderB.page.getByText("14,000원")).toBeVisible({ timeout: 10_000 });
     } finally {
@@ -203,7 +206,7 @@ test.describe("상품 등록·입찰 Browser 흐름", () => {
         const amount = 11_000 + index * 1_000;
         const sample: typeof samples[number] = { index, amount };
         samples.push(sample);
-        const approval = bidder.page.getByText("입찰이 승인되었습니다. 현재 최고 입찰자입니다.", { exact: true });
+        const approval = bidder.page.getByText("입찰이 승인되었습니다. 이 요청 처리 당시 최고 입찰자였습니다.", { exact: true });
         await bidder.page.getByLabel("입찰 금액").fill(String(amount));
         await expect(approval).toHaveCount(0);
         const frames: { result: NonNullable<ReturnType<typeof parseBidResultFrame>>; receivedAt: number }[] = [];

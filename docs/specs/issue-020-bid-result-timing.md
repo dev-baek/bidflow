@@ -1,6 +1,6 @@
 # 입찰 승인 안내의 처리 시점 표현 사양
 
-- 상태: 제안됨. 이 문서 승인 후 TDD로 구현한다.
+- 상태: #281 승인. TDD로 문구와 기존 E2E 단언을 수정하고 [브라우저 3개 사례](../reports/issue-020-bid-result-timing.md)를 검증했다.
 - 기존 이슈: [#20 사용자 흐름 E2E](https://github.com/dev-baek/bidflow/issues/20). [경매 상세 화면](issue-213-auction-detail-bid-ui.md)과 [WebSocket 계약](issue-014-realtime-websocket.md)의 개인 결과 표시를 보완한다.
 - 근거: [실제 snapshot 시점 차이](../reports/issue-019-concurrent-smoke-failure.md), [판정 수정과 동시 실측](../reports/issue-019-concurrent-snapshot-fix.md).
 

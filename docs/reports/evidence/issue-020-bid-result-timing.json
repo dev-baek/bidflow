@@ -1,0 +1,477 @@
+{
+  "sourceCommit": "c4e069edb95cd3374c66d0c79ef6f3ee5d12e35d",
+  "startedAt": "2026-11-21T04:16:46.745Z",
+  "completedAt": "2026-11-21T04:17:31.163Z",
+  "environment": {
+    "node": "v24.18.0",
+    "arch": "arm64",
+    "os": "25.5.0",
+    "cpuCount": 8,
+    "memoryBytes": 17179869184,
+    "model": "Mac15,12",
+    "java": "openjdk 21.0.7 2025-04-15 LTS\nOpenJDK Runtime Environment Microsoft-11369939 (build 21.0.7+6-LTS)\nOpenJDK 64-Bit Server VM Microsoft-11369939 (build 21.0.7+6-LTS, mixed mode, sharing)",
+    "docker": "27.5.1 8 8217858048",
+    "chromium": "145.0.7632.6"
+  },
+  "runtime": {
+    "original": {
+      "pid": 35007,
+      "profiles": [
+        "local"
+      ],
+      "fixedDelayMs": 1000,
+      "logging": "INFO",
+      "jarSha256": "5251be8d60c6fc0f3a7afb13415c72e2438713b973a854a54f411009065f08c4",
+      "fullyStopped": true
+    },
+    "experiment": {
+      "pid": 45471,
+      "profiles": [
+        "local",
+        "e2e"
+      ],
+      "fixedDelayMs": 100,
+      "delayOverride": false,
+      "localConfig": "bidflow:\n  outbox:\n    fixed-delay-ms: 100",
+      "logging": "INFO",
+      "jarSha256": "34f4192967bf4a9ddd75150dcf87e26e67dd67af8957c330a1b358aeae23d898",
+      "fullyStopped": true,
+      "viteInitiallyRunning": false,
+      "viteFullyStopped": true,
+      "environmentOverridesRemoved": true
+    },
+    "restoration": {
+      "pid": 45746,
+      "profiles": [
+        "local"
+      ],
+      "fixedDelayMs": 1000,
+      "logging": "INFO",
+      "verified": true
+    }
+  },
+  "browser": {
+    "exitCode": 0,
+    "workers": 1,
+    "retries": 0,
+    "stats": {
+      "startTime": "2026-11-21T04:16:57.096Z",
+      "duration": 24348.041999999998,
+      "expected": 3,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "cases": [
+      {
+        "title": "자동 입찰로 확정된 낙찰은 마감 이후 새 입찰로 바뀌지 않는다",
+        "ok": true,
+        "results": [
+          {
+            "status": "passed",
+            "retry": 0,
+            "durationMs": 8630
+          }
+        ]
+      },
+      {
+        "title": "직접 입찰 재시도는 같은 요청이고 같은 사용자의 후속 입찰은 새 요청이다",
+        "ok": true,
+        "results": [
+          {
+            "status": "passed",
+            "retry": 0,
+            "durationMs": 3617
+          }
+        ]
+      },
+      {
+        "title": "순차 입찰 20건의 개인 결과와 양쪽 화면 관측 지연을 기록한다",
+        "ok": true,
+        "results": [
+          {
+            "status": "passed",
+            "retry": 0,
+            "durationMs": 10308
+          }
+        ]
+      }
+    ]
+  },
+  "beforeLag": [
+    {
+      "partition": 0,
+      "currentOffset": 567,
+      "endOffset": 567,
+      "lag": 0
+    },
+    {
+      "partition": 1,
+      "currentOffset": 1881,
+      "endOffset": 1881,
+      "lag": 0
+    },
+    {
+      "partition": 2,
+      "currentOffset": 569,
+      "endOffset": 569,
+      "lag": 0
+    }
+  ],
+  "afterLag": [
+    {
+      "partition": 0,
+      "currentOffset": 571,
+      "endOffset": 571,
+      "lag": 0
+    },
+    {
+      "partition": 1,
+      "currentOffset": 1901,
+      "endOffset": 1901,
+      "lag": 0
+    },
+    {
+      "partition": 2,
+      "currentOffset": 572,
+      "endOffset": 572,
+      "lag": 0
+    }
+  ],
+  "sequenceObservation": {
+    "startedAt": "2026-11-21T04:17:11.101Z",
+    "completedAt": "2026-11-21T04:17:21.106Z",
+    "runId": "813f6cf4-1326-4a93-bcb3-edd859436e95",
+    "auctionId": "32b539f6-2a6d-428c-8c7f-b0dd057b6321",
+    "commit": "c4e069edb95cd3374c66d0c79ef6f3ee5d12e35d",
+    "chromium": "145.0.7632.6",
+    "completed": 20,
+    "incomplete": 0,
+    "p95WithinTarget": true,
+    "http": {
+      "count": 20,
+      "p50": 47.47587500000009,
+      "p95": 61.51583400000163,
+      "p99": 101.59570800000074
+    },
+    "privateResult": {
+      "count": 20,
+      "p50": 215.12916699999914,
+      "p95": 253.2475000000013,
+      "p99": 309.0950410000005
+    },
+    "screen": {
+      "count": 20,
+      "p50": 414.9718750000029,
+      "p95": 431.42916700000205,
+      "p99": 466.9607079999987
+    },
+    "samples": [
+      {
+        "index": 0,
+        "amount": 11000,
+        "httpMs": 48.99720800000068,
+        "requestId": "95149dee-530b-491c-b519-8e1c0aa99ae4",
+        "privateMs": 183.02041699999972,
+        "screenMs": 207.48183299999982,
+        "fineScreenMs": 207.33708300000035,
+        "fineCheckCount": 5,
+        "fineMaxCheckGapMs": 33.429667000000336,
+        "fineAfterPrivateMs": 24.316666000000623,
+        "baselineAfterPrivateMs": 24.4614160000001,
+        "baselineMinusFineMs": 0.14474999999947613
+      },
+      {
+        "index": 1,
+        "amount": 12000,
+        "httpMs": 45.21399999999994,
+        "requestId": "9c809775-7b00-424e-a086-6eba640e98ff",
+        "privateMs": 192.19858299999942,
+        "screenMs": 417.0017910000006,
+        "fineScreenMs": 208.46087500000067,
+        "fineCheckCount": 7,
+        "fineMaxCheckGapMs": 32.55879199999981,
+        "fineAfterPrivateMs": 16.262292000001253,
+        "baselineAfterPrivateMs": 224.80320800000118,
+        "baselineMinusFineMs": 208.54091599999992
+      },
+      {
+        "index": 2,
+        "amount": 13000,
+        "httpMs": 46.93841599999905,
+        "requestId": "463e01a9-5139-4ee5-883b-8bd5eb51751b",
+        "privateMs": 189.47279100000014,
+        "screenMs": 416.65500000000065,
+        "fineScreenMs": 212.61283299999923,
+        "fineCheckCount": 7,
+        "fineMaxCheckGapMs": 31.827041000000463,
+        "fineAfterPrivateMs": 23.140041999999085,
+        "baselineAfterPrivateMs": 227.1822090000005,
+        "baselineMinusFineMs": 204.04216700000143
+      },
+      {
+        "index": 3,
+        "amount": 14000,
+        "httpMs": 61.51583400000163,
+        "requestId": "65f2bb1b-cfdb-4ffe-98a5-f19243031a5e",
+        "privateMs": 213.16975000000093,
+        "screenMs": 431.42916700000205,
+        "fineScreenMs": 235.1839170000021,
+        "fineCheckCount": 7,
+        "fineMaxCheckGapMs": 34.07083400000192,
+        "fineAfterPrivateMs": 22.01416700000118,
+        "baselineAfterPrivateMs": 218.25941700000112,
+        "baselineMinusFineMs": 196.24524999999994
+      },
+      {
+        "index": 4,
+        "amount": 15000,
+        "httpMs": 43.23400000000038,
+        "requestId": "87f80853-2716-4489-8970-5178388be944",
+        "privateMs": 204.91470800000025,
+        "screenMs": 407.9006249999984,
+        "fineScreenMs": 235.1608329999981,
+        "fineCheckCount": 8,
+        "fineMaxCheckGapMs": 32.394124999998894,
+        "fineAfterPrivateMs": 30.246124999997846,
+        "baselineAfterPrivateMs": 202.98591699999815,
+        "baselineMinusFineMs": 172.7397920000003
+      },
+      {
+        "index": 5,
+        "amount": 16000,
+        "httpMs": 56.332415999997465,
+        "requestId": "218dc5dc-fa25-4c8e-9e23-a73ef9df5eca",
+        "privateMs": 222.29829099999915,
+        "screenMs": 423.883082999997,
+        "fineScreenMs": 248.74891599999683,
+        "fineCheckCount": 8,
+        "fineMaxCheckGapMs": 32.64720899999884,
+        "fineAfterPrivateMs": 26.45062499999767,
+        "baselineAfterPrivateMs": 201.58479199999783,
+        "baselineMinusFineMs": 175.13416700000016
+      },
+      {
+        "index": 6,
+        "amount": 17000,
+        "httpMs": 55.73174999999901,
+        "requestId": "c0f7ebd1-e2ee-4a70-afe0-790c038bb32a",
+        "privateMs": 223.97712500000125,
+        "screenMs": 418.33466599999883,
+        "fineScreenMs": 246.6055410000008,
+        "fineCheckCount": 8,
+        "fineMaxCheckGapMs": 30.787624999997206,
+        "fineAfterPrivateMs": 22.62841599999956,
+        "baselineAfterPrivateMs": 194.35754099999758,
+        "baselineMinusFineMs": 171.72912499999802
+      },
+      {
+        "index": 7,
+        "amount": 18000,
+        "httpMs": 42.581207999999606,
+        "requestId": "e11c2903-b3ef-4f96-8ba5-7a4079e1c87d",
+        "privateMs": 213.91279100000247,
+        "screenMs": 414.9718750000029,
+        "fineScreenMs": 230.34058300000106,
+        "fineCheckCount": 8,
+        "fineMaxCheckGapMs": 31.077625000001717,
+        "fineAfterPrivateMs": 16.42779199999859,
+        "baselineAfterPrivateMs": 201.05908400000044,
+        "baselineMinusFineMs": 184.63129200000185
+      },
+      {
+        "index": 8,
+        "amount": 19000,
+        "httpMs": 50.236832999999024,
+        "requestId": "96dbcced-2310-4a8f-8f93-75c56e79617f",
+        "privateMs": 221.86820799999987,
+        "screenMs": 421.58487500000047,
+        "fineScreenMs": 238.49925000000076,
+        "fineCheckCount": 8,
+        "fineMaxCheckGapMs": 30.66374999999971,
+        "fineAfterPrivateMs": 16.63104200000089,
+        "baselineAfterPrivateMs": 199.7166670000006,
+        "baselineMinusFineMs": 183.0856249999997
+      },
+      {
+        "index": 9,
+        "amount": 20000,
+        "httpMs": 49.70129199999792,
+        "requestId": "f354c324-129c-44ea-8294-ee26c8e834ef",
+        "privateMs": 215.12916699999914,
+        "screenMs": 423.66045799999847,
+        "fineScreenMs": 240.0649169999997,
+        "fineCheckCount": 8,
+        "fineMaxCheckGapMs": 33.12370799999917,
+        "fineAfterPrivateMs": 24.935750000000553,
+        "baselineAfterPrivateMs": 208.53129099999933,
+        "baselineMinusFineMs": 183.59554099999878
+      },
+      {
+        "index": 10,
+        "amount": 21000,
+        "httpMs": 45.37970800000039,
+        "requestId": "9f86c67e-fdd7-41dc-85a5-6a6e0883e004",
+        "privateMs": 217.3630830000002,
+        "screenMs": 410.145708,
+        "fineScreenMs": 234.50512500000332,
+        "fineCheckCount": 8,
+        "fineMaxCheckGapMs": 30.599500000000262,
+        "fineAfterPrivateMs": 17.14204200000313,
+        "baselineAfterPrivateMs": 192.78262499999983,
+        "baselineMinusFineMs": 175.6405829999967
+      },
+      {
+        "index": 11,
+        "amount": 22000,
+        "httpMs": 42.337500000001455,
+        "requestId": "ae9e8a16-605d-4892-929d-b1d78079d7e0",
+        "privateMs": 231.23558400000184,
+        "screenMs": 405.16395900000134,
+        "fineScreenMs": 261.3363339999996,
+        "fineCheckCount": 9,
+        "fineMaxCheckGapMs": 31.329541999999492,
+        "fineAfterPrivateMs": 30.100749999997788,
+        "baselineAfterPrivateMs": 173.9283749999995,
+        "baselineMinusFineMs": 143.82762500000172
+      },
+      {
+        "index": 12,
+        "amount": 23000,
+        "httpMs": 45.68341700000019,
+        "requestId": "ad7ba077-6490-4f5d-bbb7-706896a41ad5",
+        "privateMs": 253.2475000000013,
+        "screenMs": 408.15187499999956,
+        "fineScreenMs": 267.42454200000066,
+        "fineCheckCount": 9,
+        "fineMaxCheckGapMs": 36.42124999999942,
+        "fineAfterPrivateMs": 14.177041999999346,
+        "baselineAfterPrivateMs": 154.90437499999825,
+        "baselineMinusFineMs": 140.7273329999989
+      },
+      {
+        "index": 13,
+        "amount": 24000,
+        "httpMs": 45.60304199999882,
+        "requestId": "088d2094-5a85-4b33-9f7e-6ba95de5953c",
+        "privateMs": 170.0590830000001,
+        "screenMs": 412.19195799999943,
+        "fineScreenMs": 218.14058300000033,
+        "fineCheckCount": 7,
+        "fineMaxCheckGapMs": 36.148041000000376,
+        "fineAfterPrivateMs": 48.08150000000023,
+        "baselineAfterPrivateMs": 242.13287499999933,
+        "baselineMinusFineMs": 194.0513749999991
+      },
+      {
+        "index": 14,
+        "amount": 25000,
+        "httpMs": 57.226166000000376,
+        "requestId": "caa3918b-439e-409d-9045-35088c9f801b",
+        "privateMs": 176.6897910000007,
+        "screenMs": 428.0531659999979,
+        "fineScreenMs": 193.02249999999913,
+        "fineCheckCount": 6,
+        "fineMaxCheckGapMs": 30.835250000000087,
+        "fineAfterPrivateMs": 16.33270899999843,
+        "baselineAfterPrivateMs": 251.36337499999718,
+        "baselineMinusFineMs": 235.03066599999875
+      },
+      {
+        "index": 15,
+        "amount": 26000,
+        "httpMs": 49.2622080000001,
+        "requestId": "b7c0b45f-8316-40c5-b510-73cbe71c47ea",
+        "privateMs": 174.63991700000042,
+        "screenMs": 410.74475000000166,
+        "fineScreenMs": 218.06312500000058,
+        "fineCheckCount": 7,
+        "fineMaxCheckGapMs": 32.20383299999958,
+        "fineAfterPrivateMs": 43.42320800000016,
+        "baselineAfterPrivateMs": 236.10483300000124,
+        "baselineMinusFineMs": 192.68162500000108
+      },
+      {
+        "index": 16,
+        "amount": 27000,
+        "httpMs": 45.9510420000006,
+        "requestId": "e57ec286-fd71-4e2a-8fea-9cdf24156e02",
+        "privateMs": 218.1195000000007,
+        "screenMs": 407.13516700000037,
+        "fineScreenMs": 247.07729200000176,
+        "fineCheckCount": 8,
+        "fineMaxCheckGapMs": 33.72712499999761,
+        "fineAfterPrivateMs": 28.957792000001064,
+        "baselineAfterPrivateMs": 189.01566699999967,
+        "baselineMinusFineMs": 160.0578749999986
+      },
+      {
+        "index": 17,
+        "amount": 28000,
+        "httpMs": 47.47587500000009,
+        "requestId": "eb29b41c-a263-4091-a0a8-66183d1ba8e1",
+        "privateMs": 237.30916699999943,
+        "screenMs": 412.9367080000011,
+        "fineScreenMs": 264.7348329999986,
+        "fineCheckCount": 9,
+        "fineMaxCheckGapMs": 31.51458300000013,
+        "fineAfterPrivateMs": 27.425665999999183,
+        "baselineAfterPrivateMs": 175.62754100000166,
+        "baselineMinusFineMs": 148.20187500000247
+      },
+      {
+        "index": 18,
+        "amount": 29000,
+        "httpMs": 48.119792000001326,
+        "requestId": "44be2d5b-b71e-4ace-b2c6-ed5680c660cd",
+        "privateMs": 245.56895799999984,
+        "screenMs": 417.7345830000013,
+        "fineScreenMs": 264.50329200000124,
+        "fineCheckCount": 9,
+        "fineMaxCheckGapMs": 30.25262499999735,
+        "fineAfterPrivateMs": 18.9343340000014,
+        "baselineAfterPrivateMs": 172.16562500000146,
+        "baselineMinusFineMs": 153.23129100000006
+      },
+      {
+        "index": 19,
+        "amount": 30000,
+        "httpMs": 101.59570800000074,
+        "requestId": "bcbdb231-b519-4a92-a326-eb370ee856a5",
+        "privateMs": 309.0950410000005,
+        "screenMs": 466.9607079999987,
+        "fineScreenMs": 321.078207999999,
+        "fineCheckCount": 9,
+        "fineMaxCheckGapMs": 30.69041699999798,
+        "fineAfterPrivateMs": 11.983166999998502,
+        "baselineAfterPrivateMs": 157.8656669999982,
+        "baselineMinusFineMs": 145.8824999999997
+      }
+    ],
+    "observation": {
+      "baseline": "Playwright default poll/locator assertions",
+      "fineIntervalsMs": [
+        25
+      ],
+      "pairedOnSameRequest": true
+    },
+    "fineScreen": {
+      "count": 20,
+      "p50": 235.1839170000021,
+      "p95": 267.42454200000066,
+      "p99": 321.078207999999
+    },
+    "fineAfterPrivate": {
+      "count": 20,
+      "p50": 22.62841599999956,
+      "p95": 43.42320800000016,
+      "p99": 48.08150000000023
+    },
+    "baselineAfterPrivate": {
+      "count": 20,
+      "p50": 199.7166670000006,
+      "p95": 242.13287499999933,
+      "p99": 251.36337499999718
+    }
+  }
+}

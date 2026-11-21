@@ -29,7 +29,7 @@ export function BidRequestForm({ auctionId, actorId, client, settlement }: BidRe
     <label>입찰 방식<select aria-label="입찰 방식" value={state.kind} disabled={state.mode === "SUBMITTING"} onChange={(event) => { idempotencyKey.current = undefined; dispatch({ type: "KIND_CHANGED", kind: event.target.value as "DIRECT" | "AUTO_MAX" }); }}><option value="DIRECT">직접 입찰</option><option value="AUTO_MAX">자동 입찰 최대가</option></select></label>
     <label>금액<input aria-label="입찰 금액" type="number" min="1000" step="1" value={state.amount} disabled={state.mode === "SUBMITTING"} onChange={(event) => { idempotencyKey.current = undefined; dispatch({ type: "AMOUNT_CHANGED", amount: event.target.value }); }} /></label>
     {state.mode === "RECEIVED" ? <p role="status">입찰 요청을 접수했습니다. 요청 번호: {state.bidRequestId}</p> : null}
-    {state.mode === "SETTLED" && state.settlement?.decision === "ACCEPTED" ? <p role="status">입찰이 승인되었습니다. {state.settlement.isHighestBidder ? "현재 최고 입찰자입니다." : "현재 최고 입찰자가 아닙니다."}</p> : null}
+    {state.mode === "SETTLED" && state.settlement?.decision === "ACCEPTED" ? <p role="status">입찰이 승인되었습니다. {state.settlement.isHighestBidder ? "이 요청 처리 당시 최고 입찰자였습니다." : "이 요청 처리 당시 최고 입찰자가 아니었습니다."}</p> : null}
     {state.mode === "SETTLED" && state.settlement?.decision === "REJECTED" ? <p role="alert">입찰이 거절되었습니다.</p> : null}
     {state.mode === "ERROR" ? <p role="alert">입찰 요청을 접수하지 못했습니다. 금액을 확인하거나 다시 시도하세요.</p> : null}
     <button type="submit" disabled={state.mode === "SUBMITTING"}>입찰 요청</button>
