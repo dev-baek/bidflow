@@ -1,6 +1,6 @@
 # 프런트 개발 의존성 보안 업데이트 사양
 
-- 상태: 제안됨. 이 문서 승인 전에는 manifest·lock·설치된 앱 의존성을 변경하지 않는다.
+- 상태: #284 병합으로 승인됨. 승인한 범위의 업데이트와 로컬 검증은 [구현 보고서](../reports/issue-283-web-dependency-security.md)에 기록한다. 원격 CI와 구현 PR 병합은 별도로 확인한다.
 - 이슈: [#283](https://github.com/dev-baek/bidflow/issues/283). 기존 경매 기능/부하 작업과 분리한 유지보수 이슈이며 Project 3에 추가했다.
 - 기준선: [현재 audit 결과와 후보 메타데이터](../reports/evidence/issue-283-web-dependency-audit-baseline.json).
 
