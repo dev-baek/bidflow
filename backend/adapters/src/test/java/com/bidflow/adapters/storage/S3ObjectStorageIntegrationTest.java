@@ -4,6 +4,7 @@ import com.bidflow.application.storage.ObjectStorage;
 import com.bidflow.application.storage.PresignUploadCommand;
 import com.bidflow.application.storage.StoredObject;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Tag;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -19,6 +20,7 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+@Tag("integration")
 @Testcontainers(disabledWithoutDocker = true)
 class S3ObjectStorageIntegrationTest {
     private static final String ACCESS_KEY = "bidflow-local-access";

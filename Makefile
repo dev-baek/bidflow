@@ -1,4 +1,9 @@
 COMPOSE = docker compose --env-file .env.example -f infra/local/compose.yaml
+.DEFAULT_GOAL := help
+
+.PHONY: help setup test test-backend test-web test-scripts build verify verify-integration
+help setup test test-backend test-web test-scripts build verify verify-integration:
+	sh scripts/verify.sh $@
 
 .PHONY: local-up local-up-search local-down local-reset local-topics local-search-index load-focused load-distributed failure-redis-stop failure-redis-start failure-opensearch-stop failure-opensearch-start consumer-lag
 local-up:
