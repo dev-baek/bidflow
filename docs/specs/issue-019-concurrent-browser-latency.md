@@ -1,6 +1,6 @@
 # 동시 두 사용자 입찰의 브라우저 지연 검증 사양
 
-- 상태: #276 승인, #277/#278 구현 병합. [첫 실제 smoke](../reports/issue-019-concurrent-smoke-failure.md)는 snapshot 계약 가정 불일치로 실패했으며 정식 10회는 미실행이다. [판정 보완 제안](issue-019-concurrent-snapshot-alignment.md)은 승인 대기다. 아래 기존 계약으로 실패한 증적은 그대로 보존한다.
+- 상태: #276 승인, #277/#278 기반 구현 병합. [첫 실패 smoke](../reports/issue-019-concurrent-smoke-failure.md)를 보존하고 #279의 [판정 보완 사양](issue-019-concurrent-snapshot-alignment.md)을 적용해 [새 smoke·정식 10회](../reports/issue-019-concurrent-snapshot-fix.md)를 통과했다. 아래 D/B의 정산 값과 snapshot 연결은 보완 사양을 우선한다.
 - 기존 이슈: [#19 부하와 장애 검증](https://github.com/dev-baek/bidflow/issues/19). Browser 실행 기반은 [#20 E2E](issue-020-e2e.md)를 재사용한다.
 - 선행 결과: [순차 화면 측정](../reports/issue-019-local-outbox-delay.md), [동시 요청의 DB 관측](../reports/issue-019-final-settlement-observation.md), [기본 검증과 CI](../reports/issue-003-verification-ci.md).
 

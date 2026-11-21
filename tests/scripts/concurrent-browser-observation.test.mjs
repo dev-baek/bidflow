@@ -30,6 +30,34 @@ test('accepts either valid ordering, keeps response-before/frame-before receipt 
   }
 });
 
+test('an accepted low bid can carry a later valid snapshot without becoming a different settlement', () => {
+  const input = round();
+  input.frames[0].result.currentPrice = 12000;
+  input.frames[0].result.auctionVersion = 3;
+  const before = structuredClone(input);
+  const verdict = judgeConcurrentRound(input);
+  assert.equal(verdict.valid, true);
+  assert.equal(verdict.samples[0].amount, 11000);
+  assert.equal(verdict.samples[0].snapshotPrice, 12000);
+  assert.equal(verdict.samples[0].snapshotVersion, 3);
+  assert.equal('auctionVersion' in verdict.samples[0], false);
+  assert.deepEqual(input, before);
+});
+
+test('only the specified snapshot pairs are permitted, not arbitrary greater versions', () => {
+  for (const rejected of [false, true]) {
+    for (const bidder of [0, 1]) {
+      const allowed = !rejected && bidder === 0 ? [[2, 11000], [3, 12000]] : [[rejected ? 2 : 3, 12000]];
+      for (const version of [1, 2, 3, 4, NaN]) for (const price of [10000, 11000, 12000, 13000, NaN]) {
+        const input = round(0, rejected);
+        Object.assign(input.frames[bidder].result, { auctionVersion: version, currentPrice: price });
+        assert.equal(judgeConcurrentRound(input).valid, allowed.some(([v, p]) => v === version && p === price),
+          `rejected=${rejected} bidder=${bidder} pair=${version}/${price}`);
+      }
+    }
+  }
+});
+
 test('duplicate delivery does not create a sample, while cross-channel leakage and conflicting results fail', () => {
   const input = round(); input.frames.push(structuredClone(input.frames[0]));
   assert.equal(judgeConcurrentRound(input).samples.length, 2);

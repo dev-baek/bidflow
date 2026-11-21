@@ -148,6 +148,8 @@ k6 입력과 실행 방법은 [k6 부하 시나리오](docs/reports/issue-095-k6
 
 로컬 20 VU 기준선과 1,000건 어댑터 정합성 테스트는 1,000건 동시 HTTP 부하나 운영 처리량을 보장하지 않는다. [별도 20건 실험](docs/reports/issue-019-final-settlement-observation.md)에서 최종 DB 가시성을 관측했다. 초기 [브라우저 순차 20건](docs/reports/issue-019-browser-result-latency.md)의 화면 관측 P95는 2,938ms로 2초 기준에 미달했다. 이후 [Outbox 간격 대조](docs/reports/issue-019-outbox-delay-aba.md)에서는 1,000ms 조건의 약 2.93초가 100ms 조건에서 431ms로 줄었지만 유휴 조회 빈도와 DB CPU는 늘었다. [로컬 프로필 100ms 적용 확인](docs/reports/issue-019-local-outbox-delay.md)에서는 P95 430ms를 확인했다. 서로 다른 실험을 동시 부하 SLO로 합치지 않으며 자동화 polling 비용도 포함한다.
 
+[두 사용자 동시 제출 10회](docs/reports/issue-019-concurrent-snapshot-fix.md)에서는 요청 20건과 SQL 대조가 모두 완료됐고 화면 수렴 관측 P95는 443ms였다. 개인 메시지의 최신 snapshot과 요청별 정산을 혼동한 초기 관측 실패를 재현·수정했다. 두 건씩 겹친 제한된 실험이며, 20건 전체 동시 부하나 AWS SLO로 일반화하지 않는다.
+
 초기 E2E 시간 초과 2건은 [세 번의 재시작 관측](docs/reports/issue-019-startup-observation.md)에서 재현되지 않았고 원인은 미확정이다. 공통 검증은 `make verify`로 실행하며, 통합·브라우저·부하·AWS 검증은 별도 범위로 유지한다.
 
 AWS는 상시 운영하지 않는다. 별도 승인 뒤 짧게 생성하고 배포·기능·비용을 확인한 뒤 삭제하는 계획이다. 실제 AWS 계정에서 실행한 결과는 아직 없다.

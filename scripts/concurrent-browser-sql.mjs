@@ -47,7 +47,8 @@ export function judgeConcurrentSql(input, snapshot, actors, initialEndsAt) {
   if (!auction || auction.auctionId !== input.auctionId || auction.status !== 'ACTIVE'
     || auction.currentPrice !== 12000 || auction.winnerId !== actors.B
     || Date.parse(auction.endsAt) !== Date.parse(initialEndsAt)) return failure();
-  const events = [], ledgerIds = [];
+  const events = [], ledgerIds = [], settlements = [];
+  const bothAccepted = observed.samples[0].decision === 'ACCEPTED';
   for (const sample of observed.samples) {
     const rows = snapshot.rows.filter(r => r?.requestId === sample.requestId);
     if (rows.length !== 1) return failure();
@@ -61,14 +62,20 @@ export function judgeConcurrentSql(input, snapshot, actors, initialEndsAt) {
       || ledger.price !== (rejected ? null : sample.amount) || ledger.reason !== sample.reason
       || event.requestId !== sample.requestId || event.auctionId !== input.auctionId || event.bidderId !== row.bidderId
       || event.type !== (rejected ? 'BidRejected' : 'BidAccepted') || event.reason !== sample.reason
-      || event.price !== (rejected ? null : sample.amount) || event.version !== sample.auctionVersion) return failure();
+      || event.price !== (rejected ? null : sample.amount)
+      || event.version !== (sample.bidder === 'A' || !bothAccepted ? 2 : 3)) return failure();
     ledgerIds.push(ledger.id); events.push(event);
+    settlements.push({ bidder: sample.bidder, requestId: sample.requestId, decision: sample.decision,
+      settlementVersion: event.version, ledgerPrice: ledger.price, eventPrice: event.price,
+      snapshotVersion: sample.snapshotVersion, snapshotPrice: sample.snapshotPrice });
   }
   const accepted = events.filter(e => e.type === 'BidAccepted').sort((a, b) => a.version - b.version);
   if (new Set(ledgerIds).size !== 2 || new Set(events.map(e => e.id)).size !== 2
     || accepted.some((e, i) => e.version !== i + 2 || (i && e.price <= accepted[i - 1].price))
     || auction.version !== 1 + accepted.length || accepted.at(-1)?.price !== auction.currentPrice
     || accepted.at(-1)?.bidderId !== auction.winnerId) return failure();
+  if (settlements.some(s => s.snapshotVersion < s.settlementVersion || s.snapshotVersion > auction.version
+    || !accepted.some(event => event.version === s.snapshotVersion && event.price === s.snapshotPrice))) return failure();
   return { valid: true, accepted: accepted.length, rejected: 2 - accepted.length,
-    requestCount: 2, ledgerCount: 2, resultCount: 2 };
+    requestCount: 2, ledgerCount: 2, resultCount: 2, settlements };
 }
