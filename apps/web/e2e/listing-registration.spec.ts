@@ -5,6 +5,9 @@ import { execFileSync } from "node:child_process";
 import { percentiles } from "../../../scripts/final-settlement.mjs";
 import { matchesObservedBid, observationTimings } from "../../../scripts/browser-result-latency.mjs";
 import { windowMarker } from "../../../scripts/outbox-delay-observation.mjs";
+import { collectConcurrentRound } from "../../../scripts/collect-concurrent-browser.mjs";
+import { summarizeConcurrentRun } from "../../../scripts/concurrent-browser-observation.mjs";
+import { readConcurrentSql, judgeConcurrentSql } from "../../../scripts/concurrent-browser-sql.mjs";
 import { expect, test, type APIRequestContext, type Browser, type Page, type WebSocket } from "@playwright/test";
 import { parseBidResultMessage } from "../src/features/auction-realtime/auction-realtime-client";
 
@@ -287,6 +290,116 @@ test.describe("상품 등록·입찰 Browser 흐름", () => {
     }
   });
 
+  test("동시 두 사용자 입찰 10회의 개인 결과와 화면 수렴을 관측한다", async ({ page, browser, request }, testInfo) => {
+    test.skip(process.env.BIDFLOW_E2E_CONCURRENT_LATENCY !== "1", "명시적 로컬 동시 관측 플래그가 필요합니다.");
+    test.setTimeout(300_000);
+    expect(testInfo.config.workers).toBe(1);
+    expect(testInfo.project.retries).toBe(0);
+    expect(webBaseUrl).toBe("http://127.0.0.1:5173");
+    expect(apiBaseUrl).toBe("http://127.0.0.1:8080");
+    const smoke = process.env.BIDFLOW_E2E_CONCURRENT_SMOKE === "1";
+    const runId = randomUUID();
+    const observations: Parameters<typeof summarizeConcurrentRun>[0] = [];
+    const sqlChecks: { index: number; valid: boolean; error?: string }[] = [];
+    const collectionErrors: { index: number; error: string }[] = [];
+    const fixtures: { index: number; auctionId: string }[] = [];
+    const startedAt = new Date().toISOString();
+    let phase = "FIXTURE", finished = false;
+    try {
+      for (let index = 0; index < (smoke ? 1 : 10); index++) {
+        phase = "FIXTURE";
+        await setE2eClock(request, "2030-01-01T12:00:00Z");
+        const auctionId = await registerAuction(page, `concurrent-seller-${runId}`);
+        fixtures.push({ index, auctionId });
+        await setE2eClock(request, "2030-01-01T12:20:00Z");
+        const initial = await readAuction(request, auctionId) as { auctionVersion: number; currentPrice: number; endsAt: string };
+        expect(initial).toMatchObject({ auctionVersion: 1, currentPrice: 10000, endsAt: "2030-01-01T12:30:00Z" });
+        const actors = { A: `concurrent-a-${runId}`, B: `concurrent-b-${runId}` };
+        const submissionKeys = new Set<string>();
+        const viewers: Awaited<ReturnType<typeof openBidderPage>>[] = [];
+        try {
+          viewers.push(await openBidderPage(browser, auctionId, actors.A));
+          viewers.push(await openBidderPage(browser, auctionId, actors.B));
+          await Promise.all(viewers.map((viewer, i) => viewer.page.getByLabel("입찰 금액").fill(String(11000 + i * 1000))));
+          phase = "COLLECTION";
+          const collection = await collectConcurrentRound({ index, auctionId, now: () => performance.now(),
+            subscribe(receive) {
+              const listeners = viewers.map((viewer, i) => {
+                const listener = ({ payload }: { payload: string | Buffer }) => {
+                  const result = parseBidResultFrame(payload.toString());
+                  if (result) receive(i === 0 ? "A" : "B", result);
+                };
+                viewer.socket.on("framereceived", listener);
+                return () => viewer.socket.off("framereceived", listener);
+              });
+              return () => { listeners.forEach(remove => remove()); };
+            },
+            async submit(bidder, { onStart, onPost, remaining, signal }) {
+              const viewer = viewers[bidder === "A" ? 0 : 1]!;
+              const matches = (url: string) => new URL(url).pathname === `/api/v1/auctions/${auctionId}/bid-requests`;
+              const sent = (r: import("@playwright/test").Request) => { if (r.method() === "POST" && matches(r.url())) onPost(); };
+              viewer.page.on("request", sent);
+              const detach = () => { viewer.page.off("request", sent); };
+              signal.addEventListener("abort", detach, { once: true });
+              try {
+                const response = viewer.page.waitForResponse(r => r.request().method() === "POST" && matches(r.url()), { timeout: remaining() });
+                onStart();
+                const [receipt] = await Promise.all([response, viewer.page.getByRole("button", { name: "입찰 요청" }).click({ timeout: remaining() })]);
+                const key = await receipt.request().headerValue("idempotency-key");
+                if (!key || !/^[0-9a-f-]{36}$/.test(key) || submissionKeys.has(key)) throw new Error("멱등 키 누락 또는 중복");
+                submissionKeys.add(key);
+                const body = await receipt.json();
+                return { httpStatus: receipt.status(), receiptStatus: body.status, requestId: body.bidRequestId };
+              } finally { signal.removeEventListener("abort", detach); detach(); }
+            },
+            async observeScreen({ input, remaining }) {
+              const decisions: { bidder: string; decision: string }[] = [];
+              for (const [i, viewer] of viewers.entries()) {
+                const bidder = i === 0 ? "A" : "B";
+                const receipt = input.receipts.find(r => r.bidder === bidder)!;
+                const matched = () => input.frames.find(f => f.bidder === bidder && f.result.auctionId === auctionId
+                  && f.result.bidRequestId === receipt.requestId);
+                await expect.poll(() => Boolean(matched()), { timeout: remaining() }).toBe(true);
+                const decision = matched()!.result.decision;
+                if (decision !== "ACCEPTED" && decision !== "REJECTED") throw new Error("개인 판정 누락");
+                if (decision === "ACCEPTED") {
+                  await expect(viewer.page.getByRole("status").filter({ hasText: "입찰이 승인되었습니다." })).toBeVisible({ timeout: remaining() });
+                } else {
+                  await expect(viewer.page.getByRole("alert")).toHaveText("입찰이 거절되었습니다.", { timeout: remaining() });
+                }
+                decisions.push({ bidder, decision });
+              }
+              await Promise.all(viewers.map(viewer => expect(viewer.page.getByText("12,000원", { exact: true })).toBeVisible({ timeout: remaining() })));
+              return { prices: [12000, 12000], decisions };
+            },
+          });
+          observations.push(collection.input);
+          if (collection.error) collectionErrors.push({ index, error: collection.error });
+          expect(collection.error).toBeNull();
+          expect(collection.verdict.valid).toBe(true);
+          phase = "SQL";
+          const snapshot = await readConcurrentSql(auctionId, collection.input.receipts.map(r => r.requestId));
+          const sql = judgeConcurrentSql(collection.input, snapshot, actors, initial.endsAt);
+          sqlChecks.push({ index, ...sql });
+          expect(sql.valid).toBe(true);
+        } finally { await Promise.all(viewers.map(viewer => viewer.context.close())); }
+      }
+      finished = true;
+      if (!smoke) expect(summarizeConcurrentRun(observations).p95WithinTarget).toBe(true);
+    } finally {
+      const summary = summarizeConcurrentRun(observations);
+      const sqlVerified = sqlChecks.length === (smoke ? 1 : 10) && sqlChecks.every(check => check.valid);
+      const evidence = { ...summary, sqlVerified, valid: !smoke && finished && !collectionErrors.length && summary.observationValid && sqlVerified,
+        smoke, smokeVerified: smoke && finished && sqlVerified && !collectionErrors.length,
+        runId, startedAt, completedAt: new Date().toISOString(), phase,
+        commit: execFileSync("git", ["rev-parse", "HEAD"], { encoding: "utf8" }).trim(),
+        node: process.version, chromium: browser.version(), fixtures, sqlChecks, collectionErrors, observations };
+      const path = testInfo.outputPath("concurrent-browser-latency.json");
+      await writeFile(path, JSON.stringify(evidence, null, 2));
+      await testInfo.attach("concurrent-browser-latency", { path, contentType: "application/json" });
+    }
+  });
+
   test("WebSocket 연결을 복구하면 끊긴 사이 놓친 현재가를 REST에서 읽는다", async ({ page, browser, request }) => {
     await setE2eClock(request, "2030-01-01T12:00:00Z");
     let offline = false;
@@ -376,12 +489,12 @@ test.describe("상품 등록·입찰 Browser 흐름", () => {
 
 async function openBidderPage(browser: Browser, auctionId: string, actorId: string) {
   const context = await browser.newContext({ baseURL: webBaseUrl });
-  const page = await context.newPage();
-  await signInLocal(page, actorId);
-  const subscribed = waitForAuctionSubscriptions(page, auctionId);
-  await showAuctionDetail(page, auctionId);
-  const socket = await subscribed;
-  return { context, page, socket };
+  try {
+    const page = await context.newPage();
+    await signInLocal(page, actorId);
+    const [socket] = await Promise.all([waitForAuctionSubscriptions(page, auctionId), showAuctionDetail(page, auctionId)]);
+    return { context, page, socket };
+  } catch (error) { await context.close(); throw error; }
 }
 
 async function signInLocal(page: Page, actorId: string) {
