@@ -37,6 +37,14 @@ node --test tests/scripts/*.test.mjs
 
 Node 24에서 전체 스크립트 테스트 47개가 성공했고 실패·skip은 0개다. 여기에 기존 순차 관측, DB 관측, 시작 관측 및 공통 검증 명령의 회귀 테스트가 포함된다.
 
+## 로컬 공통 검증
+
+깨끗한 worktree에서 Java 21과 Node 24로 make setup 및 make verify를 실행했다. 최초 setup은 기존 사용자 npm 캐시의 EACCES/EEXIST rename 오류로 중단됐다. 전역 캐시를 삭제하거나 권한을 바꾸지 않고 별도 임시 npm 캐시를 지정한 뒤 setup과 verify가 성공했다.
+
+백엔드 unitTest는 146개, Vitest는 68개, 스크립트 테스트는 47개 성공했고 실패·오류·skip은 0개다. 새 worktree의 backend unit task 22개는 UP-TO-DATE 재사용 없이 실행됐다. bootJar와 TypeScript/Vite production build도 성공했다. 기존 전체 integration check와 브라우저 E2E는 이번에 실행하지 않았다.
+
+설치 시 npm은 기존 lock file 기준 취약점 6건(중간 2·높음 4)을 보고했다. 이 PR은 의존성을 변경하지 않으며 audit fix를 실행하지 않았다. 공통 검증 성공은 취약점 해소를 의미하지 않으므로 별도 점검이 필요하다.
+
 ## 작업 환경과 후속 순서
 
 원본 작업 폴더에 남은 미추적 복제 파일과 루트 package-lock.json은 수정·삭제·커밋하지 않았다. 승인 문서가 병합된 origin/main에서 별도 깨끗한 Git worktree를 만들어 작업했다. 새 의존성·앱 동작·DB migration·AWS 리소스 작업은 없다.
