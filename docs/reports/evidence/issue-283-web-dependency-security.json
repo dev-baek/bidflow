@@ -1,0 +1,451 @@
+{
+  "issue": 283,
+  "sourceCommit": "b829cf3752f13bdd8b2a515fc51367be7081d2bc",
+  "baselineMain": "a4c4e44bb578da4eb3431251b3f93e40ff889b75",
+  "before": {
+    "capturedAt": "2026-11-21T12:03:08.909Z",
+    "node": "v24.18.0",
+    "npm": "10.8.2",
+    "lockSha256": "9be19885e10feb1eade489a3eda0124541d43d14215300e701a061a452ec9aed",
+    "audits": {
+      "full": {
+        "exitCode": 1,
+        "vulnerabilities": {
+          "info": 0,
+          "low": 0,
+          "moderate": 2,
+          "high": 4,
+          "critical": 0,
+          "total": 6
+        }
+      },
+      "production": {
+        "exitCode": 0,
+        "vulnerabilities": {
+          "info": 0,
+          "low": 0,
+          "moderate": 0,
+          "high": 0,
+          "critical": 0,
+          "total": 0
+        }
+      }
+    }
+  },
+  "after": {
+    "capturedAt": "2026-11-21T12:07:04.579Z",
+    "node": "v24.18.0",
+    "npm": "11.21.3",
+    "lockSha256": "fd13de19db84544028e851199dfe9ed3e1ad8c7689f8ef2ddc92c348b347e212",
+    "audits": {
+      "full": {
+        "exitCode": 0,
+        "vulnerabilities": {
+          "info": 0,
+          "low": 0,
+          "moderate": 0,
+          "high": 0,
+          "critical": 0,
+          "total": 0
+        }
+      },
+      "production": {
+        "exitCode": 0,
+        "vulnerabilities": {
+          "info": 0,
+          "low": 0,
+          "moderate": 0,
+          "high": 0,
+          "critical": 0,
+          "total": 0
+        }
+      }
+    }
+  },
+  "freshInstall": {
+    "exitCode": 0,
+    "lockHashBefore": "fd13de19db84544028e851199dfe9ed3e1ad8c7689f8ef2ddc92c348b347e212",
+    "lockHashAfter": "fd13de19db84544028e851199dfe9ed3e1ad8c7689f8ef2ddc92c348b347e212",
+    "npmLs": {
+      "exitCode": 0,
+      "problems": []
+    }
+  },
+  "tooling": {
+    "initialNpm": "10.8.2",
+    "initialLockGeneration": "failed: Arborist loadPeerSet edgesOut",
+    "isolatedNpm": "11.21.3",
+    "globalInstall": false,
+    "peerBypass": false,
+    "force": false,
+    "installScriptWarnings": [
+      "fsevents@2.3.3",
+      "fsevents@2.3.2"
+    ]
+  },
+  "changes": [
+    {
+      "path": "node_modules/@jridgewell/sourcemap-codec",
+      "before": "1.5.5",
+      "after": "1.6.0"
+    },
+    {
+      "path": "node_modules/@types/estree",
+      "before": "1.0.9",
+      "after": "1.0.10"
+    },
+    {
+      "path": "node_modules/@vitest/expect",
+      "before": "4.1.10",
+      "after": "4.1.12"
+    },
+    {
+      "path": "node_modules/@vitest/mocker",
+      "before": "4.1.10",
+      "after": "4.1.12"
+    },
+    {
+      "path": "node_modules/@vitest/pretty-format",
+      "before": "4.1.10",
+      "after": "4.1.12"
+    },
+    {
+      "path": "node_modules/@vitest/runner",
+      "before": "4.1.10",
+      "after": "4.1.12"
+    },
+    {
+      "path": "node_modules/@vitest/snapshot",
+      "before": "4.1.10",
+      "after": "4.1.12"
+    },
+    {
+      "path": "node_modules/@vitest/spy",
+      "before": "4.1.10",
+      "after": "4.1.12"
+    },
+    {
+      "path": "node_modules/@vitest/utils",
+      "before": "4.1.10",
+      "after": "4.1.12"
+    },
+    {
+      "path": "node_modules/chai",
+      "before": "6.2.2",
+      "after": "6.3.0"
+    },
+    {
+      "path": "node_modules/nanoid",
+      "before": "3.3.16",
+      "after": "3.3.20"
+    },
+    {
+      "path": "node_modules/source-map-js",
+      "before": "1.2.1",
+      "after": "1.2.4"
+    },
+    {
+      "path": "node_modules/tinyrainbow",
+      "before": "3.1.1",
+      "after": "3.2.0"
+    },
+    {
+      "path": "node_modules/undici",
+      "before": "8.9.0",
+      "after": "8.13.1"
+    },
+    {
+      "path": "node_modules/vite",
+      "before": "8.1.5",
+      "after": "8.1.6"
+    },
+    {
+      "path": "node_modules/vitest",
+      "before": "4.1.10",
+      "after": "4.1.12"
+    }
+  ],
+  "verification": {
+    "makeVerifyExit": 0,
+    "vitest": {
+      "files": 17,
+      "passed": 71
+    },
+    "nodeScripts": {
+      "passed": 57
+    },
+    "backendUnit": "UP-TO-DATE",
+    "backendBootJar": "UP-TO-DATE",
+    "webBuild": "passed"
+  },
+  "browser": {
+    "startedAt": "2026-11-21T12:08:06.960Z",
+    "completedAt": "2026-11-21T12:09:24.591Z",
+    "node": "v24.18.0",
+    "chromium": "145.0.7632.6",
+    "playwright": "1.58.2",
+    "workers": 1,
+    "retries": 0,
+    "stats": {
+      "startTime": "2026-11-21T12:08:29.958Z",
+      "duration": 35894.908,
+      "expected": 3,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "cases": [
+      {
+        "title": "자동 입찰로 확정된 낙찰은 마감 이후 새 입찰로 바뀌지 않는다",
+        "results": [
+          {
+            "status": "passed",
+            "retry": 0,
+            "durationMs": 11418
+          }
+        ]
+      },
+      {
+        "title": "직접 입찰 재시도는 같은 요청이고 같은 사용자의 후속 입찰은 새 요청이다",
+        "results": [
+          {
+            "status": "passed",
+            "retry": 0,
+            "durationMs": 6510
+          }
+        ]
+      },
+      {
+        "title": "순차 입찰 20건의 개인 결과와 양쪽 화면 관측 지연을 기록한다",
+        "results": [
+          {
+            "status": "passed",
+            "retry": 0,
+            "durationMs": 15081
+          }
+        ]
+      }
+    ],
+    "trial": [
+      {
+        "startedAt": "2026-11-21T12:08:24.740Z",
+        "completedAt": "2026-11-21T12:09:05.882Z",
+        "exitCode": 0,
+        "beforeLag": [
+          {
+            "partition": 0,
+            "currentOffset": 571,
+            "endOffset": 571,
+            "lag": 0
+          },
+          {
+            "partition": 1,
+            "currentOffset": 1901,
+            "endOffset": 1901,
+            "lag": 0
+          },
+          {
+            "partition": 2,
+            "currentOffset": 572,
+            "endOffset": 572,
+            "lag": 0
+          }
+        ],
+        "afterLag": [
+          {
+            "partition": 0,
+            "currentOffset": 574,
+            "endOffset": 574,
+            "lag": 0
+          },
+          {
+            "partition": 1,
+            "currentOffset": 1905,
+            "endOffset": 1905,
+            "lag": 0
+          },
+          {
+            "partition": 2,
+            "currentOffset": 592,
+            "endOffset": 592,
+            "lag": 0
+          }
+        ]
+      }
+    ],
+    "sequential": {
+      "completed": 20,
+      "incomplete": 0,
+      "p95WithinTarget": true,
+      "screen": {
+        "count": 20,
+        "p50": 427.4116670000003,
+        "p95": 613.6496670000015,
+        "p99": 1359.4254169999986
+      },
+      "samples": [
+        {
+          "index": 0,
+          "httpMs": 52.20154199999888,
+          "privateMs": 281.53795900000114,
+          "screenMs": 440.26691700000083
+        },
+        {
+          "index": 1,
+          "httpMs": 48.639374999998836,
+          "privateMs": 268.40095900000233,
+          "screenMs": 413.3542500000003
+        },
+        {
+          "index": 2,
+          "httpMs": 57.40850000000137,
+          "privateMs": 186.27349999999933,
+          "screenMs": 427.216042
+        },
+        {
+          "index": 3,
+          "httpMs": 51.08770799999911,
+          "privateMs": 194.46837500000038,
+          "screenMs": 420.6699579999986
+        },
+        {
+          "index": 4,
+          "httpMs": 54.97520900000018,
+          "privateMs": 216.67224999999962,
+          "screenMs": 421.67179199999737
+        },
+        {
+          "index": 5,
+          "httpMs": 59.421875,
+          "privateMs": 239.30283299999792,
+          "screenMs": 427.4116670000003
+        },
+        {
+          "index": 6,
+          "httpMs": 52.84691699999894,
+          "privateMs": 404.81379200000083,
+          "screenMs": 550.8688750000001
+        },
+        {
+          "index": 7,
+          "httpMs": 55.54329100000177,
+          "privateMs": 254.47620800000004,
+          "screenMs": 468.19287500000064
+        },
+        {
+          "index": 8,
+          "httpMs": 220.02529199999844,
+          "privateMs": 502.56633299999885,
+          "screenMs": 613.6496670000015
+        },
+        {
+          "index": 9,
+          "httpMs": 56.16204199999993,
+          "privateMs": 249.39058300000033,
+          "screenMs": 423.71079199999804
+        },
+        {
+          "index": 10,
+          "httpMs": 51.41125000000102,
+          "privateMs": 269.3349999999991,
+          "screenMs": 418.7348750000019
+        },
+        {
+          "index": 11,
+          "httpMs": 54.078207999998995,
+          "privateMs": 273.4997919999987,
+          "screenMs": 420.8319169999995
+        },
+        {
+          "index": 12,
+          "httpMs": 54.879000000000815,
+          "privateMs": 287.6058750000011,
+          "screenMs": 420.90350000000035
+        },
+        {
+          "index": 13,
+          "httpMs": 57.28020800000013,
+          "privateMs": 193.27124999999796,
+          "screenMs": 430.1482079999987
+        },
+        {
+          "index": 14,
+          "httpMs": 48.78341700000237,
+          "privateMs": 203.58179200000086,
+          "screenMs": 413.88470900000175
+        },
+        {
+          "index": 15,
+          "httpMs": 59.309166999999434,
+          "privateMs": 219.1813340000008,
+          "screenMs": 456.95420899999954
+        },
+        {
+          "index": 16,
+          "httpMs": 433.2339580000007,
+          "privateMs": 957.781500000001,
+          "screenMs": 1359.4254169999986
+        },
+        {
+          "index": 17,
+          "httpMs": 93.19554100000096,
+          "privateMs": 299.3474999999962,
+          "screenMs": 470.92312500000116
+        },
+        {
+          "index": 18,
+          "httpMs": 102.01920799999789,
+          "privateMs": 278.1627080000035,
+          "screenMs": 478.4605420000007
+        },
+        {
+          "index": 19,
+          "httpMs": 64.86083299999882,
+          "privateMs": 214.84970799999428,
+          "screenMs": 434.7697909999988
+        }
+      ]
+    },
+    "runtime": {
+      "original": {
+        "pid": 45746,
+        "jarSha256": "5251be8d60c6fc0f3a7afb13415c72e2438713b973a854a54f411009065f08c4",
+        "profile": "local",
+        "fixedDelayMs": 1000,
+        "logging": "INFO",
+        "fullyStopped": true
+      },
+      "test": {
+        "jarSha256": "34f4192967bf4a9ddd75150dcf87e26e67dd67af8957c330a1b358aeae23d898",
+        "profile": "local,e2e",
+        "fixedDelayMs": 100,
+        "logging": "INFO",
+        "fullyStopped": true,
+        "viteFullyStopped": true,
+        "environmentOverridesRemoved": true
+      },
+      "restoration": {
+        "pid": 68574,
+        "verified": true,
+        "profile": "local",
+        "fixedDelayMs": 1000,
+        "logging": "INFO",
+        "viteRunning": false
+      }
+    }
+  },
+  "boundaries": {
+    "awsAccess": false,
+    "deployment": false,
+    "dataReset": false,
+    "offsetReset": false,
+    "originalUntrackedFilesChanged": false
+  },
+  "limitations": [
+    "audit database at capture time only",
+    "not an exploit reproduction",
+    "remaining four E2E not run",
+    "backend full integration check not run",
+    "not a performance improvement or load result"
+  ]
+}
