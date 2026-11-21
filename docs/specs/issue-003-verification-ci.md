@@ -1,6 +1,6 @@
 # [Issue #3] 공통 검증 명령과 CI 사양
 
-- 상태: 제안됨 — 승인 후 TDD로 구현. 현재 Makefile에 `verify` target과 GitHub Actions workflow는 없다.
+- 상태: #274에서 승인됨 — 구현 PR #275. [검증 결과](../reports/issue-003-verification-ci.md)에서 로컬·원격 실행 범위를 확인한다.
 - 기존 이슈: [#3 개발 기반](https://github.com/dev-baek/bidflow/issues/3). [원래 부트스트랩 사양](issue-003-repository-bootstrap.md)의 I.4/I.6과 남은 완료 조건을 구체화한다.
 
 ## S. 검증 사용 흐름
@@ -25,7 +25,7 @@ lock file은 `apps/web/package-lock.json`을 사용한다. 기존 루트 미추�
 
 ## I. 명령 계약
 
-아래는 구현 후의 계약이다. 현재 존재하는 local-up/down/reset·부하·장애 명령은 유지한다.
+아래 명령을 구현한다. 기존 local-up/down/reset·부하·장애 명령은 유지한다.
 
 | 명령 | 범위 |
 |---|---|

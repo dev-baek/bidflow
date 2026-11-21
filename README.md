@@ -82,7 +82,7 @@ SPRING_PROFILES_ACTIVE=local ./backend/gradlew -p backend :runtime:bootRun
 
 # Vite 개발 서버
 cd apps/web
-npm install
+npm ci
 npm run dev
 ```
 
@@ -105,20 +105,33 @@ make local-down
 
 ## 테스트와 검증
 
+Java 21을 `JAVA_HOME`, Node 24를 `PATH`에 선택한 뒤 실행한다. 기본 검증에는 Docker·로컬 API·AWS 자격증명이 필요 없지만 Maven/npm 의존성 다운로드는 필요할 수 있다.
+
 ```bash
-# Java 도메인·어댑터·통합 테스트와 모듈 의존성 규칙
-./backend/gradlew -p backend check
+# 최초 의존성 준비와 지원 명령 확인
+make setup
+make help
 
-# React 상태 전이·컴포넌트 테스트 (Node 24 필요)
-cd apps/web && npm run test:run
+# 정적 검사 → 백엔드 단위 → Vitest → 스크립트 테스트 → 양쪽 빌드
+make verify
 
-# 프론트엔드 production build
-cd apps/web && npm run build
+# 개별 검증 또는 빌드
+make test-backend
+make test-web
+make test-scripts
+make build
+
+# Docker와 기본 로컬 서비스가 실행 중일 때만: 기존 backend check 전체
+make verify-integration
 
 # k6 입찰 부하: 로컬 API와 활성 경매·입찰자 Fixture 필요
 make load-focused
 make load-distributed
 ```
+
+`unitTest`는 명시적인 `integration` 태그만 제외한다. 기존 `test`/`check`는 통합 테스트를 포함하며, 결과는 각각 `backend/<module>/build/reports/tests/unitTest/`와 `backend/<module>/build/reports/tests/test/`에 분리된다. `verify-integration`은 서비스를 자동 시작하거나 볼륨을 초기화하지 않는다.
+
+PR과 main push의 GitHub Actions도 `make verify`를 사용한다. CI는 Java 21·Node 24와 읽기 전용 권한을 사용하며 배포하지 않는다. CI의 whitespace 검사는 기준 SHA부터 변경분을 검사하고, 로컬 기본 실행은 작업 트리와 staged diff를 검사한다. [공통 검증 사양](docs/specs/issue-003-verification-ci.md) · [구현과 검증 결과](docs/reports/issue-003-verification-ci.md)
 
 k6 입력과 실행 방법은 [k6 부하 시나리오](docs/reports/issue-095-k6-bid-load.md), 기존 JSON·SQL·Lag 증적은 [결과·회고](docs/reports/issue-102-portfolio-retrospective.md)에서 확인할 수 있다. Playwright는 [별도 로컬 실행 절차](docs/reports/issue-099-playwright-e2e.md)에 따라 테스트 전용 Clock을 사용한다.
 
@@ -135,7 +148,7 @@ k6 입력과 실행 방법은 [k6 부하 시나리오](docs/reports/issue-095-k6
 
 로컬 20 VU 기준선과 1,000건 어댑터 정합성 테스트는 1,000건 동시 HTTP 부하나 운영 처리량을 보장하지 않는다. [별도 20건 실험](docs/reports/issue-019-final-settlement-observation.md)에서 최종 DB 가시성을 관측했다. 초기 [브라우저 순차 20건](docs/reports/issue-019-browser-result-latency.md)의 화면 관측 P95는 2,938ms로 2초 기준에 미달했다. 이후 [Outbox 간격 대조](docs/reports/issue-019-outbox-delay-aba.md)에서는 1,000ms 조건의 약 2.93초가 100ms 조건에서 431ms로 줄었지만 유휴 조회 빈도와 DB CPU는 늘었다. [로컬 프로필 100ms 적용 확인](docs/reports/issue-019-local-outbox-delay.md)에서는 P95 430ms를 확인했다. 서로 다른 실험을 동시 부하 SLO로 합치지 않으며 자동화 polling 비용도 포함한다.
 
-초기 E2E 시간 초과 2건은 [세 번의 재시작 관측](docs/reports/issue-019-startup-observation.md)에서 재현되지 않았고 원인은 미확정이다. 다음 개발 기반 작업은 [공통 검증 명령·CI 보완](docs/specs/issue-003-verification-ci.md)이며, 현재는 위의 개별 검증 명령을 사용한다.
+초기 E2E 시간 초과 2건은 [세 번의 재시작 관측](docs/reports/issue-019-startup-observation.md)에서 재현되지 않았고 원인은 미확정이다. 공통 검증은 `make verify`로 실행하며, 통합·브라우저·부하·AWS 검증은 별도 범위로 유지한다.
 
 AWS는 상시 운영하지 않는다. 별도 승인 뒤 짧게 생성하고 배포·기능·비용을 확인한 뒤 삭제하는 계획이다. 실제 AWS 계정에서 실행한 결과는 아직 없다.
 
