@@ -1,6 +1,7 @@
 import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.artifacts.ProjectDependency
 import org.gradle.api.tasks.testing.Test
+import org.gradle.api.tasks.SourceSetContainer
 
 plugins {
     base
@@ -34,6 +35,20 @@ subprojects {
     tasks.withType<Test>().configureEach {
         useJUnitPlatform()
     }
+
+    val tests = extensions.getByType<SourceSetContainer>().named("test")
+    tasks.register<Test>("unitTest") {
+        group = "verification"
+        description = "Runs tests without external services; integration tests remain in test/check"
+        testClassesDirs = tests.get().output.classesDirs
+        classpath = tests.get().runtimeClasspath
+        useJUnitPlatform { excludeTags("integration") }
+    }
+}
+
+tasks.register("unitTest") {
+    group = "verification"
+    dependsOn(subprojects.map { it.tasks.named("unitTest") })
 }
 
 val allowedProjectDependencies = mapOf(

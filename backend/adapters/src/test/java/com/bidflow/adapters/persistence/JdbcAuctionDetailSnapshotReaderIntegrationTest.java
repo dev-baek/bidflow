@@ -9,12 +9,14 @@ import java.util.UUID;
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Tag;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+@Tag("integration")
 @Testcontainers(disabledWithoutDocker = true)
 class JdbcAuctionDetailSnapshotReaderIntegrationTest {
     private static final Instant NOW = Instant.parse("2030-01-01T12:00:00Z");
