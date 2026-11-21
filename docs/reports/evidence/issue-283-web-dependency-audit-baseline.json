@@ -1,0 +1,436 @@
+{
+  "sourceCommit": "6892685b820cdcda9ad7ed53f358e56b59050a06",
+  "capturedAt": "2026-11-21T04:25:29.739Z",
+  "node": "v24.18.0",
+  "npm": "10.8.2",
+  "lockSha256": "9be19885e10feb1eade489a3eda0124541d43d14215300e701a061a452ec9aed",
+  "full": {
+    "exitCode": 1,
+    "metadata": {
+      "vulnerabilities": {
+        "info": 0,
+        "low": 0,
+        "moderate": 2,
+        "high": 4,
+        "critical": 0,
+        "total": 6
+      },
+      "dependencies": {
+        "prod": 9,
+        "dev": 167,
+        "optional": 57,
+        "peer": 14,
+        "peerOptional": 0,
+        "total": 175
+      }
+    },
+    "packages": [
+      {
+        "name": "@vitest/mocker",
+        "version": "4.1.10",
+        "dev": true,
+        "severity": "moderate",
+        "isDirect": false,
+        "range": "<=4.1.11",
+        "nodes": [
+          "node_modules/@vitest/mocker"
+        ],
+        "via": [
+          {
+            "url": "https://github.com/advisories/GHSA-82fw-gwwq-j7x9",
+            "package": "@vitest/mocker",
+            "severity": "moderate",
+            "range": ">=2.1.0 <4.1.11"
+          },
+          {
+            "url": "https://github.com/advisories/GHSA-qxg6-89mg-rqv8",
+            "package": "@vitest/mocker",
+            "severity": "moderate",
+            "range": ">=2.1.0-beta.7 <4.1.12"
+          }
+        ],
+        "fixAvailable": {
+          "name": "vitest",
+          "version": "4.1.12",
+          "isSemVerMajor": false
+        },
+        "parents": [
+          {
+            "path": "node_modules/vitest",
+            "range": "4.1.10"
+          }
+        ]
+      },
+      {
+        "name": "nanoid",
+        "version": "3.3.16",
+        "dev": true,
+        "severity": "high",
+        "isDirect": false,
+        "range": "<3.3.18",
+        "nodes": [
+          "node_modules/nanoid"
+        ],
+        "via": [
+          {
+            "url": "https://github.com/advisories/GHSA-2v37-7h3g-55p8",
+            "package": "nanoid",
+            "severity": "high",
+            "range": "<3.3.18"
+          }
+        ],
+        "fixAvailable": true,
+        "parents": [
+          {
+            "path": "node_modules/postcss",
+            "range": "^3.3.16"
+          }
+        ]
+      },
+      {
+        "name": "source-map-js",
+        "version": "1.2.1",
+        "dev": true,
+        "severity": "high",
+        "isDirect": false,
+        "range": "1.0.0 - 1.2.1",
+        "nodes": [
+          "node_modules/source-map-js"
+        ],
+        "via": [
+          {
+            "url": "https://github.com/advisories/GHSA-68fv-2mgg-jv7q",
+            "package": "source-map-js",
+            "severity": "high",
+            "range": ">=1.0.0 <1.2.2"
+          }
+        ],
+        "fixAvailable": true,
+        "parents": [
+          {
+            "path": "node_modules/css-tree",
+            "range": "^1.2.1"
+          },
+          {
+            "path": "node_modules/postcss",
+            "range": "^1.2.1"
+          }
+        ]
+      },
+      {
+        "name": "undici",
+        "version": "8.9.0",
+        "dev": true,
+        "severity": "high",
+        "isDirect": false,
+        "range": "8.0.0 - 8.12.1",
+        "nodes": [
+          "node_modules/undici"
+        ],
+        "via": [
+          {
+            "url": "https://github.com/advisories/GHSA-3wwx-pv8p-q78v",
+            "package": "undici",
+            "severity": "moderate",
+            "range": ">=8.1.0 <8.10.2"
+          },
+          {
+            "url": "https://github.com/advisories/GHSA-pmjh-fq2x-6v4x",
+            "package": "undici",
+            "severity": "moderate",
+            "range": ">=8.0.0 <8.10.2"
+          },
+          {
+            "url": "https://github.com/advisories/GHSA-r53p-7pc4-xj5r",
+            "package": "undici",
+            "severity": "low",
+            "range": ">=8.0.0 <8.10.2"
+          },
+          {
+            "url": "https://github.com/advisories/GHSA-rfgv-xxqx-mfg5",
+            "package": "undici",
+            "severity": "high",
+            "range": ">=8.0.0 <8.10.2"
+          },
+          {
+            "url": "https://github.com/advisories/GHSA-3xpg-4rpp-hhhm",
+            "package": "undici",
+            "severity": "moderate",
+            "range": ">=8.0.0 <8.10.2"
+          },
+          {
+            "url": "https://github.com/advisories/GHSA-2jfj-6hjv-fm6j",
+            "package": "undici",
+            "severity": "moderate",
+            "range": ">=8.0.0 <8.10.2"
+          },
+          {
+            "url": "https://github.com/advisories/GHSA-2gqq-gqf2-x968",
+            "package": "undici",
+            "severity": "low",
+            "range": ">=8.0.0 <8.10.2"
+          },
+          {
+            "url": "https://github.com/advisories/GHSA-w293-vg96-wgc3",
+            "package": "undici",
+            "severity": "high",
+            "range": ">=8.0.0 <8.10.2"
+          },
+          {
+            "url": "https://github.com/advisories/GHSA-8436-99hf-9mmv",
+            "package": "undici",
+            "severity": "low",
+            "range": ">=8.0.0 <8.10.2"
+          },
+          {
+            "url": "https://github.com/advisories/GHSA-rx4f-c7p8-82vq",
+            "package": "undici",
+            "severity": "moderate",
+            "range": ">=8.0.0 <8.10.2"
+          },
+          {
+            "url": "https://github.com/advisories/GHSA-4qv8-2p9j-2685",
+            "package": "undici",
+            "severity": "moderate",
+            "range": ">=8.0.0 <8.12.2"
+          },
+          {
+            "url": "https://github.com/advisories/GHSA-f72v-6w45-q472",
+            "package": "undici",
+            "severity": "moderate",
+            "range": ">=8.0.0 <8.12.2"
+          },
+          {
+            "url": "https://github.com/advisories/GHSA-xjj6-f33q-929c",
+            "package": "undici",
+            "severity": "high",
+            "range": ">=8.0.0 <8.12.2"
+          },
+          {
+            "url": "https://github.com/advisories/GHSA-4w7w-5xrc-9h26",
+            "package": "undici",
+            "severity": "high",
+            "range": ">=8.0.0 <8.12.2"
+          },
+          {
+            "url": "https://github.com/advisories/GHSA-2m5v-pch6-74hx",
+            "package": "undici",
+            "severity": "high",
+            "range": ">=8.0.0 <8.12.2"
+          },
+          {
+            "url": "https://github.com/advisories/GHSA-qrxm-fqhp-jwvm",
+            "package": "undici",
+            "severity": "high",
+            "range": ">=8.0.0 <8.12.2"
+          },
+          {
+            "url": "https://github.com/advisories/GHSA-9fm3-97px-rjf6",
+            "package": "undici",
+            "severity": "moderate",
+            "range": ">=8.0.0 <8.12.2"
+          },
+          {
+            "url": "https://github.com/advisories/GHSA-55wc-3pg8-jfw6",
+            "package": "undici",
+            "severity": "moderate",
+            "range": ">=8.0.0 <8.12.2"
+          }
+        ],
+        "fixAvailable": true,
+        "parents": [
+          {
+            "path": "node_modules/jsdom",
+            "range": "^8.7.0"
+          }
+        ]
+      },
+      {
+        "name": "vite",
+        "version": "8.1.5",
+        "dev": true,
+        "severity": "high",
+        "isDirect": true,
+        "range": "8.0.0 - 8.1.5",
+        "nodes": [
+          "node_modules/vite"
+        ],
+        "via": [
+          {
+            "url": "https://github.com/advisories/GHSA-698v-4r3x-3vcv",
+            "package": "vite",
+            "severity": "moderate",
+            "range": ">=8.0.0 <=8.1.5"
+          },
+          {
+            "url": "https://github.com/advisories/GHSA-r825-w8mm-5pxw",
+            "package": "vite",
+            "severity": "moderate",
+            "range": ">=8.0.0 <=8.1.5"
+          },
+          {
+            "url": "https://github.com/advisories/GHSA-587h-7wmj-h5pm",
+            "package": "vite",
+            "severity": "high",
+            "range": ">=8.0.0 <=8.1.5"
+          },
+          {
+            "url": "https://github.com/advisories/GHSA-9jrq-w75r-8gcw",
+            "package": "vite",
+            "severity": "low",
+            "range": ">=8.0.0 <=8.1.5"
+          },
+          {
+            "url": "https://github.com/advisories/GHSA-rq7h-c2jc-7f22",
+            "package": "vite",
+            "severity": "moderate",
+            "range": ">=8.0.0 <=8.1.5"
+          }
+        ],
+        "fixAvailable": {
+          "name": "vite",
+          "version": "8.3.8",
+          "isSemVerMajor": false
+        },
+        "parents": [
+          {
+            "path": "node_modules/vitest",
+            "range": "^6.0.0 || ^7.0.0 || ^8.0.0"
+          }
+        ]
+      },
+      {
+        "name": "vitest",
+        "version": "4.1.10",
+        "dev": true,
+        "severity": "moderate",
+        "isDirect": true,
+        "range": "2.1.0-beta.1 - 4.1.10",
+        "nodes": [
+          "node_modules/vitest"
+        ],
+        "via": [
+          "@vitest/mocker",
+          {
+            "url": "https://github.com/advisories/GHSA-82fw-gwwq-j7x9",
+            "package": "vitest",
+            "severity": "moderate",
+            "range": ">=2.1.0 <4.1.11"
+          }
+        ],
+        "fixAvailable": {
+          "name": "vitest",
+          "version": "4.1.12",
+          "isSemVerMajor": false
+        },
+        "parents": []
+      }
+    ]
+  },
+  "production": {
+    "exitCode": 0,
+    "metadata": {
+      "vulnerabilities": {
+        "info": 0,
+        "low": 0,
+        "moderate": 0,
+        "high": 0,
+        "critical": 0,
+        "total": 0
+      },
+      "dependencies": {
+        "prod": 9,
+        "dev": 167,
+        "optional": 57,
+        "peer": 14,
+        "peerOptional": 0,
+        "total": 175
+      }
+    },
+    "vulnerabilities": {}
+  },
+  "uniqueAdvisoryUrlCount": 27,
+  "candidates": [
+    {
+      "request": "vite@8.1.6",
+      "version": "8.1.6",
+      "engines": {
+        "node": "^20.19.0 || >=22.12.0"
+      },
+      "peerDependencies": {
+        "tsx": "^4.8.1",
+        "jiti": ">=1.21.0",
+        "less": "^4.0.0",
+        "sass": "^1.70.0",
+        "yaml": "^2.4.2",
+        "stylus": ">=0.54.8",
+        "terser": "^5.16.0",
+        "esbuild": "^0.27.0 || ^0.28.0",
+        "sugarss": "^5.0.0",
+        "@types/node": "^20.19.0 || >=22.12.0",
+        "sass-embedded": "^1.70.0",
+        "@vitejs/devtools": "^0.3.0"
+      },
+      "vitestCompanions": {}
+    },
+    {
+      "request": "vitest@4.1.12",
+      "version": "4.1.12",
+      "engines": {
+        "node": "^20.0.0 || ^22.0.0 || >=24.0.0"
+      },
+      "peerDependencies": {
+        "vite": "^6.0.0 || ^7.0.0 || ^8.0.0",
+        "jsdom": "*",
+        "happy-dom": "*",
+        "@vitest/ui": "4.1.12",
+        "@types/node": "^20.0.0 || ^22.0.0 || >=24.0.0",
+        "@edge-runtime/vm": "*",
+        "@opentelemetry/api": "^1.9.0",
+        "@vitest/coverage-v8": "4.1.12",
+        "@vitest/browser-preview": "4.1.12",
+        "@vitest/coverage-istanbul": "4.1.12",
+        "@vitest/browser-playwright": "4.1.12",
+        "@vitest/browser-webdriverio": "^4.1.11"
+      },
+      "vitestCompanions": {
+        "@vitest/spy": "4.1.12",
+        "@vitest/utils": "4.1.12",
+        "@vitest/expect": "4.1.12",
+        "@vitest/mocker": "4.1.12",
+        "@vitest/runner": "4.1.12",
+        "@vitest/snapshot": "4.1.12",
+        "@vitest/pretty-format": "4.1.12"
+      }
+    },
+    {
+      "request": "nanoid@3.3.18",
+      "version": "3.3.18",
+      "engines": {
+        "node": "^10 || ^12 || ^13.7 || ^14 || >=15.0.1"
+      },
+      "peerDependencies": {},
+      "vitestCompanions": {}
+    },
+    {
+      "request": "source-map-js@1.2.2",
+      "version": "1.2.2",
+      "engines": {
+        "node": ">=0.10.0"
+      },
+      "peerDependencies": {},
+      "vitestCompanions": {}
+    },
+    {
+      "request": "undici@8.12.2",
+      "version": "8.12.2",
+      "engines": {
+        "node": ">=22.19.0"
+      },
+      "peerDependencies": {},
+      "vitestCompanions": {}
+    }
+  ],
+  "reactPluginVitePeer": "^8.0.0",
+  "manifestAndLockModified": false
+}
