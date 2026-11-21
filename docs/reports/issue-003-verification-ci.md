@@ -50,7 +50,7 @@ make verify-integration
 
 PR과 main push가 동일한 `make verify`를 호출한다. Ubuntu 24.04, Java 21, Node 24를 사용하며 job 상한은 20분이다. 권한은 `contents: read`이고 checkout 자격증명을 보존하지 않는다. 공식 checkout/setup-java/setup-node를 전체 commit SHA로 고정했다. 캐시는 Gradle/npm 의존성 범위이며 secrets·AWS·배포 단계는 없다.
 
-PR 실행: [Verify 실행](https://github.com/dev-baek/bidflow/actions/runs/44856131285), 구현 commit `eaad38e9d9b43da36fae193bcfc7f38b0d88b07e`. 원격 결과는 실행 완료 후 확정한다. main push 실행은 PR 병합 뒤 별도로 확인한다.
+PR의 [Verify 실행](https://github.com/dev-baek/bidflow/actions/runs/44856131285)이 성공했다. 구현 commit은 `eaad38e9d9b43da36fae193bcfc7f38b0d88b07e`이며, GitHub-hosted runner에서 npm ci와 make verify의 실제 성공을 확인했다. 후속 문서 commit의 최신 결과는 [PR #275의 Checks](https://github.com/dev-baek/bidflow/pull/275/checks)에서 확인한다. main push 실행은 PR 병합 뒤 별도로 확인한다.
 
 ## 범위와 남은 확인
 
