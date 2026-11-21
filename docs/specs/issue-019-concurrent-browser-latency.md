@@ -1,6 +1,6 @@
 # 동시 두 사용자 입찰의 브라우저 지연 검증 사양
 
-- 상태: #276에서 승인됨. 순수 관측 판정과 집계의 TDD 구현을 진행한다. 브라우저 수집·SQL 대조·실측은 후속 단계이며 아직 완료하지 않았다.
+- 상태: #276 승인, #277 순수 판정 병합 완료. [브라우저 수집·SQL 대조 연결 구현](../reports/issue-019-concurrent-collection-implementation.md)을 진행했다. 실제 smoke·정식 10회 실측은 아직 완료하지 않았다.
 - 기존 이슈: [#19 부하와 장애 검증](https://github.com/dev-baek/bidflow/issues/19). Browser 실행 기반은 [#20 E2E](issue-020-e2e.md)를 재사용한다.
 - 선행 결과: [순차 화면 측정](../reports/issue-019-local-outbox-delay.md), [동시 요청의 DB 관측](../reports/issue-019-final-settlement-observation.md), [기본 검증과 CI](../reports/issue-003-verification-ci.md).
 
