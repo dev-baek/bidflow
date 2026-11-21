@@ -98,7 +98,7 @@ Destination은 `/user/queue/bid-results`이고, 결과를 낸 사용자에게만
 - `decision`은 `ACCEPTED` 또는 `REJECTED`다.
 - 거절 때 `reason`은 `BID_TOO_LOW`, `SELF_BID`, `AUCTION_ENDED`, `AUCTION_NOT_STARTED` 중 하나이며 `currentPrice`는 마지막 확정 가격이다.
 - `isHighestBidder`는 승인 요청 처리 당시 결과 수신자 자신이 최고 입찰자였는지 나타내는 boolean이다. 현재 순위나 최종 낙찰 여부가 아니다. currentPrice·auctionVersion은 더 최신 DB Snapshot일 수 있어 flag와 기준 시점이 다를 수 있다. 다른 사용자의 승자 식별자는 공개하지 않는다.
-- 화면의 현재 최고 입찰자 단정 문구를 과거 처리 시점으로 바꾸는 제안은 [#20 승인 안내 사양](issue-020-bid-result-timing.md)에서 다룬다. 이 문서 수정만으로 앱 문구가 바뀌지는 않는다.
+- 화면은 [#20 승인 안내 사양](issue-020-bid-result-timing.md)에 따라 이 요청 처리 당시의 최고 입찰 여부로 표현한다. 현재 순위나 최종 결과 안내로 사용하지 않는다. [구현과 브라우저 검증](../reports/issue-020-bid-result-timing.md)을 참조한다.
 - `eventId`는 Kafka Outbox의 event ID를 그대로 사용한다. Browser는 최근 event ID를 짧게 보관해 중복 Frame을 무시한다.
 
 ### 3.4 REST Snapshot
