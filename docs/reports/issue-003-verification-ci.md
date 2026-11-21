@@ -56,4 +56,4 @@ PR의 [Verify 실행](https://github.com/dev-baek/bidflow/actions/runs/448561312
 
 이 작업은 브라우저 E2E, k6, Terraform 계약 검사, 실제 AWS 배포를 실행하지 않았다. 기본 CI 성공은 Kafka·Redis·OpenSearch·S3의 실제 통합 성공이나 부하 SLO를 보장하지 않는다. AWS 자격증명·리소스 명령은 사용하지 않았으며 branch protection도 변경하지 않았다.
 
-기존 #3은 이 PR 병합 후 main push의 동일 검증까지 확인한 뒤 완료 여부를 판단한다. 관련 없는 루트 미추적 package-lock.json은 변경·추가하지 않았다.
+#275 병합 commit `8d452b808b7bd985b8cb20ae1e1f984053d7dfba`의 [main push 검증](https://github.com/dev-baek/bidflow/actions/runs/44856566203)도 성공했다. PR과 main에서 같은 명령이 실제 통과한 것을 확인해 기존 #3의 남은 공통 검증·CI 작업을 완료했다. 관련 없는 루트 미추적 package-lock.json은 변경·추가하지 않았다.

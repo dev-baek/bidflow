@@ -1,6 +1,6 @@
 # [Issue #3] 공통 검증 명령과 CI 사양
 
-- 상태: #274에서 승인됨 — 구현 PR #275. [검증 결과](../reports/issue-003-verification-ci.md)에서 로컬·원격 실행 범위를 확인한다.
+- 상태: #274 승인 및 #275 구현 병합 완료. 로컬·PR·main push의 공통 검증 성공. [검증 결과](../reports/issue-003-verification-ci.md)에서 실행 범위를 확인한다.
 - 기존 이슈: [#3 개발 기반](https://github.com/dev-baek/bidflow/issues/3). [원래 부트스트랩 사양](issue-003-repository-bootstrap.md)의 I.4/I.6과 남은 완료 조건을 구체화한다.
 
 ## S. 검증 사용 흐름
