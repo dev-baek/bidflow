@@ -142,6 +142,24 @@ test('SQL verdict checks every request/ledger/event and the final auction, never
   assert.equal(judgeConcurrentSql(input, good, { A: actors.A, B: actors.A }, endsAt).valid, false);
 });
 
+test('SQL preserves request settlement v2 while validating a private snapshot at v3 against the accepted chain', async () => {
+  const { input } = await collectConcurrentRound(fake().io);
+  const good = snapshot(input);
+  Object.assign(input.frames[0].result, { currentPrice: 12000, auctionVersion: 3 });
+  const result = judgeConcurrentSql(input, good, actors, endsAt);
+  assert.equal(result.valid, true);
+  assert.deepEqual(result.settlements.map(s => [s.bidder, s.settlementVersion, s.ledgerPrice, s.snapshotVersion, s.snapshotPrice]),
+    [['A', 2, 11000, 3, 12000], ['B', 3, 12000, 3, 12000]]);
+  for (const edit of [
+    s => { s.rows[0].events[0].version = 3; },
+    s => { s.rows[0].events[0].price = 12000; },
+    s => { s.rows[0].ledgers[0].price = 12000; },
+    s => { s.auction.version = 4; },
+    s => { s.rows[1].events[0].version = 4; },
+    s => { s.rows[1].bidderId = actors.A; },
+  ]) { const bad = structuredClone(good); edit(bad); assert.equal(judgeConcurrentSql(input, bad, actors, endsAt).valid, false); }
+});
+
 test('SQL reader is fixed to local Docker/psql with read-only transaction and rejects unsafe IDs before execution', async () => {
   let calls = 0;
   const command = async (program, args, options) => {

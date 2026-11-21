@@ -25,7 +25,7 @@ export function judgeConcurrentRound(input) {
     if (!frames.length) return failure('MISSING_RESULT');
     for (const frame of frames) {
       const result = frame.result;
-      const accepted = result.decision === 'ACCEPTED' && result.reason === null && result.currentPrice === receipt.amount;
+      const accepted = result.decision === 'ACCEPTED' && result.reason === null;
       const rejected = index === 0 && result.decision === 'REJECTED' && result.reason === 'BID_TOO_LOW'
         && result.currentPrice === 12000;
       if (frame.bidder !== receipt.bidder || result.auctionId !== input.auctionId || result.type !== 'bid.result'
@@ -37,6 +37,14 @@ export function judgeConcurrentRound(input) {
     if (frames.some(f => ['decision', 'reason', 'currentPrice', 'auctionVersion', 'isHighestBidder']
       .some(key => f.result[key] !== first.result[key]))) return failure('CONFLICTING_RESULT');
     matched.push(first);
+  }
+
+  const bothAccepted = matched[0].result.decision === 'ACCEPTED';
+  for (const [i, frame] of matched.entries()) {
+    const { auctionVersion, currentPrice } = frame.result;
+    const finalSnapshot = auctionVersion === (bothAccepted ? 3 : 2) && currentPrice === 12000;
+    const earlierSnapshot = bothAccepted && i === 0 && auctionVersion === 2 && currentPrice === 11000;
+    if (!finalSnapshot && !earlierSnapshot) return failure('INVALID_SNAPSHOT');
   }
 
   const screen = input.screen;
@@ -54,7 +62,7 @@ export function judgeConcurrentRound(input) {
     postSkewMs: Math.abs(receipts[0].postMs - receipts[1].postMs),
     samples: receipts.map((r, i) => ({ bidder: r.bidder, requestId: r.requestId,
       decision: matched[i].result.decision, reason: matched[i].result.reason,
-      amount: r.amount, auctionVersion: matched[i].result.auctionVersion,
+      amount: r.amount, snapshotVersion: matched[i].result.auctionVersion, snapshotPrice: matched[i].result.currentPrice,
       startedMs: r.startedMs, postMs: r.postMs, httpCompletedMs: r.httpCompletedMs,
       privateReceivedMs: matched[i].receivedMs, screenCompletedMs: screen.completedMs,
       httpMs: r.httpCompletedMs - r.startedMs, privateMs: matched[i].receivedMs - r.startedMs,
