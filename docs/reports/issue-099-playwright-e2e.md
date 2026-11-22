@@ -4,6 +4,8 @@
 
 [실패 캡처 확인](issue-020-failure-artifacts.md)은 외부 임시 fixture의 고의 실패 1회에서 자동 screenshot·trace·console 기록을 확인했다. 업무 E2E 통과나 실제 HTTP/WS/SQL 장애 진단과 구분하며, 원문 artifact는 저장소에 커밋하지 않았다.
 
+[직접 입찰 실패 연결](issue-020-failure-correlation.md)은 #299 승인 범위에서 정상 기능 5개 뒤 새 경매의 고의 실패 probe를 한 번 실행해 HTTP 104건·WS 9개·요청/원장/결과 3개의 연결을 확인했다. 실제 운영 장애나 다른 모든 E2E의 실패 수집 완료로 확대하지 않는다.
+
 ## 실행 전제
 
 Playwright는 임의의 개발 서버나 AWS 환경을 자동으로 만들지 않는다. 다음 local 전용 환경을 사용한다.

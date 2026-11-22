@@ -88,3 +88,11 @@ test('preserves a known rejection in partial SQL without claiming the expected c
   const {journal,sql}=fixture(),row=sql.rows[0];row.decision='REJECTED';Object.assign(row.ledgers[0],{decision:'REJECTED',price:null,reason:'AUCTION_ENDED'});Object.assign(row.events[0],{type:'BidRejected',price:null,reason:'AUCTION_ENDED'});
   const result=judgeFailureCorrelation(journal.close(),sql);assert.equal(result.complete,false);assert.equal(result.sql?.rows[0].reason,'AUCTION_ENDED');
 });
+test('conflicting duplicate frames, WS overflow and a backwards clock fail closed',()=>{
+  const f=fixture(),s=f.journal.close();s.ws.push({...s.ws[0],version:4,price:14000});
+  assert.equal(judgeFailureCorrelation(s,f.sql).code,'CONFLICTING_FRAME');
+  const g=fixture();for(let i=0;i<70;i++)g.journal.frame('A',JSON.stringify({type:'auction.updated',eventId:uuid(30),auctionId,auctionVersion:2,currentPrice:12000,endsAt}));
+  const capped=g.journal.close();assert.equal(capped.ws.length,64);assert.equal(capped.truncated,true);
+  let time=2;const journal=createFailureJournal({runId:uuid(2),source,now:()=>time--});journal.register(auctionId,endsAt);journal.console('A','log',null);journal.console('A','log',null);
+  assert.equal(journal.close().invalid,1);
+});
