@@ -6,6 +6,15 @@ import { judgeConcurrentRound } from './concurrent-browser-observation.mjs';
 export function buildConcurrentSql(auctionId, requestIds) {
   if (!isUuid(auctionId) || !Array.isArray(requestIds) || requestIds.length !== 2
     || !requestIds.every(isUuid) || new Set(requestIds).size !== 2) throw Error('invalid SQL scope');
+  return scopedBidSql(auctionId,requestIds);
+}
+
+export function buildFocusedSql(auctionId) {
+  if(!isUuid(auctionId))throw Error('invalid SQL scope');
+  return scopedBidSql(auctionId);
+}
+
+function scopedBidSql(auctionId,requestIds) {
   return `BEGIN READ ONLY; SET LOCAL statement_timeout = 4000;
 SELECT jsonb_build_object(
   'auction', jsonb_build_object('auctionId',a.auction_id,'status',a.status,'currentPrice',a.current_price,
@@ -15,7 +24,7 @@ SELECT jsonb_build_object(
   'resultCount',(SELECT count(*) FROM outbox_event WHERE aggregate_id=a.auction_id AND topic='bid-event'
     AND event_type IN ('BidAccepted','BidRejected')),
   'rows',(SELECT coalesce(jsonb_agg(jsonb_build_object(
-    'requestId',r.bid_request_id,'auctionId',r.auction_id,'bidderId',r.bidder_id,'amount',r.amount,'decision',r.status,
+    'requestId',r.bid_request_id,'key',r.idempotency_key,'auctionId',r.auction_id,'bidderId',r.bidder_id,'amount',r.amount,'decision',r.status,
     'ledgers',(SELECT coalesce(jsonb_agg(jsonb_build_object('id',l.bid_ledger_id,'bidderId',l.bidder_id,
       'amount',l.requested_amount,'decision',l.decision,'price',l.current_price,'reason',l.rejection_reason)),'[]'::jsonb)
       FROM bid_ledger l WHERE l.auction_id=r.auction_id AND l.bid_request_id=r.bid_request_id),
@@ -25,7 +34,7 @@ SELECT jsonb_build_object(
       FROM outbox_event o WHERE o.aggregate_id=r.auction_id AND o.topic='bid-event'
         AND o.event_type IN ('BidAccepted','BidRejected') AND o.payload->>'bidRequestId'=r.bid_request_id::text)
   )),'[]'::jsonb) FROM bid_request r WHERE r.auction_id=a.auction_id
-    AND r.bid_request_id IN (${requestIds.map(id => `'${id}'`).join(',')}))
+    ${requestIds ? `AND r.bid_request_id IN (${requestIds.map(id => `'${id}'`).join(',')})` : ''})
 ) FROM auction a WHERE a.auction_id='${auctionId}'; COMMIT;`;
 }
 
