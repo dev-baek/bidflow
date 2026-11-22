@@ -67,3 +67,5 @@ node scripts/run-focused-load.mjs "$result_parent/full" full
 이번 실측은 별도 실행 관리로 기존 JVM을 완전히 종료하고 검증 JVM을 띄웠다. 종료 후 검증 JVM의 완전 종료·원래 jar hash/인자·listen PID 792·readiness UP을 확인했다. CLI 내부 restoration은 해당 검증 API가 변경되지 않았다는 확인이고, 기존 API로의 실제 복원은 별도 실행 관리의 결과로 구분한다.
 
 다음 #19 작업은 관측 명령 비용/timeout과 앱 접수 지연을 구분하는 진단이다. 필요하면 소규모 별도 runId로 확인하되 정식 성공으로 세지 않는다. 이후 명시적으로 새 smoke와 1,000건 검증을 진행하며 이번 실패를 보존한다. 브라우저·전체 backend integration·AWS 검증은 이번에 실행하지 않았고, 데이터/볼륨/offset 초기화나 원본 미추적 파일 변경도 없었다. #19는 열린 상태다.
+
+후속 [읽기 전용 진단](issue-019-observer-diagnosis.md)은 기존 API를 유지한 관측 명령 18회와 과거 HTTP 구간/로그를 점검했다. 실패 재현이나 새 부하 검증이 아니며 [명령 추적 사양](../specs/issue-019-observer-command-trace.md)을 제안한다.
