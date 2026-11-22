@@ -1,0 +1,88 @@
+{
+  "issue": 20,
+  "sourceCommit": "cb4ba7318651c656d83136c01c8847a3d9285250",
+  "startedAt": "2026-11-22T07:37:47.524Z",
+  "completedAt": "2026-11-22T07:37:50.889Z",
+  "captureVerified": true,
+  "businessFlowVerified": false,
+  "expectedFailure": true,
+  "runnerExitCode": 1,
+  "attempts": 1,
+  "workers": 1,
+  "retries": 0,
+  "test": {
+    "title": "controlled artifact capture only",
+    "status": "failed",
+    "errorCode": "BIDFLOW_EXPECTED_ARTIFACT_FAILURE",
+    "retry": 0
+  },
+  "reporterStats": {
+    "startTime": "2026-11-22T07:37:48.569Z",
+    "duration": 2268.362,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 1,
+    "flaky": 0
+  },
+  "browserVersion": "145.0.7632.6",
+  "playwrightVersion": "1.58.2",
+  "inheritedPolicy": {
+    "trace": "retain-on-failure",
+    "screenshot": "only-on-failure",
+    "productionConfigSha256": "9f09ca06b1b67cbb90af1f675a25e5ff74b9387873683b501d1477145e7f685b",
+    "captureOptionsOverridden": false
+  },
+  "fixture": {
+    "externalToRepository": true,
+    "staticHtml": true,
+    "applicationServerUsed": false,
+    "networkAbortRoute": true,
+    "traceNetworkEntries": 0,
+    "manualScreenshotOrTracing": false
+  },
+  "artifacts": {
+    "screenshot": {
+      "bytes": 15832,
+      "sha256": "557ef448c4998818cdc39007e4cc1f4851587dab9301f2652c9e8e34acc03b10"
+    },
+    "error-context": {
+      "bytes": 191,
+      "sha256": "219ac5f916c43ea0f87cbe3369cb12b7ad4e7d5887394c8e2cf4f4f4c91619a1"
+    },
+    "trace": {
+      "bytes": 23393,
+      "sha256": "450ce7b23e02f0c050f8f701fdc92321938575e079db1cdbad8e50cd0a5f5725"
+    }
+  },
+  "artifactChecks": {
+    "pngWidth": 1280,
+    "pngHeight": 720,
+    "pngVisuallyInspected": true,
+    "zipIntegrity": true,
+    "consoleMarkerMatches": 1,
+    "errorMarkerPresent": true,
+    "errorContextHeadingMatched": true
+  },
+  "safety": {
+    "apiPidBefore": 30982,
+    "apiPidAfter": 30982,
+    "pidUnchanged": true,
+    "argumentsUnchanged": true,
+    "jarMatchesPriorVerifiedBaseline": true,
+    "readinessUp": true,
+    "existingContainerIdsUnchanged": true,
+    "apiRestarted": false,
+    "awsAccess": false
+  },
+  "inputSha256": {
+    "controlled-failure.spec.ts": "1820b5932eb35627c1954e13f9b0ae8a967748a6db547933a7484fa6518246ca",
+    "playwright.config.ts": "cbedcfda40b53d8df93d9e587435b668d1da7c1ec79914cbb4435316625163ed",
+    "runner.json": "4ab1d6d022738b512bd442ba5c810e53bd9a229cb18053d712a918bdde698d29",
+    "reporter.json": "44eddf43f910f7ad6dc1991d1cda1390383de966f371dd02a50cadd79fac74d9"
+  },
+  "limitations": [
+    "Synthetic failure capture check, not a failed BidFlow business scenario or functional regression pass.",
+    "No HTTP/WS/SQL request correlation was exercised because the fixture made no network requests.",
+    "Raw artifacts remain in a protected external temporary directory and are not committed or uploaded."
+  ]
+}
