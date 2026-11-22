@@ -4,6 +4,7 @@
 - 관련 Issue: [#98 상품 등록부터 낙찰까지 E2E 시나리오 작성](https://github.com/dev-baek/bidflow/issues/98)
 - 후속 구현: #99 Playwright 핵심 E2E 테스트
 - #19 후속 측정: [로컬 브라우저 결과 관측 지연](issue-019-browser-result-latency.md). 기능 E2E 통과와 성능 표본 수집을 구분한다.
+- 후속 제안: [로컬 입찰 실패 증적 연결](issue-020-failure-correlation.md). 직접 입찰 한 사례의 HTTP·WebSocket·SQL을 연결하는 승인 범위이며, 승인 전에는 구현/고의 실패를 실행하지 않는다.
 
 ## 1. 목적과 경계
 
