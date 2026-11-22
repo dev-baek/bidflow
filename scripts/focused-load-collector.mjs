@@ -41,12 +41,15 @@ const dltRows=rows=>{
   return [...rows];
 };
 
-export async function collectFocused(mode,io) {
+export async function collectFocused(mode,io,observer) {
   const {count}=focusedConfig(mode);
   const e={mode,valid:false,fullVerified:false,observationValid:false,startedAt:new Date().toISOString(),
     cpu:[],containers:[],lagSamples:[],receipts:[],failures:[],consistency:{valid:false},resources:{valid:false},
     commandTrace:summarizeTrace(),phaseSummary:summarizePhases(),diagnosticsComplete:false};
+  if(observer)e.browserObservationValid=false;
   let load,finished=false,abort=false,watchers=[],stage='prepare';
+  const browserDeadline=observer?io.now()+300000:Infinity;
+  const assertBrowserTime=()=>{if(observer&&io.now()>=browserDeadline)throw Error('browser run deadline');};
   const failure=(source,error)=>e.failures.push({source,kind:error?.killed===true?'TERMINATED':'FAILED'});
   const diagnostics=()=>{
     try{e.commandTrace=summarizeTrace(io.trace?.());}catch{e.commandTrace=summarizeTrace();}
@@ -68,11 +71,19 @@ export async function collectFocused(mode,io) {
     e.dltBefore=dltRows(await io.dlt());
     e.fixture=await io.fixture();planFocused(e.fixture.runId,mode,1,0);
     if(!isUuid(e.fixture.auctionId)||!Number.isFinite(Date.parse(e.fixture.endsAt)))throw Error('invalid fixture');
+    stage='browser-prepare';
+    if(observer)await observer.prepare(e.fixture,mode);
     await containers();await cpu();
+    assertBrowserTime();
+    if(observer?.error())throw Error('browser not ready');
+    stage='load';
     e.loadStartedMs=io.now();load=await io.start(e.fixture,mode);
     const done=Promise.resolve(load.done).then(code=>{e.exitCode=code;finished=true;},()=>{e.error='LOAD_FAILED';finished=true;});
     watchers=[watch(cpu,1000,'cpu'),watch(containers,3000,'containers'),watch(sampleLag,3000,'lag')];
-    while(!finished&&!abort)await io.wait(100);
+    while(!finished&&!abort){
+      if(observer&&(observer.error()||io.now()>=browserDeadline)){abort=true;e.error='BROWSER_OBSERVATION_FAILED';break;}
+      await io.wait(100);
+    }
     e.loadEndedMs=io.now();
     if(abort)await load.stop();else await done;
     finished=true;await Promise.all(watchers);await containers();
@@ -82,6 +93,7 @@ export async function collectFocused(mode,io) {
     e.phaseSummary=summarizePhases(summary.phaseMetrics);
     const deadline=e.loadEndedMs+60000;
     do {
+      assertBrowserTime();
       stage='snapshot';
       e.snapshot=await io.snapshot(e.fixture.auctionId);
       e.consistency=judgeFocused({...e.fixture,mode,receipts:e.receipts,snapshot:e.snapshot});
@@ -101,17 +113,30 @@ export async function collectFocused(mode,io) {
     const counters=e.http.count===count&&e.http.iterations===count&&e.http.received===count;
     e.observationValid=!e.error&&[0,99].includes(e.exitCode)&&counters&&e.invalidReceipts===0&&e.resources.valid
       &&Number.isFinite(e.recoveredMs)&&e.recoveredMs<=deadline&&e.dltBefore.every((n,i)=>n===e.dltAfter[i]);
+    stage='browser-finish';
+    assertBrowserTime();
+    if(observer&&e.consistency.valid&&e.observationValid&&!observer.error()){
+      e.browser=await observer.finish(e,Math.min(deadline,browserDeadline));
+      assertBrowserTime();
+    }
   }catch(error){failure(stage,error);e.error??='COLLECTION_FAILED';}
   finally {
     finished=true;
     try{if(load)await load.stop();}catch{e.error='LOAD_STOP_FAILED';}
     await Promise.all(watchers);
+    if(observer){
+      try{
+        e.browserEvidence=await observer.close();
+        e.browserObservationValid=e.browser?.valid===true&&!e.browserEvidence.error&&io.now()<browserDeadline;
+      }catch{failure('browser-close');}
+    }
     // Save before restoration as well so a failed restore cannot erase the trial.
     diagnostics();
     try{await io.save(e);}catch{e.error='ARTIFACT_WRITE_FAILED';}
     try{e.restoration=await io.restore();}catch{e.restoration={verified:false};}
     diagnostics();e.observationValid=e.observationValid&&e.diagnosticsComplete&&e.commandTrace.successful;
     e.valid=!e.error&&e.observationValid&&e.consistency.valid&&e.performancePassed===true&&e.restoration?.verified===true;
+    if(observer)e.valid=e.valid&&e.browserObservationValid;
     e.fullVerified=mode==='full'&&e.valid;e.completedAt=new Date().toISOString();await io.save(e);
   }
   return e;

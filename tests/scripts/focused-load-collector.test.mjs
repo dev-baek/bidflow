@@ -43,6 +43,26 @@ test('collector joins a complete smoke without pretending it is a thousand-reque
   assert.equal(e.diagnosticsComplete,true);assert.equal(e.commandTrace.complete,true);assert.equal(e.phaseSummary.complete,true);
 });
 
+test('optional observer gates load, stops on disconnect and preserves partial evidence and restoration',async()=>{
+  for(const scenario of ['prepare','lost','finish','close','pass']){
+    const f=fake();let started=false,lost=false,closed=false;
+    const start=f.io.start;
+    f.io.start=async()=>{started=true;lost=scenario==='lost';return start();};
+    const observer={
+      prepare:async()=>{if(scenario==='prepare')throw Error('private');},
+      error:()=>lost?'SOCKET_LOST':null,
+      finish:async e=>({valid:scenario!=='finish'&&e.consistency.valid}),
+      close:async()=>{closed=true;if(scenario==='close')throw Error('private');return {frames:[]};},
+    };
+    const e=await collectFocused('smoke',f.io,observer);
+    assert.equal(started,scenario!=='prepare');assert.equal(closed,true);assert.equal(f.restored,1);
+    assert.equal(e.valid,scenario==='pass');assert.equal(e.browserObservationValid,scenario==='pass');
+    if(scenario==='lost')assert.equal(f.stopped>0,true);
+    if(scenario!=='close')assert.deepEqual(e.browserEvidence.frames,[]);
+    assert.doesNotMatch(JSON.stringify(e),/private/);
+  }
+});
+
 test('partial receipts, malformed SQL, late recovery and DLT changes cannot pass by lag zero',async()=>{
   for(const change of [f=>f.receipts.pop(),f=>f.snapshot.rows[0].ledgers=[],
     f=>f.io.snapshot=async()=>{throw Error('SQL secret');},f=>f.io.receipts=async()=>({records:[],invalid:1}),
