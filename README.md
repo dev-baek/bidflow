@@ -133,6 +133,8 @@ make load-distributed
 
 `unitTest`는 명시적인 `integration` 태그만 제외한다. 기존 `test`/`check`는 통합 테스트를 포함하며, 결과는 각각 `backend/<module>/build/reports/tests/unitTest/`와 `backend/<module>/build/reports/tests/test/`에 분리된다. `verify-integration`은 서비스를 자동 시작하거나 볼륨을 초기화하지 않는다.
 
+[전체 백엔드 재검증](docs/reports/issue-020-backend-full-check.md)에서는 192개(통합 태그 46개 포함)가 실패/skip 없이 통과했다. 첫 실행은 Docker 소켓 mount 문제로 45개가 skip됐으므로 Gradle 성공만으로 통합 성공을 판단하지 않았다. 이 Mac의 Docker Desktop에서는 호출 시 `TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE=/var/run/docker.sock`을 별도로 지정했으며 전역 설정은 바꾸지 않았다. 재현 명령과 적용 범위는 보고서에 있다.
+
 PR과 main push의 GitHub Actions도 `make verify`를 사용한다. CI는 Java 21·Node 24와 읽기 전용 권한을 사용하며 배포하지 않는다. CI의 whitespace 검사는 기준 SHA부터 변경분을 검사하고, 로컬 기본 실행은 작업 트리와 staged diff를 검사한다. [공통 검증 사양](docs/specs/issue-003-verification-ci.md) · [구현과 검증 결과](docs/reports/issue-003-verification-ci.md)
 
 k6 입력과 실행 방법은 [k6 부하 시나리오](docs/reports/issue-095-k6-bid-load.md), 기존 JSON·SQL·Lag 증적은 [결과·회고](docs/reports/issue-102-portfolio-retrospective.md)에서 확인할 수 있다. Playwright는 [별도 로컬 실행 절차](docs/reports/issue-099-playwright-e2e.md)에 따라 테스트 전용 Clock을 사용한다.
