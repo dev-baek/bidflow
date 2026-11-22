@@ -1,6 +1,6 @@
 # 통합 검증의 skip과 실행 누락 차단 사양
 
-- 상태: 제안됨. 문서 승인/병합 후 TDD로 구현한다. 이번 변경은 실행 스크립트·Gradle·테스트 코드를 바꾸거나 통합 테스트를 재실행하지 않는다.
+- 상태: #296 병합으로 승인됨. TDD 구현과 실제 엄격 통합 검증을 완료했다. [구현·실행 결과](../reports/issue-020-integration-completeness.md). 아래는 승인된 계약이다.
 - 기존 이슈: [#20](https://github.com/dev-baek/bidflow/issues/20). [공통 검증 계약](issue-003-verification-ci.md)의 후속이며 관련 작업이므로 새 이슈를 만들지 않는다.
 - 근거: [#295 전체 백엔드 검증](../reports/issue-020-backend-full-check.md). 첫 실행은 Gradle 성공에도 192개 중 45개가 skip됐고, 호출별 Docker 소켓 보완 후 192개가 skip 없이 통과했다.
 
