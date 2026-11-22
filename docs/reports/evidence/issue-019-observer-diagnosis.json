@@ -1,0 +1,507 @@
+{
+  "issue": 19,
+  "measurement": {
+    "startedAt": "2026-11-22T02:03:00.676Z",
+    "valid": true,
+    "syntheticBidsSubmitted": 0,
+    "records": [
+      {
+        "phase": "sequential",
+        "round": 1,
+        "operation": "stats",
+        "timeoutMs": 5000,
+        "startedMs": 3111.6188749999997,
+        "success": true,
+        "completedMs": 5871.114792,
+        "value": {
+          "count": 5,
+          "memoryBytes": 2610098601.984
+        },
+        "durationMs": 2759.4959170000006
+      },
+      {
+        "phase": "sequential",
+        "round": 1,
+        "operation": "inspect",
+        "timeoutMs": 5000,
+        "startedMs": 5872.518667,
+        "success": true,
+        "completedMs": 6028.423208,
+        "value": {
+          "count": 5,
+          "oom": false
+        },
+        "durationMs": 155.90454099999988
+      },
+      {
+        "phase": "sequential",
+        "round": 1,
+        "operation": "lag",
+        "timeoutMs": 12000,
+        "startedMs": 6028.647417,
+        "success": true,
+        "completedMs": 11306.751499999998,
+        "value": [
+          {
+            "partition": 0,
+            "currentOffset": 1159,
+            "endOffset": 1159,
+            "lag": 0
+          },
+          {
+            "partition": 1,
+            "currentOffset": 1905,
+            "endOffset": 1905,
+            "lag": 0
+          },
+          {
+            "partition": 2,
+            "currentOffset": 602,
+            "endOffset": 602,
+            "lag": 0
+          }
+        ],
+        "durationMs": 5278.104082999998
+      },
+      {
+        "phase": "sequential",
+        "round": 2,
+        "operation": "stats",
+        "timeoutMs": 5000,
+        "startedMs": 11308.714375,
+        "success": true,
+        "completedMs": 14024.190458,
+        "value": {
+          "count": 5,
+          "memoryBytes": 2610413174.784
+        },
+        "durationMs": 2715.4760829999996
+      },
+      {
+        "phase": "sequential",
+        "round": 2,
+        "operation": "inspect",
+        "timeoutMs": 5000,
+        "startedMs": 14024.5165,
+        "success": true,
+        "completedMs": 14700.632625,
+        "value": {
+          "count": 5,
+          "oom": false
+        },
+        "durationMs": 676.1161250000005
+      },
+      {
+        "phase": "sequential",
+        "round": 2,
+        "operation": "lag",
+        "timeoutMs": 12000,
+        "startedMs": 14700.74275,
+        "success": true,
+        "completedMs": 19936.182375,
+        "value": [
+          {
+            "partition": 0,
+            "currentOffset": 1159,
+            "endOffset": 1159,
+            "lag": 0
+          },
+          {
+            "partition": 1,
+            "currentOffset": 1905,
+            "endOffset": 1905,
+            "lag": 0
+          },
+          {
+            "partition": 2,
+            "currentOffset": 602,
+            "endOffset": 602,
+            "lag": 0
+          }
+        ],
+        "durationMs": 5235.439625000001
+      },
+      {
+        "phase": "sequential",
+        "round": 3,
+        "operation": "stats",
+        "timeoutMs": 5000,
+        "startedMs": 19936.418333,
+        "success": true,
+        "completedMs": 22399.805083000003,
+        "value": {
+          "count": 5,
+          "memoryBytes": 2610360745.984
+        },
+        "durationMs": 2463.3867500000015
+      },
+      {
+        "phase": "sequential",
+        "round": 3,
+        "operation": "inspect",
+        "timeoutMs": 5000,
+        "startedMs": 22399.878292,
+        "success": true,
+        "completedMs": 22543.000917,
+        "value": {
+          "count": 5,
+          "oom": false
+        },
+        "durationMs": 143.12262499999997
+      },
+      {
+        "phase": "sequential",
+        "round": 3,
+        "operation": "lag",
+        "timeoutMs": 12000,
+        "startedMs": 22543.055542000002,
+        "success": true,
+        "completedMs": 26800.132958000002,
+        "value": [
+          {
+            "partition": 0,
+            "currentOffset": 1159,
+            "endOffset": 1159,
+            "lag": 0
+          },
+          {
+            "partition": 1,
+            "currentOffset": 1905,
+            "endOffset": 1905,
+            "lag": 0
+          },
+          {
+            "partition": 2,
+            "currentOffset": 602,
+            "endOffset": 602,
+            "lag": 0
+          }
+        ],
+        "durationMs": 4257.077416
+      },
+      {
+        "phase": "concurrent",
+        "round": 1,
+        "operation": "stats",
+        "timeoutMs": 5000,
+        "startedMs": 26800.628,
+        "success": true,
+        "completedMs": 29977.425167,
+        "value": {
+          "count": 5,
+          "memoryBytes": 2693372313.6
+        },
+        "durationMs": 3176.7971670000006
+      },
+      {
+        "phase": "concurrent",
+        "round": 1,
+        "operation": "inspect",
+        "timeoutMs": 5000,
+        "startedMs": 26828.040125,
+        "success": true,
+        "completedMs": 27267.62125,
+        "value": {
+          "count": 5,
+          "oom": false
+        },
+        "durationMs": 439.5811250000006
+      },
+      {
+        "phase": "concurrent",
+        "round": 1,
+        "operation": "lag",
+        "timeoutMs": 12000,
+        "startedMs": 26851.256625,
+        "success": true,
+        "completedMs": 31291.898208000002,
+        "value": [
+          {
+            "partition": 0,
+            "currentOffset": 1159,
+            "endOffset": 1159,
+            "lag": 0
+          },
+          {
+            "partition": 1,
+            "currentOffset": 1905,
+            "endOffset": 1905,
+            "lag": 0
+          },
+          {
+            "partition": 2,
+            "currentOffset": 602,
+            "endOffset": 602,
+            "lag": 0
+          }
+        ],
+        "durationMs": 4440.6415830000005
+      },
+      {
+        "phase": "concurrent",
+        "round": 2,
+        "operation": "stats",
+        "timeoutMs": 5000,
+        "startedMs": 31292.142583,
+        "success": true,
+        "completedMs": 34130.736208,
+        "value": {
+          "count": 5,
+          "memoryBytes": 2691224829.9519997
+        },
+        "durationMs": 2838.5936250000013
+      },
+      {
+        "phase": "concurrent",
+        "round": 2,
+        "operation": "inspect",
+        "timeoutMs": 5000,
+        "startedMs": 31294.096667,
+        "success": true,
+        "completedMs": 31446.190417,
+        "value": {
+          "count": 5,
+          "oom": false
+        },
+        "durationMs": 152.09375
+      },
+      {
+        "phase": "concurrent",
+        "round": 2,
+        "operation": "lag",
+        "timeoutMs": 12000,
+        "startedMs": 31295.980375000003,
+        "success": true,
+        "completedMs": 34064.070167,
+        "value": [
+          {
+            "partition": 0,
+            "currentOffset": 1159,
+            "endOffset": 1159,
+            "lag": 0
+          },
+          {
+            "partition": 1,
+            "currentOffset": 1905,
+            "endOffset": 1905,
+            "lag": 0
+          },
+          {
+            "partition": 2,
+            "currentOffset": 602,
+            "endOffset": 602,
+            "lag": 0
+          }
+        ],
+        "durationMs": 2768.089791999995
+      },
+      {
+        "phase": "concurrent",
+        "round": 3,
+        "operation": "stats",
+        "timeoutMs": 5000,
+        "startedMs": 34131.14825,
+        "success": true,
+        "completedMs": 36746.447083,
+        "value": {
+          "count": 5,
+          "memoryBytes": 2663559200.7679996
+        },
+        "durationMs": 2615.2988330000007
+      },
+      {
+        "phase": "concurrent",
+        "round": 3,
+        "operation": "inspect",
+        "timeoutMs": 5000,
+        "startedMs": 34137.612208,
+        "success": true,
+        "completedMs": 34369.373292000004,
+        "value": {
+          "count": 5,
+          "oom": false
+        },
+        "durationMs": 231.7610840000052
+      },
+      {
+        "phase": "concurrent",
+        "round": 3,
+        "operation": "lag",
+        "timeoutMs": 12000,
+        "startedMs": 34146.199,
+        "success": true,
+        "completedMs": 38246.834833,
+        "value": [
+          {
+            "partition": 0,
+            "currentOffset": 1159,
+            "endOffset": 1159,
+            "lag": 0
+          },
+          {
+            "partition": 1,
+            "currentOffset": 1905,
+            "endOffset": 1905,
+            "lag": 0
+          },
+          {
+            "partition": 2,
+            "currentOffset": 602,
+            "endOffset": 602,
+            "lag": 0
+          }
+        ],
+        "durationMs": 4100.635833
+      }
+    ],
+    "rounds": [
+      {
+        "phase": "sequential",
+        "round": 1,
+        "startedMs": 3111.0447919999997,
+        "completedMs": 11308.444542,
+        "hostBusyPercent": 57.193143556779916
+      },
+      {
+        "phase": "sequential",
+        "round": 2,
+        "startedMs": 11308.612958,
+        "completedMs": 19936.273958,
+        "hostBusyPercent": 57.8733294596165
+      },
+      {
+        "phase": "sequential",
+        "round": 3,
+        "startedMs": 19936.371208,
+        "completedMs": 26800.301125,
+        "hostBusyPercent": 56.48994515539305
+      },
+      {
+        "phase": "concurrent",
+        "round": 1,
+        "startedMs": 26800.501208,
+        "completedMs": 31292.00275,
+        "hostBusyPercent": 66.81551772257885
+      },
+      {
+        "phase": "concurrent",
+        "round": 2,
+        "startedMs": 31292.1005,
+        "completedMs": 34130.838083,
+        "hostBusyPercent": 68.85752095280107
+      },
+      {
+        "phase": "concurrent",
+        "round": 3,
+        "startedMs": 34131.027375,
+        "completedMs": 38246.8975,
+        "hostBusyPercent": 62.74390243902439
+      }
+    ],
+    "apiUnchanged": true,
+    "sourceCommit": "5baf4c4fe139f67afeb82fc0da3061d1960c98f3",
+    "environment": {
+      "node": "v24.18.0",
+      "arch": "arm64",
+      "cpus": 8,
+      "memoryBytes": 17179869184,
+      "os": "25.5.0",
+      "docker": "27.5.1 8 8217858048",
+      "pressure": 2
+    },
+    "beforeHealth": "healthy\nhealthy\nhealthy\nhealthy\nhealthy",
+    "afterHealth": "healthy\nhealthy\nhealthy\nhealthy\nhealthy",
+    "api": {
+      "pid": 792,
+      "jarSha256": "5251be8d60c6fc0f3a7afb13415c72e2438713b973a854a54f411009065f08c4",
+      "profile": "local",
+      "delayMs": 1000,
+      "logging": "INFO"
+    },
+    "completedAt": "2026-11-22T02:03:39.233Z"
+  },
+  "priorFailureLogReview": {
+    "capturedAt": "2026-11-22T02:04:10.443Z",
+    "receiptIds": 585,
+    "files": [
+      {
+        "file": "test-api.log",
+        "counts": {
+          "bid.request.received": 585,
+          "bid.settled": 559
+        },
+        "uniqueIds": {
+          "bid.request.received": 585,
+          "bid.settled": 559
+        },
+        "durationFields": 0
+      },
+      {
+        "file": "restored-api.log",
+        "counts": {
+          "bid.request.received": 0,
+          "bid.settled": 26
+        },
+        "uniqueIds": {
+          "bid.request.received": 0,
+          "bid.settled": 26
+        },
+        "durationFields": 0
+      }
+    ],
+    "receivedIds": 585,
+    "settledIds": 585,
+    "missingReceived": 0,
+    "missingSettled": 0
+  },
+  "priorFailureHttpPhases": {
+    "sourceCommit": "6f43682",
+    "responses": 585,
+    "fullRunCompleted": false,
+    "metrics": {
+      "http_req_duration": {
+        "max": 2516.338084,
+        "med": 93.975125,
+        "p(95)": 620.5990421999998,
+        "p(99)": 2132.08620944
+      },
+      "http_req_blocked": {
+        "p(99)": 9.639176719999998,
+        "max": 37.763209,
+        "med": 0.008208,
+        "p(95)": 0.06390859999999969
+      },
+      "http_req_connecting": {
+        "p(95)": 0,
+        "p(99)": 6.46565856,
+        "max": 7.019042,
+        "med": 0
+      },
+      "http_req_sending": {
+        "med": 0.032833,
+        "p(95)": 0.21852499999999947,
+        "p(99)": 4.966065279999997,
+        "max": 28.109875
+      },
+      "http_req_waiting": {
+        "med": 92.206792,
+        "p(95)": 620.1756335999997,
+        "p(99)": 2131.81155744,
+        "max": 2516.069377
+      },
+      "http_req_receiving": {
+        "med": 0.125375,
+        "p(95)": 3.7935921999999995,
+        "p(99)": 13.527247999999984,
+        "max": 40.372083
+      }
+    }
+  },
+  "limitations": [
+    "no synthetic bids submitted in this diagnosis",
+    "sequential then concurrent, three rounds each; no randomized control",
+    "host CPU includes background work, not command-attributed CPU",
+    "no previous failure reproduced and no new load latency measured",
+    "past server phases and exact failing command unavailable"
+  ]
+}
