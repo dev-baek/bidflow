@@ -3,6 +3,7 @@
 - 상태: #286 병합으로 승인됨. [기반 구현](../reports/issue-019-focused-thousand-core.md) 뒤 [실행 수집기와 첫 실측](../reports/issue-019-focused-load-collector.md)을 추가했다. 10건 smoke는 통과했지만 정식 실행은 관측 오류로 585건 접수 후 중단됐으므로 1,000건 검증은 미완료다.
 - 기존 이슈: [#19 부하와 장애 검증](https://github.com/dev-baek/bidflow/issues/19). 같은 검증 범위이므로 새 이슈를 만들지 않는다.
 - 선행 계약: [부하·장애 기준](issue-019-load-failure-test.md), [기존 k6 도구](../reports/issue-095-k6-bid-load.md), [동시 정산과 snapshot 구분](issue-019-concurrent-snapshot-alignment.md).
+- 후속 제안: [명령 추적을 포함한 재검증](issue-019-instrumented-rerun.md). #290 계측을 연결한 새 smoke/본 실행의 승인 범위·중단·복원·결과 구분을 정한다. 승인 전에는 추가 부하를 실행하지 않는다.
 
 ## 목적과 기존 결과의 구분
 
