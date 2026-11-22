@@ -1,0 +1,1765 @@
+{
+  "issue": 20,
+  "verificationSucceeded": true,
+  "businessProbePassed": false,
+  "expectedFailure": true,
+  "sourceCommit": "8095a144d39c3b24af05b2780b47a16c45de7931",
+  "startedAt": "2026-11-22T10:50:43.660Z",
+  "completedAt": "2026-11-22T10:52:28.783Z",
+  "environment": {
+    "node": "v24.18.0",
+    "arch": "arm64",
+    "os": "25.5.0",
+    "cpuCount": 8,
+    "memoryBytes": 17179869184,
+    "model": "Mac15,12",
+    "java": "openjdk 21.0.7 2025-04-15 LTS\nOpenJDK Runtime Environment Microsoft-11369939 (build 21.0.7+6-LTS)\nOpenJDK 64-Bit Server VM Microsoft-11369939 (build 21.0.7+6-LTS, mixed mode, sharing)",
+    "docker": "27.5.1 8 8217858048"
+  },
+  "baseline": {
+    "stats": {
+      "startTime": "2026-11-22T10:51:10.956Z",
+      "duration": 41552.413,
+      "expected": 5,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "cases": [
+      {
+        "title": "등록한 경매에 입찰이 없으면 마감에 공개 유찰로 바뀐다",
+        "status": "passed",
+        "retry": 0
+      },
+      {
+        "title": "자동 입찰로 확정된 낙찰은 마감 이후 새 입찰로 바뀌지 않는다",
+        "status": "passed",
+        "retry": 0
+      },
+      {
+        "title": "직접 입찰 재시도는 같은 요청이고 같은 사용자의 후속 입찰은 새 요청이다",
+        "status": "passed",
+        "retry": 0
+      },
+      {
+        "title": "WebSocket 연결을 복구하면 끊긴 사이 놓친 현재가를 REST에서 읽는다",
+        "status": "passed",
+        "retry": 0
+      },
+      {
+        "title": "OpenSearch 복합 필터와 정렬을 적용하고 실제 경매 상세를 연다",
+        "status": "passed",
+        "retry": 0
+      }
+    ]
+  },
+  "probe": {
+    "stats": {
+      "startTime": "2026-11-22T10:51:58.245Z",
+      "duration": 11737.389,
+      "expected": 0,
+      "skipped": 0,
+      "unexpected": 1,
+      "flaky": 0
+    },
+    "status": "failed",
+    "errorCode": "BIDFLOW_EXPECTED_CORRELATION_FAILURE",
+    "retry": 0,
+    "diagnosticsCompleteConfirmed": true,
+    "cleanupFailureAnnotation": false
+  },
+  "diagnostic": {
+    "runId": "1cdd3317-1f9f-4f65-bd38-87e5c6619be9",
+    "source": "8095a144d39c3b24af05b2780b47a16c45de7931",
+    "caseId": "direct-bid",
+    "stage": "VERIFIED",
+    "auctionId": "0c37b976-4613-4009-8e01-898e0c304871",
+    "initialEndsAt": "2030-01-01T12:30:00Z",
+    "ws": [
+      {
+        "role": "B",
+        "auctionId": "0c37b976-4613-4009-8e01-898e0c304871",
+        "eventId": "c0b9ec12-8e58-4b24-97a9-594656cbc625",
+        "version": 2,
+        "price": 12000,
+        "endsAt": "2030-01-01T12:30:00Z",
+        "channel": "public",
+        "type": "auction.updated",
+        "atMs": 4073.065166
+      },
+      {
+        "role": "A",
+        "auctionId": "0c37b976-4613-4009-8e01-898e0c304871",
+        "eventId": "c0b9ec12-8e58-4b24-97a9-594656cbc625",
+        "version": 2,
+        "price": 12000,
+        "endsAt": "2030-01-01T12:30:00Z",
+        "channel": "public",
+        "type": "auction.updated",
+        "atMs": 4073.7644159999995
+      },
+      {
+        "role": "A",
+        "auctionId": "0c37b976-4613-4009-8e01-898e0c304871",
+        "eventId": "c0b9ec12-8e58-4b24-97a9-594656cbc625",
+        "version": 2,
+        "price": 12000,
+        "endsAt": "2030-01-01T12:30:00Z",
+        "channel": "private",
+        "type": "bid.result",
+        "requestId": "50e5d6ee-d77a-43bc-b93e-c9cd9684c651",
+        "decision": "ACCEPTED",
+        "reason": null,
+        "isHighestBidder": true,
+        "atMs": 4074.2419999999997
+      },
+      {
+        "role": "B",
+        "auctionId": "0c37b976-4613-4009-8e01-898e0c304871",
+        "eventId": "b8265f1e-16cb-433a-9408-c9eab36b87ce",
+        "version": 3,
+        "price": 13000,
+        "endsAt": "2030-01-01T12:30:00Z",
+        "channel": "public",
+        "type": "auction.updated",
+        "atMs": 5186.953875000001
+      },
+      {
+        "role": "A",
+        "auctionId": "0c37b976-4613-4009-8e01-898e0c304871",
+        "eventId": "b8265f1e-16cb-433a-9408-c9eab36b87ce",
+        "version": 3,
+        "price": 13000,
+        "endsAt": "2030-01-01T12:30:00Z",
+        "channel": "public",
+        "type": "auction.updated",
+        "atMs": 5186.995500000001
+      },
+      {
+        "role": "B",
+        "auctionId": "0c37b976-4613-4009-8e01-898e0c304871",
+        "eventId": "b8265f1e-16cb-433a-9408-c9eab36b87ce",
+        "version": 3,
+        "price": 13000,
+        "endsAt": "2030-01-01T12:30:00Z",
+        "channel": "private",
+        "type": "bid.result",
+        "requestId": "d633c033-e745-4e7a-9217-9aa7951004e3",
+        "decision": "ACCEPTED",
+        "reason": null,
+        "isHighestBidder": true,
+        "atMs": 5189.622333000001
+      },
+      {
+        "role": "B",
+        "auctionId": "0c37b976-4613-4009-8e01-898e0c304871",
+        "eventId": "d8b7daed-4e33-49e8-99ff-9a12e1c5288f",
+        "version": 4,
+        "price": 14000,
+        "endsAt": "2030-01-01T12:30:00Z",
+        "channel": "public",
+        "type": "auction.updated",
+        "atMs": 6031.939708
+      },
+      {
+        "role": "A",
+        "auctionId": "0c37b976-4613-4009-8e01-898e0c304871",
+        "eventId": "d8b7daed-4e33-49e8-99ff-9a12e1c5288f",
+        "version": 4,
+        "price": 14000,
+        "endsAt": "2030-01-01T12:30:00Z",
+        "channel": "public",
+        "type": "auction.updated",
+        "atMs": 6031.980875000001
+      },
+      {
+        "role": "A",
+        "auctionId": "0c37b976-4613-4009-8e01-898e0c304871",
+        "eventId": "d8b7daed-4e33-49e8-99ff-9a12e1c5288f",
+        "version": 4,
+        "price": 14000,
+        "endsAt": "2030-01-01T12:30:00Z",
+        "channel": "private",
+        "type": "bid.result",
+        "requestId": "ebd06255-bba9-4503-8b59-42a7927836f5",
+        "decision": "ACCEPTED",
+        "reason": null,
+        "isHighestBidder": true,
+        "atMs": 6043.997291
+      }
+    ],
+    "console": [],
+    "invalid": 0,
+    "truncated": false,
+    "correlation": {
+      "complete": true,
+      "code": "CORRELATED",
+      "sql": {
+        "requestCount": 3,
+        "ledgerCount": 3,
+        "resultCount": 3,
+        "rows": [
+          {
+            "requestId": "50e5d6ee-d77a-43bc-b93e-c9cd9684c651",
+            "key": "5bca9e1a-3bdb-4c3f-8801-cc91907399a3",
+            "role": "A",
+            "amount": 12000,
+            "decision": "ACCEPTED",
+            "ledgerId": "87ee84a4-fa7c-4b02-80b4-2b1c8aee914b",
+            "eventId": "c0b9ec12-8e58-4b24-97a9-594656cbc625",
+            "settlementVersion": 2,
+            "price": 12000,
+            "reason": null
+          },
+          {
+            "requestId": "d633c033-e745-4e7a-9217-9aa7951004e3",
+            "key": "bd5f1e1d-7d6a-4aca-b001-b833dbd8f3ad",
+            "role": "B",
+            "amount": 13000,
+            "decision": "ACCEPTED",
+            "ledgerId": "d920e58a-42f7-464f-9bdc-5060fd6e6530",
+            "eventId": "b8265f1e-16cb-433a-9408-c9eab36b87ce",
+            "settlementVersion": 3,
+            "price": 13000,
+            "reason": null
+          },
+          {
+            "requestId": "ebd06255-bba9-4503-8b59-42a7927836f5",
+            "key": "051e715a-bf2f-4040-95ec-667867e1e180",
+            "role": "A",
+            "amount": 14000,
+            "decision": "ACCEPTED",
+            "ledgerId": "8050997d-66c1-4798-901f-94f9fed2278e",
+            "eventId": "d8b7daed-4e33-49e8-99ff-9a12e1c5288f",
+            "settlementVersion": 4,
+            "price": 14000,
+            "reason": null
+          }
+        ],
+        "auction": {
+          "auctionId": "0c37b976-4613-4009-8e01-898e0c304871",
+          "status": "ACTIVE",
+          "price": 14000,
+          "winner": "A",
+          "version": 4,
+          "endsAt": "2030-01-01T12:30:00+00:00"
+        }
+      },
+      "links": [
+        {
+          "requestId": "50e5d6ee-d77a-43bc-b93e-c9cd9684c651",
+          "key": "5bca9e1a-3bdb-4c3f-8801-cc91907399a3",
+          "role": "A",
+          "amount": 12000,
+          "decision": "ACCEPTED",
+          "ledgerId": "87ee84a4-fa7c-4b02-80b4-2b1c8aee914b",
+          "eventId": "c0b9ec12-8e58-4b24-97a9-594656cbc625",
+          "settlementVersion": 2,
+          "price": 12000,
+          "reason": null
+        },
+        {
+          "requestId": "d633c033-e745-4e7a-9217-9aa7951004e3",
+          "key": "bd5f1e1d-7d6a-4aca-b001-b833dbd8f3ad",
+          "role": "B",
+          "amount": 13000,
+          "decision": "ACCEPTED",
+          "ledgerId": "d920e58a-42f7-464f-9bdc-5060fd6e6530",
+          "eventId": "b8265f1e-16cb-433a-9408-c9eab36b87ce",
+          "settlementVersion": 3,
+          "price": 13000,
+          "reason": null
+        },
+        {
+          "requestId": "ebd06255-bba9-4503-8b59-42a7927836f5",
+          "key": "051e715a-bf2f-4040-95ec-667867e1e180",
+          "role": "A",
+          "amount": 14000,
+          "decision": "ACCEPTED",
+          "ledgerId": "8050997d-66c1-4798-901f-94f9fed2278e",
+          "eventId": "d8b7daed-4e33-49e8-99ff-9a12e1c5288f",
+          "settlementVersion": 4,
+          "price": 14000,
+          "reason": null
+        }
+      ]
+    },
+    "capture": {
+      "sql": "OK",
+      "A": {
+        "status": "OK",
+        "bytes": 52889,
+        "sha256": "c9fb2d00ae855c8ee39dcec0b363c2b47bf758e978c31dab49e1e0ddd0ae788b"
+      },
+      "B": {
+        "status": "OK",
+        "bytes": 52945,
+        "sha256": "b33c3585b4833ee586bcafe49315568ecb89b047c0ebe775863727167d44d2ce"
+      },
+      "cleanup": "OK",
+      "attachmentVerification": "REPORTER_REQUIRED"
+    },
+    "httpColumns": [
+      "role",
+      "auctionId",
+      "key",
+      "amount",
+      "status",
+      "requestId",
+      "receiptStatus",
+      "code",
+      "atMs"
+    ],
+    "httpSamples": [
+      [
+        "A",
+        "0c37b976-4613-4009-8e01-898e0c304871",
+        "5bca9e1a-3bdb-4c3f-8801-cc91907399a3",
+        12000,
+        202,
+        "50e5d6ee-d77a-43bc-b93e-c9cd9684c651",
+        "RECEIVED",
+        null,
+        3850.1724579999996
+      ],
+      [
+        "A",
+        "0c37b976-4613-4009-8e01-898e0c304871",
+        "5bca9e1a-3bdb-4c3f-8801-cc91907399a3",
+        12000,
+        202,
+        "50e5d6ee-d77a-43bc-b93e-c9cd9684c651",
+        "RECEIVED",
+        null,
+        4252.466375
+      ],
+      [
+        "A",
+        "0c37b976-4613-4009-8e01-898e0c304871",
+        "5bca9e1a-3bdb-4c3f-8801-cc91907399a3",
+        12000,
+        202,
+        "50e5d6ee-d77a-43bc-b93e-c9cd9684c651",
+        "RECEIVED",
+        null,
+        4260.728083
+      ],
+      [
+        "A",
+        "0c37b976-4613-4009-8e01-898e0c304871",
+        "5bca9e1a-3bdb-4c3f-8801-cc91907399a3",
+        12000,
+        202,
+        "50e5d6ee-d77a-43bc-b93e-c9cd9684c651",
+        "RECEIVED",
+        null,
+        4260.920333
+      ],
+      [
+        "A",
+        "0c37b976-4613-4009-8e01-898e0c304871",
+        "5bca9e1a-3bdb-4c3f-8801-cc91907399a3",
+        12000,
+        202,
+        "50e5d6ee-d77a-43bc-b93e-c9cd9684c651",
+        "RECEIVED",
+        null,
+        4260.9400829999995
+      ],
+      [
+        "A",
+        "0c37b976-4613-4009-8e01-898e0c304871",
+        "5bca9e1a-3bdb-4c3f-8801-cc91907399a3",
+        12000,
+        202,
+        "50e5d6ee-d77a-43bc-b93e-c9cd9684c651",
+        "RECEIVED",
+        null,
+        4270.3267909999995
+      ],
+      [
+        "A",
+        "0c37b976-4613-4009-8e01-898e0c304871",
+        "5bca9e1a-3bdb-4c3f-8801-cc91907399a3",
+        12000,
+        202,
+        "50e5d6ee-d77a-43bc-b93e-c9cd9684c651",
+        "RECEIVED",
+        null,
+        4270.362832999999
+      ],
+      [
+        "A",
+        "0c37b976-4613-4009-8e01-898e0c304871",
+        "5bca9e1a-3bdb-4c3f-8801-cc91907399a3",
+        12000,
+        202,
+        "50e5d6ee-d77a-43bc-b93e-c9cd9684c651",
+        "RECEIVED",
+        null,
+        4270.385666
+      ],
+      [
+        "A",
+        "0c37b976-4613-4009-8e01-898e0c304871",
+        "5bca9e1a-3bdb-4c3f-8801-cc91907399a3",
+        12000,
+        202,
+        "50e5d6ee-d77a-43bc-b93e-c9cd9684c651",
+        "RECEIVED",
+        null,
+        4270.401291
+      ],
+      [
+        "A",
+        "0c37b976-4613-4009-8e01-898e0c304871",
+        "5bca9e1a-3bdb-4c3f-8801-cc91907399a3",
+        12000,
+        202,
+        "50e5d6ee-d77a-43bc-b93e-c9cd9684c651",
+        "RECEIVED",
+        null,
+        4270.421582999999
+      ],
+      [
+        "A",
+        "0c37b976-4613-4009-8e01-898e0c304871",
+        "5bca9e1a-3bdb-4c3f-8801-cc91907399a3",
+        12000,
+        202,
+        "50e5d6ee-d77a-43bc-b93e-c9cd9684c651",
+        "RECEIVED",
+        null,
+        4270.506208000001
+      ],
+      [
+        "A",
+        "0c37b976-4613-4009-8e01-898e0c304871",
+        "5bca9e1a-3bdb-4c3f-8801-cc91907399a3",
+        12000,
+        202,
+        "50e5d6ee-d77a-43bc-b93e-c9cd9684c651",
+        "RECEIVED",
+        null,
+        4310.679125000001
+      ],
+      [
+        "A",
+        "0c37b976-4613-4009-8e01-898e0c304871",
+        "5bca9e1a-3bdb-4c3f-8801-cc91907399a3",
+        12000,
+        202,
+        "50e5d6ee-d77a-43bc-b93e-c9cd9684c651",
+        "RECEIVED",
+        null,
+        4310.709999999999
+      ],
+      [
+        "A",
+        "0c37b976-4613-4009-8e01-898e0c304871",
+        "5bca9e1a-3bdb-4c3f-8801-cc91907399a3",
+        12000,
+        202,
+        "50e5d6ee-d77a-43bc-b93e-c9cd9684c651",
+        "RECEIVED",
+        null,
+        4310.740625
+      ],
+      [
+        "A",
+        "0c37b976-4613-4009-8e01-898e0c304871",
+        "5bca9e1a-3bdb-4c3f-8801-cc91907399a3",
+        12000,
+        202,
+        "50e5d6ee-d77a-43bc-b93e-c9cd9684c651",
+        "RECEIVED",
+        null,
+        4310.755665999999
+      ],
+      [
+        "A",
+        "0c37b976-4613-4009-8e01-898e0c304871",
+        "5bca9e1a-3bdb-4c3f-8801-cc91907399a3",
+        12000,
+        202,
+        "50e5d6ee-d77a-43bc-b93e-c9cd9684c651",
+        "RECEIVED",
+        null,
+        4310.886541
+      ],
+      [
+        "A",
+        "0c37b976-4613-4009-8e01-898e0c304871",
+        "5bca9e1a-3bdb-4c3f-8801-cc91907399a3",
+        12000,
+        202,
+        "50e5d6ee-d77a-43bc-b93e-c9cd9684c651",
+        "RECEIVED",
+        null,
+        4310.894708
+      ],
+      [
+        "A",
+        "0c37b976-4613-4009-8e01-898e0c304871",
+        "5bca9e1a-3bdb-4c3f-8801-cc91907399a3",
+        12000,
+        202,
+        "50e5d6ee-d77a-43bc-b93e-c9cd9684c651",
+        "RECEIVED",
+        null,
+        4310.9032910000005
+      ],
+      [
+        "A",
+        "0c37b976-4613-4009-8e01-898e0c304871",
+        "5bca9e1a-3bdb-4c3f-8801-cc91907399a3",
+        12000,
+        202,
+        "50e5d6ee-d77a-43bc-b93e-c9cd9684c651",
+        "RECEIVED",
+        null,
+        4310.910333
+      ],
+      [
+        "A",
+        "0c37b976-4613-4009-8e01-898e0c304871",
+        "5bca9e1a-3bdb-4c3f-8801-cc91907399a3",
+        12000,
+        202,
+        "50e5d6ee-d77a-43bc-b93e-c9cd9684c651",
+        "RECEIVED",
+        null,
+        4310.918540999999
+      ],
+      [
+        "A",
+        "0c37b976-4613-4009-8e01-898e0c304871",
+        "5bca9e1a-3bdb-4c3f-8801-cc91907399a3",
+        12000,
+        202,
+        "50e5d6ee-d77a-43bc-b93e-c9cd9684c651",
+        "RECEIVED",
+        null,
+        4310.926541000001
+      ],
+      [
+        "A",
+        "0c37b976-4613-4009-8e01-898e0c304871",
+        "5bca9e1a-3bdb-4c3f-8801-cc91907399a3",
+        12000,
+        202,
+        "50e5d6ee-d77a-43bc-b93e-c9cd9684c651",
+        "RECEIVED",
+        null,
+        4374.056957999999
+      ],
+      [
+        "A",
+        "0c37b976-4613-4009-8e01-898e0c304871",
+        "5bca9e1a-3bdb-4c3f-8801-cc91907399a3",
+        12000,
+        202,
+        "50e5d6ee-d77a-43bc-b93e-c9cd9684c651",
+        "RECEIVED",
+        null,
+        4374.072
+      ],
+      [
+        "A",
+        "0c37b976-4613-4009-8e01-898e0c304871",
+        "5bca9e1a-3bdb-4c3f-8801-cc91907399a3",
+        12000,
+        202,
+        "50e5d6ee-d77a-43bc-b93e-c9cd9684c651",
+        "RECEIVED",
+        null,
+        4374.082582999999
+      ],
+      [
+        "A",
+        "0c37b976-4613-4009-8e01-898e0c304871",
+        "5bca9e1a-3bdb-4c3f-8801-cc91907399a3",
+        12000,
+        202,
+        "50e5d6ee-d77a-43bc-b93e-c9cd9684c651",
+        "RECEIVED",
+        null,
+        4376.567499999999
+      ],
+      [
+        "A",
+        "0c37b976-4613-4009-8e01-898e0c304871",
+        "5bca9e1a-3bdb-4c3f-8801-cc91907399a3",
+        12000,
+        202,
+        "50e5d6ee-d77a-43bc-b93e-c9cd9684c651",
+        "RECEIVED",
+        null,
+        4376.5825
+      ],
+      [
+        "A",
+        "0c37b976-4613-4009-8e01-898e0c304871",
+        "5bca9e1a-3bdb-4c3f-8801-cc91907399a3",
+        12000,
+        202,
+        "50e5d6ee-d77a-43bc-b93e-c9cd9684c651",
+        "RECEIVED",
+        null,
+        4376.59425
+      ],
+      [
+        "A",
+        "0c37b976-4613-4009-8e01-898e0c304871",
+        "5bca9e1a-3bdb-4c3f-8801-cc91907399a3",
+        12000,
+        202,
+        "50e5d6ee-d77a-43bc-b93e-c9cd9684c651",
+        "RECEIVED",
+        null,
+        4377.142540999999
+      ],
+      [
+        "A",
+        "0c37b976-4613-4009-8e01-898e0c304871",
+        "5bca9e1a-3bdb-4c3f-8801-cc91907399a3",
+        12000,
+        202,
+        "50e5d6ee-d77a-43bc-b93e-c9cd9684c651",
+        "RECEIVED",
+        null,
+        4377.1591659999995
+      ],
+      [
+        "A",
+        "0c37b976-4613-4009-8e01-898e0c304871",
+        "5bca9e1a-3bdb-4c3f-8801-cc91907399a3",
+        12000,
+        202,
+        "50e5d6ee-d77a-43bc-b93e-c9cd9684c651",
+        "RECEIVED",
+        null,
+        4377.186040999999
+      ],
+      [
+        "A",
+        "0c37b976-4613-4009-8e01-898e0c304871",
+        "5bca9e1a-3bdb-4c3f-8801-cc91907399a3",
+        12000,
+        202,
+        "50e5d6ee-d77a-43bc-b93e-c9cd9684c651",
+        "RECEIVED",
+        null,
+        4377.200000000001
+      ],
+      [
+        "A",
+        "0c37b976-4613-4009-8e01-898e0c304871",
+        "5bca9e1a-3bdb-4c3f-8801-cc91907399a3",
+        12000,
+        202,
+        "50e5d6ee-d77a-43bc-b93e-c9cd9684c651",
+        "RECEIVED",
+        null,
+        4495.743915999999
+      ],
+      [
+        "A",
+        "0c37b976-4613-4009-8e01-898e0c304871",
+        "5bca9e1a-3bdb-4c3f-8801-cc91907399a3",
+        12000,
+        202,
+        "50e5d6ee-d77a-43bc-b93e-c9cd9684c651",
+        "RECEIVED",
+        null,
+        4499.439582999999
+      ],
+      [
+        "A",
+        "0c37b976-4613-4009-8e01-898e0c304871",
+        "5bca9e1a-3bdb-4c3f-8801-cc91907399a3",
+        12000,
+        202,
+        "50e5d6ee-d77a-43bc-b93e-c9cd9684c651",
+        "RECEIVED",
+        null,
+        4507.583583
+      ],
+      [
+        "A",
+        "0c37b976-4613-4009-8e01-898e0c304871",
+        "5bca9e1a-3bdb-4c3f-8801-cc91907399a3",
+        12000,
+        202,
+        "50e5d6ee-d77a-43bc-b93e-c9cd9684c651",
+        "RECEIVED",
+        null,
+        4516.618666
+      ],
+      [
+        "A",
+        "0c37b976-4613-4009-8e01-898e0c304871",
+        "5bca9e1a-3bdb-4c3f-8801-cc91907399a3",
+        12000,
+        202,
+        "50e5d6ee-d77a-43bc-b93e-c9cd9684c651",
+        "RECEIVED",
+        null,
+        4517.2212500000005
+      ],
+      [
+        "A",
+        "0c37b976-4613-4009-8e01-898e0c304871",
+        "5bca9e1a-3bdb-4c3f-8801-cc91907399a3",
+        12000,
+        202,
+        "50e5d6ee-d77a-43bc-b93e-c9cd9684c651",
+        "RECEIVED",
+        null,
+        4517.241708
+      ],
+      [
+        "A",
+        "0c37b976-4613-4009-8e01-898e0c304871",
+        "5bca9e1a-3bdb-4c3f-8801-cc91907399a3",
+        12000,
+        202,
+        "50e5d6ee-d77a-43bc-b93e-c9cd9684c651",
+        "RECEIVED",
+        null,
+        4517.255958
+      ],
+      [
+        "A",
+        "0c37b976-4613-4009-8e01-898e0c304871",
+        "5bca9e1a-3bdb-4c3f-8801-cc91907399a3",
+        12000,
+        202,
+        "50e5d6ee-d77a-43bc-b93e-c9cd9684c651",
+        "RECEIVED",
+        null,
+        4517.267416000001
+      ],
+      [
+        "A",
+        "0c37b976-4613-4009-8e01-898e0c304871",
+        "5bca9e1a-3bdb-4c3f-8801-cc91907399a3",
+        12000,
+        202,
+        "50e5d6ee-d77a-43bc-b93e-c9cd9684c651",
+        "RECEIVED",
+        null,
+        4517.277833
+      ],
+      [
+        "A",
+        "0c37b976-4613-4009-8e01-898e0c304871",
+        "5bca9e1a-3bdb-4c3f-8801-cc91907399a3",
+        12000,
+        202,
+        "50e5d6ee-d77a-43bc-b93e-c9cd9684c651",
+        "RECEIVED",
+        null,
+        4517.302583000001
+      ],
+      [
+        "A",
+        "0c37b976-4613-4009-8e01-898e0c304871",
+        "5bca9e1a-3bdb-4c3f-8801-cc91907399a3",
+        12000,
+        202,
+        "50e5d6ee-d77a-43bc-b93e-c9cd9684c651",
+        "RECEIVED",
+        null,
+        4574.649416
+      ],
+      [
+        "A",
+        "0c37b976-4613-4009-8e01-898e0c304871",
+        "5bca9e1a-3bdb-4c3f-8801-cc91907399a3",
+        12000,
+        202,
+        "50e5d6ee-d77a-43bc-b93e-c9cd9684c651",
+        "RECEIVED",
+        null,
+        4632.161749999999
+      ],
+      [
+        "A",
+        "0c37b976-4613-4009-8e01-898e0c304871",
+        "5bca9e1a-3bdb-4c3f-8801-cc91907399a3",
+        12000,
+        202,
+        "50e5d6ee-d77a-43bc-b93e-c9cd9684c651",
+        "RECEIVED",
+        null,
+        4632.175583
+      ],
+      [
+        "A",
+        "0c37b976-4613-4009-8e01-898e0c304871",
+        "5bca9e1a-3bdb-4c3f-8801-cc91907399a3",
+        12000,
+        202,
+        "50e5d6ee-d77a-43bc-b93e-c9cd9684c651",
+        "RECEIVED",
+        null,
+        4632.183916
+      ],
+      [
+        "A",
+        "0c37b976-4613-4009-8e01-898e0c304871",
+        "5bca9e1a-3bdb-4c3f-8801-cc91907399a3",
+        12000,
+        202,
+        "50e5d6ee-d77a-43bc-b93e-c9cd9684c651",
+        "RECEIVED",
+        null,
+        4632.320291
+      ],
+      [
+        "A",
+        "0c37b976-4613-4009-8e01-898e0c304871",
+        "5bca9e1a-3bdb-4c3f-8801-cc91907399a3",
+        12000,
+        202,
+        "50e5d6ee-d77a-43bc-b93e-c9cd9684c651",
+        "RECEIVED",
+        null,
+        4632.554958000001
+      ],
+      [
+        "A",
+        "0c37b976-4613-4009-8e01-898e0c304871",
+        "5bca9e1a-3bdb-4c3f-8801-cc91907399a3",
+        12000,
+        202,
+        "50e5d6ee-d77a-43bc-b93e-c9cd9684c651",
+        "RECEIVED",
+        null,
+        4632.56575
+      ],
+      [
+        "A",
+        "0c37b976-4613-4009-8e01-898e0c304871",
+        "5bca9e1a-3bdb-4c3f-8801-cc91907399a3",
+        12000,
+        202,
+        "50e5d6ee-d77a-43bc-b93e-c9cd9684c651",
+        "RECEIVED",
+        null,
+        4632.603041
+      ],
+      [
+        "A",
+        "0c37b976-4613-4009-8e01-898e0c304871",
+        "5bca9e1a-3bdb-4c3f-8801-cc91907399a3",
+        12000,
+        202,
+        "50e5d6ee-d77a-43bc-b93e-c9cd9684c651",
+        "RECEIVED",
+        null,
+        4632.611457999999
+      ],
+      [
+        "A",
+        "0c37b976-4613-4009-8e01-898e0c304871",
+        "5bca9e1a-3bdb-4c3f-8801-cc91907399a3",
+        12000,
+        202,
+        "50e5d6ee-d77a-43bc-b93e-c9cd9684c651",
+        "RECEIVED",
+        null,
+        4632.620208
+      ],
+      [
+        "A",
+        "0c37b976-4613-4009-8e01-898e0c304871",
+        "5bca9e1a-3bdb-4c3f-8801-cc91907399a3",
+        12000,
+        202,
+        "50e5d6ee-d77a-43bc-b93e-c9cd9684c651",
+        "RECEIVED",
+        null,
+        4685.157375000001
+      ],
+      [
+        "A",
+        "0c37b976-4613-4009-8e01-898e0c304871",
+        "5bca9e1a-3bdb-4c3f-8801-cc91907399a3",
+        12000,
+        202,
+        "50e5d6ee-d77a-43bc-b93e-c9cd9684c651",
+        "RECEIVED",
+        null,
+        4685.186583000001
+      ],
+      [
+        "A",
+        "0c37b976-4613-4009-8e01-898e0c304871",
+        "5bca9e1a-3bdb-4c3f-8801-cc91907399a3",
+        12000,
+        202,
+        "50e5d6ee-d77a-43bc-b93e-c9cd9684c651",
+        "RECEIVED",
+        null,
+        4685.2228749999995
+      ],
+      [
+        "A",
+        "0c37b976-4613-4009-8e01-898e0c304871",
+        "5bca9e1a-3bdb-4c3f-8801-cc91907399a3",
+        12000,
+        202,
+        "50e5d6ee-d77a-43bc-b93e-c9cd9684c651",
+        "RECEIVED",
+        null,
+        4685.2705829999995
+      ],
+      [
+        "A",
+        "0c37b976-4613-4009-8e01-898e0c304871",
+        "5bca9e1a-3bdb-4c3f-8801-cc91907399a3",
+        12000,
+        202,
+        "50e5d6ee-d77a-43bc-b93e-c9cd9684c651",
+        "RECEIVED",
+        null,
+        4685.286833
+      ],
+      [
+        "A",
+        "0c37b976-4613-4009-8e01-898e0c304871",
+        "5bca9e1a-3bdb-4c3f-8801-cc91907399a3",
+        12000,
+        202,
+        "50e5d6ee-d77a-43bc-b93e-c9cd9684c651",
+        "RECEIVED",
+        null,
+        4685.668375000001
+      ],
+      [
+        "A",
+        "0c37b976-4613-4009-8e01-898e0c304871",
+        "5bca9e1a-3bdb-4c3f-8801-cc91907399a3",
+        12000,
+        202,
+        "50e5d6ee-d77a-43bc-b93e-c9cd9684c651",
+        "RECEIVED",
+        null,
+        4685.681833000001
+      ],
+      [
+        "A",
+        "0c37b976-4613-4009-8e01-898e0c304871",
+        "5bca9e1a-3bdb-4c3f-8801-cc91907399a3",
+        12000,
+        202,
+        "50e5d6ee-d77a-43bc-b93e-c9cd9684c651",
+        "RECEIVED",
+        null,
+        4685.6903330000005
+      ],
+      [
+        "A",
+        "0c37b976-4613-4009-8e01-898e0c304871",
+        "5bca9e1a-3bdb-4c3f-8801-cc91907399a3",
+        12000,
+        202,
+        "50e5d6ee-d77a-43bc-b93e-c9cd9684c651",
+        "RECEIVED",
+        null,
+        4685.698875
+      ],
+      [
+        "A",
+        "0c37b976-4613-4009-8e01-898e0c304871",
+        "5bca9e1a-3bdb-4c3f-8801-cc91907399a3",
+        12000,
+        202,
+        "50e5d6ee-d77a-43bc-b93e-c9cd9684c651",
+        "RECEIVED",
+        null,
+        4685.707833
+      ],
+      [
+        "A",
+        "0c37b976-4613-4009-8e01-898e0c304871",
+        "5bca9e1a-3bdb-4c3f-8801-cc91907399a3",
+        12000,
+        202,
+        "50e5d6ee-d77a-43bc-b93e-c9cd9684c651",
+        "RECEIVED",
+        null,
+        4739.097041000001
+      ],
+      [
+        "A",
+        "0c37b976-4613-4009-8e01-898e0c304871",
+        "5bca9e1a-3bdb-4c3f-8801-cc91907399a3",
+        12000,
+        202,
+        "50e5d6ee-d77a-43bc-b93e-c9cd9684c651",
+        "RECEIVED",
+        null,
+        4739.109708
+      ],
+      [
+        "A",
+        "0c37b976-4613-4009-8e01-898e0c304871",
+        "5bca9e1a-3bdb-4c3f-8801-cc91907399a3",
+        12000,
+        202,
+        "50e5d6ee-d77a-43bc-b93e-c9cd9684c651",
+        "RECEIVED",
+        null,
+        4739.119000000001
+      ],
+      [
+        "A",
+        "0c37b976-4613-4009-8e01-898e0c304871",
+        "5bca9e1a-3bdb-4c3f-8801-cc91907399a3",
+        12000,
+        202,
+        "50e5d6ee-d77a-43bc-b93e-c9cd9684c651",
+        "RECEIVED",
+        null,
+        4739.12725
+      ],
+      [
+        "A",
+        "0c37b976-4613-4009-8e01-898e0c304871",
+        "5bca9e1a-3bdb-4c3f-8801-cc91907399a3",
+        12000,
+        202,
+        "50e5d6ee-d77a-43bc-b93e-c9cd9684c651",
+        "RECEIVED",
+        null,
+        4739.134625000001
+      ],
+      [
+        "A",
+        "0c37b976-4613-4009-8e01-898e0c304871",
+        "5bca9e1a-3bdb-4c3f-8801-cc91907399a3",
+        12000,
+        202,
+        "50e5d6ee-d77a-43bc-b93e-c9cd9684c651",
+        "RECEIVED",
+        null,
+        4739.250625000001
+      ],
+      [
+        "A",
+        "0c37b976-4613-4009-8e01-898e0c304871",
+        "5bca9e1a-3bdb-4c3f-8801-cc91907399a3",
+        12000,
+        202,
+        "50e5d6ee-d77a-43bc-b93e-c9cd9684c651",
+        "RECEIVED",
+        null,
+        4739.291083
+      ],
+      [
+        "A",
+        "0c37b976-4613-4009-8e01-898e0c304871",
+        "5bca9e1a-3bdb-4c3f-8801-cc91907399a3",
+        12000,
+        202,
+        "50e5d6ee-d77a-43bc-b93e-c9cd9684c651",
+        "RECEIVED",
+        null,
+        4739.305249999999
+      ],
+      [
+        "A",
+        "0c37b976-4613-4009-8e01-898e0c304871",
+        "5bca9e1a-3bdb-4c3f-8801-cc91907399a3",
+        12000,
+        202,
+        "50e5d6ee-d77a-43bc-b93e-c9cd9684c651",
+        "RECEIVED",
+        null,
+        4739.314625000001
+      ],
+      [
+        "A",
+        "0c37b976-4613-4009-8e01-898e0c304871",
+        "5bca9e1a-3bdb-4c3f-8801-cc91907399a3",
+        12000,
+        202,
+        "50e5d6ee-d77a-43bc-b93e-c9cd9684c651",
+        "RECEIVED",
+        null,
+        4739.476791000001
+      ],
+      [
+        "A",
+        "0c37b976-4613-4009-8e01-898e0c304871",
+        "5bca9e1a-3bdb-4c3f-8801-cc91907399a3",
+        12000,
+        202,
+        "50e5d6ee-d77a-43bc-b93e-c9cd9684c651",
+        "RECEIVED",
+        null,
+        4780.272333000001
+      ],
+      [
+        "A",
+        "0c37b976-4613-4009-8e01-898e0c304871",
+        "5bca9e1a-3bdb-4c3f-8801-cc91907399a3",
+        12000,
+        202,
+        "50e5d6ee-d77a-43bc-b93e-c9cd9684c651",
+        "RECEIVED",
+        null,
+        4780.287041
+      ],
+      [
+        "A",
+        "0c37b976-4613-4009-8e01-898e0c304871",
+        "5bca9e1a-3bdb-4c3f-8801-cc91907399a3",
+        12000,
+        202,
+        "50e5d6ee-d77a-43bc-b93e-c9cd9684c651",
+        "RECEIVED",
+        null,
+        4780.298000000001
+      ],
+      [
+        "A",
+        "0c37b976-4613-4009-8e01-898e0c304871",
+        "5bca9e1a-3bdb-4c3f-8801-cc91907399a3",
+        12000,
+        202,
+        "50e5d6ee-d77a-43bc-b93e-c9cd9684c651",
+        "RECEIVED",
+        null,
+        4780.30875
+      ],
+      [
+        "A",
+        "0c37b976-4613-4009-8e01-898e0c304871",
+        "5bca9e1a-3bdb-4c3f-8801-cc91907399a3",
+        12000,
+        202,
+        "50e5d6ee-d77a-43bc-b93e-c9cd9684c651",
+        "RECEIVED",
+        null,
+        4780.319833
+      ],
+      [
+        "A",
+        "0c37b976-4613-4009-8e01-898e0c304871",
+        "5bca9e1a-3bdb-4c3f-8801-cc91907399a3",
+        12000,
+        202,
+        "50e5d6ee-d77a-43bc-b93e-c9cd9684c651",
+        "RECEIVED",
+        null,
+        4780.330083000001
+      ],
+      [
+        "A",
+        "0c37b976-4613-4009-8e01-898e0c304871",
+        "5bca9e1a-3bdb-4c3f-8801-cc91907399a3",
+        12000,
+        202,
+        "50e5d6ee-d77a-43bc-b93e-c9cd9684c651",
+        "RECEIVED",
+        null,
+        4780.446958
+      ],
+      [
+        "A",
+        "0c37b976-4613-4009-8e01-898e0c304871",
+        "5bca9e1a-3bdb-4c3f-8801-cc91907399a3",
+        12000,
+        202,
+        "50e5d6ee-d77a-43bc-b93e-c9cd9684c651",
+        "RECEIVED",
+        null,
+        4780.455
+      ],
+      [
+        "A",
+        "0c37b976-4613-4009-8e01-898e0c304871",
+        "5bca9e1a-3bdb-4c3f-8801-cc91907399a3",
+        12000,
+        202,
+        "50e5d6ee-d77a-43bc-b93e-c9cd9684c651",
+        "RECEIVED",
+        null,
+        4780.4622500000005
+      ],
+      [
+        "A",
+        "0c37b976-4613-4009-8e01-898e0c304871",
+        "5bca9e1a-3bdb-4c3f-8801-cc91907399a3",
+        12000,
+        202,
+        "50e5d6ee-d77a-43bc-b93e-c9cd9684c651",
+        "RECEIVED",
+        null,
+        4780.469500000001
+      ],
+      [
+        "A",
+        "0c37b976-4613-4009-8e01-898e0c304871",
+        "5bca9e1a-3bdb-4c3f-8801-cc91907399a3",
+        12000,
+        202,
+        "50e5d6ee-d77a-43bc-b93e-c9cd9684c651",
+        "RECEIVED",
+        null,
+        4815.394583000001
+      ],
+      [
+        "A",
+        "0c37b976-4613-4009-8e01-898e0c304871",
+        "5bca9e1a-3bdb-4c3f-8801-cc91907399a3",
+        12000,
+        202,
+        "50e5d6ee-d77a-43bc-b93e-c9cd9684c651",
+        "RECEIVED",
+        null,
+        4815.410416000001
+      ],
+      [
+        "A",
+        "0c37b976-4613-4009-8e01-898e0c304871",
+        "5bca9e1a-3bdb-4c3f-8801-cc91907399a3",
+        12000,
+        202,
+        "50e5d6ee-d77a-43bc-b93e-c9cd9684c651",
+        "RECEIVED",
+        null,
+        4815.4193749999995
+      ],
+      [
+        "A",
+        "0c37b976-4613-4009-8e01-898e0c304871",
+        "5bca9e1a-3bdb-4c3f-8801-cc91907399a3",
+        12000,
+        202,
+        "50e5d6ee-d77a-43bc-b93e-c9cd9684c651",
+        "RECEIVED",
+        null,
+        4815.426375000001
+      ],
+      [
+        "A",
+        "0c37b976-4613-4009-8e01-898e0c304871",
+        "5bca9e1a-3bdb-4c3f-8801-cc91907399a3",
+        12000,
+        202,
+        "50e5d6ee-d77a-43bc-b93e-c9cd9684c651",
+        "RECEIVED",
+        null,
+        4815.433041
+      ],
+      [
+        "A",
+        "0c37b976-4613-4009-8e01-898e0c304871",
+        "5bca9e1a-3bdb-4c3f-8801-cc91907399a3",
+        12000,
+        202,
+        "50e5d6ee-d77a-43bc-b93e-c9cd9684c651",
+        "RECEIVED",
+        null,
+        4815.439791000001
+      ],
+      [
+        "A",
+        "0c37b976-4613-4009-8e01-898e0c304871",
+        "5bca9e1a-3bdb-4c3f-8801-cc91907399a3",
+        12000,
+        202,
+        "50e5d6ee-d77a-43bc-b93e-c9cd9684c651",
+        "RECEIVED",
+        null,
+        4815.5605
+      ],
+      [
+        "A",
+        "0c37b976-4613-4009-8e01-898e0c304871",
+        "5bca9e1a-3bdb-4c3f-8801-cc91907399a3",
+        12000,
+        202,
+        "50e5d6ee-d77a-43bc-b93e-c9cd9684c651",
+        "RECEIVED",
+        null,
+        4815.568666000001
+      ],
+      [
+        "A",
+        "0c37b976-4613-4009-8e01-898e0c304871",
+        "5bca9e1a-3bdb-4c3f-8801-cc91907399a3",
+        12000,
+        202,
+        "50e5d6ee-d77a-43bc-b93e-c9cd9684c651",
+        "RECEIVED",
+        null,
+        4815.57625
+      ],
+      [
+        "A",
+        "0c37b976-4613-4009-8e01-898e0c304871",
+        "5bca9e1a-3bdb-4c3f-8801-cc91907399a3",
+        12000,
+        202,
+        "50e5d6ee-d77a-43bc-b93e-c9cd9684c651",
+        "RECEIVED",
+        null,
+        4815.583833000001
+      ],
+      [
+        "A",
+        "0c37b976-4613-4009-8e01-898e0c304871",
+        "5bca9e1a-3bdb-4c3f-8801-cc91907399a3",
+        12000,
+        202,
+        "50e5d6ee-d77a-43bc-b93e-c9cd9684c651",
+        "RECEIVED",
+        null,
+        4861.956291
+      ],
+      [
+        "A",
+        "0c37b976-4613-4009-8e01-898e0c304871",
+        "5bca9e1a-3bdb-4c3f-8801-cc91907399a3",
+        12000,
+        202,
+        "50e5d6ee-d77a-43bc-b93e-c9cd9684c651",
+        "RECEIVED",
+        null,
+        4861.970333000001
+      ],
+      [
+        "A",
+        "0c37b976-4613-4009-8e01-898e0c304871",
+        "5bca9e1a-3bdb-4c3f-8801-cc91907399a3",
+        12000,
+        202,
+        "50e5d6ee-d77a-43bc-b93e-c9cd9684c651",
+        "RECEIVED",
+        null,
+        4861.979666000001
+      ],
+      [
+        "A",
+        "0c37b976-4613-4009-8e01-898e0c304871",
+        "5bca9e1a-3bdb-4c3f-8801-cc91907399a3",
+        12000,
+        202,
+        "50e5d6ee-d77a-43bc-b93e-c9cd9684c651",
+        "RECEIVED",
+        null,
+        4861.988625
+      ],
+      [
+        "A",
+        "0c37b976-4613-4009-8e01-898e0c304871",
+        "5bca9e1a-3bdb-4c3f-8801-cc91907399a3",
+        12000,
+        202,
+        "50e5d6ee-d77a-43bc-b93e-c9cd9684c651",
+        "RECEIVED",
+        null,
+        4861.997000000001
+      ],
+      [
+        "A",
+        "0c37b976-4613-4009-8e01-898e0c304871",
+        "5bca9e1a-3bdb-4c3f-8801-cc91907399a3",
+        12000,
+        202,
+        "50e5d6ee-d77a-43bc-b93e-c9cd9684c651",
+        "RECEIVED",
+        null,
+        4862.1485410000005
+      ],
+      [
+        "A",
+        "0c37b976-4613-4009-8e01-898e0c304871",
+        "5bca9e1a-3bdb-4c3f-8801-cc91907399a3",
+        12000,
+        202,
+        "50e5d6ee-d77a-43bc-b93e-c9cd9684c651",
+        "RECEIVED",
+        null,
+        4862.157166000001
+      ],
+      [
+        "A",
+        "0c37b976-4613-4009-8e01-898e0c304871",
+        "5bca9e1a-3bdb-4c3f-8801-cc91907399a3",
+        12000,
+        202,
+        "50e5d6ee-d77a-43bc-b93e-c9cd9684c651",
+        "RECEIVED",
+        null,
+        4862.164583
+      ],
+      [
+        "A",
+        "0c37b976-4613-4009-8e01-898e0c304871",
+        "5bca9e1a-3bdb-4c3f-8801-cc91907399a3",
+        12000,
+        202,
+        "50e5d6ee-d77a-43bc-b93e-c9cd9684c651",
+        "RECEIVED",
+        null,
+        4862.171666
+      ],
+      [
+        "A",
+        "0c37b976-4613-4009-8e01-898e0c304871",
+        "5bca9e1a-3bdb-4c3f-8801-cc91907399a3",
+        12000,
+        202,
+        "50e5d6ee-d77a-43bc-b93e-c9cd9684c651",
+        "RECEIVED",
+        null,
+        4862.185458
+      ],
+      [
+        "A",
+        "0c37b976-4613-4009-8e01-898e0c304871",
+        "5bca9e1a-3bdb-4c3f-8801-cc91907399a3",
+        99000,
+        409,
+        null,
+        null,
+        "IDEMPOTENCY_KEY_PAYLOAD_MISMATCH",
+        4889.943166000001
+      ],
+      [
+        "B",
+        "0c37b976-4613-4009-8e01-898e0c304871",
+        "bd5f1e1d-7d6a-4aca-b001-b833dbd8f3ad",
+        13000,
+        202,
+        "d633c033-e745-4e7a-9217-9aa7951004e3",
+        "RECEIVED",
+        null,
+        5032.737583
+      ],
+      [
+        "A",
+        "0c37b976-4613-4009-8e01-898e0c304871",
+        "051e715a-bf2f-4040-95ec-667867e1e180",
+        14000,
+        202,
+        "ebd06255-bba9-4503-8b59-42a7927836f5",
+        "RECEIVED",
+        null,
+        5748.4806659999995
+      ]
+    ]
+  },
+  "artifacts": [
+    {
+      "index": 0,
+      "name": "failure-role-A",
+      "contentType": "image/png",
+      "bytes": 52889,
+      "sha256": "c9fb2d00ae855c8ee39dcec0b363c2b47bf758e978c31dab49e1e0ddd0ae788b"
+    },
+    {
+      "index": 1,
+      "name": "failure-role-B",
+      "contentType": "image/png",
+      "bytes": 52945,
+      "sha256": "b33c3585b4833ee586bcafe49315568ecb89b047c0ebe775863727167d44d2ce"
+    },
+    {
+      "index": 2,
+      "name": "failure-correlation",
+      "contentType": "application/json",
+      "bytes": 41462,
+      "sha256": "50e1b9dc1d49e397e59df4c9ae54d5338a00f5c8ea826f2f7e411f520f7324a8"
+    },
+    {
+      "index": 3,
+      "name": "screenshot",
+      "contentType": "image/png",
+      "bytes": 56520,
+      "sha256": "08a3e69f795f48745f7388aaae71eea298005f1bb51beb3a376795bf726c8d3e"
+    },
+    {
+      "index": 4,
+      "name": "screenshot",
+      "contentType": "image/png",
+      "bytes": 52889,
+      "sha256": "c9fb2d00ae855c8ee39dcec0b363c2b47bf758e978c31dab49e1e0ddd0ae788b"
+    },
+    {
+      "index": 5,
+      "name": "screenshot",
+      "contentType": "image/png",
+      "bytes": 52945,
+      "sha256": "b33c3585b4833ee586bcafe49315568ecb89b047c0ebe775863727167d44d2ce"
+    },
+    {
+      "index": 6,
+      "name": "error-context",
+      "contentType": "text/markdown",
+      "bytes": 2060,
+      "sha256": "929f4448c258d81604435d52f4d907d82a890826e60192717fcffafc91cbc0c5"
+    },
+    {
+      "index": 7,
+      "name": "trace",
+      "contentType": "application/zip",
+      "bytes": 1339438,
+      "sha256": "052c8c3075cdb733e15bc6dbc28f494a479222af046c4edf92ac23e7530306cb"
+    }
+  ],
+  "artifactChecks": {
+    "manualRoleImagesVisuallyVerified": true,
+    "allPngDimensions": [
+      1280,
+      720
+    ],
+    "zipIntegrity": true
+  },
+  "afterRestorationReadOnly": {
+    "observedAt": "2026-11-22T10:54:47.309Z",
+    "afterRestoration": true,
+    "readOnly": true,
+    "correlation": {
+      "complete": true,
+      "code": "CORRELATED",
+      "sql": {
+        "requestCount": 3,
+        "ledgerCount": 3,
+        "resultCount": 3,
+        "rows": [
+          {
+            "requestId": "50e5d6ee-d77a-43bc-b93e-c9cd9684c651",
+            "key": "5bca9e1a-3bdb-4c3f-8801-cc91907399a3",
+            "role": "A",
+            "amount": 12000,
+            "decision": "ACCEPTED",
+            "ledgerId": "87ee84a4-fa7c-4b02-80b4-2b1c8aee914b",
+            "eventId": "c0b9ec12-8e58-4b24-97a9-594656cbc625",
+            "settlementVersion": 2,
+            "price": 12000,
+            "reason": null
+          },
+          {
+            "requestId": "d633c033-e745-4e7a-9217-9aa7951004e3",
+            "key": "bd5f1e1d-7d6a-4aca-b001-b833dbd8f3ad",
+            "role": "B",
+            "amount": 13000,
+            "decision": "ACCEPTED",
+            "ledgerId": "d920e58a-42f7-464f-9bdc-5060fd6e6530",
+            "eventId": "b8265f1e-16cb-433a-9408-c9eab36b87ce",
+            "settlementVersion": 3,
+            "price": 13000,
+            "reason": null
+          },
+          {
+            "requestId": "ebd06255-bba9-4503-8b59-42a7927836f5",
+            "key": "051e715a-bf2f-4040-95ec-667867e1e180",
+            "role": "A",
+            "amount": 14000,
+            "decision": "ACCEPTED",
+            "ledgerId": "8050997d-66c1-4798-901f-94f9fed2278e",
+            "eventId": "d8b7daed-4e33-49e8-99ff-9a12e1c5288f",
+            "settlementVersion": 4,
+            "price": 14000,
+            "reason": null
+          }
+        ],
+        "auction": {
+          "auctionId": "0c37b976-4613-4009-8e01-898e0c304871",
+          "status": "ACTIVE",
+          "price": 14000,
+          "winner": "A",
+          "version": 4,
+          "endsAt": "2030-01-01T12:30:00+00:00"
+        }
+      },
+      "links": [
+        {
+          "requestId": "50e5d6ee-d77a-43bc-b93e-c9cd9684c651",
+          "key": "5bca9e1a-3bdb-4c3f-8801-cc91907399a3",
+          "role": "A",
+          "amount": 12000,
+          "decision": "ACCEPTED",
+          "ledgerId": "87ee84a4-fa7c-4b02-80b4-2b1c8aee914b",
+          "eventId": "c0b9ec12-8e58-4b24-97a9-594656cbc625",
+          "settlementVersion": 2,
+          "price": 12000,
+          "reason": null
+        },
+        {
+          "requestId": "d633c033-e745-4e7a-9217-9aa7951004e3",
+          "key": "bd5f1e1d-7d6a-4aca-b001-b833dbd8f3ad",
+          "role": "B",
+          "amount": 13000,
+          "decision": "ACCEPTED",
+          "ledgerId": "d920e58a-42f7-464f-9bdc-5060fd6e6530",
+          "eventId": "b8265f1e-16cb-433a-9408-c9eab36b87ce",
+          "settlementVersion": 3,
+          "price": 13000,
+          "reason": null
+        },
+        {
+          "requestId": "ebd06255-bba9-4503-8b59-42a7927836f5",
+          "key": "051e715a-bf2f-4040-95ec-667867e1e180",
+          "role": "A",
+          "amount": 14000,
+          "decision": "ACCEPTED",
+          "ledgerId": "8050997d-66c1-4798-901f-94f9fed2278e",
+          "eventId": "d8b7daed-4e33-49e8-99ff-9a12e1c5288f",
+          "settlementVersion": 4,
+          "price": 14000,
+          "reason": null
+        }
+      ]
+    }
+  },
+  "runtime": {
+    "original": {
+      "pid": 30982,
+      "jarSha256": "5251be8d60c6fc0f3a7afb13415c72e2438713b973a854a54f411009065f08c4",
+      "delayMs": 1000,
+      "fullyStopped": true
+    },
+    "test": {
+      "pid": 78310,
+      "jarSha256": "08efe30e379ff23ddac6de84de20d4c9f1ac5ae3c7e5dd8ab1aca9d668abbadd",
+      "profile": "local,e2e",
+      "delayMs": 100,
+      "fullyStopped": true,
+      "viteFullyStopped": true
+    },
+    "restored": {
+      "pid": 79499,
+      "verified": true,
+      "originalArgumentsAndJarMatched": true,
+      "readiness": "UP",
+      "delayMs": 1000
+    }
+  },
+  "bounds": {
+    "baselineAttempts": 1,
+    "probeAttempts": 1,
+    "automaticRetries": 0,
+    "workers": 1,
+    "fixtureAuctions": 9,
+    "awsAccess": false,
+    "dataReset": false,
+    "otherContainerStopRequested": false
+  },
+  "settlementLag": [
+    {
+      "label": "baseline",
+      "before": [
+        {
+          "partition": 0,
+          "currentOffset": 1173,
+          "endOffset": 1173,
+          "lag": 0
+        },
+        {
+          "partition": 1,
+          "currentOffset": 1909,
+          "endOffset": 1909,
+          "lag": 0
+        },
+        {
+          "partition": 2,
+          "currentOffset": 1602,
+          "endOffset": 1602,
+          "lag": 0
+        }
+      ],
+      "after": [
+        {
+          "partition": 0,
+          "currentOffset": 1173,
+          "endOffset": 1173,
+          "lag": 0
+        },
+        {
+          "partition": 1,
+          "currentOffset": 1916,
+          "endOffset": 1916,
+          "lag": 0
+        },
+        {
+          "partition": 2,
+          "currentOffset": 1603,
+          "endOffset": 1603,
+          "lag": 0
+        }
+      ]
+    },
+    {
+      "label": "probe",
+      "before": [
+        {
+          "partition": 0,
+          "currentOffset": 1173,
+          "endOffset": 1173,
+          "lag": 0
+        },
+        {
+          "partition": 1,
+          "currentOffset": 1916,
+          "endOffset": 1916,
+          "lag": 0
+        },
+        {
+          "partition": 2,
+          "currentOffset": 1603,
+          "endOffset": 1603,
+          "lag": 0
+        }
+      ],
+      "after": [
+        {
+          "partition": 0,
+          "currentOffset": 1173,
+          "endOffset": 1173,
+          "lag": 0
+        },
+        {
+          "partition": 1,
+          "currentOffset": 1916,
+          "endOffset": 1916,
+          "lag": 0
+        },
+        {
+          "partition": 2,
+          "currentOffset": 1606,
+          "endOffset": 1606,
+          "lag": 0
+        }
+      ]
+    }
+  ],
+  "basicVerification": {
+    "nodeTests": 121,
+    "vitestTests": 71,
+    "vitestFiles": 17,
+    "buildPassed": true,
+    "extraE2eTypeCheck": "passed using bundled Node types; no dependency change"
+  },
+  "rawFileSha256": {
+    "baseline.json": "6d9f82827ea51042dfdb4e2494da73d3e68a432d5c034cf2faa73e141e4933c6",
+    "probe.json": "c47e87010a1c434b703b31a3d40030581a2364df63ccfde1c6e2d9804b0866be",
+    "run.json": "6e32d47f1ca8771f906413b72e4370f26b66cfd4bd654263fd1654d15a440a87",
+    "recheck.json": "05a3a8f0d7d161327b46191262f7cab4a653ae125e13be7016530a8ab4eac276"
+  },
+  "limitations": [
+    "Controlled error after normal business assertions, not an operational service failure or load benchmark.",
+    "Direct-bid case only; missing frames/SQL/screens produce incomplete diagnostics.",
+    "DB observations are polling snapshots, not exact commit or failure timestamps.",
+    "Raw trace/screens/reporter remain private and are not committed or uploaded.",
+    "No new full backend check or AWS verification."
+  ]
+}

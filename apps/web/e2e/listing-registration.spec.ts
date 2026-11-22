@@ -10,13 +10,17 @@ import { summarizeConcurrentRun } from "../../../scripts/concurrent-browser-obse
 import { readConcurrentSql, judgeConcurrentSql } from "../../../scripts/concurrent-browser-sql.mjs";
 import { expect, test, type APIRequestContext, type Browser, type Page, type WebSocket } from "@playwright/test";
 import { parseBidResultMessage } from "../src/features/auction-realtime/auction-realtime-client";
+import { createDirectFailureDiagnostics } from "./failure-correlation";
+import { validateFailureProbe } from "../../../scripts/failure-correlation.mjs";
 
 const enabled = Boolean(process.env.BIDFLOW_E2E_BASE_URL);
 const webBaseUrl = process.env.BIDFLOW_E2E_BASE_URL ?? "http://127.0.0.1:5173";
 const apiBaseUrl = process.env.BIDFLOW_E2E_API_BASE_URL ?? "http://127.0.0.1:8080";
+if(process.env.BIDFLOW_E2E_FAILURE_PROBE!==undefined&&!enabled)throw Error('INVALID_FAILURE_PROBE');
 
 test.describe("상품 등록·입찰 Browser 흐름", () => {
   test.skip(!enabled, "BIDFLOW_E2E_BASE_URL로 local,e2e 실행 중인 Vite 주소를 지정해야 합니다.");
+  test.beforeEach(({},info)=>{validateFailureProbe({flag:process.env.BIDFLOW_E2E_FAILURE_PROBE,web:webBaseUrl,api:apiBaseUrl,title:info.title,workers:info.config.workers,retries:info.project.retries});});
 
   test("등록한 경매에 입찰이 없으면 마감에 공개 유찰로 바뀐다", async ({ page, browser, request }) => {
     await setE2eClock(request, "2030-01-01T12:00:00Z");
@@ -130,23 +134,28 @@ test.describe("상품 등록·입찰 Browser 흐름", () => {
     }
   });
 
-  test("직접 입찰 재시도는 같은 요청이고 같은 사용자의 후속 입찰은 새 요청이다", async ({ page, browser, request }) => {
-    await setE2eClock(request, "2030-01-01T12:00:00Z");
-    const auctionId = await registerAuction(page, "e2e-seller-direct");
-    await setE2eClock(request, "2030-01-01T12:20:00Z");
-
+  test("직접 입찰 재시도는 같은 요청이고 같은 사용자의 후속 입찰은 새 요청이다", async ({ page, browser, request },testInfo) => {
+    const diagnostics=createDirectFailureDiagnostics(testInfo,webBaseUrl,apiBaseUrl);
     const actorA = "e2e-direct-a";
-    const bidderA = await openBidderPage(browser, auctionId, actorA);
-    const bidderB = await openBidderPage(browser, auctionId, "e2e-direct-b");
+    let bidderA:Awaited<ReturnType<typeof openBidderPage>>|undefined,bidderB:Awaited<ReturnType<typeof openBidderPage>>|undefined;
+    let originalFailure=false;
     try {
-      const first = await submitDirectBid(bidderA.page, auctionId, "12000");
+      await setE2eClock(request, "2030-01-01T12:00:00Z");
+      const auctionId = await registerAuction(page, "e2e-seller-direct");
+      diagnostics.register(auctionId);
+      await setE2eClock(request, "2030-01-01T12:20:00Z");
+      bidderA = await openBidderPage(browser, auctionId, actorA);
+      diagnostics.page('A',bidderA.page,bidderA.socket);
+      bidderB = await openBidderPage(browser, auctionId, "e2e-direct-b");
+      diagnostics.page('B',bidderB.page,bidderB.socket);
+      const first = await submitDirectBid(bidderA.page, auctionId, "12000",r=>diagnostics.record('A',12000,r));
       await expect(bidderA.page.getByText("입찰이 승인되었습니다. 이 요청 처리 당시 최고 입찰자였습니다.")).toBeVisible({ timeout: 10_000 });
       await expect(bidderA.page.getByText("12,000원")).toBeVisible({ timeout: 10_000 });
 
-      const retry = (amount: number) => request.post(`${apiBaseUrl}/api/v1/auctions/${auctionId}/bid-requests`, {
+      const retry = async(amount: number) => {const response=await request.post(`${apiBaseUrl}/api/v1/auctions/${auctionId}/bid-requests`, {
         headers: { "X-Actor-Id": actorA, "Idempotency-Key": first.key },
         data: { bidKind: "DIRECT", amount },
-      });
+      });await diagnostics.record('A',amount,response,first.key);return response;};
       for (let batch = 0; batch < 10; batch++) {
         const replays = await Promise.all(Array.from({ length: 10 }, () => retry(12_000)));
         for (const replay of replays) {
@@ -159,21 +168,29 @@ test.describe("상품 등록·입찰 Browser 흐름", () => {
       expect(await conflict.json()).toEqual({ code: "IDEMPOTENCY_KEY_PAYLOAD_MISMATCH" });
       expect(await readAuction(request, auctionId)).toMatchObject({ currentPrice: 12_000 });
 
-      await submitDirectBid(bidderB.page, auctionId, "13000");
+      await submitDirectBid(bidderB.page, auctionId, "13000",r=>diagnostics.record('B',13000,r));
       await expect(bidderA.page.getByText("13,000원")).toBeVisible({ timeout: 10_000 });
       await expect(bidderB.page.getByText("13,000원")).toBeVisible({ timeout: 10_000 });
       await expect(bidderA.page.getByText("입찰이 승인되었습니다. 이 요청 처리 당시 최고 입찰자였습니다.", { exact: true })).toBeVisible();
       await expect(bidderA.page.getByText(/현재 최고 입찰자/)).toHaveCount(0);
 
-      const next = await submitDirectBid(bidderA.page, auctionId, "14000");
+      const next = await submitDirectBid(bidderA.page, auctionId, "14000",r=>diagnostics.record('A',14000,r));
       expect(next.id).not.toBe(first.id);
       expect(next.key).not.toBe(first.key);
       await expect(bidderA.page.getByText("입찰이 승인되었습니다. 이 요청 처리 당시 최고 입찰자였습니다.")).toBeVisible({ timeout: 10_000 });
       await expect(bidderA.page.getByText("14,000원")).toBeVisible({ timeout: 10_000 });
       await expect(bidderB.page.getByText("14,000원")).toBeVisible({ timeout: 10_000 });
+      diagnostics.verified();
+      if(diagnostics.probe)throw new Error('BIDFLOW_EXPECTED_CORRELATION_FAILURE');
+    } catch(error){
+      originalFailure=true;
+      try{await diagnostics.capture();}catch{}
+      throw error;
     } finally {
-      await bidderA.context.close();
-      await bidderB.context.close();
+      let cleanupFailed=false;
+      try{diagnostics.dispose();}catch{cleanupFailed=true;}
+      for(const bidder of [bidderA,bidderB])try{await bidder?.context.close();}catch{cleanupFailed=true;}
+      if(cleanupFailed){try{testInfo.annotations.push({type:'failure-cleanup',description:'failed'});}catch{}if(!originalFailure)throw Error('E2E_CLEANUP_FAILED');}
     }
   });
 
@@ -522,13 +539,14 @@ async function submitAutoBid(page: Page, amount: string): Promise<void> {
   await expect(page.getByRole("status")).toContainText("입찰 요청을 접수했습니다. 요청 번호:");
 }
 
-async function submitDirectBid(page: Page, auctionId: string, amount: string) {
+async function submitDirectBid(page: Page, auctionId: string, amount: string,observe?:(response:import('@playwright/test').Response)=>Promise<void>) {
   await page.getByLabel("입찰 금액").fill(amount);
   const [response] = await Promise.all([
     page.waitForResponse(response => new URL(response.url()).pathname === `/api/v1/auctions/${auctionId}/bid-requests`
       && response.request().method() === "POST"),
     page.getByRole("button", { name: "입찰 요청" }).click(),
   ]);
+  if(observe)await observe(response);
   expect(response.status()).toBe(202);
   const key = await response.request().headerValue("idempotency-key");
   const result: { bidRequestId?: string } = await response.json();

@@ -1,6 +1,6 @@
 # 로컬 입찰 E2E 실패 증적 연결 사양
 
-- 상태: 제안됨. 승인/병합 후 TDD로 구현한다. 이번 문서 작업에서는 브라우저 실패·입찰·API 전환을 실행하지 않는다.
+- 상태: #299 병합으로 승인됨. 직접 입찰의 TDD 구현과 정상 5개/고의 실패 1개 실행·복원·재조회를 완료했다. [구현·실행 결과](../reports/issue-020-failure-correlation.md). 아래는 승인된 계약이다.
 - 기존 이슈: [#20](https://github.com/dev-baek/bidflow/issues/20). 기존 [E2E 실패 증적 계약](issue-020-e2e.md)의 후속이므로 새 이슈를 만들지 않는다.
 - 선행 결과: [#298 합성 캡처](../reports/issue-020-failure-artifacts.md)는 screenshot/trace/console 보존만 확인했다. 이번 범위는 실제 로컬 입찰 경로의 접수·메시지·DB 식별자를 연결하는 것이다.
 
