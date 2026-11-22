@@ -4,6 +4,7 @@
 - 기존 이슈: [#19 부하와 장애 검증](https://github.com/dev-baek/bidflow/issues/19). 같은 검증 범위이므로 새 이슈를 만들지 않는다.
 - 선행 계약: [부하·장애 기준](issue-019-load-failure-test.md), [기존 k6 도구](../reports/issue-095-k6-bid-load.md), [동시 정산과 snapshot 구분](issue-019-concurrent-snapshot-alignment.md).
 - 승인된 후속 계획: [명령 추적을 포함한 재검증](issue-019-instrumented-rerun.md). #290 계측을 연결한 새 smoke/본 실행의 승인 범위·중단·복원·결과 구분을 정한다.
+- 다음 검토 사양: [같은 부하의 브라우저 수렴](issue-019-load-browser-convergence.md). 기존 k6 계획을 유지하며 최종 공개 이벤트와 두 화면을 연결한다. 요청별 전달 P95 검증과는 구분한다.
 
 ## 목적과 기존 결과의 구분
 
