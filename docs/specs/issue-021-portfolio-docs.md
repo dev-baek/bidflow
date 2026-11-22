@@ -70,7 +70,7 @@ BidFlow는 **경매 마감 직전의 동시 입찰을 Kafka 순서와 Redis Lua 
 
 ### 금지하는 표현
 
-- “AWS에 배포 완료”, “MSK 운영 경험”, “P95 300ms 달성”처럼 아직 실행하지 않은 결과를 단정하지 않는다.
+- “AWS에 배포 완료”, “MSK 운영 경험”처럼 미실행 결과를 단정하거나, “P95 300ms 달성”에서 환경·부하·접수/전달 구간을 생략하지 않는다.
 - 단일 Mac의 TPS를 일반적인 운영 처리량으로 일반화하지 않는다.
 - Redis를 원장 또는 Kafka를 exactly-once 보장으로 설명하지 않는다.
 
@@ -78,6 +78,7 @@ BidFlow는 **경매 마감 직전의 동시 입찰을 Kafka 순서와 Redis Lua 
 
 - “AWS 이전을 전제로 로컬 Docker에서 계약·복구 경계를 검증하도록 설계했다.”
 - “로컬 분산 실험에서 접수 P95는 41.88ms였다. 최종 결과의 브라우저 도달 P95는 측정하지 않았다.”
+- “공유 로컬 Mac에서 단일 경매 20 VU 누적 1,000건의 접수 P95는 290.48ms였다. 같은 부하의 최종 WebSocket 전달 지연과 AWS 성능은 측정하지 않았다.”
 
 ## 6. T. 증적 연결표
 
@@ -88,8 +89,8 @@ BidFlow는 **경매 마감 직전의 동시 입찰을 Kafka 순서와 Redis Lua 
 | Redis 유실 복구 | `NOT_ACTIVE → Snapshot 복구 → 재실행` 테스트 | 구현됨 |
 | 자동 연장 | 4:59/5:00/반복 연장 Lua·DB 테스트 | 구현됨 |
 | 종료 단일성 | 다중 Scheduler `SKIP LOCKED` 통합 테스트 | 구현됨 |
-| E2E Browser 흐름 | [#99 시나리오](../reports/issue-099-playwright-e2e.md)·[PR #240 로컬 실행](https://github.com/dev-baek/bidflow/pull/240) | 로컬 실행 증적 있음 |
-| 부하 P95·Lag 회복 | [집중](../reports/issue-019-focused-load-baseline.md)·[분산](../reports/issue-019-distributed-load-baseline.md) k6 JSON, SQL, Kafka Lag | 로컬 실측 |
+| E2E Browser 흐름 | [#99 시나리오](../reports/issue-099-playwright-e2e.md)·[기능 5개 회귀와 SQL](../reports/issue-020-local-functional-regression.md) | 로컬 통과, AWS는 별도 |
+| 부하 P95·Lag 회복 | [집중](../reports/issue-019-focused-load-baseline.md)·[분산](../reports/issue-019-distributed-load-baseline.md)·[누적 1,000건](../reports/issue-019-instrumented-rerun.md)의 k6 JSON, SQL, Kafka Lag | 조건이 다른 로컬 실측을 분리 |
 | 장애 복구 실험 | [#102 증적 모음](../reports/issue-102-portfolio-retrospective.md#장애에서-배운-것): 정산 Consumer·Redis·OpenSearch | 로컬 실측 |
 | AWS 비용 | [#97 공개 단가 추정](../reports/issue-097-kafka-performance-cost.md); 실제 과금·삭제 로그는 별도 | 추정만 있음 |
 

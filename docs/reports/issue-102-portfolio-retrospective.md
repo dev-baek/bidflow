@@ -17,6 +17,8 @@ API는 PostgreSQL에 입찰 요청과 Outbox를 함께 저장한 뒤 `202 RECEIV
 
 재현: [#99 Browser 실행 절차와 전체 시나리오](issue-099-playwright-e2e.md). 기존 로컬 실행 기록: [검색 → 상세 #234](https://github.com/dev-baek/bidflow/pull/234) · [연장 → 종료 #229](https://github.com/dev-baek/bidflow/pull/229) · [종료 후 거절 #236](https://github.com/dev-baek/bidflow/pull/236) · [개인 결과 #240](https://github.com/dev-baek/bidflow/pull/240). 위 시연 순서는 여러 테스트를 묶은 것이며, [README 화면](../../README.md#핵심-시연과-결과)은 그중 로컬 자동입찰 시나리오의 낙찰·패찰 캡처다. [자동 연장 테스트](issue-104-auction-extension.md)는 정확히 5분 남았을 때와 같은 요청을 재실행했을 때 연장하지 않는 경계도 다룬다.
 
+2026년 11월 22일 [기능 회귀](issue-020-local-functional-regression.md)에서는 등록/유찰·자동입찰/낙찰·직접입찰 재시도·재연결·검색의 기존 5개를 한 번씩 실행해 모두 통과했다. 새 경매 8개의 요청/원장/입찰 결과는 각각 8개(승인 7·종료 후 거절 1), 미처리·중복 0개였고 경매 결과와 AuctionEnded 3개를 대조했다. 로컬 테스트 인증/Clock 조건이며 실제 Cognito나 AWS 사용자 여정은 아니다.
+
 ## 측정 결과: 무엇을 증명했나
 
 | 검증 | 결과 | 범위 |
@@ -24,8 +26,13 @@ API는 PostgreSQL에 입찰 요청과 Outbox를 함께 저장한 뒤 `202 RECEIV
 | [동일 경매 어댑터 통합 테스트 #76](https://github.com/dev-baek/bidflow/pull/149) | Redis Lua에 서로 다른 입찰 1,000건: 승인 순서의 가격 증가 및 최종 승자 일치. PostgreSQL에 동일 요청 정산 1,000건: 원장·이벤트 Outbox 각 1건. | Redis·PostgreSQL Testcontainers로 각각 검증. HTTP 1,000건 동시 실측이 아님. |
 | [집중 HTTP 부하](issue-019-focused-load-baseline.md) | 단일 경매, 20건 모두 접수. 접수 P50/P95/P99 **75.09 / 78.14 / 78.65ms**, 처리 시작 P95 **886.47ms**. 승인 1건·거절 19건, 미처리·중복 원장 0건. | Lag는 전·후 0, 중간 피크 미측정. 승인 표본 1건이라 가격 단조성의 증거로 쓰지 않음. |
 | [분산 HTTP 부하](issue-019-distributed-load-baseline.md) | 6경매, 20 VU 2분 유지, 2,535건 접수·HTTP 실패 0건. 접수 P50/P95/P99 **12.77 / 41.88 / 105.65ms**, 처리 시작 P95 **1,338.53ms**. 미처리·중복 원장 0건. Lag 최대 관측 10건. | 종료 약 2.04초 뒤 첫 사후 조회에서 Lag 0. 파티션 1에 약 67%가 유입됐지만 병목 원인까지 측정하지는 않음. |
+| [단일 경매 누적 1,000건 HTTP](issue-019-instrumented-rerun.md) | 20 VU × 50회. 요청/원장/결과 각각 1,000개, 승인 207·정상 거절 793·미처리 0. 접수 P50/P95/P99 **17.73 / 290.48 / 713.15ms**, HTTP 오류율 0%. 명령 40개 모두 성공, DLT 불변, 관측 Lag 최대 합계 241 → 최종 0. | local/100ms·공유 Mac 한 번의 결과. 1,000건 전체 동시 HTTP가 아니다. P95 기준 여유는 약 9.52ms. 부하 종료 관측 약 9.67초 뒤 최종 SQL/Lag 0을 확인했지만 정확한 커밋/회복 시각은 아님. |
 
-`202`는 입찰 승인과 다르다. 처리 시작 지표는 서버의 요청 기록부터 Consumer 처리 시작까지이며, **최종 DB 커밋·WebSocket 전달 시간은 포함하지 않는다.** 두 부하의 패턴이 다르므로 P95를 서로 비교해 개선율이나 처리량 한계로 해석하지 않는다.
+`202`는 입찰 승인과 다르다. 처리 시작 지표는 서버의 요청 기록부터 Consumer 처리 시작까지이며, **최종 DB 커밋·WebSocket 전달 시간은 포함하지 않는다.** 각 부하의 패턴이 다르므로 P95를 서로 비교해 개선율이나 처리량 한계로 해석하지 않는다.
+
+누적 1,000건의 [첫 시도](issue-019-focused-load-collector.md)는 585건 접수 후 관측 오류로 중단됐다. 뒤이은 진단·명령 추적 보완 후 별도 smoke와 본 실행이 통과했지만, 배경 상태와 관측 SQL/수집기가 달라 인과적 개선율을 제시할 수 없다. 실패 시점의 불완전한 관측은 그대로 보존했고 정확한 중단 원인은 미확정이다. 결과가 좋아진 것과 원인을 설명할 수 있는 것은 별개다.
+
+[두 사용자 동시 관측](issue-019-concurrent-snapshot-fix.md)은 두 건씩 10회/총 20건의 개인 결과와 양쪽 화면 수렴 P95 443.33ms를 기록했다. 이 값은 브라우저 assertion polling 등을 포함하는 별도 지표이며, 위 1,000건 접수 지연과 합쳐 “1,000건의 WebSocket 전달 P95 2초”로 주장하지 않는다.
 
 ## 장애에서 배운 것
 
@@ -44,6 +51,6 @@ API는 PostgreSQL에 입찰 요청과 Outbox를 함께 저장한 뒤 `202 RECEIV
 | AWS 설계·정적 검증 | [Terraform 구성](../../infra/terraform/README.md), [Runbook](../specs/issue-017-aws-deployment.md), 기존 [Budget #175](https://github.com/dev-baek/bidflow/pull/175)·[OpenSearch 런타임 #212](https://github.com/dev-baek/bidflow/pull/212) PR의 `terraform validate`·계약 테스트 기록 | AWS 계정에서의 Plan·Apply, 실서비스 연결 및 비용 |
 | 실제 AWS 검증 | 미실행. [#97 비용 예시](issue-097-kafka-performance-cost.md#aws-요금-예시--실측-청구액-아님)는 공개 요금과 가정만 사용 | 10만 원 전체 예산 적합성, 실제 배포·Smoke Test·청구·Destroy 결과 |
 
-다음 로컬 검증은 같은 요청 ID로 접수부터 DB 확정과 브라우저 표시까지 이어서 측정하는 것이다. 파티션 쏠림이 반복될 때는 Outbox 대기·Consumer 처리·DB 잠금 등 구간별로 시간을 나눠 원인을 좁힌다. AWS 검증은 별도 승인과 전체 비용 검토 뒤, [#91 Smoke Test·Destroy](https://github.com/dev-baek/bidflow/issues/91)에서 동일 흐름과 잔여 리소스를 확인한다.
+제한된 브라우저/DB 관측과 누적 1,000건 접수 검증은 확보했지만, 1,000건 전체 동시 HTTP와 그 조건의 최종 WebSocket 전달 지연은 여전히 미검증이다. 정확한 DB 커밋·서버 내부 구간 병목도 기존 관측으로 단정하지 않는다. 추가 대규모 실험은 자동으로 확대하지 않고 별도 사양으로 결정한다. AWS 검증은 별도 승인과 전체 비용 검토 뒤, [#91 Smoke Test·Destroy](https://github.com/dev-baek/bidflow/issues/91)에서 동일 흐름과 잔여 리소스를 확인한다.
 
 면접에서는 “Kafka를 써서 빨라졌다”보다 “접수와 정산을 분리했고, 지연·장애 뒤에도 원장 결과가 일치하는지 검증했다”고 설명한다. 특히 **Lag 0인데 검색 결과가 누락된 사례**는 기술 선택뿐 아니라 무엇을 운영 지표로 봐야 하는지 보여준다.
