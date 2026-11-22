@@ -2,6 +2,7 @@
 
 - 상태: #274 승인 및 #275 구현 병합 완료. 로컬·PR·main push의 공통 검증 성공. [검증 결과](../reports/issue-003-verification-ci.md)에서 실행 범위를 확인한다.
 - 기존 이슈: [#3 개발 기반](https://github.com/dev-baek/bidflow/issues/3). [원래 부트스트랩 사양](issue-003-repository-bootstrap.md)의 I.4/I.6과 남은 완료 조건을 구체화한다.
+- 후속 제안: [#20 통합 검증 완전성](issue-020-integration-completeness.md). 실제 skip 사례 뒤 `verify-integration`의 엄격 판정·실행 누락 차단을 구체화한다. 승인 전에는 기존 명령 계약을 변경하지 않는다.
 
 ## S. 검증 사용 흐름
 
