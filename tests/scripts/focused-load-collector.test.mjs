@@ -9,6 +9,10 @@ import {planFocused} from '../../scripts/focused-thousand.mjs';
 import {collectFocused,claimOutput,parseReceipt} from '../../scripts/focused-load-collector.mjs';
 
 const id=n=>`00000000-0000-4000-8000-${String(n).padStart(12,'0')}`;
+const phaseMetrics=Object.fromEntries(['blocked','connecting','sending','waiting','receiving'].map(p=>
+  ['http_req_'+p,{values:{med:1,'p(95)':2,'p(99)':3}}]));
+const traceEntry=(n=1)=>({commandId:n,operation:'SETUP_METADATA',startedMs:n,completedMs:n+1,durationMs:1,
+  timeoutMs:5000,outcome:'SUCCEEDED',exitCode:0,signal:null});
 function fake() {
   const auctionId=id(1),runId='fake19',endsAt='2030-01-01T13:00:00Z';
   const receipts=Array.from({length:10},(_,i)=>({...planFocused(runId,'smoke',i%2+1,Math.floor(i/2)),
@@ -26,7 +30,8 @@ function fake() {
     cpu:async()=>({cpu:20,pressure:1}),containers:async()=>({oom:false,memoryBytes:1000}),
     start:async()=>({done:wait(25).then(()=>0),stop:async()=>{stopped++;}}),
     receipts:async()=>({records:receipts,invalid:0}),snapshot:async()=>snapshot,
-    summary:async()=>({count:10,iterations:10,received:10,p50:10,p95:20,p99:25,errorRate:0})};
+    trace:()=>({records:[traceEntry()],clockValid:true,truncated:false}),
+    summary:async()=>({count:10,iterations:10,received:10,p50:10,p95:20,p99:25,errorRate:0,phaseMetrics})};
   return {io,receipts,snapshot,lag,get restored(){return restored;},get stopped(){return stopped;},get saved(){return saved;}};
 }
 
@@ -35,6 +40,7 @@ test('collector joins a complete smoke without pretending it is a thousand-reque
   assert.equal(e.valid,true);assert.equal(e.fullVerified,false);assert.equal(e.consistency.valid,true);
   assert.equal(e.resources.valid,true);assert.equal(e.performancePassed,true);assert.equal(f.restored,1);
   assert.equal(f.saved.at(-1).restoration.verified,true);
+  assert.equal(e.diagnosticsComplete,true);assert.equal(e.commandTrace.complete,true);assert.equal(e.phaseSummary.complete,true);
 });
 
 test('partial receipts, malformed SQL, late recovery and DLT changes cannot pass by lag zero',async()=>{
@@ -58,7 +64,7 @@ test('load failure, resource pressure and failed restoration preserve sanitized 
 });
 
 test('performance failure is separate from valid collection and SQL, and preexisting lag prevents load',async()=>{
-  const f=fake();f.io.summary=async()=>({count:10,iterations:10,received:10,p50:10,p95:301,p99:310,errorRate:0});
+  const f=fake();f.io.summary=async()=>({count:10,iterations:10,received:10,p50:10,p95:301,p99:310,errorRate:0,phaseMetrics});
   const e=await collectFocused('smoke',f.io);assert.equal(e.valid,false);assert.equal(e.consistency.valid,true);
   assert.equal(e.observationValid,true);assert.equal(e.performancePassed,false);
   const g=fake();g.lag[0].lag=1;g.io.start=async()=>{assert.fail('must not submit');};
@@ -72,17 +78,34 @@ test('artifact write failure still restores the owned runtime and cannot report 
 
 test('malformed summary values and unconfirmed counter totals are not performance success',async()=>{
   for(const bad of [{p95:-1},{p50:100,p95:20},{p99:null},{errorRate:-1},{count:9},{iterations:9},{received:9}]){
-    const f=fake();f.io.summary=async()=>({count:10,iterations:10,received:10,p50:10,p95:20,p99:25,errorRate:0,...bad});
+    const f=fake();f.io.summary=async()=>({count:10,iterations:10,received:10,p50:10,p95:20,p99:25,errorRate:0,phaseMetrics,...bad});
     assert.equal((await collectFocused('smoke',f.io)).valid,false);
   }
 });
 
-test('sampler timeout retains its source and safe error kind, never raw command output',async()=>{
+test('sampler termination retains source without inferring a timeout or raw command output',async()=>{
   const f=fake();let calls=0;
   f.io.containers=async()=>{if(++calls>1)throw Object.assign(Error('token-secret'),{killed:true});return {oom:false,memoryBytes:1000};};
   const e=await collectFocused('smoke',f.io);assert.equal(e.valid,false);
-  assert.ok(e.failures.some(x=>x.source==='containers'&&x.kind==='COMMAND_TIMEOUT'));
+  assert.ok(e.failures.some(x=>x.source==='containers'&&x.kind==='TERMINATED'));
   assert.equal(JSON.stringify(e).includes('secret'),false);
+});
+
+test('missing/truncated/corrupt trace or missing HTTP phases cannot turn a good SQL result into full success',async()=>{
+  for(const change of [f=>delete f.io.trace,f=>f.io.trace=()=>({records:[],truncated:true,clockValid:true}),
+    f=>f.io.trace=()=>({records:[traceEntry(2)],clockValid:true,truncated:false}),
+    f=>{const summary=f.io.summary;f.io.summary=async()=>({...await summary(),phaseMetrics:{}}); }]){
+    const f=fake();change(f);const e=await collectFocused('smoke',f.io);
+    assert.equal(e.valid,false);assert.equal(e.consistency.valid,true);assert.equal(e.performancePassed,true);
+    assert.equal(e.diagnosticsComplete,false);assert.equal(e.observationValid,false);assert.equal(f.restored,1);
+  }
+});
+
+test('trace is captured before saving partial evidence and refreshed after restoration commands',async()=>{
+  const f=fake(),records=[traceEntry()];f.io.trace=()=>({records,clockValid:true,truncated:false});
+  f.io.restore=async()=>{records.push(traceEntry(2));return {verified:true};};
+  const e=await collectFocused('smoke',f.io);
+  assert.equal(f.saved[0].commandTrace.records.length,1);assert.equal(e.commandTrace.records.length,2);assert.equal(e.valid,true);
 });
 
 test('receipt parser strips arbitrary payload and preserves an invalid receipt as failure',()=>{

@@ -1,5 +1,4 @@
 import {execFile,spawn} from 'node:child_process';
-import {promisify} from 'node:util';
 import {readFile,writeFile,rename} from 'node:fs/promises';
 import {createHash,randomUUID} from 'node:crypto';
 import {fileURLToPath,pathToFileURL} from 'node:url';
@@ -11,11 +10,23 @@ import {focusedConfig,planFocused} from './focused-thousand.mjs';
 import {isUuid} from './final-settlement.mjs';
 import {buildFocusedSql} from './concurrent-browser-sql.mjs';
 import {claimOutput,collectFocused,parseReceipt} from './focused-load-collector.mjs';
+import {createCommandTrace} from './command-trace.mjs';
 
 const root=fileURLToPath(new URL('../',import.meta.url)).replace(/\/$/,'');
 const services=['postgres','kafka','redis','object-storage','opensearch'].map(s=>`bidflow-local-${s}-1`);
-const execute=promisify(execFile);
-const command=async(program,args,timeout=5000)=>(await execute(program,args,{cwd:root,timeout,maxBuffer:4_000_000})).stdout.trim();
+export function executeObserved(program,args,{timeoutMs,onTimeout}) {
+  return new Promise((resolve,reject)=>{
+    let timer;
+    const child=execFile(program,args,{cwd:root,maxBuffer:4_000_000},(error,stdout,stderr)=>{
+      clearTimeout(timer);if(error)reject(error);else resolve({stdout,stderr});
+    });
+    timer=setTimeout(()=>{
+      if(child.exitCode===null&&child.signalCode===null) {
+        try{if(child.kill('SIGTERM'))onTimeout();}catch(error){reject(error);}
+      }
+    },timeoutMs);
+  });
+}
 
 export function memoryBytes(input) {
   const m=typeof input==='string'&&input.match(/^([0-9]+(?:\.[0-9]+)?)(B|KiB|MiB|GiB|TiB|kB|MB|GB) \/ /);
@@ -36,6 +47,9 @@ export function buildK6Args(source,output,fixture,mode) {
 }
 
 function realIo(output) {
+  const trace=createCommandTrace({now:()=>performance.now(),execute:executeObserved});
+  const command=async(program,args,timeout=5000,operation='SETUP_METADATA')=>
+    (await trace.run(operation,program,args,timeout)).stdout.trim();
   let runtime,priorCommand,previousCpu=os.cpus(),started=false;
   const jar=root+'/backend/runtime/build/libs/runtime-0.0.1-SNAPSHOT.jar';
   const hash=async()=>createHash('sha256').update(await readFile(jar)).digest('hex');
@@ -44,9 +58,10 @@ function realIo(output) {
     if(!/^\d+$/.test(pid))throw Error('one local API required');
     return {pid:Number(pid),command:await command('ps',['-p',pid,'-o','command='])};
   };
-  const sql=async query=>JSON.parse(await command('docker',['exec','bidflow-local-postgres-1','psql','-XqAt','-U','bidflow','-d','bidflow','-v','ON_ERROR_STOP=1','-c',query]));
+  const sql=async query=>JSON.parse(await command('docker',['exec','bidflow-local-postgres-1','psql','-XqAt','-U','bidflow','-d','bidflow','-v','ON_ERROR_STOP=1','-c',query],5000,'SCOPED_SQL'));
   return {
     now:()=>performance.now(),wait,
+    trace:()=>trace.snapshot(),
     save:async e=>{await writeFile(output+'/evidence.tmp',JSON.stringify(e,null,2)+'\n',{mode:0o600});await rename(output+'/evidence.tmp',output+'/evidence.json');},
     prepare:async()=>{
       if(process.platform!=='darwin'||process.versions.node.split('.')[0]!=='24')throw Error('Mac and Node 24 required');
@@ -95,13 +110,13 @@ function realIo(output) {
     },
     lag:async()=>{
       const text=await command('docker',['exec','bidflow-local-kafka-1','/opt/kafka/bin/kafka-consumer-groups.sh',
-        '--bootstrap-server','localhost:9092','--describe','--group','bid-settlement'],12000);
+        '--bootstrap-server','localhost:9092','--describe','--group','bid-settlement'],12000,'KAFKA_LAG');
       return text.split('\n').map(s=>s.trim().split(/\s+/)).filter(c=>c[0]==='bid-settlement'&&c[1]==='bid-command')
         .map(c=>({partition:+c[2],currentOffset:+c[3],endOffset:+c[4],lag:+c[5]}));
     },
     dlt:async()=>{
       const text=await command('docker',['exec','bidflow-local-kafka-1','/opt/kafka/bin/kafka-get-offsets.sh',
-        '--bootstrap-server','localhost:9092','--topic','bid-command.DLT','--time','-1'],12000);
+        '--bootstrap-server','localhost:9092','--topic','bid-command.DLT','--time','-1'],12000,'KAFKA_DLT');
       const rows=text.split('\n').map(s=>s.trim().split(':')).sort((a,b)=>+a[1]-+b[1]);
       if(rows.length!==3||rows.some((r,i)=>r[0]!=='bid-command.DLT'||+r[1]!==i||!/^\d+$/.test(r[2])))throw Error('DLT offsets unavailable');
       return rows.map(r=>+r[2]);
@@ -111,12 +126,12 @@ function realIo(output) {
       if(next.length!==previousCpu.length)throw Error('CPU topology changed');
       next.forEach((c,i)=>{for(const [k,v]of Object.entries(c.times)){const delta=v-previousCpu[i].times[k];total+=delta;if(k==='idle')idle+=delta;}});
       previousCpu=next;
-      const pressure=Number(await command('sysctl',['-n','kern.memorystatus_vm_pressure_level']));
+      const pressure=Number(await command('sysctl',['-n','kern.memorystatus_vm_pressure_level'],5000,'CPU_PRESSURE'));
       return {cpu:total>0?100*(1-idle/total):0,pressure};
     },
     containers:async()=>{
-      const usage=(await command('docker',['stats','--no-stream','--format','{{.MemUsage}}',...services])).split('\n');
-      const oom=(await command('docker',['inspect','--format','{{.State.OOMKilled}}',...services])).split('\n');
+      const usage=(await command('docker',['stats','--no-stream','--format','{{.MemUsage}}',...services],5000,'CONTAINER_STATS')).split('\n');
+      const oom=(await command('docker',['inspect','--format','{{.State.OOMKilled}}',...services],5000,'CONTAINER_OOM')).split('\n');
       if(usage.length!==services.length||oom.length!==services.length||oom.some(s=>!['true','false'].includes(s)))throw Error('incomplete container observation');
       return {memoryBytes:usage.reduce((sum,s)=>sum+memoryBytes(s),0),oom:oom.some(s=>s==='true')};
     },
@@ -126,7 +141,7 @@ function realIo(output) {
       const done=new Promise((resolve,reject)=>{child.once('error',reject);child.once('close',resolve);});
       return {done,stop:async()=>{
         if(child.exitCode!==null||child.signalCode!==null)return;
-        await command('docker',['stop','--time','5',`bidflow-focused-${fixture.runId}`],10000);
+        await command('docker',['stop','--time','5',`bidflow-focused-${fixture.runId}`],10000,'LOAD_STOP');
         await Promise.race([done,wait(5000).then(()=>{throw Error('load stop timeout');})]);
       }};
     },
@@ -142,7 +157,8 @@ function realIo(output) {
       const s=JSON.parse(await readFile(output+'/summary.json','utf8')).metrics;
       const timing=s['http_req_duration{operation:bid_request}'].values;
       return {count:s.http_reqs.values.count,iterations:s.iterations.values.count,received:s.bid_request_received?.values.count??0,
-        p50:timing.med,p95:timing['p(95)'],p99:timing['p(99)'],errorRate:s['http_req_failed{operation:bid_request}'].values.rate};
+        p50:timing.med,p95:timing['p(95)'],p99:timing['p(99)'],errorRate:s['http_req_failed{operation:bid_request}'].values.rate,
+        phaseMetrics:s};
     },
   };
 }
