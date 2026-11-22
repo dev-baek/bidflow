@@ -1,6 +1,6 @@
 # 명령 추적을 포함한 집중 부하 재검증 계획
 
-- 상태: 제안됨. 문서 PR 승인 후 실행한다. 이번 문서 작성에서는 부하·API 재시작·Fixture 삽입을 하지 않는다.
+- 상태: #291 병합으로 승인됨. 새 smoke 10건과 별도 새 경매의 1,000건을 각각 한 번 실행해 통과했고 원래 API를 복원했다. [실행 결과](../reports/issue-019-instrumented-rerun.md). 아래는 승인된 실행 계약이다.
 - 기존 이슈: [#19](https://github.com/dev-baek/bidflow/issues/19). 같은 검증 범위이므로 새 이슈를 만들지 않는다.
 - 기준 계약: [1,000건 집중 부하](issue-019-focused-thousand-requests.md), [명령 추적](issue-019-observer-command-trace.md).
 - 선행 증적: [585건 중단](../reports/issue-019-focused-load-collector.md), [진단](../reports/issue-019-observer-diagnosis.md), [계측 구현과 읽기 전용 검증](../reports/issue-019-observer-command-trace.md).
