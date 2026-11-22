@@ -16,24 +16,35 @@ export function buildFocusedSql(auctionId) {
 
 function scopedBidSql(auctionId,requestIds) {
   return `BEGIN READ ONLY; SET LOCAL statement_timeout = 4000;
+WITH requests AS MATERIALIZED (
+  SELECT * FROM bid_request WHERE auction_id='${auctionId}'
+), ledgers AS MATERIALIZED (
+  SELECT * FROM bid_ledger WHERE auction_id='${auctionId}'
+), events AS MATERIALIZED (
+  SELECT * FROM outbox_event WHERE aggregate_id='${auctionId}' AND topic='bid-event'
+    AND event_type IN ('BidAccepted','BidRejected')
+), ledger_groups AS (
+  SELECT l.bid_request_id, jsonb_agg(jsonb_build_object('id',l.bid_ledger_id,'bidderId',l.bidder_id,
+    'amount',l.requested_amount,'decision',l.decision,'price',l.current_price,'reason',l.rejection_reason)) AS data
+  FROM ledgers l GROUP BY l.bid_request_id
+), event_groups AS (
+  SELECT o.payload->>'bidRequestId' AS request_id, jsonb_agg(jsonb_build_object('id',o.event_id,'type',o.event_type,
+    'requestId',o.payload->>'bidRequestId','auctionId',o.payload->>'auctionId','bidderId',o.payload->>'bidderId',
+    'version',(o.payload->>'auctionVersion')::bigint,'price',(o.payload->>'currentPrice')::bigint,'reason',o.payload->>'reason')) AS data
+  FROM events o GROUP BY o.payload->>'bidRequestId'
+)
 SELECT jsonb_build_object(
   'auction', jsonb_build_object('auctionId',a.auction_id,'status',a.status,'currentPrice',a.current_price,
     'winnerId',a.current_winner_id,'version',a.version,'endsAt',a.ends_at),
-  'requestCount',(SELECT count(*) FROM bid_request WHERE auction_id=a.auction_id),
-  'ledgerCount',(SELECT count(*) FROM bid_ledger WHERE auction_id=a.auction_id),
-  'resultCount',(SELECT count(*) FROM outbox_event WHERE aggregate_id=a.auction_id AND topic='bid-event'
-    AND event_type IN ('BidAccepted','BidRejected')),
+  'requestCount',(SELECT count(*) FROM requests),
+  'ledgerCount',(SELECT count(*) FROM ledgers),
+  'resultCount',(SELECT count(*) FROM events),
   'rows',(SELECT coalesce(jsonb_agg(jsonb_build_object(
     'requestId',r.bid_request_id,'key',r.idempotency_key,'auctionId',r.auction_id,'bidderId',r.bidder_id,'amount',r.amount,'decision',r.status,
-    'ledgers',(SELECT coalesce(jsonb_agg(jsonb_build_object('id',l.bid_ledger_id,'bidderId',l.bidder_id,
-      'amount',l.requested_amount,'decision',l.decision,'price',l.current_price,'reason',l.rejection_reason)),'[]'::jsonb)
-      FROM bid_ledger l WHERE l.auction_id=r.auction_id AND l.bid_request_id=r.bid_request_id),
-    'events',(SELECT coalesce(jsonb_agg(jsonb_build_object('id',o.event_id,'type',o.event_type,
-      'requestId',o.payload->>'bidRequestId','auctionId',o.payload->>'auctionId','bidderId',o.payload->>'bidderId',
-      'version',(o.payload->>'auctionVersion')::bigint,'price',(o.payload->>'currentPrice')::bigint,'reason',o.payload->>'reason')),'[]'::jsonb)
-      FROM outbox_event o WHERE o.aggregate_id=r.auction_id AND o.topic='bid-event'
-        AND o.event_type IN ('BidAccepted','BidRejected') AND o.payload->>'bidRequestId'=r.bid_request_id::text)
-  )),'[]'::jsonb) FROM bid_request r WHERE r.auction_id=a.auction_id
+    'ledgers',coalesce(lg.data,'[]'::jsonb), 'events',coalesce(eg.data,'[]'::jsonb)
+  )),'[]'::jsonb) FROM requests r
+    LEFT JOIN ledger_groups lg ON lg.bid_request_id=r.bid_request_id
+    LEFT JOIN event_groups eg ON eg.request_id=r.bid_request_id::text WHERE r.auction_id=a.auction_id
     ${requestIds ? `AND r.bid_request_id IN (${requestIds.map(id => `'${id}'`).join(',')})` : ''})
 ) FROM auction a WHERE a.auction_id='${auctionId}'; COMMIT;`;
 }

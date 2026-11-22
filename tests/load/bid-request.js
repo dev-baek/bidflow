@@ -27,7 +27,8 @@ if (thousand) {
 
 export const options = thousand
   ? { scenarios: { focused_thousand: { executor: "per-vu-iterations", vus: focusedConfig(mode).vus,
-      iterations: focusedConfig(mode).iterations, maxDuration: "120s", gracefulStop: "0s", exec: "focusedThousand" } }, thresholds: thresholds() }
+      iterations: focusedConfig(mode).iterations, maxDuration: "120s", gracefulStop: "0s", exec: "focusedThousand" } },
+      summaryTrendStats: ["med", "p(95)", "p(99)", "max"], thresholds: thresholds() }
   : scenario === "focused"
   ? {
       scenarios: {

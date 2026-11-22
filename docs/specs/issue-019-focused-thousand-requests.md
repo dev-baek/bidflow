@@ -1,6 +1,6 @@
 # 단일 경매 천 건 입찰 부하 검증 사양
 
-- 상태: #286 병합으로 승인됨. [요청 계획·판정·k6 연결 구현](../reports/issue-019-focused-thousand-core.md)은 1단계이며, 실행 수집기와 실제 smoke/1,000건 검증은 아직 남아 있다.
+- 상태: #286 병합으로 승인됨. [기반 구현](../reports/issue-019-focused-thousand-core.md) 뒤 [실행 수집기와 첫 실측](../reports/issue-019-focused-load-collector.md)을 추가했다. 10건 smoke는 통과했지만 정식 실행은 관측 오류로 585건 접수 후 중단됐으므로 1,000건 검증은 미완료다.
 - 기존 이슈: [#19 부하와 장애 검증](https://github.com/dev-baek/bidflow/issues/19). 같은 검증 범위이므로 새 이슈를 만들지 않는다.
 - 선행 계약: [부하·장애 기준](issue-019-load-failure-test.md), [기존 k6 도구](../reports/issue-095-k6-bid-load.md), [동시 정산과 snapshot 구분](issue-019-concurrent-snapshot-alignment.md).
 
