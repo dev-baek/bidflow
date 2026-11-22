@@ -1,6 +1,6 @@
 # 집중 부하 관측 명령 추적 사양
 
-- 상태: 제안됨. 이 문서 승인 뒤 TDD로 구현한다.
+- 상태: #289 병합으로 승인됨. [명령 추적 구현·읽기 전용 검증](../reports/issue-019-observer-command-trace.md)을 기록했다. 추가 입찰 부하와 과거 실패 원인 확정은 완료하지 않았다.
 - 기존 이슈: [#19](https://github.com/dev-baek/bidflow/issues/19). 새 이슈를 만들지 않는다.
 - 근거: [첫 실패](../reports/issue-019-focused-load-collector.md), [읽기 전용 진단](../reports/issue-019-observer-diagnosis.md), [기존 부하 계약](issue-019-focused-thousand-requests.md).
 
