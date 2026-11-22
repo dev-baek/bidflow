@@ -1,0 +1,267 @@
+{
+  "source": "c4bf0f0064940a237c134ec24e82a63bd33fd2fd",
+  "startedAt": "2026-11-22T12:04:37.406Z",
+  "completedAt": "2026-11-22T12:05:44.676Z",
+  "profile": "local",
+  "clock": "system",
+  "outboxIntervalMs": 100,
+  "original": {
+    "pid": 79499,
+    "hash": "5251be8d60c6fc0f3a7afb13415c72e2438713b973a854a54f411009065f08c4",
+    "stopped": true
+  },
+  "verificationApi": {
+    "hash": "08efe30e379ff23ddac6de84de20d4c9f1ac5ae3c7e5dd8ab1aca9d668abbadd",
+    "pid": 92790
+  },
+  "restored": {
+    "pid": 94652,
+    "verified": true
+  },
+  "trials": [
+    {
+      "mode": "smoke",
+      "startedAt": "2026-11-22T12:04:46.965Z",
+      "completedAt": "2026-11-22T12:05:09.073Z",
+      "fixture": {
+        "auctionId": "78b90126-7589-48a2-b29e-778dedf35275",
+        "productId": "a50b279b-1c05-4e13-85d9-af15ae0976d4",
+        "runId": "focus6b7e0ba45ba146d4a8e7be4d933ab0bd",
+        "endsAt": "2026-11-22T12:35:51.929312+00:00"
+      },
+      "http": {
+        "count": 10,
+        "iterations": 10,
+        "received": 10,
+        "p50": 67.768438,
+        "p95": 107.1999606,
+        "p99": 107.52982571999999,
+        "errorRate": 0
+      },
+      "loadStartedMs": 10717.776,
+      "loadEndedMs": 13625.672,
+      "recoveredMs": 21399.365375,
+      "exitCode": 0,
+      "valid": true,
+      "observationValid": true,
+      "browserObservationValid": true,
+      "fullVerified": false,
+      "diagnosticsComplete": true,
+      "consistency": {
+        "valid": true,
+        "total": 10,
+        "accepted": 6,
+        "rejected": 4
+      },
+      "resources": {
+        "valid": true
+      },
+      "performancePassed": true,
+      "failures": [],
+      "dltBefore": [
+        0,
+        0,
+        0
+      ],
+      "dltAfter": [
+        0,
+        0,
+        0
+      ],
+      "browser": {
+        "valid": true,
+        "code": "CONVERGED",
+        "samples": [
+          {
+            "role": "A",
+            "finalFrameMs": 12936.523917,
+            "finalScreenMs": 12942.16975,
+            "frameFromStartMs": 2218.7479170000006,
+            "screenFromStartMs": 2224.3937499999993,
+            "remainingAfterLoadMs": 0,
+            "convergedBeforeLoadEnd": true,
+            "frameToScreenMs": 5.6458329999986745
+          },
+          {
+            "role": "B",
+            "finalFrameMs": 12934.1945,
+            "finalScreenMs": 12940.3,
+            "frameFromStartMs": 2216.4184999999998,
+            "screenFromStartMs": 2222.5239999999994,
+            "remainingAfterLoadMs": 0,
+            "convergedBeforeLoadEnd": true,
+            "frameToScreenMs": 6.105499999999665
+          }
+        ],
+        "screens": {
+          "A": 12942.16975,
+          "B": 12940.3
+        }
+      },
+      "matchedFinalFrames": [
+        {
+          "role": "B",
+          "auctionId": "78b90126-7589-48a2-b29e-778dedf35275",
+          "eventId": "bf93c5e1-8ed0-44f4-a651-e3df934aec25",
+          "type": "auction.updated",
+          "version": 7,
+          "price": 510000,
+          "endsAt": "2026-11-22T12:35:51.929Z",
+          "atMs": 12934.1945
+        },
+        {
+          "role": "A",
+          "auctionId": "78b90126-7589-48a2-b29e-778dedf35275",
+          "eventId": "bf93c5e1-8ed0-44f4-a651-e3df934aec25",
+          "type": "auction.updated",
+          "version": 7,
+          "price": 510000,
+          "endsAt": "2026-11-22T12:35:51.929Z",
+          "atMs": 12936.523917
+        }
+      ],
+      "framesByRole": [
+        {
+          "role": "A",
+          "count": 7
+        },
+        {
+          "role": "B",
+          "count": 7
+        }
+      ],
+      "lagMax": 0,
+      "traceCount": 30,
+      "failedCommands": [],
+      "auction": {
+        "endsAt": "2026-11-22T12:35:51.929+00:00",
+        "status": "ACTIVE",
+        "version": 7,
+        "auctionId": "78b90126-7589-48a2-b29e-778dedf35275",
+        "currentPrice": 510000
+      }
+    },
+    {
+      "mode": "full",
+      "startedAt": "2026-11-22T12:05:09.621Z",
+      "completedAt": "2026-11-22T12:05:36.751Z",
+      "fixture": {
+        "auctionId": "c1c81d8e-025d-4f04-83ba-6696408005c9",
+        "productId": "b8ff78d5-c9c9-4bd1-b788-c31d30071251",
+        "runId": "focus1291f04f3ad04fed9a44d6dee340d0c2",
+        "endsAt": "2026-11-22T12:36:13.962639+00:00"
+      },
+      "http": {
+        "count": 1000,
+        "iterations": 1000,
+        "received": 1000,
+        "p50": 16.291521,
+        "p95": 93.79490239999994,
+        "p99": 248.27838282999997,
+        "errorRate": 0
+      },
+      "loadStartedMs": 8723.225416,
+      "loadEndedMs": 17327.118916,
+      "recoveredMs": null,
+      "exitCode": 0,
+      "valid": false,
+      "observationValid": false,
+      "browserObservationValid": false,
+      "fullVerified": false,
+      "diagnosticsComplete": true,
+      "consistency": {
+        "valid": false
+      },
+      "resources": {
+        "valid": false
+      },
+      "performancePassed": null,
+      "failures": [
+        {
+          "source": "snapshot",
+          "kind": "FAILED"
+        }
+      ],
+      "dltBefore": [
+        0,
+        0,
+        0
+      ],
+      "dltAfter": null,
+      "browser": null,
+      "matchedFinalFrames": [
+        {
+          "role": "B",
+          "auctionId": "c1c81d8e-025d-4f04-83ba-6696408005c9",
+          "eventId": "d57ba73e-5596-4ebf-9e37-86f859df4ecf",
+          "type": "auction.updated",
+          "version": 266,
+          "price": 50010000,
+          "endsAt": "2026-11-22T12:36:13.962Z",
+          "atMs": 25333.825083
+        },
+        {
+          "role": "A",
+          "auctionId": "c1c81d8e-025d-4f04-83ba-6696408005c9",
+          "eventId": "d57ba73e-5596-4ebf-9e37-86f859df4ecf",
+          "type": "auction.updated",
+          "version": 266,
+          "price": 50010000,
+          "endsAt": "2026-11-22T12:36:13.962Z",
+          "atMs": 25334.243333
+        }
+      ],
+      "framesByRole": [
+        {
+          "role": "A",
+          "count": 266
+        },
+        {
+          "role": "B",
+          "count": 266
+        }
+      ],
+      "lagMax": 208,
+      "traceCount": 37,
+      "failedCommands": [
+        {
+          "commandId": 35,
+          "operation": "SCOPED_SQL",
+          "startedMs": 23206.532291,
+          "completedMs": 27431.0125,
+          "durationMs": 4224.480209000001,
+          "timeoutMs": 5000,
+          "outcome": "FAILED",
+          "exitCode": 1,
+          "signal": null
+        }
+      ],
+      "auction": null
+    }
+  ],
+  "postgresLog": {
+    "at": "2026-11-22T12:05:36.436Z",
+    "kind": "STATEMENT_TIMEOUT",
+    "statementTimeoutMs": 4000
+  },
+  "postRestoreReadOnly": {
+    "observedAt": "2026-11-22T12:06:08.248Z",
+    "elapsedMs": 230.959583,
+    "counts": {
+      "requests": 1000,
+      "ledgers": 1000,
+      "results": 1000
+    },
+    "accepted": 265,
+    "rejected": 735,
+    "consistencyValid": true,
+    "finalEventId": "d57ba73e-5596-4ebf-9e37-86f859df4ecf",
+    "price": 50010000,
+    "version": 266,
+    "matchedRoles": [
+      "A",
+      "B"
+    ],
+    "doesNotChangeRunVerdict": true
+  }
+}

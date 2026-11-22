@@ -164,10 +164,12 @@ function realIo(output) {
 }
 
 async function main() {
-  if(process.argv.length<3||process.argv.length>4)throw Error('usage: node scripts/run-focused-load.mjs NEW_EXTERNAL_DIRECTORY [smoke|full]');
+  if(process.argv.length<3||process.argv.length>5)throw Error('usage: node scripts/run-focused-load.mjs NEW_EXTERNAL_DIRECTORY [smoke|full] [LOOPBACK_VITE_ORIGIN]');
   const mode=process.argv[3]??'full';focusedConfig(mode);
+  const web=process.argv[4];
+  const observer=web===undefined?undefined:(await import('../apps/web/e2e/load-browser-observer.mjs')).createBrowserObserver(web,()=>performance.now());
   const output=await claimOutput(process.argv[2]);
-  const e=await collectFocused(mode,realIo(output));
+  const e=await collectFocused(mode,realIo(output),observer);
   console.log(JSON.stringify({mode,valid:e.valid,fullVerified:e.fullVerified,output}));
   if(!e.valid)process.exitCode=1;
 }
