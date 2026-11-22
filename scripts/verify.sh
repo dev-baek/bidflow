@@ -73,6 +73,6 @@ case "${1:-help}" in
     tools
     run docker docker info
     BIDFLOW_EXPECTED_SERVICES=postgres,kafka,redis,object-storage sh scripts/check-local-health.sh
-    run backend-full ./backend/gradlew -p backend check;;
+    run backend-full ./backend/gradlew -p backend check -Pbidflow.strictIntegration=true --rerun-tasks;;
   *) fail 'Unknown verification target. Run make help.';;
 esac

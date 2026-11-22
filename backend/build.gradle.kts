@@ -84,3 +84,5 @@ val verifyModuleDependencies by tasks.registering {
 tasks.named("check") {
     dependsOn(verifyModuleDependencies)
 }
+
+apply(from = "gradle/strict-integration.gradle")
