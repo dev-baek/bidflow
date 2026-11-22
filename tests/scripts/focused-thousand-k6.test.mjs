@@ -22,6 +22,7 @@ test('new k6 scenario is bounded, records one receipt and disables redirects',()
   const r=load({BIDFLOW_LOAD_SCENARIO:'focused-thousand'});
   const s=r.options.scenarios.focused_thousand;
   assert.equal(s.vus,20);assert.equal(s.iterations,50);assert.equal(s.maxDuration,'120s');assert.equal(s.gracefulStop,'0s');
+  assert.deepEqual(Array.from(r.options.summaryTrendStats),['med','p(95)','p(99)','max']);
   r.focusedThousand();assert.equal(r.calls.length,1);
   assert.equal(r.calls[0][2].timeout,'5s');assert.equal(r.calls[0][2].redirects,0);
   assert.equal(JSON.parse(r.calls[0][1]).amount,60000);
