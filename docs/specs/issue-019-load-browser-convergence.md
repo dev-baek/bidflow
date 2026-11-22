@@ -1,6 +1,6 @@
 # 천 건 부하와 같은 실행의 브라우저 수렴 검증
 
-- 상태: 검토 대기. 구현과 실제 부하 실행은 이 사양 병합 후 진행한다.
+- 상태: #301 승인 후 구현 및 제한 실행. smoke 통과, 본 실행은 SQL 시간 초과로 미완료. [결과와 복원](../reports/issue-019-load-browser-convergence.md).
 - 기존 이슈: [#19](https://github.com/dev-baek/bidflow/issues/19). 별도 이슈를 만들지 않는다.
 - 기반: [누적 1,000건 계약](issue-019-focused-thousand-requests.md), [명령 추적 재검증](issue-019-instrumented-rerun.md), [기존 결과](../reports/issue-019-instrumented-rerun.md), [공개 화면 관측](issue-019-concurrent-browser-latency.md).
 
