@@ -123,7 +123,7 @@ make test-web
 make test-scripts
 make build
 
-# Docker와 기본 로컬 서비스가 실행 중일 때만: 기존 backend check 전체
+# Docker와 기본 로컬 서비스가 실행 중일 때만: skip/실행 누락을 차단하는 전체 backend check
 make verify-integration
 
 # k6 입찰 부하: 로컬 API와 활성 경매·입찰자 Fixture 필요
@@ -131,7 +131,7 @@ make load-focused
 make load-distributed
 ```
 
-`unitTest`는 명시적인 `integration` 태그만 제외한다. 기존 `test`/`check`는 통합 테스트를 포함하며, 결과는 각각 `backend/<module>/build/reports/tests/unitTest/`와 `backend/<module>/build/reports/tests/test/`에 분리된다. `verify-integration`은 서비스를 자동 시작하거나 볼륨을 초기화하지 않는다.
+`unitTest`는 명시적인 `integration` 태그만 제외한다. 기존 `test`/`check`는 통합 테스트를 포함하며, 결과는 각각 `backend/<module>/build/reports/tests/unitTest/`와 `backend/<module>/build/reports/tests/test/`에 분리된다. `verify-integration`은 `check -Pbidflow.strictIntegration=true --rerun-tasks`로 다섯 모듈의 실제 실행을 요구하고 skip·빈 집합·결과 누락·축소 필터를 실패로 처리한다. 서비스 자동 시작/초기화는 하지 않는다. 엄격 속성이 없는 일반 `check`의 기존 동작은 유지되므로 두 명령의 성공 의미를 구분한다. [엄격 검증 사양](docs/specs/issue-020-integration-completeness.md)
 
 [전체 백엔드 재검증](docs/reports/issue-020-backend-full-check.md)에서는 192개(통합 태그 46개 포함)가 실패/skip 없이 통과했다. 첫 실행은 Docker 소켓 mount 문제로 45개가 skip됐으므로 Gradle 성공만으로 통합 성공을 판단하지 않았다. 이 Mac의 Docker Desktop에서는 호출 시 `TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE=/var/run/docker.sock`을 별도로 지정했으며 전역 설정은 바꾸지 않았다. 재현 명령과 적용 범위는 보고서에 있다.
 

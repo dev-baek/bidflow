@@ -1,0 +1,62 @@
+import org.gradle.api.tasks.testing.Test
+import org.gradle.api.tasks.testing.TestDescriptor
+import org.gradle.api.tasks.testing.TestListener
+import org.gradle.api.tasks.testing.TestResult
+import org.gradle.api.tasks.testing.junitplatform.JUnitPlatformOptions
+import java.util.concurrent.ConcurrentHashMap
+
+def flag = providers.gradleProperty('bidflow.strictIntegration').orNull
+if (flag != null && !(flag in ['true', 'false'])) {
+    throw new GradleException('STRICT_INTEGRATION_INVALID_PROPERTY: expected true or false')
+}
+if (flag == 'true') {
+    def results = new ConcurrentHashMap<String, Map>()
+    def tests = ['domain', 'application', 'event-contract', 'adapters', 'runtime'].collect {
+        project(":${it}").tasks.named('test', Test)
+    }
+    def complete = { Map r -> r != null && r.total > 0 && r.failed == 0 && r.skipped == 0 && r.successful == r.total }
+    tests.each { provider ->
+        provider.configure { Test task ->
+            outputs.upToDateWhen { false }
+            outputs.doNotCacheIf('Strict integration requires a fresh execution') { true }
+            doFirst {
+                // Gradle 8.14 keeps --tests separately from public includePatterns.
+                def filtered = !filter.includePatterns.empty || !filter.excludePatterns.empty || !filter.commandLineIncludePatterns.empty
+                def tagged = options instanceof JUnitPlatformOptions && (!options.includeTags.empty || !options.excludeTags.empty)
+                if (ignoreFailures || !includes.empty || !excludes.empty || filtered || tagged) {
+                    throw new GradleException("STRICT_INTEGRATION_RESTRICTED: ${path}")
+                }
+            }
+            addTestListener(new TestListener() {
+                void beforeSuite(TestDescriptor suite) {}
+                void beforeTest(TestDescriptor test) {}
+                void afterTest(TestDescriptor test, TestResult result) {}
+                void afterSuite(TestDescriptor suite, TestResult result) {
+                    if (suite.parent == null) {
+                        results.put(task.path, [total: result.testCount, successful: result.successfulTestCount,
+                            failed: result.failedTestCount, skipped: result.skippedTestCount])
+                    }
+                }
+            })
+        }
+    }
+    def verification = tasks.register('verifyIntegrationCompleteness') {
+        dependsOn(tests)
+        doLast {
+            tests.each { provider ->
+                def path = provider.get().path
+                def result = results.get(path)
+                if (result == null) throw new GradleException("STRICT_INTEGRATION_MISSING: ${path}")
+                logger.lifecycle("STRICT_INTEGRATION_RESULT ${path} total=${result.total} successful=${result.successful} failed=${result.failed} skipped=${result.skipped}")
+                if (!complete(result)) throw new GradleException("STRICT_INTEGRATION_INCOMPLETE: ${path}")
+            }
+            logger.lifecycle('STRICT_INTEGRATION_COMPLETE')
+        }
+    }
+    tasks.named('check') { dependsOn(verification) }
+    gradle.taskGraph.whenReady { graph ->
+        if (!graph.hasTask(verification.get())) {
+            throw new GradleException('STRICT_INTEGRATION_CHECK_REQUIRED: run the root check')
+        }
+    }
+}

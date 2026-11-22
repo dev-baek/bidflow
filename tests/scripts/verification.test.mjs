@@ -5,10 +5,11 @@ import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {spawnSync} from 'node:child_process';
 
-function fixture(extra={}) {
+function fixture(extra={},target='verify') {
   const root=mkdtempSync(join(tmpdir(),'bidflow-verify.'));
   for(const dir of ['scripts','backend','bin'])mkdirSync(join(root,dir));
   copyFileSync('Makefile',join(root,'Makefile'));copyFileSync('scripts/verify.sh',join(root,'scripts/verify.sh'));
+  writeFileSync(join(root,'scripts/check-local-health.sh'),'#!/bin/sh\nprintf "health\\n" >> "$TEST_CALL_LOG"\nexit "${TEST_HEALTH_EXIT:-0}"\n');
   const log=join(root,'calls');writeFileSync(log,'');
   const fake=`#!/bin/sh
 name=$(basename "$0")
@@ -19,16 +20,27 @@ node:--version) echo "v${'${TEST_NODE_MAJOR:-24}'}.0.0"; exit 0;;
 npm:--version) echo 11.0.0; exit 0;;
 esac
 printf '%s %s\\n' "$name" "$*" >> "$TEST_CALL_LOG"
-case "$name" in docker|aws) exit 99;; esac
+case "$name" in aws) exit 99;; docker) exit "${'${TEST_DOCKER_EXIT:-99}'}";; esac
 case "$name:$*" in *"${'${TEST_FAIL_MATCH:-not-a-command}'}"*) exit 7;; esac
 exit 0
 `;
   for(const name of ['java','node','npm','git','docker','aws'])writeFileSync(join(root,'bin',name),fake,{mode:0o755});
   writeFileSync(join(root,'backend/gradlew'),fake,{mode:0o755});
-  const result=spawnSync('make',['-j4','verify'],{cwd:root,encoding:'utf8',timeout:10000,
+  const result=spawnSync('make',['-j4',target],{cwd:root,encoding:'utf8',timeout:10000,
     env:{...process.env,PATH:join(root,'bin')+':'+process.env.PATH,JAVA_HOME:'',BIDFLOW_VERIFY_BASE:'',TEST_CALL_LOG:log,...extra}});
   return {result,calls:readFileSync(log,'utf8').trim().split('\n').filter(Boolean)};
 }
+
+test('integration uses strict full check only after Docker and health succeed, and preserves failures',()=>{
+  const ok=fixture({TEST_DOCKER_EXIT:'0'},'verify-integration');
+  assert.equal(ok.result.status,0,ok.result.stderr);
+  assert.deepEqual(ok.calls,['docker info','health','gradlew -p backend check -Pbidflow.strictIntegration=true --rerun-tasks']);
+  for(const extra of [{TEST_DOCKER_EXIT:'9'},{TEST_DOCKER_EXIT:'0',TEST_HEALTH_EXIT:'8'}]){
+    const r=fixture(extra,'verify-integration');assert.notEqual(r.result.status,0);assert.ok(!r.calls.some(c=>c.startsWith('gradlew')));
+  }
+  const bad=fixture({TEST_DOCKER_EXIT:'0',TEST_FAIL_MATCH:'check'},'verify-integration');
+  assert.notEqual(bad.result.status,0);assert.match(bad.result.stderr,/backend-full failed \(exit 7\)/);
+});
 
 test('verify runs sequential static, backend, web, scripts and build steps without Docker or AWS',()=>{
   const {result,calls}=fixture();assert.equal(result.status,0,result.stderr);
