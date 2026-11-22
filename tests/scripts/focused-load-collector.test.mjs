@@ -48,7 +48,9 @@ test('partial receipts, malformed SQL, late recovery and DLT changes cannot pass
 
 test('load failure, resource pressure and failed restoration preserve sanitized partial evidence',async()=>{
   for(const change of [f=>f.io.start=async()=>({done:Promise.reject(Error('token-secret')),stop:async()=>{}}),
-    f=>f.io.cpu=async()=>({cpu:95,pressure:1}),f=>f.io.containers=async()=>({oom:true,memoryBytes:1000}),
+    f=>{let finish;f.io.cpu=async()=>({cpu:95,pressure:1});
+      f.io.start=async()=>({done:new Promise(resolve=>{finish=resolve;}),stop:async()=>finish(105)});},
+    f=>f.io.containers=async()=>({oom:true,memoryBytes:1000}),
     f=>f.io.restore=async()=>{throw Error('restore-secret');}]){
     const f=fake();change(f);const e=await collectFocused('smoke',f.io);
     assert.equal(e.valid,false);assert.ok(f.saved.length>0);assert.equal(JSON.stringify(e).includes('secret'),false);
