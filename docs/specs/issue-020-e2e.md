@@ -1,6 +1,6 @@
 # [Issue #98] 상품 등록부터 낙찰까지 E2E 시나리오
 
-- 상태: 제안됨
+- 상태: #98 사양과 #99 및 후속 구현이 병합됨. [로컬 기능 회귀 결과](../reports/issue-020-local-functional-regression.md)에서 기존 기능 5개와 SQL 교차 검사를 통과했다. AWS 사용자 여정은 #91의 별도 승인/실행 전이며 #20은 열린 상태로 유지한다.
 - 관련 Issue: [#98 상품 등록부터 낙찰까지 E2E 시나리오 작성](https://github.com/dev-baek/bidflow/issues/98)
 - 후속 구현: #99 Playwright 핵심 E2E 테스트
 - #19 후속 측정: [로컬 브라우저 결과 관측 지연](issue-019-browser-result-latency.md). 기능 E2E 통과와 성능 표본 수집을 구분한다.

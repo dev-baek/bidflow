@@ -1,5 +1,7 @@
 # [Issue #99] Playwright E2E 실행 기준
 
+최근 [#20 로컬 기능 회귀 결과](issue-020-local-functional-regression.md): #292 병합 소스에서 검색을 포함한 기능 5개 통과, 실패/skip/retry 0, 새 경매의 원장·이벤트 교차 검사와 기존 API 복원 완료. 지연 측정 2개와 AWS 사용자 여정은 별도 범위다.
+
 ## 실행 전제
 
 Playwright는 임의의 개발 서버나 AWS 환경을 자동으로 만들지 않는다. 다음 local 전용 환경을 사용한다.

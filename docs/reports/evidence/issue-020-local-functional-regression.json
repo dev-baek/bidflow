@@ -1,0 +1,599 @@
+{
+  "issue": 20,
+  "sourceCommit": "2537abf182f006e20e3c4e4d0eccc33637c3bd45",
+  "startedAt": "2026-11-22T02:59:51.740Z",
+  "completedAt": "2026-11-22T03:00:53.696Z",
+  "valid": true,
+  "environment": {
+    "node": "v24.18.0",
+    "arch": "arm64",
+    "os": "25.5.0",
+    "cpuCount": 8,
+    "memoryBytes": 17179869184,
+    "model": "Mac15,12",
+    "java": "openjdk 21.0.7 2025-04-15 LTS\nOpenJDK Runtime Environment Microsoft-11369939 (build 21.0.7+6-LTS)\nOpenJDK 64-Bit Server VM Microsoft-11369939 (build 21.0.7+6-LTS, mixed mode, sharing)",
+    "docker": "27.5.1 8 8217858048"
+  },
+  "execution": {
+    "workers": 1,
+    "retries": 0,
+    "attempts": 1,
+    "selectedFunctionalCases": 5,
+    "searchEnabled": true,
+    "performanceCasesSelected": false,
+    "awsAccess": false,
+    "profile": "local,e2e",
+    "clock": "test-only mutable Clock",
+    "outboxDelayMs": 100,
+    "environmentOverridesRemoved": true,
+    "infrastructureHealthyBefore": true
+  },
+  "reporter": {
+    "stats": {
+      "startTime": "2026-11-22T03:00:10.051Z",
+      "duration": 30095.745000000003,
+      "expected": 5,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "cases": [
+      {
+        "title": "등록한 경매에 입찰이 없으면 마감에 공개 유찰로 바뀐다",
+        "status": "expected",
+        "results": [
+          {
+            "status": "passed",
+            "durationMs": 3352,
+            "retry": 0
+          }
+        ]
+      },
+      {
+        "title": "자동 입찰로 확정된 낙찰은 마감 이후 새 입찰로 바뀌지 않는다",
+        "status": "expected",
+        "results": [
+          {
+            "status": "passed",
+            "durationMs": 8036,
+            "retry": 0
+          }
+        ]
+      },
+      {
+        "title": "직접 입찰 재시도는 같은 요청이고 같은 사용자의 후속 입찰은 새 요청이다",
+        "status": "expected",
+        "results": [
+          {
+            "status": "passed",
+            "durationMs": 6317,
+            "retry": 0
+          }
+        ]
+      },
+      {
+        "title": "WebSocket 연결을 복구하면 끊긴 사이 놓친 현재가를 REST에서 읽는다",
+        "status": "expected",
+        "results": [
+          {
+            "status": "passed",
+            "durationMs": 6614,
+            "retry": 0
+          }
+        ]
+      },
+      {
+        "title": "OpenSearch 복합 필터와 정렬을 적용하고 실제 경매 상세를 연다",
+        "status": "expected",
+        "results": [
+          {
+            "status": "passed",
+            "durationMs": 3391,
+            "retry": 0
+          }
+        ]
+      }
+    ]
+  },
+  "settlementLag": {
+    "before": [
+      {
+        "partition": 0,
+        "currentOffset": 1169,
+        "endOffset": 1169,
+        "lag": 0
+      },
+      {
+        "partition": 1,
+        "currentOffset": 1905,
+        "endOffset": 1905,
+        "lag": 0
+      },
+      {
+        "partition": 2,
+        "currentOffset": 1602,
+        "endOffset": 1602,
+        "lag": 0
+      }
+    ],
+    "after": [
+      {
+        "partition": 0,
+        "currentOffset": 1173,
+        "endOffset": 1173,
+        "lag": 0
+      },
+      {
+        "partition": 1,
+        "currentOffset": 1909,
+        "endOffset": 1909,
+        "lag": 0
+      },
+      {
+        "partition": 2,
+        "currentOffset": 1602,
+        "endOffset": 1602,
+        "lag": 0
+      }
+    ]
+  },
+  "runtime": {
+    "original": {
+      "pid": 24969,
+      "jarSha256": "5251be8d60c6fc0f3a7afb13415c72e2438713b973a854a54f411009065f08c4",
+      "delayMs": 1000,
+      "fullyStopped": true
+    },
+    "test": {
+      "pid": 30721,
+      "jarSha256": "34f4192967bf4a9ddd75150dcf87e26e67dd67af8957c330a1b358aeae23d898",
+      "fullyStopped": true,
+      "vitePid": 30755,
+      "viteFullyStopped": true
+    },
+    "restoration": {
+      "pid": 30982,
+      "verified": true,
+      "originalArgumentsAndJarMatched": true,
+      "readiness": "UP",
+      "delayMs": 1000
+    }
+  },
+  "scopedSql": {
+    "observedAt": "2026-11-22T03:01:18.927Z",
+    "readOnly": true,
+    "afterRuntimeRestoration": true,
+    "snapshots": [
+      {
+        "rows": [],
+        "auction": {
+          "endsAt": "2030-01-01T12:30:00+00:00",
+          "status": "SCHEDULED",
+          "version": 1,
+          "winnerId": null,
+          "auctionId": "e63fe0b1-ac44-4cad-9131-845694237115",
+          "currentPrice": 10000
+        },
+        "ledgerCount": 0,
+        "resultCount": 0,
+        "requestCount": 0
+      },
+      {
+        "rows": [],
+        "auction": {
+          "endsAt": "2030-01-01T12:30:00+00:00",
+          "status": "SCHEDULED",
+          "version": 1,
+          "winnerId": null,
+          "auctionId": "f958f3b3-12a4-4f3a-8667-aba677a6d75a",
+          "currentPrice": 14000
+        },
+        "ledgerCount": 0,
+        "resultCount": 0,
+        "requestCount": 0
+      },
+      {
+        "rows": [],
+        "auction": {
+          "endsAt": "2030-01-01T12:30:00+00:00",
+          "status": "SCHEDULED",
+          "version": 1,
+          "winnerId": null,
+          "auctionId": "287308c2-8a14-4ed0-8f7b-cfcd23aff1eb",
+          "currentPrice": 20000
+        },
+        "ledgerCount": 0,
+        "resultCount": 0,
+        "requestCount": 0
+      },
+      {
+        "rows": [
+          {
+            "key": "3d46b8a3-4a8a-41c1-b152-3e5de689fbfc",
+            "amount": 12000,
+            "events": [
+              {
+                "id": "429ec1cf-3c78-4f52-9018-5da4a61e571f",
+                "type": "BidAccepted",
+                "price": 12000,
+                "reason": null,
+                "version": 2,
+                "bidderId": "e2e-bidder-control",
+                "auctionId": "3d46b8a3-4a8a-41c1-b152-3e5de689fbfc",
+                "requestId": "e7e2ba86-385f-4dd8-87f7-e644102710a3"
+              }
+            ],
+            "ledgers": [
+              {
+                "id": "b82b1061-1f7a-4dfd-9ff7-d2b8a4739718",
+                "price": 12000,
+                "amount": 12000,
+                "reason": null,
+                "bidderId": "e2e-bidder-control",
+                "decision": "ACCEPTED"
+              }
+            ],
+            "bidderId": "e2e-bidder-control",
+            "decision": "ACCEPTED",
+            "auctionId": "3d46b8a3-4a8a-41c1-b152-3e5de689fbfc",
+            "requestId": "e7e2ba86-385f-4dd8-87f7-e644102710a3"
+          }
+        ],
+        "auction": {
+          "endsAt": "2030-01-01T12:30:00+00:00",
+          "status": "ENDED",
+          "version": 3,
+          "winnerId": "e2e-bidder-control",
+          "auctionId": "3d46b8a3-4a8a-41c1-b152-3e5de689fbfc",
+          "currentPrice": 12000
+        },
+        "ledgerCount": 1,
+        "resultCount": 1,
+        "requestCount": 1
+      },
+      {
+        "rows": [],
+        "auction": {
+          "endsAt": "2030-01-01T12:30:00+00:00",
+          "status": "ENDED",
+          "version": 2,
+          "winnerId": null,
+          "auctionId": "b216d48b-6061-4252-9ef2-c5435d62c22e",
+          "currentPrice": 10000
+        },
+        "ledgerCount": 0,
+        "resultCount": 0,
+        "requestCount": 0
+      },
+      {
+        "rows": [
+          {
+            "key": "36a43a28-788a-497c-ac53-8334e0c4d25b",
+            "amount": 30000,
+            "events": [
+              {
+                "id": "cdc07d96-b8d1-4eac-b3ab-dc433209c5ae",
+                "type": "BidAccepted",
+                "price": 11000,
+                "reason": null,
+                "version": 2,
+                "bidderId": "e2e-bidder-a",
+                "auctionId": "2db5a9f1-6166-43ce-b3ce-ee26efa86840",
+                "requestId": "d67db90f-1d5d-4aa8-9c62-9105162558b6"
+              }
+            ],
+            "ledgers": [
+              {
+                "id": "6f149b3d-cf1b-47a8-95d0-cea729b5376c",
+                "price": 11000,
+                "amount": 30000,
+                "reason": null,
+                "bidderId": "e2e-bidder-a",
+                "decision": "ACCEPTED"
+              }
+            ],
+            "bidderId": "e2e-bidder-a",
+            "decision": "ACCEPTED",
+            "auctionId": "2db5a9f1-6166-43ce-b3ce-ee26efa86840",
+            "requestId": "d67db90f-1d5d-4aa8-9c62-9105162558b6"
+          },
+          {
+            "key": "28dbdf3e-f249-4007-b222-779a991d7768",
+            "amount": 20000,
+            "events": [
+              {
+                "id": "a9b8ed4d-d8c4-4078-aef4-b7210dbdf0bb",
+                "type": "BidAccepted",
+                "price": 21000,
+                "reason": null,
+                "version": 3,
+                "bidderId": "e2e-bidder-b",
+                "auctionId": "2db5a9f1-6166-43ce-b3ce-ee26efa86840",
+                "requestId": "0d699d5f-fe3d-40d6-a951-5a9fa425bb02"
+              }
+            ],
+            "ledgers": [
+              {
+                "id": "20d2e130-f50f-4346-b0a9-4d6d8dff6ceb",
+                "price": 21000,
+                "amount": 20000,
+                "reason": null,
+                "bidderId": "e2e-bidder-b",
+                "decision": "ACCEPTED"
+              }
+            ],
+            "bidderId": "e2e-bidder-b",
+            "decision": "ACCEPTED",
+            "auctionId": "2db5a9f1-6166-43ce-b3ce-ee26efa86840",
+            "requestId": "0d699d5f-fe3d-40d6-a951-5a9fa425bb02"
+          },
+          {
+            "key": "19944b01-5109-437b-a0c5-c332adfb3a68",
+            "amount": 35000,
+            "events": [
+              {
+                "id": "3d64f418-1e8f-4e99-afa4-7c57d26c6458",
+                "type": "BidRejected",
+                "price": null,
+                "reason": "AUCTION_ENDED",
+                "version": 4,
+                "bidderId": "e2e-bidder-b",
+                "auctionId": "2db5a9f1-6166-43ce-b3ce-ee26efa86840",
+                "requestId": "2deb96e3-a9d4-4c36-ac91-50a79958cd16"
+              }
+            ],
+            "ledgers": [
+              {
+                "id": "c667b17d-cf9c-423a-a732-15bf43bdf773",
+                "price": null,
+                "amount": 35000,
+                "reason": "AUCTION_ENDED",
+                "bidderId": "e2e-bidder-b",
+                "decision": "REJECTED"
+              }
+            ],
+            "bidderId": "e2e-bidder-b",
+            "decision": "REJECTED",
+            "auctionId": "2db5a9f1-6166-43ce-b3ce-ee26efa86840",
+            "requestId": "2deb96e3-a9d4-4c36-ac91-50a79958cd16"
+          }
+        ],
+        "auction": {
+          "endsAt": "2030-01-01T12:35:00+00:00",
+          "status": "ENDED",
+          "version": 4,
+          "winnerId": "e2e-bidder-a",
+          "auctionId": "2db5a9f1-6166-43ce-b3ce-ee26efa86840",
+          "currentPrice": 21000
+        },
+        "ledgerCount": 3,
+        "resultCount": 3,
+        "requestCount": 3
+      },
+      {
+        "rows": [
+          {
+            "key": "67dc9db6-e764-4aa7-8265-e4cbc6d5985b",
+            "amount": 12000,
+            "events": [
+              {
+                "id": "dc216d8e-57d6-4b83-a9de-aa76e0e14ed0",
+                "type": "BidAccepted",
+                "price": 12000,
+                "reason": null,
+                "version": 2,
+                "bidderId": "e2e-direct-a",
+                "auctionId": "4650a907-d23c-42b8-872b-6f076fe2c970",
+                "requestId": "4f7f3b19-1e6c-480f-9d35-1c4c1e48547f"
+              }
+            ],
+            "ledgers": [
+              {
+                "id": "7fdd47a6-6feb-4d37-859d-95018c0048a3",
+                "price": 12000,
+                "amount": 12000,
+                "reason": null,
+                "bidderId": "e2e-direct-a",
+                "decision": "ACCEPTED"
+              }
+            ],
+            "bidderId": "e2e-direct-a",
+            "decision": "ACCEPTED",
+            "auctionId": "4650a907-d23c-42b8-872b-6f076fe2c970",
+            "requestId": "4f7f3b19-1e6c-480f-9d35-1c4c1e48547f"
+          },
+          {
+            "key": "1a264dc5-91d5-4f79-85dd-0a1e29f9edf1",
+            "amount": 13000,
+            "events": [
+              {
+                "id": "43c9102c-8c86-4cee-9b70-6aab1ac36d49",
+                "type": "BidAccepted",
+                "price": 13000,
+                "reason": null,
+                "version": 3,
+                "bidderId": "e2e-direct-b",
+                "auctionId": "4650a907-d23c-42b8-872b-6f076fe2c970",
+                "requestId": "c48872bf-3f0d-4c15-b627-edb5a382dea5"
+              }
+            ],
+            "ledgers": [
+              {
+                "id": "0e37c9e8-3862-4f13-a913-34684782f4b5",
+                "price": 13000,
+                "amount": 13000,
+                "reason": null,
+                "bidderId": "e2e-direct-b",
+                "decision": "ACCEPTED"
+              }
+            ],
+            "bidderId": "e2e-direct-b",
+            "decision": "ACCEPTED",
+            "auctionId": "4650a907-d23c-42b8-872b-6f076fe2c970",
+            "requestId": "c48872bf-3f0d-4c15-b627-edb5a382dea5"
+          },
+          {
+            "key": "9d5af556-8537-4670-b550-192744573fde",
+            "amount": 14000,
+            "events": [
+              {
+                "id": "5b2e15b2-80db-40a1-b731-32fd72c37a19",
+                "type": "BidAccepted",
+                "price": 14000,
+                "reason": null,
+                "version": 4,
+                "bidderId": "e2e-direct-a",
+                "auctionId": "4650a907-d23c-42b8-872b-6f076fe2c970",
+                "requestId": "52ec5fc4-b762-4053-9900-186a9aa38d49"
+              }
+            ],
+            "ledgers": [
+              {
+                "id": "921a1f9a-bcef-44a4-876f-a254030d6788",
+                "price": 14000,
+                "amount": 14000,
+                "reason": null,
+                "bidderId": "e2e-direct-a",
+                "decision": "ACCEPTED"
+              }
+            ],
+            "bidderId": "e2e-direct-a",
+            "decision": "ACCEPTED",
+            "auctionId": "4650a907-d23c-42b8-872b-6f076fe2c970",
+            "requestId": "52ec5fc4-b762-4053-9900-186a9aa38d49"
+          }
+        ],
+        "auction": {
+          "endsAt": "2030-01-01T12:30:00+00:00",
+          "status": "ACTIVE",
+          "version": 4,
+          "winnerId": "e2e-direct-a",
+          "auctionId": "4650a907-d23c-42b8-872b-6f076fe2c970",
+          "currentPrice": 14000
+        },
+        "ledgerCount": 3,
+        "resultCount": 3,
+        "requestCount": 3
+      },
+      {
+        "rows": [
+          {
+            "key": "7092c8aa-7098-4926-aeeb-3b263266e44e",
+            "amount": 12000,
+            "events": [
+              {
+                "id": "1c5974ac-b7d4-47c8-87d8-1a107eddd20e",
+                "type": "BidAccepted",
+                "price": 12000,
+                "reason": null,
+                "version": 2,
+                "bidderId": "e2e-reconnect-bidder",
+                "auctionId": "88fdc435-4bce-4064-a018-38608283e31b",
+                "requestId": "608368e6-aea2-4567-8876-1274a43303b6"
+              }
+            ],
+            "ledgers": [
+              {
+                "id": "3a4131de-1503-4c99-b1b5-f553679b2209",
+                "price": 12000,
+                "amount": 12000,
+                "reason": null,
+                "bidderId": "e2e-reconnect-bidder",
+                "decision": "ACCEPTED"
+              }
+            ],
+            "bidderId": "e2e-reconnect-bidder",
+            "decision": "ACCEPTED",
+            "auctionId": "88fdc435-4bce-4064-a018-38608283e31b",
+            "requestId": "608368e6-aea2-4567-8876-1274a43303b6"
+          }
+        ],
+        "auction": {
+          "endsAt": "2030-01-01T12:30:00+00:00",
+          "status": "ACTIVE",
+          "version": 2,
+          "winnerId": "e2e-reconnect-bidder",
+          "auctionId": "88fdc435-4bce-4064-a018-38608283e31b",
+          "currentPrice": 12000
+        },
+        "ledgerCount": 1,
+        "resultCount": 1,
+        "requestCount": 1
+      }
+    ],
+    "closing": {
+      "results": [
+        {
+          "outcome": "UNSOLD",
+          "winnerId": null,
+          "auctionId": "b216d48b-6061-4252-9ef2-c5435d62c22e",
+          "finalPrice": null
+        },
+        {
+          "outcome": "SOLD",
+          "winnerId": "e2e-bidder-control",
+          "auctionId": "3d46b8a3-4a8a-41c1-b152-3e5de689fbfc",
+          "finalPrice": 12000
+        },
+        {
+          "outcome": "SOLD",
+          "winnerId": "e2e-bidder-a",
+          "auctionId": "2db5a9f1-6166-43ce-b3ce-ee26efa86840",
+          "finalPrice": 21000
+        }
+      ],
+      "endedEvents": [
+        {
+          "eventId": "f5237dc0-198a-46a8-a724-75c5cade445a",
+          "auctionId": "b216d48b-6061-4252-9ef2-c5435d62c22e"
+        },
+        {
+          "eventId": "494992ff-6a05-44a2-aec2-982a64041e69",
+          "auctionId": "3d46b8a3-4a8a-41c1-b152-3e5de689fbfc"
+        },
+        {
+          "eventId": "da6fc27a-5076-41e8-886c-fdacb3e84ca1",
+          "auctionId": "2db5a9f1-6166-43ce-b3ce-ee26efa86840"
+        }
+      ],
+      "consumerDuplicates": 0
+    },
+    "checks": {
+      "valid": true,
+      "auctions": 8,
+      "requests": 8,
+      "ledgers": 8,
+      "resultEvents": 8,
+      "accepted": 7,
+      "rejected": 1,
+      "pending": 0,
+      "duplicateRequestIds": 0,
+      "duplicateLedgerIds": 0,
+      "duplicateResultIds": 0,
+      "auctionResults": 3,
+      "auctionEndedEvents": 3,
+      "consumerDuplicates": 0
+    }
+  },
+  "originalArtifactSha256": {
+    "run.json": "21bee6dc00fed4ca0eeb0f680bb77739a24afb756fd37a3517b593e877d7b4b5",
+    "playwright.json": "fbfc748545a79345edd5d51c0b765a1681788f0eae794ac650e366d14534ca05",
+    "scoped-sql.json": "0dfc5424dd485fa4ad21bccf89ae2e10e1d6faac50985d70d1c7919c298ff2e9"
+  },
+  "failureArtifacts": {
+    "policy": {
+      "trace": "retain-on-failure",
+      "screenshot": "only-on-failure"
+    },
+    "failureInjected": false,
+    "failedCases": 0,
+    "artifactsObserved": 0
+  },
+  "limitations": [
+    "Local test-only authentication and mutable Clock, not Cognito or deployed AWS.",
+    "Performance/latency cases were not selected and this is not a new load measurement.",
+    "Failure trace generation was not deliberately exercised; no case failed.",
+    "SQL was read after runtime restoration and is not an exact browser assertion timestamp.",
+    "The full backend integration check was not rerun."
+  ]
+}
