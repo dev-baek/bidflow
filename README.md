@@ -15,8 +15,8 @@ BidFlow는 단순한 CRUD 경매 서비스가 아니라 **동시 입찰의 정�
 | 입찰 엔진 | 구현됨 | Redis Lua 직접/자동 입찰, 요청 재실행, Redis 복구 |
 | 자동 연장·종료 | 구현됨 | 마감까지 5분 미만일 때 입찰 승인 시 기존 종료 시각 +5분. 낙찰·유찰 확정, 본인 결과 조회 |
 | Kafka·Outbox | 구현됨 | 경매별 Key, Consumer 멱등성, DLT 계약 |
-| Browser E2E | 로컬 검증 | 등록·검색·직접/자동 입찰·연장·낙찰/유찰·재연결 |
-| k6·장애 실험 | 로컬 실측 | 집중/분산 입찰과 정산 Consumer·Redis·OpenSearch 중단 후 복구 |
+| Browser E2E | 로컬 검증 | 검색 포함 기능 5개와 새 경매의 원장·이벤트 교차 검사 통과 |
+| k6·장애 실험 | 로컬 실측 | 단일 경매 20 VU 누적 1,000건, 분산 입찰과 정산 Consumer·Redis·OpenSearch 중단 후 복구 |
 | AWS 배포 | 설계·정적 검증 | Terraform과 검증 Runbook 준비. 실제 배포·청구·Destroy 검증은 미실행 |
 
 ## 핵심 시연과 결과
@@ -30,6 +30,8 @@ BidFlow는 단순한 CRUD 경매 서비스가 아니라 **동시 입찰의 정�
 | ![공개 낙찰가 21,000원과 본인 낙찰 표시](docs/reports/evidence/issue-021-auction-winner.png) | ![공개 낙찰가 21,000원과 본인 패찰 표시](docs/reports/evidence/issue-021-auction-outbid.png) |
 
 - **분산 입찰:** 경매 6개, 20 VU 유지 구간 2분. 2,535건 모두 접수됐고, 접수 P95는 **41.88ms**, 서버 요청 기록부터 처리 시작까지 P95는 **1,338.53ms**였다. 미처리와 중복 원장은 0건이었다. 최종 DB 커밋이나 브라우저 결과 전달 지연은 측정하지 않았다. [부하 실측](docs/reports/issue-019-distributed-load-baseline.md)
+- **단일 경매 누적 1,000건:** 20 VU × 50회, 요청·원장·결과 각각 1,000개. 승인 207건·정상 거절 793건·미처리 0건, 접수 P95 **290.48ms**·P99 **713.15ms**, HTTP 오류율 0%였다. 공유 로컬 환경 한 번의 결과이며 P95 기준 여유는 약 9.52ms뿐이다. [실행·복원 증적](docs/reports/issue-019-instrumented-rerun.md)
+- **기능 E2E:** 등록/유찰·자동입찰/낙찰·직접입찰 재시도·재연결·검색의 5개가 실패/skip/retry 없이 통과했다. 새 경매 8개의 원장·이벤트도 사후 SQL로 대조했다. 로컬 테스트 인증/Clock 조건이며 Cognito/AWS 검증은 아니다. [회귀 결과](docs/reports/issue-020-local-functional-regression.md)
 - **장애 복구:** 정산 Consumer만 멈춰도 입찰 접수는 유지됐고, 재시작 후 대기 3건이 중복 없이 정산됐다. 반면 검색 그룹 Lag가 0이어도 DLT로 이동한 이벤트의 문서는 검색에서 빠졌다. [장애 사례와 회고](docs/reports/issue-102-portfolio-retrospective.md)
 
 ## 핵심 흐름
@@ -146,7 +148,9 @@ k6 입력과 실행 방법은 [k6 부하 시나리오](docs/reports/issue-095-k6
 
 ## 로드맵과 한계
 
-로컬 20 VU 기준선과 1,000건 어댑터 정합성 테스트는 1,000건 동시 HTTP 부하나 운영 처리량을 보장하지 않는다. [별도 20건 실험](docs/reports/issue-019-final-settlement-observation.md)에서 최종 DB 가시성을 관측했다. 초기 [브라우저 순차 20건](docs/reports/issue-019-browser-result-latency.md)의 화면 관측 P95는 2,938ms로 2초 기준에 미달했다. 이후 [Outbox 간격 대조](docs/reports/issue-019-outbox-delay-aba.md)에서는 1,000ms 조건의 약 2.93초가 100ms 조건에서 431ms로 줄었지만 유휴 조회 빈도와 DB CPU는 늘었다. [로컬 프로필 100ms 적용 확인](docs/reports/issue-019-local-outbox-delay.md)에서는 P95 430ms를 확인했다. 서로 다른 실험을 동시 부하 SLO로 합치지 않으며 자동화 polling 비용도 포함한다.
+로컬 20 VU 기준선·누적 1,000건 HTTP·1,000건 어댑터 정합성 테스트는 각각 다른 검증이다. 어느 것도 1,000건 전체 동시 HTTP 부하나 운영 처리량을 보장하지 않는다. 누적 1,000건의 [첫 시도는 585건에서 중단](docs/reports/issue-019-focused-load-collector.md)됐고, 명령 추적을 연결한 별도 새 실행이 통과했다. 첫 중단의 정확한 원인은 미확정이며 재검증 성공을 원인 해결이나 통제된 성능 개선으로 해석하지 않는다.
+
+[별도 20건 실험](docs/reports/issue-019-final-settlement-observation.md)에서 최종 DB 가시성을 관측했다. 초기 [브라우저 순차 20건](docs/reports/issue-019-browser-result-latency.md)의 화면 관측 P95는 2,938ms로 2초 기준에 미달했다. 이후 [Outbox 간격 대조](docs/reports/issue-019-outbox-delay-aba.md)에서는 1,000ms 조건의 약 2.93초가 100ms 조건에서 431ms로 줄었지만 유휴 조회 빈도와 DB CPU는 늘었다. [로컬 프로필 100ms 적용 확인](docs/reports/issue-019-local-outbox-delay.md)에서는 P95 430ms를 확인했다. 서로 다른 실험을 동시 부하 SLO로 합치지 않으며 자동화 polling 비용도 포함한다.
 
 [두 사용자 동시 제출 10회](docs/reports/issue-019-concurrent-snapshot-fix.md)에서는 요청 20건과 SQL 대조가 모두 완료됐고 화면 수렴 관측 P95는 443ms였다. 개인 메시지의 최신 snapshot과 요청별 정산을 혼동한 초기 관측 실패를 재현·수정했다. 두 건씩 겹친 제한된 실험이며, 20건 전체 동시 부하나 AWS SLO로 일반화하지 않는다.
 
