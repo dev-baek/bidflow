@@ -8,5 +8,6 @@ test('focused SQL selects only a valid new auction in read-only transaction with
   assert.match(sql,/r.idempotency_key/);assert.match(sql,/l.requested_amount/);
   assert.match(sql,new RegExp(`WHERE a.auction_id='${id}'`));
   assert.doesNotMatch(sql,/r.bid_request_id IN/);
+  assert.equal((sql.match(/FROM outbox_event/g)||[]).length,1,'load query must scope events once, not scan all Outbox for every request');
   for(const value of ['bad',"';DELETE FROM auction;--",null])assert.throws(()=>buildFocusedSql(value));
 });

@@ -75,6 +75,14 @@ test('malformed summary values and unconfirmed counter totals are not performanc
   }
 });
 
+test('sampler timeout retains its source and safe error kind, never raw command output',async()=>{
+  const f=fake();let calls=0;
+  f.io.containers=async()=>{if(++calls>1)throw Object.assign(Error('token-secret'),{killed:true});return {oom:false,memoryBytes:1000};};
+  const e=await collectFocused('smoke',f.io);assert.equal(e.valid,false);
+  assert.ok(e.failures.some(x=>x.source==='containers'&&x.kind==='COMMAND_TIMEOUT'));
+  assert.equal(JSON.stringify(e).includes('secret'),false);
+});
+
 test('receipt parser strips arbitrary payload and preserves an invalid receipt as failure',()=>{
   const r={...planFocused('fake19','smoke',1,0),requestId:id(10),httpStatus:202,receiptStatus:'RECEIVED',durationMs:2,secret:'token-secret'};
   assert.equal(JSON.stringify(parseReceipt(JSON.stringify(r),'fake19','smoke')).includes('secret'),false);
