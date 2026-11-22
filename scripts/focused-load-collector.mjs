@@ -3,6 +3,7 @@ import {resolve,dirname,basename,relative,isAbsolute} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {focusedConfig,planFocused,judgeFocused,judgeResources} from './focused-thousand.mjs';
 import {isUuid} from './final-settlement.mjs';
+import {summarizeTrace,summarizePhases} from './command-trace.mjs';
 
 export async function claimOutput(path) {
   if(typeof path!=='string'||/[:,\n\r]/.test(path))throw Error('invalid output path');
@@ -43,9 +44,14 @@ const dltRows=rows=>{
 export async function collectFocused(mode,io) {
   const {count}=focusedConfig(mode);
   const e={mode,valid:false,fullVerified:false,observationValid:false,startedAt:new Date().toISOString(),
-    cpu:[],containers:[],lagSamples:[],receipts:[],failures:[],consistency:{valid:false},resources:{valid:false}};
+    cpu:[],containers:[],lagSamples:[],receipts:[],failures:[],consistency:{valid:false},resources:{valid:false},
+    commandTrace:summarizeTrace(),phaseSummary:summarizePhases(),diagnosticsComplete:false};
   let load,finished=false,abort=false,watchers=[],stage='prepare';
-  const failure=(source,error)=>e.failures.push({source,kind:error?.killed===true?'COMMAND_TIMEOUT':'FAILED'});
+  const failure=(source,error)=>e.failures.push({source,kind:error?.killed===true?'TERMINATED':'FAILED'});
+  const diagnostics=()=>{
+    try{e.commandTrace=summarizeTrace(io.trace?.());}catch{e.commandTrace=summarizeTrace();}
+    e.diagnosticsComplete=e.commandTrace.complete&&e.phaseSummary.complete;
+  };
   const sampleLag=async()=>{
     const startedMs=io.now(),rows=lagRows(await io.lag());
     e.lagSamples.push({startedMs,completedMs:io.now(),rows});return rows;
@@ -73,6 +79,7 @@ export async function collectFocused(mode,io) {
     stage='receipts';const receipts=await io.receipts(e.fixture,mode);e.receipts=receipts.records;e.invalidReceipts=receipts.invalid;
     stage='summary';
     const summary=await io.summary();e.http=Object.fromEntries(['count','iterations','received','p50','p95','p99','errorRate'].map(k=>[k,Number.isFinite(summary[k])?summary[k]:null]));
+    e.phaseSummary=summarizePhases(summary.phaseMetrics);
     const deadline=e.loadEndedMs+60000;
     do {
       stage='snapshot';
@@ -100,8 +107,10 @@ export async function collectFocused(mode,io) {
     try{if(load)await load.stop();}catch{e.error='LOAD_STOP_FAILED';}
     await Promise.all(watchers);
     // Save before restoration as well so a failed restore cannot erase the trial.
+    diagnostics();
     try{await io.save(e);}catch{e.error='ARTIFACT_WRITE_FAILED';}
     try{e.restoration=await io.restore();}catch{e.restoration={verified:false};}
+    diagnostics();e.observationValid=e.observationValid&&e.diagnosticsComplete&&e.commandTrace.successful;
     e.valid=!e.error&&e.observationValid&&e.consistency.valid&&e.performancePassed===true&&e.restoration?.verified===true;
     e.fullVerified=mode==='full'&&e.valid;e.completedAt=new Date().toISOString();await io.save(e);
   }

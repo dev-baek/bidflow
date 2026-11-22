@@ -1,0 +1,780 @@
+{
+  "startedAt": "2026-11-22T02:30:12.261Z",
+  "valid": true,
+  "syntheticBidsSubmitted": 0,
+  "records": [
+    {
+      "phase": "sequential",
+      "round": 1,
+      "operation": "stats",
+      "timeoutMs": 5000,
+      "startedMs": 1073.390208,
+      "success": true,
+      "completedMs": 3786.7559579999997,
+      "value": {
+        "count": 5,
+        "memoryBytes": 2609637228.5439997
+      },
+      "durationMs": 2713.36575
+    },
+    {
+      "phase": "sequential",
+      "round": 1,
+      "operation": "inspect",
+      "timeoutMs": 5000,
+      "startedMs": 3788.3122080000003,
+      "success": true,
+      "completedMs": 3943.3046249999998,
+      "value": {
+        "count": 5,
+        "oom": false
+      },
+      "durationMs": 154.99241699999948
+    },
+    {
+      "phase": "sequential",
+      "round": 1,
+      "operation": "lag",
+      "timeoutMs": 12000,
+      "startedMs": 3943.6691659999997,
+      "success": true,
+      "completedMs": 5353.691541,
+      "value": [
+        {
+          "partition": 0,
+          "currentOffset": 1159,
+          "endOffset": 1159,
+          "lag": 0
+        },
+        {
+          "partition": 1,
+          "currentOffset": 1905,
+          "endOffset": 1905,
+          "lag": 0
+        },
+        {
+          "partition": 2,
+          "currentOffset": 602,
+          "endOffset": 602,
+          "lag": 0
+        }
+      ],
+      "durationMs": 1410.0223750000005
+    },
+    {
+      "phase": "sequential",
+      "round": 2,
+      "operation": "stats",
+      "timeoutMs": 5000,
+      "startedMs": 5354.3820829999995,
+      "success": true,
+      "completedMs": 8006.745958,
+      "value": {
+        "count": 5,
+        "memoryBytes": 2687489802.24
+      },
+      "durationMs": 2652.363875000001
+    },
+    {
+      "phase": "sequential",
+      "round": 2,
+      "operation": "inspect",
+      "timeoutMs": 5000,
+      "startedMs": 8006.814541000001,
+      "success": true,
+      "completedMs": 8185.762207999999,
+      "value": {
+        "count": 5,
+        "oom": false
+      },
+      "durationMs": 178.94766699999855
+    },
+    {
+      "phase": "sequential",
+      "round": 2,
+      "operation": "lag",
+      "timeoutMs": 12000,
+      "startedMs": 8185.810708,
+      "success": true,
+      "completedMs": 9471.654625000001,
+      "value": [
+        {
+          "partition": 0,
+          "currentOffset": 1159,
+          "endOffset": 1159,
+          "lag": 0
+        },
+        {
+          "partition": 1,
+          "currentOffset": 1905,
+          "endOffset": 1905,
+          "lag": 0
+        },
+        {
+          "partition": 2,
+          "currentOffset": 602,
+          "endOffset": 602,
+          "lag": 0
+        }
+      ],
+      "durationMs": 1285.843917000001
+    },
+    {
+      "phase": "sequential",
+      "round": 3,
+      "operation": "stats",
+      "timeoutMs": 5000,
+      "startedMs": 9471.840416000001,
+      "success": true,
+      "completedMs": 12165.634833,
+      "value": {
+        "count": 5,
+        "memoryBytes": 2609584799.744
+      },
+      "durationMs": 2693.794416999999
+    },
+    {
+      "phase": "sequential",
+      "round": 3,
+      "operation": "inspect",
+      "timeoutMs": 5000,
+      "startedMs": 12165.713416,
+      "success": true,
+      "completedMs": 12391.872166000001,
+      "value": {
+        "count": 5,
+        "oom": false
+      },
+      "durationMs": 226.1587500000005
+    },
+    {
+      "phase": "sequential",
+      "round": 3,
+      "operation": "lag",
+      "timeoutMs": 12000,
+      "startedMs": 12391.923583,
+      "success": true,
+      "completedMs": 13724.060916,
+      "value": [
+        {
+          "partition": 0,
+          "currentOffset": 1159,
+          "endOffset": 1159,
+          "lag": 0
+        },
+        {
+          "partition": 1,
+          "currentOffset": 1905,
+          "endOffset": 1905,
+          "lag": 0
+        },
+        {
+          "partition": 2,
+          "currentOffset": 602,
+          "endOffset": 602,
+          "lag": 0
+        }
+      ],
+      "durationMs": 1332.1373330000006
+    },
+    {
+      "phase": "concurrent",
+      "round": 1,
+      "operation": "stats",
+      "timeoutMs": 5000,
+      "startedMs": 13724.460041,
+      "success": true,
+      "completedMs": 16390.108333,
+      "value": {
+        "count": 5,
+        "memoryBytes": 2610633375.744
+      },
+      "durationMs": 2665.648292
+    },
+    {
+      "phase": "concurrent",
+      "round": 1,
+      "operation": "inspect",
+      "timeoutMs": 5000,
+      "startedMs": 13727.95375,
+      "success": true,
+      "completedMs": 13867.765416,
+      "value": {
+        "count": 5,
+        "oom": false
+      },
+      "durationMs": 139.8116659999996
+    },
+    {
+      "phase": "concurrent",
+      "round": 1,
+      "operation": "lag",
+      "timeoutMs": 12000,
+      "startedMs": 13731.395,
+      "success": true,
+      "completedMs": 15021.529750000002,
+      "value": [
+        {
+          "partition": 0,
+          "currentOffset": 1159,
+          "endOffset": 1159,
+          "lag": 0
+        },
+        {
+          "partition": 1,
+          "currentOffset": 1905,
+          "endOffset": 1905,
+          "lag": 0
+        },
+        {
+          "partition": 2,
+          "currentOffset": 602,
+          "endOffset": 602,
+          "lag": 0
+        }
+      ],
+      "durationMs": 1290.134750000001
+    },
+    {
+      "phase": "concurrent",
+      "round": 2,
+      "operation": "stats",
+      "timeoutMs": 5000,
+      "startedMs": 16390.271708,
+      "success": true,
+      "completedMs": 18410.354625,
+      "value": {
+        "count": 5,
+        "memoryBytes": 2609595285.5039997
+      },
+      "durationMs": 2020.0829169999997
+    },
+    {
+      "phase": "concurrent",
+      "round": 2,
+      "operation": "inspect",
+      "timeoutMs": 5000,
+      "startedMs": 16392.065541,
+      "success": true,
+      "completedMs": 16537.335625,
+      "value": {
+        "count": 5,
+        "oom": false
+      },
+      "durationMs": 145.27008399999977
+    },
+    {
+      "phase": "concurrent",
+      "round": 2,
+      "operation": "lag",
+      "timeoutMs": 12000,
+      "startedMs": 16393.119333,
+      "success": true,
+      "completedMs": 17782.294125,
+      "value": [
+        {
+          "partition": 0,
+          "currentOffset": 1159,
+          "endOffset": 1159,
+          "lag": 0
+        },
+        {
+          "partition": 1,
+          "currentOffset": 1905,
+          "endOffset": 1905,
+          "lag": 0
+        },
+        {
+          "partition": 2,
+          "currentOffset": 602,
+          "endOffset": 602,
+          "lag": 0
+        }
+      ],
+      "durationMs": 1389.1747920000016
+    },
+    {
+      "phase": "concurrent",
+      "round": 3,
+      "operation": "stats",
+      "timeoutMs": 5000,
+      "startedMs": 18410.608624999997,
+      "success": true,
+      "completedMs": 20439.945375,
+      "value": {
+        "count": 5,
+        "memoryBytes": 2689637285.888
+      },
+      "durationMs": 2029.3367500000022
+    },
+    {
+      "phase": "concurrent",
+      "round": 3,
+      "operation": "inspect",
+      "timeoutMs": 5000,
+      "startedMs": 18413.029790999997,
+      "success": true,
+      "completedMs": 18554.324540999998,
+      "value": {
+        "count": 5,
+        "oom": false
+      },
+      "durationMs": 141.29475000000093
+    },
+    {
+      "phase": "concurrent",
+      "round": 3,
+      "operation": "lag",
+      "timeoutMs": 12000,
+      "startedMs": 18417.874416,
+      "success": true,
+      "completedMs": 19949.423832999997,
+      "value": [
+        {
+          "partition": 0,
+          "currentOffset": 1159,
+          "endOffset": 1159,
+          "lag": 0
+        },
+        {
+          "partition": 1,
+          "currentOffset": 1905,
+          "endOffset": 1905,
+          "lag": 0
+        },
+        {
+          "partition": 2,
+          "currentOffset": 602,
+          "endOffset": 602,
+          "lag": 0
+        }
+      ],
+      "durationMs": 1531.5494169999984
+    }
+  ],
+  "rounds": [
+    {
+      "phase": "sequential",
+      "round": 1,
+      "startedMs": 1073.172041,
+      "completedMs": 5354.280125,
+      "hostBusyPercent": 39.34137018523963
+    },
+    {
+      "phase": "sequential",
+      "round": 2,
+      "startedMs": 5354.347083,
+      "completedMs": 9471.73625,
+      "hostBusyPercent": 59.48170731707316
+    },
+    {
+      "phase": "sequential",
+      "round": 3,
+      "startedMs": 9471.80825,
+      "completedMs": 13724.217416000001,
+      "hostBusyPercent": 48.19739952718676
+    },
+    {
+      "phase": "concurrent",
+      "round": 1,
+      "startedMs": 13724.387041,
+      "completedMs": 16390.153707999998,
+      "hostBusyPercent": 31.117397454031114
+    },
+    {
+      "phase": "concurrent",
+      "round": 2,
+      "startedMs": 16390.230333,
+      "completedMs": 18410.428375,
+      "hostBusyPercent": 44.340796019900495
+    },
+    {
+      "phase": "concurrent",
+      "round": 3,
+      "startedMs": 18410.530375,
+      "completedMs": 20440.022915999998,
+      "hostBusyPercent": 39.92560446373218
+    }
+  ],
+  "apiUnchanged": true,
+  "sourceCommit": "9523a0c0a9afca33ce0d79c8634244ea923f9d19",
+  "environment": {
+    "node": "v24.18.0",
+    "arch": "arm64",
+    "cpus": 8,
+    "memoryBytes": 17179869184,
+    "os": "25.5.0",
+    "docker": "27.5.1 8 8217858048",
+    "pressure": 2
+  },
+  "beforeHealth": "healthy\nhealthy\nhealthy\nhealthy\nhealthy",
+  "afterHealth": "healthy\nhealthy\nhealthy\nhealthy\nhealthy",
+  "api": {
+    "pid": 792,
+    "jarSha256": "5251be8d60c6fc0f3a7afb13415c72e2438713b973a854a54f411009065f08c4",
+    "profile": "local",
+    "delayMs": 1000,
+    "logging": "INFO"
+  },
+  "commandTrace": {
+    "records": [
+      {
+        "commandId": 1,
+        "operation": "SETUP_METADATA",
+        "startedMs": 9.120499999999993,
+        "completedMs": 142.03133300000002,
+        "durationMs": 132.91083300000003,
+        "timeoutMs": 5000,
+        "outcome": "SUCCEEDED",
+        "exitCode": 0,
+        "signal": null
+      },
+      {
+        "commandId": 2,
+        "operation": "SETUP_METADATA",
+        "startedMs": 142.08633300000002,
+        "completedMs": 194.53395799999998,
+        "durationMs": 52.44762499999996,
+        "timeoutMs": 5000,
+        "outcome": "SUCCEEDED",
+        "exitCode": 0,
+        "signal": null
+      },
+      {
+        "commandId": 3,
+        "operation": "SETUP_METADATA",
+        "startedMs": 194.55149999999998,
+        "completedMs": 199.99475,
+        "durationMs": 5.443250000000035,
+        "timeoutMs": 5000,
+        "outcome": "SUCCEEDED",
+        "exitCode": 0,
+        "signal": null
+      },
+      {
+        "commandId": 4,
+        "operation": "SETUP_METADATA",
+        "startedMs": 304.37570800000003,
+        "completedMs": 329.43429100000003,
+        "durationMs": 25.058583,
+        "timeoutMs": 5000,
+        "outcome": "SUCCEEDED",
+        "exitCode": 0,
+        "signal": null
+      },
+      {
+        "commandId": 5,
+        "operation": "SETUP_METADATA",
+        "startedMs": 329.67108299999995,
+        "completedMs": 927.242,
+        "durationMs": 597.570917,
+        "timeoutMs": 5000,
+        "outcome": "SUCCEEDED",
+        "exitCode": 0,
+        "signal": null
+      },
+      {
+        "commandId": 6,
+        "operation": "SETUP_METADATA",
+        "startedMs": 927.298166,
+        "completedMs": 936.7993329999999,
+        "durationMs": 9.501166999999896,
+        "timeoutMs": 5000,
+        "outcome": "SUCCEEDED",
+        "exitCode": 0,
+        "signal": null
+      },
+      {
+        "commandId": 7,
+        "operation": "SETUP_METADATA",
+        "startedMs": 936.8458330000001,
+        "completedMs": 1073.066416,
+        "durationMs": 136.2205829999998,
+        "timeoutMs": 5000,
+        "outcome": "SUCCEEDED",
+        "exitCode": 0,
+        "signal": null
+      },
+      {
+        "commandId": 8,
+        "operation": "CONTAINER_STATS",
+        "startedMs": 1073.399541,
+        "completedMs": 3786.736333,
+        "durationMs": 2713.336792,
+        "timeoutMs": 5000,
+        "outcome": "SUCCEEDED",
+        "exitCode": 0,
+        "signal": null
+      },
+      {
+        "commandId": 9,
+        "operation": "CONTAINER_OOM",
+        "startedMs": 3788.3328330000004,
+        "completedMs": 3943.2787499999995,
+        "durationMs": 154.9459169999991,
+        "timeoutMs": 5000,
+        "outcome": "SUCCEEDED",
+        "exitCode": 0,
+        "signal": null
+      },
+      {
+        "commandId": 10,
+        "operation": "KAFKA_LAG",
+        "startedMs": 3943.706583,
+        "completedMs": 5353.6813329999995,
+        "durationMs": 1409.9747499999994,
+        "timeoutMs": 12000,
+        "outcome": "SUCCEEDED",
+        "exitCode": 0,
+        "signal": null
+      },
+      {
+        "commandId": 11,
+        "operation": "CONTAINER_STATS",
+        "startedMs": 5354.389416,
+        "completedMs": 8006.737582999999,
+        "durationMs": 2652.348166999999,
+        "timeoutMs": 5000,
+        "outcome": "SUCCEEDED",
+        "exitCode": 0,
+        "signal": null
+      },
+      {
+        "commandId": 12,
+        "operation": "CONTAINER_OOM",
+        "startedMs": 8006.820041,
+        "completedMs": 8185.755125000001,
+        "durationMs": 178.93508400000064,
+        "timeoutMs": 5000,
+        "outcome": "SUCCEEDED",
+        "exitCode": 0,
+        "signal": null
+      },
+      {
+        "commandId": 13,
+        "operation": "KAFKA_LAG",
+        "startedMs": 8185.814958,
+        "completedMs": 9471.644208000002,
+        "durationMs": 1285.8292500000016,
+        "timeoutMs": 12000,
+        "outcome": "SUCCEEDED",
+        "exitCode": 0,
+        "signal": null
+      },
+      {
+        "commandId": 14,
+        "operation": "CONTAINER_STATS",
+        "startedMs": 9471.844875,
+        "completedMs": 12165.623500000002,
+        "durationMs": 2693.778625000001,
+        "timeoutMs": 5000,
+        "outcome": "SUCCEEDED",
+        "exitCode": 0,
+        "signal": null
+      },
+      {
+        "commandId": 15,
+        "operation": "CONTAINER_OOM",
+        "startedMs": 12165.719458000001,
+        "completedMs": 12391.864041,
+        "durationMs": 226.14458299999933,
+        "timeoutMs": 5000,
+        "outcome": "SUCCEEDED",
+        "exitCode": 0,
+        "signal": null
+      },
+      {
+        "commandId": 16,
+        "operation": "KAFKA_LAG",
+        "startedMs": 12391.928750000001,
+        "completedMs": 13724.047333,
+        "durationMs": 1332.1185829999995,
+        "timeoutMs": 12000,
+        "outcome": "SUCCEEDED",
+        "exitCode": 0,
+        "signal": null
+      },
+      {
+        "commandId": 17,
+        "operation": "CONTAINER_STATS",
+        "startedMs": 13724.46825,
+        "completedMs": 16390.102541,
+        "durationMs": 2665.6342910000003,
+        "timeoutMs": 5000,
+        "outcome": "SUCCEEDED",
+        "exitCode": 0,
+        "signal": null
+      },
+      {
+        "commandId": 18,
+        "operation": "CONTAINER_OOM",
+        "startedMs": 13727.961416,
+        "completedMs": 13867.756166000001,
+        "durationMs": 139.79475000000093,
+        "timeoutMs": 5000,
+        "outcome": "SUCCEEDED",
+        "exitCode": 0,
+        "signal": null
+      },
+      {
+        "commandId": 19,
+        "operation": "KAFKA_LAG",
+        "startedMs": 13731.403750000001,
+        "completedMs": 15021.515166000001,
+        "durationMs": 1290.1114159999997,
+        "timeoutMs": 12000,
+        "outcome": "SUCCEEDED",
+        "exitCode": 0,
+        "signal": null
+      },
+      {
+        "commandId": 20,
+        "operation": "CONTAINER_STATS",
+        "startedMs": 16390.275208,
+        "completedMs": 18410.346999999998,
+        "durationMs": 2020.0717919999988,
+        "timeoutMs": 5000,
+        "outcome": "SUCCEEDED",
+        "exitCode": 0,
+        "signal": null
+      },
+      {
+        "commandId": 21,
+        "operation": "CONTAINER_OOM",
+        "startedMs": 16392.067708,
+        "completedMs": 16537.325125,
+        "durationMs": 145.25741700000071,
+        "timeoutMs": 5000,
+        "outcome": "SUCCEEDED",
+        "exitCode": 0,
+        "signal": null
+      },
+      {
+        "commandId": 22,
+        "operation": "KAFKA_LAG",
+        "startedMs": 16393.120625,
+        "completedMs": 17782.281208,
+        "durationMs": 1389.1605830000008,
+        "timeoutMs": 12000,
+        "outcome": "SUCCEEDED",
+        "exitCode": 0,
+        "signal": null
+      },
+      {
+        "commandId": 23,
+        "operation": "CONTAINER_STATS",
+        "startedMs": 18410.612208,
+        "completedMs": 20439.934332999997,
+        "durationMs": 2029.3221249999988,
+        "timeoutMs": 5000,
+        "outcome": "SUCCEEDED",
+        "exitCode": 0,
+        "signal": null
+      },
+      {
+        "commandId": 24,
+        "operation": "CONTAINER_OOM",
+        "startedMs": 18413.038166,
+        "completedMs": 18554.316832999997,
+        "durationMs": 141.27866699999868,
+        "timeoutMs": 5000,
+        "outcome": "SUCCEEDED",
+        "exitCode": 0,
+        "signal": null
+      },
+      {
+        "commandId": 25,
+        "operation": "KAFKA_LAG",
+        "startedMs": 18417.882208,
+        "completedMs": 19949.416041,
+        "durationMs": 1531.5338330000013,
+        "timeoutMs": 12000,
+        "outcome": "SUCCEEDED",
+        "exitCode": 0,
+        "signal": null
+      },
+      {
+        "commandId": 26,
+        "operation": "SETUP_METADATA",
+        "startedMs": 20440.191124999998,
+        "completedMs": 20584.642,
+        "durationMs": 144.45087500000227,
+        "timeoutMs": 5000,
+        "outcome": "SUCCEEDED",
+        "exitCode": 0,
+        "signal": null
+      },
+      {
+        "commandId": 27,
+        "operation": "SETUP_METADATA",
+        "startedMs": 20584.696041,
+        "completedMs": 20637.132166,
+        "durationMs": 52.436125000000175,
+        "timeoutMs": 5000,
+        "outcome": "SUCCEEDED",
+        "exitCode": 0,
+        "signal": null
+      },
+      {
+        "commandId": 28,
+        "operation": "SETUP_METADATA",
+        "startedMs": 20637.159666,
+        "completedMs": 20642.442,
+        "durationMs": 5.282333999999537,
+        "timeoutMs": 5000,
+        "outcome": "SUCCEEDED",
+        "exitCode": 0,
+        "signal": null
+      }
+    ],
+    "truncated": false,
+    "clockValid": true,
+    "complete": true,
+    "successful": true
+  },
+  "executedCommands": 28,
+  "samplerCommandCount": 18,
+  "historicalPhaseCheck": {
+    "source": "issue-019-observer-diagnosis.json",
+    "originalTrialVerified": false,
+    "summary": {
+      "complete": true,
+      "phases": {
+        "blocked": {
+          "p50": 0.008208,
+          "p95": 0.06390859999999969,
+          "p99": 9.639176719999998
+        },
+        "connecting": {
+          "p50": 0,
+          "p95": 0,
+          "p99": 6.46565856
+        },
+        "sending": {
+          "p50": 0.032833,
+          "p95": 0.21852499999999947,
+          "p99": 4.966065279999997
+        },
+        "waiting": {
+          "p50": 92.206792,
+          "p95": 620.1756335999997,
+          "p99": 2131.81155744
+        },
+        "receiving": {
+          "p50": 0.125375,
+          "p95": 3.7935921999999995,
+          "p99": 13.527247999999984
+        }
+      }
+    }
+  },
+  "scope": "READ_ONLY_COMMAND_TRACE",
+  "fullRunVerified": false,
+  "completedAt": "2026-11-22T02:30:32.986Z",
+  "limitations": [
+    "read-only commands, not a bid load run",
+    "no previous failure reproduced or reclassified",
+    "no causal latency comparison",
+    "historical HTTP phase parser check is not a new HTTP measurement"
+  ]
+}
