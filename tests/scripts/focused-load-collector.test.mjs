@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {performance} from 'node:perf_hooks';
 import {setTimeout as wait} from 'node:timers/promises';
-import {mkdtemp,writeFile,readFile,symlink,realpath} from 'node:fs/promises';
+import {mkdtemp,writeFile,readFile,symlink,realpath,mkdir} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {planFocused} from '../../scripts/focused-thousand.mjs';
@@ -97,4 +97,11 @@ test('output claim rejects repository, existing and symlink targets without over
   await assert.rejects(claimOutput(join(process.cwd(),'forbidden-focused-output')));
   await symlink(process.cwd(),join(dir,'repo'));await assert.rejects(claimOutput(join(dir,'repo','forbidden-focused-output')));
   const output=await claimOutput(join(dir,'fresh'));assert.equal(output,join(await realpath(dir),'fresh'));
+});
+
+test('output claim also protects other Git worktrees and rejects Docker mount delimiter paths',async()=>{
+  const dir=await mkdtemp(join(tmpdir(),'bidflow-focused-other.'));
+  await mkdir(join(dir,'repo'));await writeFile(join(dir,'repo','.git'),'gitdir: /unused');
+  await assert.rejects(claimOutput(join(dir,'repo','result')));
+  for(const name of ['bad:rw','bad,bind','bad\nname'])await assert.rejects(claimOutput(join(dir,name)));
 });

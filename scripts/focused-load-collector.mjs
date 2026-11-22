@@ -1,4 +1,4 @@
-import {mkdir,realpath} from 'node:fs/promises';
+import {mkdir,realpath,lstat} from 'node:fs/promises';
 import {resolve,dirname,basename,relative,isAbsolute} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {focusedConfig,planFocused,judgeFocused,judgeResources} from './focused-thousand.mjs';
@@ -9,6 +9,12 @@ export async function claimOutput(path) {
   const target=resolve(await realpath(dirname(resolve(path))),basename(resolve(path)));
   const root=await realpath(fileURLToPath(new URL('../',import.meta.url))),rel=relative(root,target);
   if(rel===''||(!rel.startsWith('../')&&!isAbsolute(rel)))throw Error('output must be outside repository');
+  for(let parent=dirname(target);;parent=dirname(parent)) {
+    let git=false;
+    try{await lstat(resolve(parent,'.git'));git=true;}catch(error){if(error.code!=='ENOENT')throw error;}
+    if(git)throw Error('output must be outside Git worktrees');
+    if(parent===dirname(parent))break;
+  }
   await mkdir(target,{mode:0o700});
   return target;
 }
