@@ -31,3 +31,5 @@ A/B는 각각 118개 공개 frame을 받았다. 같은 도메인 eventId의 50,0
 기존 1,000ms API를 PID 54954로 복원하고 기존 인자·jar hash·listen·readiness를 확인했다. 소유 검증 API·Vite·브라우저·부하를 정리했으며 BidFlow 컨테이너 5개의 ID와 healthy 상태가 그대로였다.
 
 [구조화 증적](evidence/issue-019-ingress-full-verification.json)에 단계별 결과와 선택 표본·부분 화면·복원을 남겼다. 요청별 전체 계측과 원본 로그는 보호된 로컬 경로에만 보존했다. 재시도·추가 DB 조회·기준 변경·AWS는 하지 않았다. #302·#306의 기록도 유지한다. 다음에는 반복된 정산 조회의 비용을 읽기 전용 근거로 좁힌 뒤, SQL 변경이나 추가 실행이 필요한지 검토한다.
+
+[별도 사후 진단](issue-019-scoped-sql-plan-diagnosis.md)은 기존 쿼리와 후보 플랜을 비교했다. 이 진단은 본 실행의 실패 판정을 바꾸지 않는다.

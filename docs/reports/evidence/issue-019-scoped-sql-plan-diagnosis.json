@@ -1,0 +1,503 @@
+{
+  "observedAt": "2026-11-23T09:41:55.311Z",
+  "readOnly": true,
+  "statementTimeoutMs": 4000,
+  "subprocessTimeoutMs": 5000,
+  "candidate": "REMOVE_DUPLICATE_AUCTION_CONDITION",
+  "result": [
+    {
+      "name": "full-312",
+      "scope": "AUCTION",
+      "status": "ACTIVE",
+      "price": 50010000,
+      "auctionVersion": 118,
+      "counts": {
+        "requestCount": 1000,
+        "ledgerCount": 1000,
+        "resultCount": 1000,
+        "detailRows": 1000
+      },
+      "resultsEqual": true,
+      "finalBidEvent": {
+        "id": "da4b6cb1-fe68-49b9-b4b4-7738faceb6cd",
+        "price": 50010000,
+        "version": 118
+      },
+      "outputSha256": "cfa6e0dc95896cc66544e90708e82a5c87d3e9bc7d61eb7cff57801b64cd04e8",
+      "planPairOrder": [
+        [
+          "original",
+          "candidate"
+        ],
+        [
+          "candidate",
+          "original"
+        ]
+      ],
+      "original": [
+        {
+          "planningMs": 0.364,
+          "executionMs": 32.415,
+          "totalCost": 1874.62,
+          "buffers": {
+            "sharedHits": 970,
+            "sharedReads": 0,
+            "tempRead": 4,
+            "tempWritten": 28
+          },
+          "requestRows": {
+            "node": "CTE Scan",
+            "expected": 7,
+            "actual": 1000,
+            "loops": 1
+          },
+          "joinRows": {
+            "node": "Merge Join",
+            "expected": 17,
+            "actual": 1000,
+            "loops": 1
+          },
+          "outbox": {
+            "node": "Seq Scan",
+            "expected": 487,
+            "actual": 1000,
+            "loops": 1,
+            "sharedHits": 871
+          }
+        },
+        {
+          "planningMs": 0.4,
+          "executionMs": 31.62,
+          "totalCost": 1874.62,
+          "buffers": {
+            "sharedHits": 970,
+            "sharedReads": 0,
+            "tempRead": 4,
+            "tempWritten": 28
+          },
+          "requestRows": {
+            "node": "CTE Scan",
+            "expected": 7,
+            "actual": 1000,
+            "loops": 1
+          },
+          "joinRows": {
+            "node": "Merge Join",
+            "expected": 17,
+            "actual": 1000,
+            "loops": 1
+          },
+          "outbox": {
+            "node": "Seq Scan",
+            "expected": 487,
+            "actual": 1000,
+            "loops": 1,
+            "sharedHits": 871
+          }
+        }
+      ],
+      "candidate": [
+        {
+          "planningMs": 0.308,
+          "executionMs": 32.659,
+          "totalCost": 1901.97,
+          "buffers": {
+            "sharedHits": 970,
+            "sharedReads": 0,
+            "tempRead": 4,
+            "tempWritten": 28
+          },
+          "requestRows": {
+            "node": "CTE Scan",
+            "expected": 1000,
+            "actual": 1000,
+            "loops": 1
+          },
+          "joinRows": {
+            "node": "Hash Join",
+            "expected": 2435,
+            "actual": 1000,
+            "loops": 1
+          },
+          "outbox": {
+            "node": "Seq Scan",
+            "expected": 487,
+            "actual": 1000,
+            "loops": 1,
+            "sharedHits": 871
+          }
+        },
+        {
+          "planningMs": 0.33,
+          "executionMs": 30.978,
+          "totalCost": 1901.97,
+          "buffers": {
+            "sharedHits": 970,
+            "sharedReads": 0,
+            "tempRead": 4,
+            "tempWritten": 28
+          },
+          "requestRows": {
+            "node": "CTE Scan",
+            "expected": 1000,
+            "actual": 1000,
+            "loops": 1
+          },
+          "joinRows": {
+            "node": "Hash Join",
+            "expected": 2435,
+            "actual": 1000,
+            "loops": 1
+          },
+          "outbox": {
+            "node": "Seq Scan",
+            "expected": 487,
+            "actual": 1000,
+            "loops": 1,
+            "sharedHits": 871
+          }
+        }
+      ]
+    },
+    {
+      "name": "full-302",
+      "scope": "AUCTION",
+      "status": "ENDED",
+      "price": 50010000,
+      "auctionVersion": 267,
+      "counts": {
+        "requestCount": 1000,
+        "ledgerCount": 1000,
+        "resultCount": 1000,
+        "detailRows": 1000
+      },
+      "resultsEqual": true,
+      "finalBidEvent": {
+        "id": "d57ba73e-5596-4ebf-9e37-86f859df4ecf",
+        "price": 50010000,
+        "version": 266
+      },
+      "outputSha256": "755a04a7c3d6714287b05d45e49d8b32c5c257de7a0d13a82d279baa21e30653",
+      "planPairOrder": [
+        [
+          "original",
+          "candidate"
+        ],
+        [
+          "candidate",
+          "original"
+        ]
+      ],
+      "original": [
+        {
+          "planningMs": 0.406,
+          "executionMs": 32.103,
+          "totalCost": 1874.62,
+          "buffers": {
+            "sharedHits": 992,
+            "sharedReads": 0,
+            "tempRead": 4,
+            "tempWritten": 26
+          },
+          "requestRows": {
+            "node": "CTE Scan",
+            "expected": 7,
+            "actual": 1000,
+            "loops": 1
+          },
+          "joinRows": {
+            "node": "Merge Join",
+            "expected": 17,
+            "actual": 1000,
+            "loops": 1
+          },
+          "outbox": {
+            "node": "Seq Scan",
+            "expected": 487,
+            "actual": 1000,
+            "loops": 1,
+            "sharedHits": 871
+          }
+        },
+        {
+          "planningMs": 0.257,
+          "executionMs": 31.403,
+          "totalCost": 1874.62,
+          "buffers": {
+            "sharedHits": 992,
+            "sharedReads": 0,
+            "tempRead": 4,
+            "tempWritten": 26
+          },
+          "requestRows": {
+            "node": "CTE Scan",
+            "expected": 7,
+            "actual": 1000,
+            "loops": 1
+          },
+          "joinRows": {
+            "node": "Merge Join",
+            "expected": 17,
+            "actual": 1000,
+            "loops": 1
+          },
+          "outbox": {
+            "node": "Seq Scan",
+            "expected": 487,
+            "actual": 1000,
+            "loops": 1,
+            "sharedHits": 871
+          }
+        }
+      ],
+      "candidate": [
+        {
+          "planningMs": 0.384,
+          "executionMs": 32.043,
+          "totalCost": 1901.97,
+          "buffers": {
+            "sharedHits": 992,
+            "sharedReads": 0,
+            "tempRead": 4,
+            "tempWritten": 26
+          },
+          "requestRows": {
+            "node": "CTE Scan",
+            "expected": 1000,
+            "actual": 1000,
+            "loops": 1
+          },
+          "joinRows": {
+            "node": "Hash Join",
+            "expected": 2435,
+            "actual": 1000,
+            "loops": 1
+          },
+          "outbox": {
+            "node": "Seq Scan",
+            "expected": 487,
+            "actual": 1000,
+            "loops": 1,
+            "sharedHits": 871
+          }
+        },
+        {
+          "planningMs": 0.308,
+          "executionMs": 30.795,
+          "totalCost": 1901.97,
+          "buffers": {
+            "sharedHits": 992,
+            "sharedReads": 0,
+            "tempRead": 4,
+            "tempWritten": 26
+          },
+          "requestRows": {
+            "node": "CTE Scan",
+            "expected": 1000,
+            "actual": 1000,
+            "loops": 1
+          },
+          "joinRows": {
+            "node": "Hash Join",
+            "expected": 2435,
+            "actual": 1000,
+            "loops": 1
+          },
+          "outbox": {
+            "node": "Seq Scan",
+            "expected": 487,
+            "actual": 1000,
+            "loops": 1,
+            "sharedHits": 871
+          }
+        }
+      ]
+    },
+    {
+      "name": "two-request-312",
+      "scope": "TWO_REQUESTS",
+      "status": "ACTIVE",
+      "price": 50010000,
+      "auctionVersion": 118,
+      "counts": {
+        "requestCount": 1000,
+        "ledgerCount": 1000,
+        "resultCount": 1000,
+        "detailRows": 2
+      },
+      "resultsEqual": true,
+      "finalBidEvent": null,
+      "outputSha256": "75fe0d8196c4057ed2a23badb058deaa40b3b7912dad2e60c5b34d803d446a9f",
+      "planPairOrder": [
+        [
+          "original",
+          "candidate"
+        ],
+        [
+          "candidate",
+          "original"
+        ]
+      ],
+      "original": [
+        {
+          "planningMs": 0.33,
+          "executionMs": 15.166,
+          "totalCost": 1876.26,
+          "buffers": {
+            "sharedHits": 970,
+            "sharedReads": 0,
+            "tempRead": 4,
+            "tempWritten": 28
+          },
+          "requestRows": {
+            "node": "CTE Scan",
+            "expected": 1,
+            "actual": 2,
+            "loops": 1
+          },
+          "joinRows": {
+            "node": "Merge Join",
+            "expected": 2,
+            "actual": 2,
+            "loops": 1
+          },
+          "outbox": {
+            "node": "Seq Scan",
+            "expected": 487,
+            "actual": 1000,
+            "loops": 1,
+            "sharedHits": 871
+          }
+        },
+        {
+          "planningMs": 0.22,
+          "executionMs": 14.405,
+          "totalCost": 1876.26,
+          "buffers": {
+            "sharedHits": 970,
+            "sharedReads": 0,
+            "tempRead": 4,
+            "tempWritten": 28
+          },
+          "requestRows": {
+            "node": "CTE Scan",
+            "expected": 1,
+            "actual": 2,
+            "loops": 1
+          },
+          "joinRows": {
+            "node": "Merge Join",
+            "expected": 2,
+            "actual": 2,
+            "loops": 1
+          },
+          "outbox": {
+            "node": "Seq Scan",
+            "expected": 487,
+            "actual": 1000,
+            "loops": 1,
+            "sharedHits": 871
+          }
+        }
+      ],
+      "candidate": [
+        {
+          "planningMs": 0.244,
+          "executionMs": 14.436,
+          "totalCost": 1873.91,
+          "buffers": {
+            "sharedHits": 970,
+            "sharedReads": 0,
+            "tempRead": 4,
+            "tempWritten": 28
+          },
+          "requestRows": {
+            "node": "CTE Scan",
+            "expected": 2,
+            "actual": 2,
+            "loops": 1
+          },
+          "joinRows": {
+            "node": "Merge Join",
+            "expected": 5,
+            "actual": 2,
+            "loops": 1
+          },
+          "outbox": {
+            "node": "Seq Scan",
+            "expected": 487,
+            "actual": 1000,
+            "loops": 1,
+            "sharedHits": 871
+          }
+        },
+        {
+          "planningMs": 0.253,
+          "executionMs": 15.358,
+          "totalCost": 1873.91,
+          "buffers": {
+            "sharedHits": 970,
+            "sharedReads": 0,
+            "tempRead": 4,
+            "tempWritten": 28
+          },
+          "requestRows": {
+            "node": "CTE Scan",
+            "expected": 2,
+            "actual": 2,
+            "loops": 1
+          },
+          "joinRows": {
+            "node": "Merge Join",
+            "expected": 5,
+            "actual": 2,
+            "loops": 1
+          },
+          "outbox": {
+            "node": "Seq Scan",
+            "expected": 487,
+            "actual": 1000,
+            "loops": 1,
+            "sharedHits": 871
+          }
+        }
+      ]
+    }
+  ],
+  "readinessQueryPlans": [
+    {
+      "trial": "full-312",
+      "executionMs": 0.751,
+      "sharedHits": 58,
+      "sharedReads": 0,
+      "tempRead": 0,
+      "tempWritten": 0,
+      "rows": 1000,
+      "priorFailure": {
+        "lag": [
+          0,
+          204,
+          0
+        ],
+        "secondsSinceLatestLagAtSqlStart": 5.7700007079999995
+      }
+    },
+    {
+      "trial": "full-302",
+      "executionMs": 0.683,
+      "sharedHits": 83,
+      "sharedReads": 0,
+      "tempRead": 0,
+      "tempWritten": 0,
+      "rows": 1000,
+      "priorFailure": {
+        "lag": [
+          0,
+          0,
+          208
+        ],
+        "secondsSinceLatestLagAtSqlStart": 5.830542207999999
+      }
+    }
+  ]
+}
