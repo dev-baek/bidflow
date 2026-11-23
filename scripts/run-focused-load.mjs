@@ -8,7 +8,7 @@ import {performance} from 'node:perf_hooks';
 import os from 'node:os';
 import {focusedConfig,planFocused} from './focused-thousand.mjs';
 import {isUuid} from './final-settlement.mjs';
-import {readScopedSnapshot} from './concurrent-browser-sql.mjs';
+import {buildSettlementReadinessSql,readScopedSnapshot} from './concurrent-browser-sql.mjs';
 import {claimOutput,collectFocused,parseReceipt} from './focused-load-collector.mjs';
 import {createCommandTrace} from './command-trace.mjs';
 
@@ -69,7 +69,7 @@ function realIo(output) {
     if(!/^\d+$/.test(pid))throw Error('one local API required');
     return {pid:Number(pid),command:await command('ps',['-p',pid,'-o','command='])};
   };
-  const sql=async query=>JSON.parse(await command('docker',['exec','bidflow-local-postgres-1','psql','-XqAt','-U','bidflow','-d','bidflow','-v','ON_ERROR_STOP=1','-c',query],5000,'SCOPED_SQL'));
+  const sql=async (query,operation='SCOPED_SQL')=>JSON.parse(await command('docker',['exec','bidflow-local-postgres-1','psql','-XqAt','-U','bidflow','-d','bidflow','-v','ON_ERROR_STOP=1','-c',query],5000,operation));
   return {
     now:()=>performance.now(),wait,
     trace:()=>trace.snapshot(),
@@ -162,6 +162,7 @@ function realIo(output) {
       }
       return {records,invalid};
     },
+    readiness:auctionId=>sql(buildSettlementReadinessSql(auctionId),'SETTLEMENT_READINESS'),
     snapshot:auctionId=>readScopedSnapshot(auctionId,trace.run),
     summary:async()=>{
       const s=JSON.parse(await readFile(output+'/summary.json','utf8')).metrics;

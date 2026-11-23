@@ -47,7 +47,7 @@ const dltRows=rows=>{
 export async function collectFocused(mode,io,observer) {
   const {count}=focusedConfig(mode);
   const e={mode,valid:false,fullVerified:false,observationValid:false,startedAt:new Date().toISOString(),
-    cpu:[],containers:[],lagSamples:[],receipts:[],failures:[],consistency:{valid:false},resources:{valid:false},
+    cpu:[],containers:[],lagSamples:[],readinessChecks:[],receipts:[],failures:[],consistency:{valid:false},resources:{valid:false},
     commandTrace:summarizeTrace(),phaseSummary:summarizePhases(),diagnosticsComplete:false};
   if(observer)e.browserObservationValid=false;
   let load,finished=false,abort=false,watchers=[],stage='prepare';
@@ -95,21 +95,42 @@ export async function collectFocused(mode,io,observer) {
     stage='summary';
     const summary=await io.summary();e.http=Object.fromEntries(['count','iterations','received','p50','p95','p99','errorRate'].map(k=>[k,Number.isFinite(summary[k])?summary[k]:null]));
     e.phaseSummary=summarizePhases(summary.phaseMetrics);
-    const deadline=e.loadEndedMs+60000;
-    do {
-      assertBrowserTime();
-      stage='snapshot';
-      e.snapshot=await io.snapshot(e.fixture.auctionId);
-      e.consistency=judgeFocused({...e.fixture,mode,receipts:e.receipts,snapshot:e.snapshot});
-      stage='recovery-lag';const rows=await sampleLag();
-      if(rows.every(r=>r.lag===0)&&e.snapshot?.requestCount===count&&e.snapshot.rows?.length===count
-        &&e.snapshot.rows.every(r=>['ACCEPTED','REJECTED'].includes(r.decision))) {
-        e.recoveredMs=io.now();break;
+    const deadline=Math.min(e.loadEndedMs+60000,browserDeadline);
+    const withinRecovery=(requiredMs=0)=>{
+      if(io.now()+requiredMs>=deadline){
+        e.error??='RECOVERY_DEADLINE';
+        throw Error('recovery deadline');
       }
-      if(io.now()>=deadline)break;
+    };
+    while(true){
+      stage='recovery-lag';withinRecovery(12000);
+      const rows=await sampleLag();
+      withinRecovery();
+      if(rows.every(r=>r.lag===0)){
+        stage='readiness';withinRecovery(5000);
+        const startedMs=io.now(),r=await io.readiness(e.fixture.auctionId),completedMs=io.now();
+        if(r?.auctionId!==e.fixture.auctionId||!Number.isSafeInteger(r.requestCount)
+          ||!Number.isSafeInteger(r.completedCount)||r.completedCount<0||r.completedCount>r.requestCount||r.requestCount>count){
+          e.error??='RECOVERY_READINESS_INVALID';throw Error('invalid readiness counts');
+        }
+        e.readinessChecks.push({startedMs,completedMs,requestCount:r.requestCount,completedCount:r.completedCount});
+        withinRecovery();
+        if(r.completedCount===count)break;
+      }
+      stage='recovery-wait';withinRecovery(1000);
       await io.wait(1000);
-    }while(io.now()<deadline);
+    }
+    stage='snapshot';withinRecovery(5000);
+    e.snapshot=await io.snapshot(e.fixture.auctionId);
+    withinRecovery();
+    e.consistency=judgeFocused({...e.fixture,mode,receipts:e.receipts,snapshot:e.snapshot});
+    stage='post-snapshot-lag';withinRecovery(12000);
+    const postSnapshotLag=await sampleLag();
+    withinRecovery();
+    if(e.consistency.valid&&postSnapshotLag.every(r=>r.lag===0))e.recoveredMs=io.now();
+    stage='recovery-dlt';withinRecovery(12000);
     e.dltAfter=dltRows(await io.dlt());
+    withinRecovery();
     e.resources=judgeResources({startedMs:e.loadStartedMs,endedMs:e.loadEndedMs,samples:e.cpu,containers:e.containers});
     const timings=[e.http.p50,e.http.p95,e.http.p99];
     e.performancePassed=timings.every(n=>Number.isFinite(n)&&n>=0)&&e.http.p50<=e.http.p95&&e.http.p95<=e.http.p99
@@ -120,7 +141,7 @@ export async function collectFocused(mode,io,observer) {
     stage='browser-finish';
     assertBrowserTime();
     if(observer&&e.consistency.valid&&e.observationValid&&!observer.error()){
-      e.browser=await observer.finish(e,Math.min(deadline,browserDeadline));
+      e.browser=await observer.finish(e,deadline);
       assertBrowserTime();
     }
   }catch(error){failure(stage,error);e.error??='COLLECTION_FAILED';}

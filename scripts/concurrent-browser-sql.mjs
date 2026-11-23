@@ -14,6 +14,14 @@ export function buildFocusedSql(auctionId) {
   return scopedBidSql(auctionId);
 }
 
+export function buildSettlementReadinessSql(auctionId) {
+  if(auctionId?.length!==36||!isUuid(auctionId))throw Error('invalid SQL scope');
+  return `BEGIN READ ONLY; SET LOCAL statement_timeout = 4000;
+SELECT jsonb_build_object('auctionId','${auctionId}','requestCount',count(*),
+  'completedCount',count(*) FILTER (WHERE status IN ('ACCEPTED','REJECTED')))
+FROM bid_request WHERE auction_id='${auctionId}'; COMMIT;`;
+}
+
 export const snapshotFailureCodes=['SQL_QUERY_CANCELED','SQL_PROCESS_TIMEOUT','SQL_OUTPUT_INVALID','SQL_CALL_FAILED'];
 
 export async function readScopedSnapshot(auctionId,run) {

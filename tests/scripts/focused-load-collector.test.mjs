@@ -30,6 +30,7 @@ function fake() {
     cpu:async()=>({cpu:20,pressure:1}),containers:async()=>({oom:false,memoryBytes:1000}),
     start:async()=>({done:wait(25).then(()=>0),stop:async()=>{stopped++;}}),
     receipts:async()=>({records:receipts,invalid:0}),snapshot:async()=>snapshot,
+    readiness:async()=>({auctionId,requestCount:10,completedCount:10}),
     trace:()=>({records:[traceEntry()],clockValid:true,truncated:false}),
     summary:async()=>({count:10,iterations:10,received:10,p50:10,p95:20,p99:25,errorRate:0,phaseMetrics})};
   return {io,receipts,snapshot,lag,get restored(){return restored;},get stopped(){return stopped;},get saved(){return saved;}};
@@ -43,8 +44,72 @@ test('collector joins a complete smoke without pretending it is a thousand-reque
   assert.equal(e.diagnosticsComplete,true);assert.equal(e.commandTrace.complete,true);assert.equal(e.phaseSummary.complete,true);
 });
 
+test('checks fresh lag then scoped counts before doing the full snapshot exactly once',async()=>{
+  const f=fake(),zero=f.lag,positive=[{...zero[0],endOffset:1,lag:1},...zero.slice(1)];
+  let recovery=false,lagCalls=0,readyCalls=0,snapshots=0;
+  const summary=f.io.summary,snapshot=f.io.snapshot,readiness=f.io.readiness;
+  f.io.summary=async()=>{recovery=true;return summary();};
+  f.io.lag=async()=>recovery&&++lagCalls===1?positive:zero;
+  f.io.readiness=async()=>{
+    assert.equal(lagCalls,++readyCalls+1);
+    return {...await readiness(),completedCount:readyCalls===1?9:10,secret:'discard-me'};
+  };
+  f.io.snapshot=async()=>{assert.equal(readyCalls,2);snapshots++;return snapshot();};
+  const e=await collectFocused('smoke',f.io);
+  assert.equal(e.valid,true);assert.equal(snapshots,1);assert.equal(lagCalls,4);
+  assert.deepEqual(e.readinessChecks.map(x=>x.completedCount),[9,10]);
+  assert.doesNotMatch(JSON.stringify(e),/discard-me/);
+});
+
+test('does not start a snapshot on lag, pending, invalid or late readiness',async()=>{
+  for(const condition of ['lag','late-lag','pending','invalid','foreign','error','late']){
+    const f=fake(),zero=f.lag;let recovery=false,offset=0,reads=0,snapshots=0;
+    const summary=f.io.summary,readiness=f.io.readiness,wait=f.io.wait;
+    f.io.summary=async()=>{recovery=true;return summary();};
+    f.io.now=()=>performance.now()+offset;
+    f.io.wait=async ms=>{if(recovery){offset+=40000;return;}return wait(ms);};
+    f.io.lag=async()=>{
+      if(recovery&&condition==='late-lag')offset+=60000;
+      return recovery&&condition==='lag'?[{...zero[0],endOffset:1,lag:1},...zero.slice(1)]:zero;
+    };
+    f.io.readiness=async()=>{
+      reads++;
+      if(condition==='error')throw Error('secret');
+      if(condition==='late')offset+=60000;
+      const r=await readiness();
+      return condition==='pending'?{...r,completedCount:9}:condition==='invalid'?{...r,requestCount:11}
+        :condition==='foreign'?{...r,auctionId:id(9)}:r;
+    };
+    f.io.snapshot=async()=>{snapshots++;return f.snapshot;};
+    const e=await collectFocused('smoke',f.io);
+    assert.equal(e.valid,false,condition);assert.equal(snapshots,0,condition);assert.equal(f.restored,1,condition);
+    assert.equal(reads,['lag','late-lag'].includes(condition)?0:condition==='pending'?2:1,condition);
+    assert.doesNotMatch(JSON.stringify(e),/secret/);
+  }
+});
+
+test('does not retry snapshot on post-audit lag, invalid ledger, or SQL failure',async()=>{
+  for(const fail of ['lag','ledger','sql']){
+    const f=fake();let recovery=false,lagCalls=0,snapshots=0;
+    const summary=f.io.summary;
+    f.io.summary=async()=>{recovery=true;return summary();};
+    f.io.lag=async()=>recovery&&++lagCalls>=2&&fail==='lag'
+      ?[{...f.lag[0],endOffset:1,lag:1},...f.lag.slice(1)]:f.lag;
+    f.io.snapshot=async()=>{
+      snapshots++;
+      if(fail==='sql')throw Object.assign(Error('secret'),{code:'SQL_QUERY_CANCELED'});
+      if(fail==='ledger')f.snapshot.rows[0].ledgers=[];
+      return f.snapshot;
+    };
+    const e=await collectFocused('smoke',f.io);
+    assert.equal(e.valid,false,fail);assert.equal(snapshots,1,fail);assert.equal(f.restored,1,fail);
+    assert.equal(e.recoveredMs,undefined,fail);
+    assert.doesNotMatch(JSON.stringify(e),/secret/);
+  }
+});
+
 test('optional observer gates load, stops on disconnect and preserves partial evidence and restoration',async()=>{
-  for(const scenario of ['prepare','lost','finish','close','sql','pass']){
+  for(const scenario of ['prepare','lost','finish','close','readiness','sql','pass']){
     const f=fake();let started=false,lost=false,closed=false;
     const start=f.io.start;
     f.io.start=async()=>{started=true;lost=scenario==='lost';return start();};
@@ -56,12 +121,14 @@ test('optional observer gates load, stops on disconnect and preserves partial ev
       close:async()=>{closed=true;if(['close','sql'].includes(scenario))throw Error('private');},
     };
     if(scenario==='sql')f.io.snapshot=async()=>{throw Object.assign(Error('private'),{code:'SQL_QUERY_CANCELED'});};
+    if(scenario==='readiness')f.io.readiness=async()=>{throw Error('private');};
     const e=await collectFocused('smoke',f.io,observer);
     assert.equal(started,scenario!=='prepare');assert.equal(closed,true);assert.equal(f.restored,1);
     assert.equal(e.valid,scenario==='pass');assert.equal(e.browserObservationValid,scenario==='pass');
     if(scenario==='lost')assert.equal(f.stopped>0,true);
     assert.deepEqual(e.browserEvidence.screenChecks,[{role:'A',atMs:2}]);
     if(scenario==='sql')assert.ok(e.failures.some(x=>x.source==='snapshot'&&x.code==='SQL_QUERY_CANCELED'));
+    if(scenario==='readiness')assert.ok(e.failures.some(x=>x.source==='readiness'));
     if(['sql','close'].includes(scenario))assert.ok(e.failures.some(x=>x.source==='browser-close'));
     assert.deepEqual(f.saved.at(-1).browserEvidence,e.browserEvidence);
     assert.doesNotMatch(JSON.stringify(e),/private/);
