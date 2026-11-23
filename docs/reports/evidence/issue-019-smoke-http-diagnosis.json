@@ -1,0 +1,199 @@
+{
+  "source": "1e9dd050a5dbb7bf6d947feaf6ef51e6b14828f8",
+  "readOnlyObservedAt": "2026-11-23T09:04:02.640Z",
+  "runStartedAt": "2026-11-23T08:55:23.288Z",
+  "linkedRequests": 10,
+  "receiptLogCount": 10,
+  "settlementLogCount": 10,
+  "http": {
+    "count": 10,
+    "iterations": 10,
+    "received": 10,
+    "p50": 60.947625,
+    "p95": 310.50402745,
+    "p99": 312.75167269,
+    "errorRate": 0
+  },
+  "phases": {
+    "blocked": {
+      "p50": 0.0096045,
+      "p95": 11.09855885,
+      "p99": 11.98727897
+    },
+    "connecting": {
+      "p50": 0,
+      "p95": 2.49139185,
+      "p99": 2.50171197
+    },
+    "sending": {
+      "p50": 0.035854,
+      "p95": 4.606385749999997,
+      "p99": 7.332710749999999
+    },
+    "waiting": {
+      "p50": 59.458603999999994,
+      "p95": 309.71581265,
+      "p99": 311.55886253
+    },
+    "receiving": {
+      "p50": 0.7106875,
+      "p95": 2.0604732499999994,
+      "p99": 2.53292825
+    }
+  },
+  "samples": [
+    {
+      "index": 0,
+      "iteration": 0,
+      "vu": 1,
+      "httpMs": 60.789125,
+      "outcome": "BID_TOO_LOW",
+      "partition": 2,
+      "offset": 2607,
+      "receivedOffsetMs": 0,
+      "settledOffsetMs": 988.452,
+      "requestWriteStartToReceiveLogMs": 11.059,
+      "receiveLogToSettlementLogMs": 988.452,
+      "consumerStartToSettlementLogMs": 10.301
+    },
+    {
+      "index": 1,
+      "iteration": 0,
+      "vu": 2,
+      "httpMs": 61.106125,
+      "outcome": "ACCEPTED",
+      "partition": 2,
+      "offset": 2606,
+      "receivedOffsetMs": 2.487,
+      "settledOffsetMs": 966.261,
+      "requestWriteStartToReceiveLogMs": 17,
+      "receiveLogToSettlementLogMs": 963.774,
+      "consumerStartToSettlementLogMs": 425.707
+    },
+    {
+      "index": 2,
+      "iteration": 1,
+      "vu": 1,
+      "httpMs": 313.313584,
+      "outcome": "BID_TOO_LOW",
+      "partition": 2,
+      "offset": 2609,
+      "receivedOffsetMs": 433.47,
+      "settledOffsetMs": 1024.605,
+      "requestWriteStartToReceiveLogMs": 231.906,
+      "receiveLogToSettlementLogMs": 591.135,
+      "consumerStartToSettlementLogMs": 9.829
+    },
+    {
+      "index": 3,
+      "iteration": 1,
+      "vu": 2,
+      "httpMs": 305.225375,
+      "outcome": "ACCEPTED",
+      "partition": 2,
+      "offset": 2608,
+      "receivedOffsetMs": 416.752,
+      "settledOffsetMs": 1009.613,
+      "requestWriteStartToReceiveLogMs": 215.188,
+      "receiveLogToSettlementLogMs": 592.861,
+      "consumerStartToSettlementLogMs": 14.726
+    },
+    {
+      "index": 4,
+      "iteration": 2,
+      "vu": 1,
+      "httpMs": 307.070125,
+      "outcome": "BID_TOO_LOW",
+      "partition": 2,
+      "offset": 2611,
+      "receivedOffsetMs": 852.496,
+      "settledOffsetMs": 1068.07,
+      "requestWriteStartToReceiveLogMs": 63.571,
+      "receiveLogToSettlementLogMs": 215.574,
+      "consumerStartToSettlementLogMs": 16.093
+    },
+    {
+      "index": 5,
+      "iteration": 2,
+      "vu": 2,
+      "httpMs": 200.283834,
+      "outcome": "ACCEPTED",
+      "partition": 2,
+      "offset": 2610,
+      "receivedOffsetMs": 836.939,
+      "settledOffsetMs": 1045.212,
+      "requestWriteStartToReceiveLogMs": 48.014,
+      "receiveLogToSettlementLogMs": 208.273,
+      "consumerStartToSettlementLogMs": 14.386
+    },
+    {
+      "index": 6,
+      "iteration": 3,
+      "vu": 1,
+      "httpMs": 22.724417,
+      "outcome": "BID_TOO_LOW",
+      "partition": 2,
+      "offset": 2613,
+      "receivedOffsetMs": 979.246,
+      "settledOffsetMs": 1387.682,
+      "requestWriteStartToReceiveLogMs": 8.341,
+      "receiveLogToSettlementLogMs": 408.436,
+      "consumerStartToSettlementLogMs": 25.614
+    },
+    {
+      "index": 7,
+      "iteration": 3,
+      "vu": 2,
+      "httpMs": 34.806417,
+      "outcome": "ACCEPTED",
+      "partition": 2,
+      "offset": 2612,
+      "receivedOffsetMs": 976.713,
+      "settledOffsetMs": 1291.412,
+      "requestWriteStartToReceiveLogMs": 25.293,
+      "receiveLogToSettlementLogMs": 314.699,
+      "consumerStartToSettlementLogMs": 109.334
+    },
+    {
+      "index": 8,
+      "iteration": 4,
+      "vu": 1,
+      "httpMs": 16.696208,
+      "outcome": "BID_TOO_LOW",
+      "partition": 2,
+      "offset": 2615,
+      "receivedOffsetMs": 1096.784,
+      "settledOffsetMs": 1511.584,
+      "requestWriteStartToReceiveLogMs": 7.445,
+      "receiveLogToSettlementLogMs": 414.8,
+      "consumerStartToSettlementLogMs": 9.727
+    },
+    {
+      "index": 9,
+      "iteration": 4,
+      "vu": 2,
+      "httpMs": 16.794583,
+      "outcome": "ACCEPTED",
+      "partition": 2,
+      "offset": 2614,
+      "receivedOffsetMs": 1094.16,
+      "settledOffsetMs": 1490.174,
+      "requestWriteStartToReceiveLogMs": 7.669,
+      "receiveLogToSettlementLogMs": 396.014,
+      "consumerStartToSettlementLogMs": 20.882
+    }
+  ],
+  "provenance": {
+    "http": "k6 per-request duration and run-level phase summary",
+    "log": "the original verification JVM, exact auctionId + requestId and matching correlationId",
+    "db": "one later read-only query, original bid_request timestamps; statement 4000ms, process 5000ms",
+    "timestamps": "all server log offsets are relative to earliest receive log; not HTTP start times; DB timestamps are app-generated"
+  },
+  "limits": {
+    "serverHttpEntryObserved": false,
+    "serverHttpResponseEndObserved": false,
+    "individualHttpPhasesObserved": false,
+    "rootCauseConfirmed": false,
+    "newLoadStarted": false
+  }
+}
