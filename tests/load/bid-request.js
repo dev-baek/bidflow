@@ -2,6 +2,7 @@ import http from "k6/http";
 import { check, fail, sleep } from "k6";
 import { Counter, Trend } from "k6/metrics";
 import { focusedConfig, planFocused, localLoadUrl } from "../../scripts/focused-thousand.mjs";
+import { diagnosticCorrelationId } from "../../scripts/bid-ingress-observation.mjs";
 
 const scenario = __ENV.BIDFLOW_LOAD_SCENARIO || "focused";
 const baseUrl = required("BIDFLOW_BASE_URL").replace(/\/$/, "");
@@ -74,7 +75,8 @@ export function focusedThousand() {
   const requestId = typeof body?.bidRequestId === "string" && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(body.bidRequestId) ? body.bidRequestId : null;
   const receiptStatus = body?.status === "RECEIVED" ? "RECEIVED" : null;
   if (check(response, {"valid receipt": () => response.status === 202 && receiptStatus === "RECEIVED" && requestId !== null})) received.add(1);
-  console.log(JSON.stringify({...plan, requestId, httpStatus:response.status, receiptStatus, durationMs:response.timings.duration}));
+  const correlationId = diagnosticCorrelationId(response.headers?.["X-Correlation-Id"]);
+  console.log(JSON.stringify({...plan, requestId, correlationId, httpStatus:response.status, receiptStatus, durationMs:response.timings.duration}));
   sleep(0.1);
 }
 

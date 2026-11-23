@@ -135,6 +135,9 @@ test('trace is captured before saving partial evidence and refreshed after resto
 
 test('receipt parser strips arbitrary payload and preserves an invalid receipt as failure',()=>{
   const r={...planFocused('fake19','smoke',1,0),requestId:id(10),httpStatus:202,receiptStatus:'RECEIVED',durationMs:2,secret:'token-secret'};
+  assert.equal(parseReceipt(JSON.stringify(r),'fake19','smoke').correlationId,null);
+  assert.equal(parseReceipt(JSON.stringify({...r,correlationId:id(20)}),'fake19','smoke').correlationId,id(20));
+  assert.equal(parseReceipt(JSON.stringify({...r,correlationId:'token-secret'}),'fake19','smoke').correlationId,null);
   assert.equal(JSON.stringify(parseReceipt(JSON.stringify(r),'fake19','smoke')).includes('secret'),false);
   r.requestId='token-secret';assert.equal(parseReceipt(JSON.stringify(r),'fake19','smoke').requestId,null);
   assert.throws(()=>parseReceipt('{bad','fake19','smoke'));

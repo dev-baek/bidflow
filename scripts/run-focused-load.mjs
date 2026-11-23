@@ -48,6 +48,15 @@ export function buildK6Args(source,output,fixture,mode) {
     'tests/load/bid-request.js'];
 }
 
+export function focusedApiMode(command,java,jar) {
+  if(!java)return null;
+  const expected=[java,'-jar',jar,'--spring.profiles.active=local','--server.address=127.0.0.1',
+    '--logging.level.com.bidflow.runtime.OutboxScheduler=INFO'].join(' ');
+  if(command===expected)return 'DEFAULT';
+  if(command===expected+' --bidflow.bid.ingress-timing=true')return 'INGRESS_TIMING';
+  return null;
+}
+
 function realIo(output) {
   const trace=createCommandTrace({now:()=>performance.now(),execute:executeObserved});
   const command=async(program,args,timeout=5000,operation='SETUP_METADATA')=>
@@ -72,9 +81,8 @@ function realIo(output) {
       if(!endpoint.startsWith('unix://'))throw Error('local Docker required');
       const state=await apiState();
       const java=process.env.JAVA_HOME?process.env.JAVA_HOME+'/bin/java':'';
-      const expected=[java,'-jar',jar,'--spring.profiles.active=local','--server.address=127.0.0.1',
-        '--logging.level.com.bidflow.runtime.OutboxScheduler=INFO'].join(' ');
-      if(!java||state.command!==expected)throw Error('explicit local system-Clock API required; no automatic restart');
+      const apiMode=focusedApiMode(state.command,java,jar);
+      if(!apiMode)throw Error('explicit local system-Clock API required; no automatic restart');
       const processEnv=await command('ps',['eww','-p',String(state.pid),'-o','command=']);
       if(/(?:^| )(?:(?:BIDFLOW_|SPRING_|SERVER_)[A-Z0-9_]*|JAVA_TOOL_OPTIONS|JDK_JAVA_OPTIONS|_JAVA_OPTIONS)=/.test(processEnv))throw Error('API environment override not allowed');
       priorCommand=state.command;
@@ -85,7 +93,7 @@ function realIo(output) {
       if(ready.status!==200||(await ready.json()).status!=='UP')throw Error('API not ready');
       const healthy=await command('docker',['inspect','--format','{{.State.Health.Status}} {{index .Config.Labels "com.docker.compose.project"}}',...services]);
       if(healthy.split('\n').length!==services.length||healthy.split('\n').some(s=>s!=='healthy bidflow-local'))throw Error('local services not healthy');
-      runtime={pid:state.pid,jarSha256:await hash(),profile:'local',clock:'system',delayMs:100,logging:'INFO',
+      runtime={pid:state.pid,jarSha256:await hash(),profile:'local',clock:'system',delayMs:100,logging:'INFO',apiMode,
         commit:await command('git',['rev-parse','HEAD']),node:process.version,java:version.split('\n')[0],
         docker:await command('docker',['info','--format','{{.ServerVersion}} {{.NCPU}} {{.MemTotal}}']),
         k6:await command('docker',['run','--rm','grafana/k6:0.54.0','version']),
