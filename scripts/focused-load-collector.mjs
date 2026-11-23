@@ -3,6 +3,7 @@ import {resolve,dirname,basename,relative,isAbsolute} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {focusedConfig,planFocused,judgeFocused,judgeResources} from './focused-thousand.mjs';
 import {isUuid} from './final-settlement.mjs';
+import {snapshotFailureCodes} from './concurrent-browser-sql.mjs';
 import {summarizeTrace,summarizePhases} from './command-trace.mjs';
 
 export async function claimOutput(path) {
@@ -50,7 +51,8 @@ export async function collectFocused(mode,io,observer) {
   let load,finished=false,abort=false,watchers=[],stage='prepare';
   const browserDeadline=observer?io.now()+300000:Infinity;
   const assertBrowserTime=()=>{if(observer&&io.now()>=browserDeadline)throw Error('browser run deadline');};
-  const failure=(source,error)=>e.failures.push({source,kind:error?.killed===true?'TERMINATED':'FAILED'});
+  const failure=(source,error)=>e.failures.push({source,kind:error?.killed===true?'TERMINATED':'FAILED',
+    ...(source==='snapshot'&&snapshotFailureCodes.includes(error?.code)?{code:error.code}:{})});
   const diagnostics=()=>{
     try{e.commandTrace=summarizeTrace(io.trace?.());}catch{e.commandTrace=summarizeTrace();}
     e.diagnosticsComplete=e.commandTrace.complete&&e.phaseSummary.complete;
@@ -122,12 +124,16 @@ export async function collectFocused(mode,io,observer) {
   }catch(error){failure(stage,error);e.error??='COLLECTION_FAILED';}
   finally {
     finished=true;
+    if(observer){
+      try{e.browserEvidence=observer.freeze(Math.min(browserDeadline,(e.loadEndedMs??Infinity)+60000));}
+      catch{failure('browser-freeze');}
+    }
     try{if(load)await load.stop();}catch{e.error='LOAD_STOP_FAILED';}
     await Promise.all(watchers);
     if(observer){
       try{
-        e.browserEvidence=await observer.close();
-        e.browserObservationValid=e.browser?.valid===true&&!e.browserEvidence.error&&io.now()<browserDeadline;
+        await observer.close();
+        e.browserObservationValid=e.browser?.valid===true&&e.browserEvidence?.error===null&&io.now()<browserDeadline;
       }catch{failure('browser-close');}
     }
     // Save before restoration as well so a failed restore cannot erase the trial.

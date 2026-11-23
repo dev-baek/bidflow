@@ -8,7 +8,7 @@ import {performance} from 'node:perf_hooks';
 import os from 'node:os';
 import {focusedConfig,planFocused} from './focused-thousand.mjs';
 import {isUuid} from './final-settlement.mjs';
-import {buildFocusedSql} from './concurrent-browser-sql.mjs';
+import {readScopedSnapshot} from './concurrent-browser-sql.mjs';
 import {claimOutput,collectFocused,parseReceipt} from './focused-load-collector.mjs';
 import {createCommandTrace} from './command-trace.mjs';
 
@@ -16,13 +16,15 @@ const root=fileURLToPath(new URL('../',import.meta.url)).replace(/\/$/,'');
 const services=['postgres','kafka','redis','object-storage','opensearch'].map(s=>`bidflow-local-${s}-1`);
 export function executeObserved(program,args,{timeoutMs,onTimeout}) {
   return new Promise((resolve,reject)=>{
-    let timer;
+    let timer,localDeadlineExceeded=false;
     const child=execFile(program,args,{cwd:root,maxBuffer:4_000_000},(error,stdout,stderr)=>{
-      clearTimeout(timer);if(error)reject(error);else resolve({stdout,stderr});
+      clearTimeout(timer);
+      if(error||localDeadlineExceeded)reject(Object.assign(error??Error('process deadline'),{stderr,localDeadlineExceeded}));
+      else resolve({stdout,stderr});
     });
     timer=setTimeout(()=>{
       if(child.exitCode===null&&child.signalCode===null) {
-        try{if(child.kill('SIGTERM'))onTimeout();}catch(error){reject(error);}
+        try{if(child.kill('SIGTERM')){localDeadlineExceeded=true;onTimeout();}}catch(error){reject(error);}
       }
     },timeoutMs);
   });
@@ -152,7 +154,7 @@ function realIo(output) {
       }
       return {records,invalid};
     },
-    snapshot:auctionId=>sql(buildFocusedSql(auctionId)),
+    snapshot:auctionId=>readScopedSnapshot(auctionId,trace.run),
     summary:async()=>{
       const s=JSON.parse(await readFile(output+'/summary.json','utf8')).metrics;
       const timing=s['http_req_duration{operation:bid_request}'].values;

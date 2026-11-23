@@ -6,6 +6,21 @@ const id=n=>`00000000-0000-4000-8000-${String(n).padStart(12,'0')}`;
 const auctionId=id(1), endsAt='2030-01-01T13:00:00Z';
 const final={id:id(2),version:11,price:510000};
 const frame={auctionId,eventId:final.id,type:'auction.updated',auctionVersion:11,currentPrice:510000,endsAt};
+test('freeze retains only completed allowlisted DOM checks, even after observation fails',()=>{
+  let now=3;
+  const journal=createPublicJournal(auctionId,()=>now);
+  const a=journal.frame('A',frame),b=journal.frame('B',frame);
+  const other=journal.frame('A',{...frame,eventId:id(3)});
+  now=5;assert.equal(journal.screen(a),5);
+  now=7;journal.screen(a);
+  now=9;journal.screen(other);
+  journal.fail('SOCKET_LOST');
+  const saved=journal.freeze(8);
+  now=10;journal.screen(b);
+  assert.equal(saved.error,'SOCKET_LOST');
+  assert.deepEqual(saved.screenChecks,[{role:'A',auctionId,eventId:final.id,price:510000,atMs:5}]);
+  assert.deepEqual(journal.freeze(20),saved);
+});
 const fixture=()=>{
   let now=3;
   const journal=createPublicJournal(auctionId,()=>now++);

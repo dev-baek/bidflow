@@ -55,7 +55,7 @@ export function createBrowserObserver(web,now) {
           const frame=journal.frame(role,body);
           if(frame?.price!==expected||screens[role].has(frame.eventId))return;
           const check=locator.and(page.getByText(priceText(expected),{exact:true})).waitFor({state:'visible',timeout:60000})
-            .then(()=>now(),()=>null);
+            .then(()=>journal.screen(frame),()=>null);
           screens[role].set(frame.eventId,check);
         };
         const onSocket=ws=>{
@@ -101,11 +101,13 @@ export function createBrowserObserver(web,now) {
       return {...judgeBrowserConvergence({...journal.snapshot(),...fixture,final,screens:observations,
         loadStartedMs:e.loadStartedMs,loadEndedMs:e.loadEndedMs}),screens:observations};
     },
+    freeze(deadline){
+      closing=true;
+      return journal?.freeze(deadline)??{frames:[],screenChecks:[],error:null};
+    },
     async close(){
-      closing=true;journal?.close();
-      for(const stop of detach)stop();
-      await browser?.close();
-      return journal?.snapshot()??{frames:[],error:null};
+      try{for(const stop of detach)stop();}
+      finally{await browser?.close();}
     },
   };
 }

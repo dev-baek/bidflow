@@ -14,6 +14,27 @@ export function buildFocusedSql(auctionId) {
   return scopedBidSql(auctionId);
 }
 
+export const snapshotFailureCodes=['SQL_QUERY_CANCELED','SQL_PROCESS_TIMEOUT','SQL_OUTPUT_INVALID','SQL_CALL_FAILED'];
+
+export async function readScopedSnapshot(auctionId,run) {
+  const query=buildFocusedSql(auctionId);
+  const failure=code=>Object.assign(Error(code),{code});
+  let stdout;
+  try {
+    ({stdout}=await run('SCOPED_SQL','docker',['exec','bidflow-local-postgres-1','psql','-XqAt',
+      '-U','bidflow','-d','bidflow','-v','ON_ERROR_STOP=1','-v','VERBOSITY=verbose','-c',query],5000));
+  }catch(error){
+    throw failure(error?.localDeadlineExceeded===true?'SQL_PROCESS_TIMEOUT'
+      :error?.code===1&&typeof error.stderr==='string'&&/^ERROR:\s+57014:/m.test(error.stderr)
+        ?'SQL_QUERY_CANCELED':'SQL_CALL_FAILED');
+  }
+  try{
+    const value=JSON.parse(stdout);
+    if(!value||!Array.isArray(value.rows))throw Error();
+    return value;
+  }catch{throw failure('SQL_OUTPUT_INVALID');}
+}
+
 function scopedBidSql(auctionId,requestIds) {
   return `BEGIN READ ONLY; SET LOCAL statement_timeout = 4000;
 WITH requests AS MATERIALIZED (
