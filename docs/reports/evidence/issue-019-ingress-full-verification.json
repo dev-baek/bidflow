@@ -1,0 +1,679 @@
+{
+  "source": "a57674c82a67108f88f61d8d67fd1a1cdf2dda0c",
+  "startedAt": "2026-11-23T09:34:39.935Z",
+  "completedAt": "2026-11-23T09:35:46.911Z",
+  "original": {
+    "pid": 43886,
+    "hash": "5251be8d60c6fc0f3a7afb13415c72e2438713b973a854a54f411009065f08c4",
+    "stopped": true
+  },
+  "test": {
+    "hash": "12d60d9c3a15286b5a0b28f746393ec542dde926d04cc90f6040b616ed68657a",
+    "pid": 53704
+  },
+  "restored": {
+    "pid": 54954,
+    "verified": true
+  },
+  "cleanup": {
+    "verified": true,
+    "servicesUnchanged": true,
+    "loadGone": true,
+    "browsersGone": true,
+    "viteGone": true
+  },
+  "verification": {
+    "nodeTests": 130,
+    "vitestTests": 71,
+    "buildPassed": true
+  },
+  "k6Image": "sha256:1f40432b1cbe7234e977f96c362c9bc550a2d2b583d014dd8669fe40d3e9e755",
+  "fullStarted": true,
+  "overallPassed": false,
+  "privateTimingsSha256": "785a6bc1640431385e9fcf04bd88e2ce0db4e390fb1abc9962cdf1a8c8ee6d0c",
+  "trials": [
+    {
+      "mode": "smoke",
+      "exitCode": 0,
+      "valid": true,
+      "browserObservationValid": true,
+      "fullVerified": false,
+      "owned": true,
+      "cleanup": true,
+      "ingressComplete": true,
+      "joined": 10,
+      "startedAt": "2026-11-23T09:34:50.444Z",
+      "completedAt": "2026-11-23T09:35:11.085Z",
+      "fixture": {
+        "auctionId": "322a9543-10b9-4aff-982c-8447f9781e00",
+        "productId": "364b31f2-644e-4856-b6dc-3affefb5491e",
+        "runId": "focus38afd89469b24734af27c2426266bd28",
+        "endsAt": "2026-11-23T10:05:54.73354+00:00"
+      },
+      "apiMode": "INGRESS_TIMING",
+      "k6Exit": 0,
+      "observationValid": true,
+      "diagnosticsComplete": true,
+      "performancePassed": true,
+      "consistency": {
+        "valid": true,
+        "total": 10,
+        "accepted": 9,
+        "rejected": 1
+      },
+      "http": {
+        "count": 10,
+        "iterations": 10,
+        "received": 10,
+        "p50": 61.4140205,
+        "p95": 233.2335129,
+        "p99": 233.32780337999998,
+        "errorRate": 0
+      },
+      "phaseSummary": {
+        "complete": true,
+        "phases": {
+          "blocked": {
+            "p50": 0.008521,
+            "p95": 35.02703955,
+            "p99": 35.470574309999996
+          },
+          "connecting": {
+            "p50": 0,
+            "p95": 4.9270997,
+            "p99": 5.08471994
+          },
+          "sending": {
+            "p50": 0.0402295,
+            "p95": 1.5613895499999997,
+            "p99": 1.98674431
+          },
+          "waiting": {
+            "p50": 60.8053125,
+            "p95": 231.46815275,
+            "p99": 231.54919775
+          },
+          "receiving": {
+            "p50": 0.482792,
+            "p95": 2.4829268999999994,
+            "p99": 2.96225178
+          }
+        }
+      },
+      "failures": [],
+      "resourcesValid": true,
+      "commandTrace": {
+        "count": 30,
+        "complete": true,
+        "successful": true,
+        "sqlOrFailed": [
+          {
+            "commandId": 14,
+            "operation": "SCOPED_SQL",
+            "startedMs": 4901.134042,
+            "completedMs": 5121.065458,
+            "durationMs": 219.93141600000035,
+            "timeoutMs": 5000,
+            "outcome": "SUCCEEDED",
+            "exitCode": 0,
+            "signal": null
+          },
+          {
+            "commandId": 26,
+            "operation": "SCOPED_SQL",
+            "startedMs": 18489.467,
+            "completedMs": 18669.266375,
+            "durationMs": 179.7993749999987,
+            "timeoutMs": 5000,
+            "outcome": "SUCCEEDED",
+            "exitCode": 0,
+            "signal": null
+          }
+        ]
+      },
+      "peakLag": 0,
+      "finalLag": [
+        0,
+        0,
+        0
+      ],
+      "dltBefore": [
+        0,
+        0,
+        0
+      ],
+      "dltAfter": [
+        0,
+        0,
+        0
+      ],
+      "recoveryObservedMs": 7986.025791,
+      "sql": {
+        "requests": 10,
+        "ledgers": 10,
+        "results": 10,
+        "auction": {
+          "status": "ACTIVE",
+          "version": 10,
+          "price": 510000,
+          "endsAt": "2026-11-23T10:05:54.733+00:00"
+        },
+        "final": {
+          "eventId": "18aa02d8-ef4f-478e-8e3f-e02ce886a5bc",
+          "price": 510000,
+          "version": 10
+        }
+      },
+      "browser": {
+        "valid": true,
+        "code": "CONVERGED",
+        "samples": [
+          {
+            "role": "A",
+            "finalFrameMs": 11492.218208,
+            "finalScreenMs": 11606.464542,
+            "frameFromStartMs": 2048.1580830000003,
+            "screenFromStartMs": 2162.4044169999997,
+            "remainingAfterLoadMs": 0,
+            "convergedBeforeLoadEnd": true,
+            "frameToScreenMs": 114.24633399999948
+          },
+          {
+            "role": "B",
+            "finalFrameMs": 11491.502708,
+            "finalScreenMs": 11516.962708,
+            "frameFromStartMs": 2047.442583,
+            "screenFromStartMs": 2072.902582999999,
+            "remainingAfterLoadMs": 0,
+            "convergedBeforeLoadEnd": true,
+            "frameToScreenMs": 25.459999999999127
+          }
+        ],
+        "screens": {
+          "A": 11606.464542,
+          "B": 11516.962708
+        }
+      },
+      "browserFrameCount": 20,
+      "finalFrames": [
+        {
+          "role": "B",
+          "auctionId": "322a9543-10b9-4aff-982c-8447f9781e00",
+          "eventId": "18aa02d8-ef4f-478e-8e3f-e02ce886a5bc",
+          "type": "auction.updated",
+          "version": 10,
+          "price": 510000,
+          "endsAt": "2026-11-23T10:05:54.733Z",
+          "atMs": 11491.502708
+        },
+        {
+          "role": "A",
+          "auctionId": "322a9543-10b9-4aff-982c-8447f9781e00",
+          "eventId": "18aa02d8-ef4f-478e-8e3f-e02ce886a5bc",
+          "type": "auction.updated",
+          "version": 10,
+          "price": 510000,
+          "endsAt": "2026-11-23T10:05:54.733Z",
+          "atMs": 11492.218208
+        }
+      ],
+      "finalScreenChecks": [
+        {
+          "role": "B",
+          "auctionId": "322a9543-10b9-4aff-982c-8447f9781e00",
+          "eventId": "18aa02d8-ef4f-478e-8e3f-e02ce886a5bc",
+          "price": 510000,
+          "atMs": 11516.962708
+        },
+        {
+          "role": "A",
+          "auctionId": "322a9543-10b9-4aff-982c-8447f9781e00",
+          "eventId": "18aa02d8-ef4f-478e-8e3f-e02ce886a5bc",
+          "price": 510000,
+          "atMs": 11606.464542
+        }
+      ],
+      "ingress": {
+        "complete": true,
+        "exactScope": true,
+        "malformed": 0,
+        "expected": 10,
+        "receiptCount": 10,
+        "uniqueCorrelationCount": 10,
+        "receivedCount": 10,
+        "timingCount": 10,
+        "joined": 10,
+        "timingDistribution": {
+          "clientDurationMs": {
+            "count": 10,
+            "p50": 59.984583,
+            "p95": 233.351376,
+            "p99": 233.351376
+          },
+          "serverDurationMs": {
+            "count": 10,
+            "p50": 54.435292,
+            "p95": 201.857833,
+            "p99": 201.857833
+          },
+          "receiveDurationMs": {
+            "count": 10,
+            "p50": 51.437875,
+            "p95": 198.862709,
+            "p99": 198.862709
+          }
+        },
+        "timingSamples": [
+          {
+            "correlationId": "2025882f-604b-4a41-a2c9-9148fc5cfdcf",
+            "requestId": "6ad4841a-fd49-4279-af36-8130dc5939af",
+            "clientDurationMs": 152.302959,
+            "serverDurationMs": 131.309541,
+            "receiveDurationMs": 71.896709,
+            "index": 0,
+            "vu": 1,
+            "iteration": 0,
+            "receiveStartNanos": 48291291,
+            "receiveEndNanos": 120188000,
+            "httpNanos": 131309541
+          },
+          {
+            "correlationId": "af21f0c2-b14b-46e8-91c6-2015ea719ce4",
+            "requestId": "bf5977d0-2dc0-465f-8366-fe07c70399a7",
+            "clientDurationMs": 151.772917,
+            "serverDurationMs": 131.918083,
+            "receiveDurationMs": 82.4135,
+            "index": 1,
+            "vu": 2,
+            "iteration": 0,
+            "receiveStartNanos": 47614083,
+            "receiveEndNanos": 130027583,
+            "httpNanos": 131918083
+          },
+          {
+            "correlationId": "c8855263-f460-441f-8833-67aa524b9d14",
+            "requestId": "6d597dc3-a629-45a1-8abf-1be7803fc99f",
+            "clientDurationMs": 49.230834,
+            "serverDurationMs": 36.514334,
+            "receiveDurationMs": 34.049292,
+            "index": 2,
+            "vu": 1,
+            "iteration": 1,
+            "receiveStartNanos": 952792,
+            "receiveEndNanos": 35002084,
+            "httpNanos": 36514334
+          },
+          {
+            "correlationId": "8aa8376f-d1cd-424f-981f-057319ff7d04",
+            "requestId": "c14446b4-b6fe-4c9b-997f-2942212fdac5",
+            "clientDurationMs": 49.167375,
+            "serverDurationMs": 37.24975,
+            "receiveDurationMs": 33.387833,
+            "index": 3,
+            "vu": 2,
+            "iteration": 1,
+            "receiveStartNanos": 2080500,
+            "receiveEndNanos": 35468333,
+            "httpNanos": 37249750
+          },
+          {
+            "correlationId": "a03cfa27-c467-4cbe-aa9b-dc9ea3d5a95c",
+            "requestId": "c435cb08-c3f5-430b-bbc9-80258d1fbc5a",
+            "clientDurationMs": 233.089458,
+            "serverDurationMs": 201.857833,
+            "receiveDurationMs": 198.862709,
+            "index": 4,
+            "vu": 1,
+            "iteration": 2,
+            "receiveStartNanos": 1490666,
+            "receiveEndNanos": 200353375,
+            "httpNanos": 201857833
+          },
+          {
+            "correlationId": "723e0219-abd2-49a0-81d9-482b37b360ff",
+            "requestId": "e1853f6b-0aef-4d1c-b378-f018656b587c",
+            "clientDurationMs": 233.351376,
+            "serverDurationMs": 199.104333,
+            "receiveDurationMs": 192.711916,
+            "index": 5,
+            "vu": 2,
+            "iteration": 2,
+            "receiveStartNanos": 1253000,
+            "receiveEndNanos": 193964916,
+            "httpNanos": 199104333
+          },
+          {
+            "correlationId": "20e3aaac-eb4c-431e-a2bf-7be294d49c87",
+            "requestId": "d79016e7-5cf3-405a-973b-29a9c3d683da",
+            "clientDurationMs": 59.984583,
+            "serverDurationMs": 54.435292,
+            "receiveDurationMs": 51.437875,
+            "index": 6,
+            "vu": 1,
+            "iteration": 3,
+            "receiveStartNanos": 765292,
+            "receiveEndNanos": 52203167,
+            "httpNanos": 54435292
+          },
+          {
+            "correlationId": "efef3d24-d07e-4097-b125-54813cf96882",
+            "requestId": "5755164b-73a8-46cd-be50-55d73e838c6e",
+            "clientDurationMs": 62.843458,
+            "serverDurationMs": 56.499209,
+            "receiveDurationMs": 54.3945,
+            "index": 7,
+            "vu": 2,
+            "iteration": 3,
+            "receiveStartNanos": 1034375,
+            "receiveEndNanos": 55428875,
+            "httpNanos": 56499209
+          },
+          {
+            "correlationId": "53b23de0-1411-4d5d-8ba8-d0fdf8cf1fe6",
+            "requestId": "ac2ceaa7-5a06-46cf-b99c-5c2a274d9add",
+            "clientDurationMs": 27.593291,
+            "serverDurationMs": 19.462667,
+            "receiveDurationMs": 16.666333,
+            "index": 8,
+            "vu": 1,
+            "iteration": 4,
+            "receiveStartNanos": 1222542,
+            "receiveEndNanos": 17888875,
+            "httpNanos": 19462667
+          },
+          {
+            "correlationId": "62f22ad8-3a62-4751-9c41-9f29848b5da8",
+            "requestId": "8ff137c5-ec93-4aaa-af2d-4272791a9617",
+            "clientDurationMs": 33.263208,
+            "serverDurationMs": 29.028916,
+            "receiveDurationMs": 26.676375,
+            "index": 9,
+            "vu": 2,
+            "iteration": 4,
+            "receiveStartNanos": 859791,
+            "receiveEndNanos": 27536166,
+            "httpNanos": 29028916
+          }
+        ],
+        "samplesOver300ms": 0
+      },
+      "evidenceHash": "3d9984262cf19313bc189e976a8afc5783d7b53a7cef70becec9f1aa134b9ff0"
+    },
+    {
+      "mode": "full",
+      "exitCode": 1,
+      "valid": false,
+      "browserObservationValid": false,
+      "fullVerified": false,
+      "owned": true,
+      "cleanup": true,
+      "ingressComplete": true,
+      "joined": 1000,
+      "startedAt": "2026-11-23T09:35:11.799Z",
+      "completedAt": "2026-11-23T09:35:39.100Z",
+      "fixture": {
+        "auctionId": "9ee784c2-8a05-49d8-9d8c-00b94cfd33d2",
+        "productId": "cc1d54ea-435c-4bcc-ab59-ba59771fe8e0",
+        "runId": "focuseef8a7d7d49d479383d95cc98ab565a5",
+        "endsAt": "2026-11-23T10:06:15.875998+00:00"
+      },
+      "apiMode": "INGRESS_TIMING",
+      "k6Exit": 0,
+      "observationValid": false,
+      "diagnosticsComplete": true,
+      "consistency": {
+        "valid": false
+      },
+      "http": {
+        "count": 1000,
+        "iterations": 1000,
+        "received": 1000,
+        "p50": 29.612395499999998,
+        "p95": 178.08895414999998,
+        "p99": 470.69442241999997,
+        "errorRate": 0
+      },
+      "phaseSummary": {
+        "complete": true,
+        "phases": {
+          "blocked": {
+            "p50": 0.006834,
+            "p95": 0.025141699999999986,
+            "p99": 7.82300166
+          },
+          "connecting": {
+            "p50": 0,
+            "p95": 0,
+            "p99": 4.71313667
+          },
+          "sending": {
+            "p50": 0.0269375,
+            "p95": 0.10112705000000001,
+            "p99": 0.729351329999999
+          },
+          "waiting": {
+            "p50": 29.0673335,
+            "p95": 177.7282521,
+            "p99": 470.58986133999997
+          },
+          "receiving": {
+            "p50": 0.1269585,
+            "p95": 2.045973549999999,
+            "p99": 8.990963509999997
+          }
+        }
+      },
+      "failures": [
+        {
+          "source": "snapshot",
+          "kind": "FAILED",
+          "code": "SQL_QUERY_CANCELED"
+        }
+      ],
+      "resourcesValid": false,
+      "commandTrace": {
+        "count": 38,
+        "complete": true,
+        "successful": false,
+        "sqlOrFailed": [
+          {
+            "commandId": 14,
+            "operation": "SCOPED_SQL",
+            "startedMs": 4500.858709,
+            "completedMs": 4698.913167,
+            "durationMs": 198.0544579999996,
+            "timeoutMs": 5000,
+            "outcome": "SUCCEEDED",
+            "exitCode": 0,
+            "signal": null
+          },
+          {
+            "commandId": 36,
+            "operation": "SCOPED_SQL",
+            "startedMs": 23449.238792,
+            "completedMs": 27638.533209,
+            "durationMs": 4189.294417000001,
+            "timeoutMs": 5000,
+            "outcome": "FAILED",
+            "exitCode": 1,
+            "signal": null
+          }
+        ]
+      },
+      "peakLag": 204,
+      "finalLag": [
+        0,
+        204,
+        0
+      ],
+      "dltBefore": [
+        0,
+        0,
+        0
+      ],
+      "recoveryObservedMs": null,
+      "sql": null,
+      "browserFrameCount": 236,
+      "finalFrames": [],
+      "finalScreenChecks": [],
+      "ingress": {
+        "complete": true,
+        "exactScope": true,
+        "malformed": 0,
+        "expected": 1000,
+        "receiptCount": 1000,
+        "uniqueCorrelationCount": 1000,
+        "receivedCount": 1000,
+        "timingCount": 1000,
+        "joined": 1000,
+        "timingDistribution": {
+          "clientDurationMs": {
+            "count": 1000,
+            "p50": 29.581,
+            "p95": 178.079625,
+            "p99": 470.662417
+          },
+          "serverDurationMs": {
+            "count": 1000,
+            "p50": 23.240167,
+            "p95": 163.145042,
+            "p99": 439.931125
+          },
+          "receiveDurationMs": {
+            "count": 1000,
+            "p50": 21.554916,
+            "p95": 160.122209,
+            "p99": 434.413916
+          }
+        },
+        "timingSamples": [
+          {
+            "correlationId": "50ddd796-1610-45f2-9df4-a7360b8c5345",
+            "requestId": "499cb137-8cc0-4e9d-aa33-acc9cb840473",
+            "clientDurationMs": 737.904417,
+            "serverDurationMs": 661.102834,
+            "receiveDurationMs": 659.2595,
+            "index": 118,
+            "vu": 19,
+            "iteration": 5,
+            "receiveStartNanos": 935125,
+            "receiveEndNanos": 660194625,
+            "httpNanos": 661102834
+          },
+          {
+            "correlationId": "7725e185-ec24-45b8-85e8-6508998b6a7e",
+            "requestId": "16779aaf-cc38-4e90-a918-659e29b2b414",
+            "clientDurationMs": 670.634125,
+            "serverDurationMs": 597.980334,
+            "receiveDurationMs": 596.284542,
+            "index": 127,
+            "vu": 8,
+            "iteration": 6,
+            "receiveStartNanos": 572667,
+            "receiveEndNanos": 596857209,
+            "httpNanos": 597980334
+          },
+          {
+            "correlationId": "21e752c6-3fd2-43d8-897c-dfd621e63613",
+            "requestId": "5dba3f2e-15f4-45be-bb1b-b26178715fe2",
+            "clientDurationMs": 582.511583,
+            "serverDurationMs": 547.668458,
+            "receiveDurationMs": 529.923792,
+            "index": 139,
+            "vu": 20,
+            "iteration": 6,
+            "receiveStartNanos": 1048583,
+            "receiveEndNanos": 530972375,
+            "httpNanos": 547668458
+          },
+          {
+            "correlationId": "771316e2-37b4-426d-b931-a2892f6dc356",
+            "requestId": "7e554abe-aad9-4904-a680-ed7d15f4e1ef",
+            "clientDurationMs": 576.488834,
+            "serverDurationMs": 526.70625,
+            "receiveDurationMs": 523.497375,
+            "index": 137,
+            "vu": 18,
+            "iteration": 6,
+            "receiveStartNanos": 1940250,
+            "receiveEndNanos": 525437625,
+            "httpNanos": 526706250
+          },
+          {
+            "correlationId": "74bddb32-2dab-46b9-b9ad-0c7cff1df372",
+            "requestId": "ccec0efb-02d6-48c9-9776-1fc623c99f23",
+            "clientDurationMs": 538.494833,
+            "serverDurationMs": 479.29825,
+            "receiveDurationMs": 477.164333,
+            "index": 126,
+            "vu": 7,
+            "iteration": 6,
+            "receiveStartNanos": 1122833,
+            "receiveEndNanos": 478287166,
+            "httpNanos": 479298250
+          }
+        ],
+        "samplesOver300ms": 19
+      },
+      "evidenceHash": "3d1831ec5e5637ed37793aec30564cf81b13f0ef422c8aedaae928417b0be7ee",
+      "postgresLog": {
+        "confirmedStatementTimeoutAt": "2026-11-23T09:35:38.816Z",
+        "statementTimeoutMs": 4000,
+        "diagnosticCode": "SQL_QUERY_CANCELED"
+      },
+      "partialBrowser": {
+        "scope": "OBSERVED_ONLY_NOT_SQL_VERIFIED",
+        "loadEndedMs": 17925.717084,
+        "screenChecksCount": 38,
+        "sameEventFinalPriceFrames": [
+          {
+            "role": "B",
+            "auctionId": "9ee784c2-8a05-49d8-9d8c-00b94cfd33d2",
+            "eventId": "da4b6cb1-fe68-49b9-b4b4-7738faceb6cd",
+            "type": "auction.updated",
+            "version": 118,
+            "price": 50010000,
+            "endsAt": "2026-11-23T10:06:15.875Z",
+            "atMs": 24268.661
+          },
+          {
+            "role": "A",
+            "auctionId": "9ee784c2-8a05-49d8-9d8c-00b94cfd33d2",
+            "eventId": "da4b6cb1-fe68-49b9-b4b4-7738faceb6cd",
+            "type": "auction.updated",
+            "version": 118,
+            "price": 50010000,
+            "endsAt": "2026-11-23T10:06:15.875Z",
+            "atMs": 24269.162667
+          }
+        ],
+        "correspondingScreenChecks": [
+          {
+            "role": "B",
+            "auctionId": "9ee784c2-8a05-49d8-9d8c-00b94cfd33d2",
+            "eventId": "da4b6cb1-fe68-49b9-b4b4-7738faceb6cd",
+            "price": 50010000,
+            "atMs": 24273.496584
+          },
+          {
+            "role": "A",
+            "auctionId": "9ee784c2-8a05-49d8-9d8c-00b94cfd33d2",
+            "eventId": "da4b6cb1-fe68-49b9-b4b4-7738faceb6cd",
+            "price": 50010000,
+            "atMs": 24273.559
+          }
+        ],
+        "screenAfterLoadMs": [
+          {
+            "role": "B",
+            "ms": 6347.779500000001
+          },
+          {
+            "role": "A",
+            "ms": 6347.841916000001
+          }
+        ]
+      }
+    }
+  ]
+}
