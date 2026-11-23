@@ -1,0 +1,241 @@
+{
+  "startedAt": "2026-11-23T10:22:59.029Z",
+  "source": "80b331d15d64f94ea4d581aa86af1eb81e86dfdf",
+  "image": "sha256:6567bca8d7bc8c82c5922425a0baee57be8402df92bae5eacad5f01ae9544daa",
+  "fixture": {
+    "target": 1000,
+    "correctnessOnly": 2,
+    "writeBatch": 250
+  },
+  "cases": {
+    "small": {
+      "background": 2000,
+      "checks": {
+        "base": {
+          "full": {
+            "matchesExpected": true,
+            "counts": [
+              1000,
+              1000,
+              1000
+            ],
+            "detailRows": 1000
+          },
+          "detail": {
+            "matchesExpected": true,
+            "counts": [
+              1000,
+              1000,
+              1000
+            ],
+            "detailRows": 2
+          },
+          "two": {
+            "matchesExpected": true,
+            "counts": [
+              2,
+              2,
+              2
+            ],
+            "detailRows": 2
+          },
+          "empty": {
+            "matchesExpected": true,
+            "counts": [
+              0,
+              0,
+              0
+            ],
+            "detailRows": 0
+          },
+          "partial": {
+            "matchesExpected": true,
+            "counts": [
+              1,
+              0,
+              0
+            ],
+            "detailRows": 1
+          }
+        },
+        "indexed": {
+          "full": {
+            "matchesExpected": true,
+            "counts": [
+              1000,
+              1000,
+              1000
+            ],
+            "detailRows": 1000
+          },
+          "detail": {
+            "matchesExpected": true,
+            "counts": [
+              1000,
+              1000,
+              1000
+            ],
+            "detailRows": 2
+          },
+          "two": {
+            "matchesExpected": true,
+            "counts": [
+              2,
+              2,
+              2
+            ],
+            "detailRows": 2
+          },
+          "empty": {
+            "matchesExpected": true,
+            "counts": [
+              0,
+              0,
+              0
+            ],
+            "detailRows": 0
+          },
+          "partial": {
+            "matchesExpected": true,
+            "counts": [
+              1,
+              0,
+              0
+            ],
+            "detailRows": 1
+          }
+        }
+      },
+      "plans": {
+        "base": {
+          "full": {
+            "node": "Seq Scan",
+            "indexes": [],
+            "actualRows": 1000,
+            "loops": 1,
+            "removedByFilter": 2002,
+            "removedByRecheck": 0,
+            "sharedHit": 147,
+            "sharedRead": 0,
+            "tempRead": 4,
+            "tempWritten": 28,
+            "executionMs": 71.654,
+            "planningMs": 3.9
+          },
+          "detail": {
+            "node": "Seq Scan",
+            "indexes": [],
+            "actualRows": 1000,
+            "loops": 1,
+            "removedByFilter": 2002,
+            "removedByRecheck": 0,
+            "sharedHit": 147,
+            "sharedRead": 0,
+            "tempRead": 4,
+            "tempWritten": 28,
+            "executionMs": 30.679,
+            "planningMs": 3.692
+          }
+        },
+        "indexed": {
+          "full": {
+            "node": "Bitmap Heap Scan",
+            "indexes": [
+              "ix_outbox_bid_result_aggregate"
+            ],
+            "actualRows": 1000,
+            "loops": 1,
+            "removedByFilter": 0,
+            "removedByRecheck": 0,
+            "sharedHit": 149,
+            "sharedRead": 0,
+            "tempRead": 4,
+            "tempWritten": 28,
+            "executionMs": 146.813,
+            "planningMs": 19.254
+          },
+          "detail": {
+            "node": "Bitmap Heap Scan",
+            "indexes": [
+              "ix_outbox_bid_result_aggregate"
+            ],
+            "actualRows": 1000,
+            "loops": 1,
+            "removedByFilter": 0,
+            "removedByRecheck": 0,
+            "sharedHit": 149,
+            "sharedRead": 0,
+            "tempRead": 4,
+            "tempWritten": 28,
+            "executionMs": 109.405,
+            "planningMs": 27.439
+          }
+        }
+      },
+      "pairs": [
+        {
+          "order": "AB"
+        }
+      ],
+      "writes": [],
+      "normalizedPairSha256": {
+        "full": "c743cf6cf251cc450673993a256eb74602776b3be702705728ad3bfb17a4701e",
+        "detail": "a1131c39f418272f65b4938ca5acc08e13b56f25ff192f7479ffc6203859dea1",
+        "two": "b2c9fdb5a098b6fffc3a8913e221da0bef68a4a15b63f9075bcf26a5fb26e7cc",
+        "empty": "94f70a725bb3c5567957c9df4908c00fd2cffd494ff28ccb31f58877ae45d3d8",
+        "partial": "b38516b0bc779ec1a7cdb98c35a54ec4207ebe81698dae0dedc14d8cc8bf3221"
+      }
+    }
+  },
+  "limits": {
+    "statementMs": 4000,
+    "processMs": 5000
+  },
+  "benchmarkRunnerSha256": "61fa49ff160259f54d27eb8c32d73524aa27d694b44a1d1f981821ae3d8c3b2f",
+  "testFixtureSha256": "5818e3d69c28513c3922ec5d3b4ec4dc918be45245d68bfe2704de49481e1858",
+  "stage": "compare-small",
+  "isolation": {
+    "ownAnonymousVolume": true,
+    "noPublishedPorts": true,
+    "noNetwork": true
+  },
+  "server": "17.5",
+  "failedSample": {
+    "label": "small.base.read.0",
+    "status": 0,
+    "code": "ETIMEDOUT",
+    "elapsedMs": 5057.318707999999
+  },
+  "completed": false,
+  "error": "measured SQL failed",
+  "errorCode": null,
+  "cleanupFailed": true,
+  "completedAt": "2026-11-23T10:24:18.979Z",
+  "firstPreflight": {
+    "startedAt": "2026-11-23T10:22:02.438Z",
+    "endedAt": "2026-11-23T10:22:17.948Z",
+    "result": "DOCKER_PREFLIGHT_FAILED_BEFORE_CONTAINER"
+  },
+  "comparison": {
+    "adopt": false,
+    "completeReadPairs": 0,
+    "plannedReadPairsPerScale": 6,
+    "completeWritePairs": 0,
+    "largeStarted": false,
+    "indexSizeMeasured": false
+  },
+  "cleanupFollowUp": {
+    "exactContainerNotFound": true,
+    "experimentContainerCount": 0,
+    "danglingVolumesCreatedThatDay": 0,
+    "existingServicesHealthy": 5,
+    "apiReadiness": "UP"
+  },
+  "verification": {
+    "fixtureTestsPassed": 2,
+    "relatedTestsPassed": 23,
+    "localMakeVerify": "WEB_TEST_AND_WORKER_TIMEOUTS",
+    "localWebTestTimeouts": 10,
+    "localWebWorkerTimeouts": 2
+  }
+}
