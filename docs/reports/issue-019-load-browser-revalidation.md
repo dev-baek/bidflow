@@ -27,3 +27,5 @@ A/B 모두 부하 종료 관측 전에 최종 가격을 확인했다. 최종 fra
 17:55:57 JST에 검증 JVM, 소유 부하·브라우저 및 Vite 정리를 확인했다. 기존 1,000ms API를 PID 23439로 복원하고 기존 jar hash·인자·listen·readiness UP을 대조했다. BidFlow 컨테이너 5개의 ID와 healthy 상태는 전후 동일했다. 새 경매 데이터는 보존했고 데이터·볼륨·Redis key·Kafka offset을 초기화하지 않았다.
 
 [구조화 증적](evidence/issue-019-load-browser-revalidation.json)에 판정, 요청별 접수 시간, 최종 frame/DOM·SQL, Lag/DLT·복원 상태를 남겼다. 원본은 로컬 보호 경로에만 두었다. 자동 재시도·1,000건 본 실행·AWS 작업은 하지 않았다. 다음 검토는 저장된 HTTP 표본과 서버 기록을 대조할 수 있는 범위부터 정하며, 지연 기준을 완화하거나 이번 결과를 성공으로 바꾸지 않는다.
+
+[후속 요청별 진단](issue-019-smoke-http-diagnosis.md)은 느린 세 표본을 접수 저장·정산 로그와 연결한다. 지연 구간을 일부 좁혔지만 병목 원인을 확정하지 않는다.
