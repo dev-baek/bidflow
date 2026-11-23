@@ -1,6 +1,6 @@
 # 완료 확인을 적용한 정산 조회 실측 계획
 
-- 상태: 별도 실행 승인 대기. 기존 [#19](https://github.com/dev-baek/bidflow/issues/19)의 범위다.
+- 상태: #315 병합 승인 후 10건 smoke 통과 및 별도 경매의 누적 1,000건 본 실행 1회. 완료 확인 후 정산 SQL을 한 번 호출했으나 시간 초과로 전체 미통과. [실측 결과](../reports/issue-019-settlement-gate-live.md). 기존 [#19](https://github.com/dev-baek/bidflow/issues/19)의 범위다.
 - 기반: [#314 준비 확인 구현](issue-019-settlement-snapshot-gate.md), [#312 실패 결과](../reports/issue-019-ingress-full-verification.md), [동일 실행 검증 계획](issue-019-ingress-full-verification.md).
 
 #312에서는 1,000건의 응답과 계측이 연결됐지만 정산 SQL이 4초에 취소됐다. #314는 전체 SQL을 변경하지 않고 호출 시점을 늦춘다. 새 실행에서 **실제로 Kafka 적체 0과 요청 완료 수를 확인한 뒤 정산 SQL을 한 번 호출하고, 기존 원장·화면·계측 판정까지 끝나는지** 확인한다. 이번 결과로 과거 시간 초과의 원인이나 해결을 소급 확정하지 않는다.
