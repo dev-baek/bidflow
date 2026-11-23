@@ -1,6 +1,6 @@
 # 접수 계측을 포함한 천 건 부하 검증 계획
 
-- 상태: 별도 실행 승인 대기. 기존 [#19](https://github.com/dev-baek/bidflow/issues/19)의 동일 실행 검증을 마무리하기 위한 범위다.
+- 상태: #311 병합 승인 후 smoke 1회 통과 및 본 실행 1회 수행. 계측 연결 1,000/1,000, SQL 시간 초과로 전체 미완료. [결과](../reports/issue-019-ingress-full-verification.md). 기존 [#19](https://github.com/dev-baek/bidflow/issues/19)의 실행 범위다.
 - 기반: [#310 계측 smoke 결과](../reports/issue-019-bid-ingress-live.md), [동일 실행 원장·브라우저 판정](issue-019-load-browser-convergence.md), [#305 이후 보호 조건](issue-019-load-browser-revalidation.md).
 
 #310에서 10건의 서버 계측 연결과 smoke 판정이 통과했다. 이번에 확인할 것은 **같은 로컬 1,000건 실행**의 접수·정산·두 브라우저 화면과 서버 계측이 함께 완전한지다. #302의 본 실행 SQL 실패와 #306의 smoke 성능 미달은 그대로 남긴다. 이번 결과를 이전 실패의 원인 해결이나 계측 오버헤드 비교로 사용하지 않는다.
