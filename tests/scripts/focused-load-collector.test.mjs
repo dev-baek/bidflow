@@ -44,7 +44,7 @@ test('collector joins a complete smoke without pretending it is a thousand-reque
 });
 
 test('optional observer gates load, stops on disconnect and preserves partial evidence and restoration',async()=>{
-  for(const scenario of ['prepare','lost','finish','close','pass']){
+  for(const scenario of ['prepare','lost','finish','close','sql','pass']){
     const f=fake();let started=false,lost=false,closed=false;
     const start=f.io.start;
     f.io.start=async()=>{started=true;lost=scenario==='lost';return start();};
@@ -52,13 +52,18 @@ test('optional observer gates load, stops on disconnect and preserves partial ev
       prepare:async()=>{if(scenario==='prepare')throw Error('private');},
       error:()=>lost?'SOCKET_LOST':null,
       finish:async e=>({valid:scenario!=='finish'&&e.consistency.valid}),
-      close:async()=>{closed=true;if(scenario==='close')throw Error('private');return {frames:[]};},
+      freeze:()=>({frames:[],screenChecks:[{role:'A',atMs:2}],error:null}),
+      close:async()=>{closed=true;if(['close','sql'].includes(scenario))throw Error('private');},
     };
+    if(scenario==='sql')f.io.snapshot=async()=>{throw Object.assign(Error('private'),{code:'SQL_QUERY_CANCELED'});};
     const e=await collectFocused('smoke',f.io,observer);
     assert.equal(started,scenario!=='prepare');assert.equal(closed,true);assert.equal(f.restored,1);
     assert.equal(e.valid,scenario==='pass');assert.equal(e.browserObservationValid,scenario==='pass');
     if(scenario==='lost')assert.equal(f.stopped>0,true);
-    if(scenario!=='close')assert.deepEqual(e.browserEvidence.frames,[]);
+    assert.deepEqual(e.browserEvidence.screenChecks,[{role:'A',atMs:2}]);
+    if(scenario==='sql')assert.ok(e.failures.some(x=>x.source==='snapshot'&&x.code==='SQL_QUERY_CANCELED'));
+    if(['sql','close'].includes(scenario))assert.ok(e.failures.some(x=>x.source==='browser-close'));
+    assert.deepEqual(f.saved.at(-1).browserEvidence,e.browserEvidence);
     assert.doesNotMatch(JSON.stringify(e),/private/);
   }
 });

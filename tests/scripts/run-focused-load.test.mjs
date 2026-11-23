@@ -2,6 +2,26 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {buildK6Args,memoryBytes,executeObserved} from '../../scripts/run-focused-load.mjs';
 import {createCommandTrace} from '../../scripts/command-trace.mjs';
+import {readScopedSnapshot} from '../../scripts/concurrent-browser-sql.mjs';
+
+test('snapshot failures expose fixed codes only and do not retry',async()=>{
+  const id='00000000-0000-4000-8000-000000000001';
+  const cancel=Object.assign(Error('secret'),{code:1,stderr:'ERROR:  57014: canceling statement\nLOCATION: secret'});
+  const limit=Object.assign(Error('secret'),{localDeadlineExceeded:true,stderr:cancel.stderr});
+  for(const [error,stdout,code] of [
+    [cancel,'','SQL_QUERY_CANCELED'],[limit,'','SQL_PROCESS_TIMEOUT'],
+    [null,'bad-secret','SQL_OUTPUT_INVALID'],[null,'null','SQL_OUTPUT_INVALID'],
+    [Object.assign(Error('secret'),{code:1,stderr:'DETAIL: ERROR:  57014: injected'}),'','SQL_CALL_FAILED'],
+  ]){
+    let calls=0;
+    await assert.rejects(readScopedSnapshot(id,async(operation,program,args,timeout)=>{
+      calls++;assert.equal(operation,'SCOPED_SQL');assert.equal(program,'docker');assert.equal(timeout,5000);
+      assert.ok(args.includes('VERBOSITY=verbose'));assert.match(args.at(-1),/BEGIN READ ONLY; SET LOCAL statement_timeout = 4000/);
+      if(error)throw error;return {stdout};
+    }),e=>e.code===code&&e.message===code&&!e.cause&&!e.stderr);
+    assert.equal(calls,1);
+  }
+});
 test('Docker load args mount source read-only and only the private output as writable',()=>{
   const f={runId:'safe19',auctionId:'00000000-0000-4000-8000-000000000001'};
   const args=buildK6Args('/repo','/tmp/fresh',f,'smoke');
@@ -26,7 +46,8 @@ test('real executor keeps stdout/exit status and confirms its own deadline witho
   await assert.rejects(trace.run('SETUP_METADATA',process.execPath,['-e','process.exit(7)'],5000),e=>e.code===7);
   await assert.rejects(trace.run('SETUP_METADATA',process.execPath,['-e','process.stdout.write("x".repeat(4000100))'],5000),
     e=>e.code==='ERR_CHILD_PROCESS_STDIO_MAXBUFFER');
-  await assert.rejects(trace.run('SETUP_METADATA',process.execPath,['-e','setInterval(()=>{},1000)'],30));
+  await assert.rejects(trace.run('SETUP_METADATA',process.execPath,['-e','setInterval(()=>{},1000)'],30),
+    e=>e.localDeadlineExceeded===true);
   const s=trace.snapshot();assert.equal(s.complete,true);
   assert.deepEqual(s.records.map(r=>r.outcome),['SUCCEEDED','FAILED','OUTPUT_LIMIT','TIMED_OUT']);
   assert.equal(JSON.stringify(s).includes('secret'),false);

@@ -1,6 +1,6 @@
 # 집중 부하 SQL 실패 분류와 부분 화면 증적 보존
 
-- 상태: 검토 대기. 기존 [#19](https://github.com/dev-baek/bidflow/issues/19)를 사용한다.
+- 상태: #303 병합으로 승인. 실패 분류와 부분 DOM 보존을 구현했으며 [검증 결과](../reports/issue-019-load-browser-convergence.md#sql-실패-분류와-부분-화면-보존)를 참고한다. 기존 [#19](https://github.com/dev-baek/bidflow/issues/19)를 사용한다.
 - 기반: [브라우저 수렴 사양](issue-019-load-browser-convergence.md), [#302 첫 실행 결과](../reports/issue-019-load-browser-convergence.md).
 
 ## 발견한 사실과 남은 질문

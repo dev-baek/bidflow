@@ -8,26 +8,43 @@ const same=(a,b)=>a.version===b.version&&a.price===b.price&&a.type===b.type
   &&Date.parse(a.endsAt)===Date.parse(b.endsAt);
 
 export function createPublicJournal(auctionId,now) {
-  const frames=[], counts={A:0,B:0};
-  let error=null,closed=false,last=-1;
-  const fail=code=>{if(!closed)error??=code;};
+  const frames=[], counts={A:0,B:0}, screens=new Map();
+  let error=null,frozen,last=-1;
+  const fail=code=>{if(!frozen)error??=code;};
   return {
     fail,
     error:()=>error,
     frame(role,value){
-      if(closed||error)return;
+      if(frozen||error)return;
       const {auctionId:id,eventId,type,auctionVersion:version,currentPrice:price,endsAt}=value??{};
       const atMs=now();
       if(!roles.includes(role)||id!==auctionId||!isUuid(id)||!isUuid(eventId)||type!=='auction.updated'
         ||!positive(version)||!positive(price)||!instant(endsAt)||!stamp(atMs)||atMs<last)return fail('INVALID_FRAME');
       if(++counts[role]>2048)return fail('FRAME_LIMIT');
       last=atMs;
-      const entry={role,auctionId:id,eventId,type,version,price,endsAt,atMs};
+      const entry=Object.freeze({role,auctionId:id,eventId,type,version,price,endsAt,atMs});
       frames.push(entry);
       return entry;
     },
+    screen(frame){
+      if(frozen||error||!frames.includes(frame))return null;
+      const {role,eventId,price}=frame,key=role+':'+eventId;
+      if(screens.has(key))return screens.get(key).atMs;
+      const atMs=now();
+      if(!stamp(atMs)||atMs<last){fail('INVALID_SCREEN_CLOCK');return null;}
+      last=atMs;
+      screens.set(key,{role,auctionId,eventId,price,atMs});
+      return atMs;
+    },
     snapshot:()=>({frames:structuredClone(frames),error}),
-    close:()=>{closed=true;},
+    freeze(deadline){
+      if(!frozen){
+        const cutoff=Math.min(now(),deadline);
+        frozen={frames:frames.filter(f=>f.atMs<=cutoff),
+          screenChecks:[...screens.values()].filter(s=>s.atMs<=cutoff),error};
+      }
+      return structuredClone(frozen);
+    },
   };
 }
 
