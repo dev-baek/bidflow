@@ -1,6 +1,6 @@
 # 입찰 접수 서버 구간 계측 사양
 
-- 상태: #307 병합 승인 후 구현. 기존 [#19](https://github.com/dev-baek/bidflow/issues/19)의 [요청별 진단](../reports/issue-019-smoke-http-diagnosis.md)을 근거로 한다.
+- 상태: #307 사양 및 #308 구현 병합. [실제 요청 검증](issue-019-bid-ingress-live.md)은 별도 승인 범위다. 기존 [#19](https://github.com/dev-baek/bidflow/issues/19)의 [요청별 진단](../reports/issue-019-smoke-http-diagnosis.md)을 근거로 한다.
 
 ## S. 사용자 동작
 
