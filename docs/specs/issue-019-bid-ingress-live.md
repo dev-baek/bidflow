@@ -1,6 +1,6 @@
 # 로컬 입찰 접수 계측의 실제 요청 검증
 
-- 상태: 실행 승인 대기. 기존 [#19](https://github.com/dev-baek/bidflow/issues/19)의 후속 검증이다.
+- 상태: #309 승인 후 smoke 1회 완료. 실제 계측 연결과 기존 smoke가 모두 통과했다. [검증 결과](../reports/issue-019-bid-ingress-live.md). 기존 [#19](https://github.com/dev-baek/bidflow/issues/19)의 후속 검증이다.
 - 기반: [#308 접수 계측 구현](issue-019-bid-ingress-timing.md), [#306 smoke](../reports/issue-019-load-browser-revalidation.md), [요청별 지연 진단](../reports/issue-019-smoke-http-diagnosis.md).
 
 #306의 빠른 SQL 대조와 HTTP P95 기준 미달은 별개였다. 서버 접수 서비스와 필터 경계를 실제 응답에 연결해, 느린 요청을 다음에 어느 경계로 좁힐 수 있는지 확인한다. **승인 범위는 새 경매의 10건 smoke 1회이며, 성공하더라도 1,000건 본 실행은 하지 않는다.**

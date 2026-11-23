@@ -1,0 +1,462 @@
+{
+  "source": "4cbcb9fb3ecc1e62203dc0cda3f14d6fc2c4570a",
+  "startedAt": "2026-11-23T09:22:40.776Z",
+  "completedAt": "2026-11-23T09:23:21.110Z",
+  "k6Image": "sha256:1f40432b1cbe7234e977f96c362c9bc550a2d2b583d014dd8669fe40d3e9e755",
+  "verification": {
+    "nodeTests": 130,
+    "vitestTests": 71,
+    "buildPassed": true
+  },
+  "original": {
+    "pid": 23439,
+    "hash": "5251be8d60c6fc0f3a7afb13415c72e2438713b973a854a54f411009065f08c4",
+    "stopped": true
+  },
+  "test": {
+    "hash": "12d60d9c3a15286b5a0b28f746393ec542dde926d04cc90f6040b616ed68657a",
+    "pid": 43201
+  },
+  "restored": {
+    "pid": 43886,
+    "verified": true
+  },
+  "servicesUnchanged": true,
+  "browsersGone": true,
+  "loadGone": true,
+  "viteGone": true,
+  "smokeStarted": true,
+  "fullStarted": false,
+  "diagnosticComplete": true,
+  "smokePassed": true,
+  "smoke": {
+    "startedAt": "2026-11-23T09:22:51.253Z",
+    "completedAt": "2026-11-23T09:23:11.424Z",
+    "source": "4cbcb9fb3ecc1e62203dc0cda3f14d6fc2c4570a",
+    "fixture": {
+      "auctionId": "f376bd4c-9477-42ff-bd9e-fd338f1c9d07",
+      "productId": "59373af3-3a53-4ae2-9a72-9d0d213551ff",
+      "runId": "focusb1131476204d46a395742322b2ed75c7",
+      "endsAt": "2026-11-23T09:53:55.242266+00:00"
+    },
+    "profile": {
+      "node": "v24.18.0",
+      "java": "openjdk 21.0.7 2025-04-15 LTS",
+      "k6": "k6 v0.54.0 (commit/baba871c8a, go1.23.1, linux/arm64)",
+      "docker": "27.5.1 8 8217858048",
+      "jarSha256": "12d60d9c3a15286b5a0b28f746393ec542dde926d04cc90f6040b616ed68657a",
+      "profile": "local",
+      "clock": "system",
+      "delayMs": 100,
+      "apiMode": "INGRESS_TIMING",
+      "host": {
+        "model": "Mac15,12",
+        "arch": "arm64",
+        "cpus": 8,
+        "memoryBytes": 17179869184,
+        "os": "25.5.0"
+      }
+    },
+    "runnerExit": 0,
+    "k6Exit": 0,
+    "valid": true,
+    "observationValid": true,
+    "browserObservationValid": true,
+    "diagnosticsComplete": true,
+    "performancePassed": true,
+    "failures": [],
+    "http": {
+      "count": 10,
+      "iterations": 10,
+      "received": 10,
+      "p50": 58.5175835,
+      "p95": 201.3821696,
+      "p99": 216.01753472000001,
+      "errorRate": 0
+    },
+    "phaseSummary": {
+      "complete": true,
+      "phases": {
+        "blocked": {
+          "p50": 0.014208,
+          "p95": 3.4297857499999997,
+          "p99": 3.66059075
+        },
+        "connecting": {
+          "p50": 0,
+          "p95": 1.1827938999999998,
+          "p99": 1.25765878
+        },
+        "sending": {
+          "p50": 0.0616045,
+          "p95": 0.26932079999999997,
+          "p99": 0.32473056
+        },
+        "waiting": {
+          "p50": 55.499604000000005,
+          "p95": 201.0035318,
+          "p99": 215.54730716
+        },
+        "receiving": {
+          "p50": 0.2810625,
+          "p95": 2.9713211999999998,
+          "p99": 3.04533144
+        }
+      }
+    },
+    "consistency": {
+      "valid": true,
+      "total": 10,
+      "accepted": 7,
+      "rejected": 3
+    },
+    "sql": {
+      "requests": 10,
+      "ledgers": 10,
+      "results": 10,
+      "final": {
+        "eventId": "dc1dca25-1942-4114-b000-4c3e2f2d5d63",
+        "version": 8,
+        "price": 510000
+      },
+      "auction": {
+        "auctionId": "f376bd4c-9477-42ff-bd9e-fd338f1c9d07",
+        "status": "ACTIVE",
+        "price": 510000,
+        "version": 8,
+        "endsAt": "2026-11-23T09:53:55.242+00:00"
+      }
+    },
+    "browser": {
+      "valid": true,
+      "code": "CONVERGED",
+      "samples": [
+        {
+          "role": "A",
+          "finalFrameMs": 10663.689625,
+          "finalScreenMs": 10673.517375,
+          "frameFromStartMs": 1698.9048750000002,
+          "screenFromStartMs": 1708.7326249999987,
+          "remainingAfterLoadMs": 0,
+          "convergedBeforeLoadEnd": true,
+          "frameToScreenMs": 9.82774999999856
+        },
+        {
+          "role": "B",
+          "finalFrameMs": 10664.310458,
+          "finalScreenMs": 10674.481625,
+          "frameFromStartMs": 1699.5257079999992,
+          "screenFromStartMs": 1709.6968749999996,
+          "remainingAfterLoadMs": 0,
+          "convergedBeforeLoadEnd": true,
+          "frameToScreenMs": 10.171167000000423
+        }
+      ],
+      "screens": {
+        "A": 10673.517375,
+        "B": 10674.481625
+      }
+    },
+    "browserFrameCount": 16,
+    "finalFrames": [
+      {
+        "role": "A",
+        "auctionId": "f376bd4c-9477-42ff-bd9e-fd338f1c9d07",
+        "eventId": "dc1dca25-1942-4114-b000-4c3e2f2d5d63",
+        "type": "auction.updated",
+        "version": 8,
+        "price": 510000,
+        "endsAt": "2026-11-23T09:53:55.242Z",
+        "atMs": 10663.689625
+      },
+      {
+        "role": "B",
+        "auctionId": "f376bd4c-9477-42ff-bd9e-fd338f1c9d07",
+        "eventId": "dc1dca25-1942-4114-b000-4c3e2f2d5d63",
+        "type": "auction.updated",
+        "version": 8,
+        "price": 510000,
+        "endsAt": "2026-11-23T09:53:55.242Z",
+        "atMs": 10664.310458
+      }
+    ],
+    "finalScreenChecks": [
+      {
+        "role": "A",
+        "auctionId": "f376bd4c-9477-42ff-bd9e-fd338f1c9d07",
+        "eventId": "dc1dca25-1942-4114-b000-4c3e2f2d5d63",
+        "price": 510000,
+        "atMs": 10673.517375
+      },
+      {
+        "role": "B",
+        "auctionId": "f376bd4c-9477-42ff-bd9e-fd338f1c9d07",
+        "eventId": "dc1dca25-1942-4114-b000-4c3e2f2d5d63",
+        "price": 510000,
+        "atMs": 10674.481625
+      }
+    ],
+    "resourcesValid": true,
+    "commandCount": 30,
+    "commandsSuccessful": true,
+    "sqlCommands": [
+      {
+        "commandId": 14,
+        "operation": "SCOPED_SQL",
+        "startedMs": 4439.702375,
+        "completedMs": 4630.447042,
+        "durationMs": 190.74466699999994,
+        "timeoutMs": 5000,
+        "outcome": "SUCCEEDED",
+        "exitCode": 0,
+        "signal": null
+      },
+      {
+        "commandId": 26,
+        "operation": "SCOPED_SQL",
+        "startedMs": 17518.077167,
+        "completedMs": 17709.172792,
+        "durationMs": 191.09562500000175,
+        "timeoutMs": 5000,
+        "outcome": "SUCCEEDED",
+        "exitCode": 0,
+        "signal": null
+      }
+    ],
+    "loadStartedMs": 8964.78475,
+    "loadEndedMs": 11201.371417,
+    "recoveredMs": 19336.129792,
+    "lagSamples": [
+      {
+        "startedMs": 1978.551792,
+        "completedMs": 3279.543625,
+        "rows": [
+          {
+            "partition": 0,
+            "currentOffset": 1183,
+            "endOffset": 1183,
+            "lag": 0
+          },
+          {
+            "partition": 1,
+            "currentOffset": 1916,
+            "endOffset": 1916,
+            "lag": 0
+          },
+          {
+            "partition": 2,
+            "currentOffset": 2616,
+            "endOffset": 2616,
+            "lag": 0
+          }
+        ]
+      },
+      {
+        "startedMs": 8972.848417,
+        "completedMs": 11699.362125,
+        "rows": [
+          {
+            "partition": 0,
+            "currentOffset": 1183,
+            "endOffset": 1183,
+            "lag": 0
+          },
+          {
+            "partition": 1,
+            "currentOffset": 1916,
+            "endOffset": 1916,
+            "lag": 0
+          },
+          {
+            "partition": 2,
+            "currentOffset": 2626,
+            "endOffset": 2626,
+            "lag": 0
+          }
+        ]
+      },
+      {
+        "startedMs": 17709.962458,
+        "completedMs": 19335.928917,
+        "rows": [
+          {
+            "partition": 0,
+            "currentOffset": 1183,
+            "endOffset": 1183,
+            "lag": 0
+          },
+          {
+            "partition": 1,
+            "currentOffset": 1916,
+            "endOffset": 1916,
+            "lag": 0
+          },
+          {
+            "partition": 2,
+            "currentOffset": 2626,
+            "endOffset": 2626,
+            "lag": 0
+          }
+        ]
+      }
+    ],
+    "dltBefore": [
+      0,
+      0,
+      0
+    ],
+    "dltAfter": [
+      0,
+      0,
+      0
+    ],
+    "cleanup": true,
+    "invalidReceipts": 0,
+    "requestTiming": {
+      "scopeValid": true,
+      "malformed": 0,
+      "receiptCount": 10,
+      "uniqueCorrelationCount": 10,
+      "receivedCount": 10,
+      "timingCount": 10,
+      "joined": 10,
+      "samples": [
+        {
+          "correlationId": "22277662-bdc4-4f0f-bdd7-ed41cd41ef2f",
+          "requestId": "ad209d81-f667-481d-9dcd-44e51b8f9147",
+          "clientDurationMs": 110.8865,
+          "serverDurationMs": 95.939083,
+          "receiveDurationMs": 43.302084,
+          "index": 0,
+          "vu": 1,
+          "iteration": 0,
+          "receiveStartNanos": 43467583,
+          "receiveEndNanos": 86769667,
+          "httpNanos": 95939083
+        },
+        {
+          "correlationId": "95e4a98c-55f8-47d5-bd1c-3e556baa3604",
+          "requestId": "dcaed5d0-fa80-4a1e-9ddc-933b1a3ace9c",
+          "clientDurationMs": 219.676376,
+          "serverDurationMs": 180.220333,
+          "receiveDurationMs": 134.331708,
+          "index": 1,
+          "vu": 2,
+          "iteration": 0,
+          "receiveStartNanos": 42657917,
+          "receiveEndNanos": 176989625,
+          "httpNanos": 180220333
+        },
+        {
+          "correlationId": "6c5cff53-5911-4e22-a0ba-0b3a1406fb72",
+          "requestId": "f3e8aa50-911c-456b-94c9-fbdd73736580",
+          "clientDurationMs": 179.022584,
+          "serverDurationMs": 166.016917,
+          "receiveDurationMs": 159.829542,
+          "index": 2,
+          "vu": 1,
+          "iteration": 1,
+          "receiveStartNanos": 2741750,
+          "receiveEndNanos": 162571292,
+          "httpNanos": 166016917
+        },
+        {
+          "correlationId": "94ca6431-3b24-4738-ab6e-f9059d25a854",
+          "requestId": "3955ce88-116b-493c-8fe5-f41664285175",
+          "clientDurationMs": 41.628125,
+          "serverDurationMs": 35.683083,
+          "receiveDurationMs": 32.853041,
+          "index": 3,
+          "vu": 2,
+          "iteration": 1,
+          "receiveStartNanos": 1405042,
+          "receiveEndNanos": 34258083,
+          "httpNanos": 35683083
+        },
+        {
+          "correlationId": "409efaf3-9f69-45b4-86a7-95f25e3292e5",
+          "requestId": "272e6e4a-1d76-44bb-b6b0-194f9b21cd90",
+          "clientDurationMs": 47.723667,
+          "serverDurationMs": 34.641167,
+          "receiveDurationMs": 31.529333,
+          "index": 4,
+          "vu": 1,
+          "iteration": 2,
+          "receiveStartNanos": 1379542,
+          "receiveEndNanos": 32908875,
+          "httpNanos": 34641167
+        },
+        {
+          "correlationId": "94c3a0a3-a282-4d76-ab39-63b660b81ffb",
+          "requestId": "0a63c56c-3155-4fb2-aa35-00275e019135",
+          "clientDurationMs": 46.217583,
+          "serverDurationMs": 39.482667,
+          "receiveDurationMs": 34.439417,
+          "index": 5,
+          "vu": 2,
+          "iteration": 2,
+          "receiveStartNanos": 3272292,
+          "receiveEndNanos": 37711709,
+          "httpNanos": 39482667
+        },
+        {
+          "correlationId": "fe1551b5-175f-4b13-808e-240ded52daf2",
+          "requestId": "cca82b39-042c-4a3d-909e-f3437e162ec8",
+          "clientDurationMs": 63.578333,
+          "serverDurationMs": 50.386,
+          "receiveDurationMs": 46.228875,
+          "index": 6,
+          "vu": 1,
+          "iteration": 3,
+          "receiveStartNanos": 1655000,
+          "receiveEndNanos": 47883875,
+          "httpNanos": 50386000
+        },
+        {
+          "correlationId": "f218c65b-3919-4e9e-90f3-d5000fb893a8",
+          "requestId": "235f5f1a-9ebb-4a6a-aecb-175bec917071",
+          "clientDurationMs": 53.456834,
+          "serverDurationMs": 45.151333,
+          "receiveDurationMs": 40.181375,
+          "index": 7,
+          "vu": 2,
+          "iteration": 3,
+          "receiveStartNanos": 2058958,
+          "receiveEndNanos": 42240333,
+          "httpNanos": 45151333
+        },
+        {
+          "correlationId": "07dedec1-86a0-41bf-bbb4-51c17913d56f",
+          "requestId": "dd0ce688-0285-4a1a-9d12-cc1b5d8c0cf8",
+          "clientDurationMs": 88.873334,
+          "serverDurationMs": 79.54925,
+          "receiveDurationMs": 75.97075,
+          "index": 8,
+          "vu": 1,
+          "iteration": 4,
+          "receiveStartNanos": 1672208,
+          "receiveEndNanos": 77642958,
+          "httpNanos": 79549250
+        },
+        {
+          "correlationId": "ae350938-a3de-4bdd-9ef1-2daa204c07c6",
+          "requestId": "324f94c7-d2e8-4115-82b1-0ff4be5597ed",
+          "clientDurationMs": 38.97225,
+          "serverDurationMs": 29.031209,
+          "receiveDurationMs": 26.5025,
+          "index": 9,
+          "vu": 2,
+          "iteration": 4,
+          "receiveStartNanos": 1179500,
+          "receiveEndNanos": 27682000,
+          "httpNanos": 29031209
+        }
+      ]
+    },
+    "externalHashes": {
+      "evidence": "d6f8e287e2e459fd5d4ff03d9e8b4b5e6cc4d2c36a204d05da5133bcf8c5cec3",
+      "apiLog": "14a53b023cb9d4322bf0c1e589de8797058ae6eef942395732f6f34b6d6cb79c",
+      "receipts": "69a673291e1485e5ba9021773ec501051a07b96f79be9c627b9f46546f460088"
+    }
+  }
+}
