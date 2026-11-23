@@ -1,0 +1,233 @@
+{
+  "source": "4b5ba1c6655ed80c60a8bcc6e2cc1687e7cc06e1",
+  "image": "sha256:6567bca8d7bc8c82c5922425a0baee57be8402df92bae5eacad5f01ae9544daa",
+  "startedAt": "2026-11-23T15:02:51.927Z",
+  "settings": {
+    "statementTimeoutMs": 4000,
+    "processTimeoutMs": 5000,
+    "maxBuffer": 4000000,
+    "rows": 1000,
+    "charsPerRow": 640,
+    "rounds": 6
+  },
+  "checks": {
+    "selectOne": 2,
+    "aggregateLength": 7,
+    "aggregateOutput": 644001,
+    "transferOnly": 644001
+  },
+  "samples": [
+    {
+      "round": 1,
+      "check": "selectOne",
+      "elapsedMs": 194.99345799999992,
+      "status": "OK",
+      "bytes": 2
+    },
+    {
+      "round": 1,
+      "check": "aggregateLength",
+      "elapsedMs": 177.47679199999948,
+      "status": "OK",
+      "bytes": 7
+    },
+    {
+      "round": 1,
+      "check": "aggregateOutput",
+      "elapsedMs": 644.9708339999997,
+      "status": "OK",
+      "bytes": 644001
+    },
+    {
+      "round": 1,
+      "check": "transferOnly",
+      "elapsedMs": 213.45720899999924,
+      "status": "OK",
+      "bytes": 644001
+    },
+    {
+      "round": 2,
+      "check": "transferOnly",
+      "elapsedMs": 219.20083299999988,
+      "status": "OK",
+      "bytes": 644001
+    },
+    {
+      "round": 2,
+      "check": "aggregateOutput",
+      "elapsedMs": 200.79483299999993,
+      "status": "OK",
+      "bytes": 644001
+    },
+    {
+      "round": 2,
+      "check": "aggregateLength",
+      "elapsedMs": 187.29249999999956,
+      "status": "OK",
+      "bytes": 7
+    },
+    {
+      "round": 2,
+      "check": "selectOne",
+      "elapsedMs": 174.16020800000024,
+      "status": "OK",
+      "bytes": 2
+    },
+    {
+      "round": 3,
+      "check": "selectOne",
+      "elapsedMs": 179.85354199999983,
+      "status": "OK",
+      "bytes": 2
+    },
+    {
+      "round": 3,
+      "check": "aggregateLength",
+      "elapsedMs": 180.53529199999957,
+      "status": "OK",
+      "bytes": 7
+    },
+    {
+      "round": 3,
+      "check": "aggregateOutput",
+      "elapsedMs": 183.31095899999946,
+      "status": "OK",
+      "bytes": 644001
+    },
+    {
+      "round": 3,
+      "check": "transferOnly",
+      "elapsedMs": 180.1121659999999,
+      "status": "OK",
+      "bytes": 644001
+    },
+    {
+      "round": 4,
+      "check": "transferOnly",
+      "elapsedMs": 179.4883749999999,
+      "status": "OK",
+      "bytes": 644001
+    },
+    {
+      "round": 4,
+      "check": "aggregateOutput",
+      "elapsedMs": 182.75408400000015,
+      "status": "OK",
+      "bytes": 644001
+    },
+    {
+      "round": 4,
+      "check": "aggregateLength",
+      "elapsedMs": 178.84445899999992,
+      "status": "OK",
+      "bytes": 7
+    },
+    {
+      "round": 4,
+      "check": "selectOne",
+      "elapsedMs": 180.0147910000005,
+      "status": "OK",
+      "bytes": 2
+    },
+    {
+      "round": 5,
+      "check": "selectOne",
+      "elapsedMs": 181.81879200000003,
+      "status": "OK",
+      "bytes": 2
+    },
+    {
+      "round": 5,
+      "check": "aggregateLength",
+      "elapsedMs": 159.05983299999934,
+      "status": "OK",
+      "bytes": 7
+    },
+    {
+      "round": 5,
+      "check": "aggregateOutput",
+      "elapsedMs": 186.84479100000044,
+      "status": "OK",
+      "bytes": 644001
+    },
+    {
+      "round": 5,
+      "check": "transferOnly",
+      "elapsedMs": 193.6392079999987,
+      "status": "OK",
+      "bytes": 644001
+    },
+    {
+      "round": 6,
+      "check": "transferOnly",
+      "elapsedMs": 176.24062500000036,
+      "status": "OK",
+      "bytes": 644001
+    },
+    {
+      "round": 6,
+      "check": "aggregateOutput",
+      "elapsedMs": 343.82324999999946,
+      "status": "OK",
+      "bytes": 644001
+    },
+    {
+      "round": 6,
+      "check": "aggregateLength",
+      "elapsedMs": 1536.4292079999996,
+      "status": "OK",
+      "bytes": 7
+    },
+    {
+      "round": 6,
+      "check": "selectOne",
+      "elapsedMs": 791.5692500000005,
+      "status": "OK",
+      "bytes": 2
+    }
+  ],
+  "stage": "complete",
+  "isolation": {
+    "noNetwork": true,
+    "noPorts": true,
+    "temporaryFilesystem": true,
+    "noPersistentStorageMount": true
+  },
+  "postgresql": "17.5",
+  "complete": true,
+  "removed": true,
+  "existingServicesUnchanged": true,
+  "completedAt": "2026-11-23T15:03:04.426Z",
+  "summary": {
+    "selectOne": {
+      "n": 6,
+      "min": 174.16020800000024,
+      "median": 180.91679150000027,
+      "max": 791.5692500000005
+    },
+    "aggregateLength": {
+      "n": 6,
+      "min": 159.05983299999934,
+      "median": 179.68987549999974,
+      "max": 1536.4292079999996
+    },
+    "aggregateOutput": {
+      "n": 6,
+      "min": 182.75408400000015,
+      "median": 193.81981200000018,
+      "max": 644.9708339999997
+    },
+    "transferOnly": {
+      "n": 6,
+      "min": 176.24062500000036,
+      "median": 186.8756869999993,
+      "max": 219.20083299999988
+    }
+  },
+  "verification": {
+    "outcomeSelfChecks": 6,
+    "relatedNodeTestsPassed": 7,
+    "apiReadiness": "UP",
+    "remainingProbeContainers": 0
+  }
+}
