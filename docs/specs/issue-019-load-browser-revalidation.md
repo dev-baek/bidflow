@@ -1,6 +1,6 @@
 # 천 건 부하의 브라우저 수렴 재검증 계획
 
-- 상태: 검토 대기. 기존 [#19](https://github.com/dev-baek/bidflow/issues/19)의 실행 승인 범위다.
+- 상태: #305 병합 승인 후 smoke 1회 실행. HTTP P95 기준 미달로 본 실행 미시작. [검증 결과](../reports/issue-019-load-browser-revalidation.md). 기존 [#19](https://github.com/dev-baek/bidflow/issues/19)의 실행 승인 범위다.
 - 기반: [동일 실행 브라우저 수렴 사양](issue-019-load-browser-convergence.md), [#302 실행 결과](../reports/issue-019-load-browser-convergence.md), [#304 실패 기록 보완](issue-019-scoped-sql-reliability.md).
 
 ## 검증할 질문
