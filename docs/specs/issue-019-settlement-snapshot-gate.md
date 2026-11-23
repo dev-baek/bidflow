@@ -1,6 +1,6 @@
 # 정산 조회 전 요청 완결 확인 사양
 
-- 상태: #313 승인 후 구현. 기존 [#19](https://github.com/dev-baek/bidflow/issues/19)의 [읽기 전용 진단](../reports/issue-019-scoped-sql-plan-diagnosis.md)에 따른다.
+- 상태: #313 사양 및 #314 구현 병합. [실제 부하 검증](issue-019-settlement-gate-live.md)은 별도 승인 범위다. 기존 [#19](https://github.com/dev-baek/bidflow/issues/19)의 [읽기 전용 진단](../reports/issue-019-scoped-sql-plan-diagnosis.md)에 따른다.
 
 ## S. 사용자와 결과 판정
 
