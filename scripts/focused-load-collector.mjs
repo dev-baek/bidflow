@@ -121,7 +121,9 @@ export async function collectFocused(mode,io,observer) {
       await io.wait(1000);
     }
     stage='snapshot';withinRecovery(5000);
-    e.snapshot=await io.snapshot(e.fixture.auctionId);
+    e.snapshot=io.snapshotWithWaits?
+      await io.snapshotWithWaits(e.fixture.auctionId,deadline,()=>withinRecovery(5000),value=>{e.settlementWait=value;}):
+      await io.snapshot(e.fixture.auctionId);
     withinRecovery();
     e.consistency=judgeFocused({...e.fixture,mode,receipts:e.receipts,snapshot:e.snapshot});
     stage='post-snapshot-lag';withinRecovery(12000);

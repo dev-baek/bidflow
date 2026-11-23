@@ -1,6 +1,6 @@
 # 정산 SQL 대기 관측 사양
 
-- 상태: 검토 대기. 기존 [#19](https://github.com/dev-baek/bidflow/issues/19)의 후속 작업이다.
+- 상태: #321 병합 후 로컬 진단 옵션을 구현하고 [격리 검증](../reports/issue-019-settlement-wait-observation.md)을 완료했다. 실제 부하 재검증은 별도 승인이다. 기존 [#19](https://github.com/dev-baek/bidflow/issues/19)의 후속 작업이다.
 - 근거: [#316 서버 SQL 취소](../reports/issue-019-settlement-gate-live.md), [#318 로컬 호출 제한](../reports/issue-019-settlement-outbox-index.md), [#320 인덱스 비교](../reports/issue-019-settlement-outbox-comparison.md).
 
 #316에서는 Kafka Lag 0과 경매 요청 1,000건의 완료를 확인하고도 정산 SQL이 서버의 4초 제한에 걸렸다. #320에서 부분 인덱스는 읽는 블록을 줄였지만 조회 시간 개선 기준을 넘지 못했다. 따라서 인덱스를 바꾸기 전에 **취소가 난 실행의 정산 SELECT에서 어떤 대기가 실제로 관측됐는지** 기록한다. #318의 5초 Docker·psql 프로세스 제한은 서버 취소와 분리한다.

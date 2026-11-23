@@ -23,18 +23,28 @@ FROM bid_request WHERE auction_id='${auctionId}'; COMMIT;`;
 }
 
 export const snapshotFailureCodes=['SQL_QUERY_CANCELED','SQL_PROCESS_TIMEOUT','SQL_OUTPUT_INVALID','SQL_CALL_FAILED'];
+export const SETTLEMENT_SQL_MARKER='/* bidflow-settlement-snapshot */ ';
+export const isSettlementTag=tag=>typeof tag==='string'&&tag.length===51&&/^bidflow-settlement-[0-9a-f]{32}$/.test(tag);
+const snapshotSetup='BEGIN READ ONLY; SET LOCAL statement_timeout = 4000;';
 
-export async function readScopedSnapshot(auctionId,run) {
-  const query=buildFocusedSql(auctionId);
-  const failure=code=>Object.assign(Error(code),{code});
+export async function readScopedSnapshot(auctionId,run,tag) {
+  if(!isUuid(auctionId)||(tag!==undefined&&!isSettlementTag(tag)))throw Error('invalid SQL scope');
+  const setup=tag?['-e','PGAPPNAME='+tag]:[];
+  const commands=tag?['-c',snapshotSetup,'-c',SETTLEMENT_SQL_MARKER+scopedSelect(auctionId),'-c','COMMIT;']
+    :['-c',buildFocusedSql(auctionId)];
+  const failure=(code,fields={})=>Object.assign(Error(code),{code,...fields});
   let stdout;
   try {
-    ({stdout}=await run('SCOPED_SQL','docker',['exec','bidflow-local-postgres-1','psql','-XqAt',
-      '-U','bidflow','-d','bidflow','-v','ON_ERROR_STOP=1','-v','VERBOSITY=verbose','-c',query],5000));
+    ({stdout}=await run('SCOPED_SQL','docker',['exec',...setup,'bidflow-local-postgres-1','psql','-XqAt',
+      '-U','bidflow','-d','bidflow','-v','ON_ERROR_STOP=1','-v','VERBOSITY=verbose',...commands],5000));
   }catch(error){
-    throw failure(error?.localDeadlineExceeded===true?'SQL_PROCESS_TIMEOUT'
-      :error?.code===1&&typeof error.stderr==='string'&&/^ERROR:\s+57014:/m.test(error.stderr)
-        ?'SQL_QUERY_CANCELED':'SQL_CALL_FAILED');
+    if(error?.localDeadlineExceeded===true)throw failure('SQL_PROCESS_TIMEOUT');
+    const stderr=typeof error?.stderr==='string'?error.stderr:'';
+    if((error?.code===1||(tag&&error?.code===3))&&/^ERROR:[ \t]+57014:/m.test(stderr)){
+      const statementTimeout=/^ERROR:[ \t]+57014:[ \t]+canceling statement due to statement timeout\r?$/m.test(stderr);
+      throw failure('SQL_QUERY_CANCELED',tag?{cancelReason:statementTimeout?'STATEMENT_TIMEOUT':'UNKNOWN'}:undefined);
+    }
+    throw failure('SQL_CALL_FAILED');
   }
   try{
     const value=JSON.parse(stdout);
@@ -44,8 +54,11 @@ export async function readScopedSnapshot(auctionId,run) {
 }
 
 function scopedBidSql(auctionId,requestIds) {
-  return `BEGIN READ ONLY; SET LOCAL statement_timeout = 4000;
-WITH requests AS MATERIALIZED (
+  return snapshotSetup+'\n'+scopedSelect(auctionId,requestIds)+' COMMIT;';
+}
+
+function scopedSelect(auctionId,requestIds) {
+  return `WITH requests AS MATERIALIZED (
   SELECT * FROM bid_request WHERE auction_id='${auctionId}'
 ), ledgers AS MATERIALIZED (
   SELECT * FROM bid_ledger WHERE auction_id='${auctionId}'
@@ -75,7 +88,7 @@ SELECT jsonb_build_object(
     LEFT JOIN ledger_groups lg ON lg.bid_request_id=r.bid_request_id
     LEFT JOIN event_groups eg ON eg.request_id=r.bid_request_id::text WHERE r.auction_id=a.auction_id
     ${requestIds ? `AND r.bid_request_id IN (${requestIds.map(id => `'${id}'`).join(',')})` : ''})
-) FROM auction a WHERE a.auction_id='${auctionId}'; COMMIT;`;
+) FROM auction a WHERE a.auction_id='${auctionId}';`;
 }
 
 export async function readConcurrentSql(auctionId, requestIds, command = promisify(execFile)) {
