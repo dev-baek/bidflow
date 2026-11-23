@@ -1,0 +1,413 @@
+{
+  "source": "1e9dd050a5dbb7bf6d947feaf6ef51e6b14828f8",
+  "startedAt": "2026-11-23T08:55:07.549Z",
+  "completedAt": "2026-11-23T08:55:57.870Z",
+  "k6Image": "sha256:1f40432b1cbe7234e977f96c362c9bc550a2d2b583d014dd8669fe40d3e9e755",
+  "original": {
+    "pid": 94652,
+    "hash": "5251be8d60c6fc0f3a7afb13415c72e2438713b973a854a54f411009065f08c4",
+    "stopped": true
+  },
+  "test": {
+    "hash": "08efe30e379ff23ddac6de84de20d4c9f1ac5ae3c7e5dd8ab1aca9d668abbadd",
+    "pid": 22700
+  },
+  "restored": {
+    "pid": 23439,
+    "verified": true
+  },
+  "servicesUnchanged": true,
+  "loadGone": true,
+  "browsersGone": true,
+  "viteGone": true,
+  "verification": {
+    "nodeTests": 127,
+    "vitestTests": 71,
+    "buildPassed": true
+  },
+  "outcome": "INCOMPLETE",
+  "fullStarted": false,
+  "trials": [
+    {
+      "mode": "smoke",
+      "startedAt": "2026-11-23T08:55:23.288Z",
+      "completedAt": "2026-11-23T08:55:44.854Z",
+      "launch": {
+        "mode": "smoke",
+        "exitCode": 1,
+        "valid": false,
+        "browserObservationValid": true,
+        "fullVerified": false,
+        "owned": true,
+        "cleanup": true
+      },
+      "fixture": {
+        "auctionId": "cb83775f-42a7-42f2-90cf-f74b1be67b33",
+        "productId": "1003248c-dd70-46e9-9149-d9504955e409",
+        "runId": "focus263804113bed4427a5302b2c37d190ac",
+        "endsAt": "2026-11-23T09:26:28.471871+00:00"
+      },
+      "loadStartedMs": 10241.500167,
+      "loadEndedMs": 13584.852875,
+      "recoveredMs": 20365.221,
+      "exitCode": 99,
+      "valid": false,
+      "fullVerified": false,
+      "observationValid": true,
+      "browserObservationValid": true,
+      "performancePassed": false,
+      "diagnosticsComplete": true,
+      "invalidReceipts": 0,
+      "receiptCount": 10,
+      "consistency": {
+        "valid": true,
+        "total": 10,
+        "accepted": 5,
+        "rejected": 5
+      },
+      "resources": {
+        "valid": true
+      },
+      "http": {
+        "count": 10,
+        "iterations": 10,
+        "received": 10,
+        "p50": 60.947625,
+        "p95": 310.50402745,
+        "p99": 312.75167269,
+        "errorRate": 0
+      },
+      "phaseSummary": {
+        "complete": true,
+        "phases": {
+          "blocked": {
+            "p50": 0.0096045,
+            "p95": 11.09855885,
+            "p99": 11.98727897
+          },
+          "connecting": {
+            "p50": 0,
+            "p95": 2.49139185,
+            "p99": 2.50171197
+          },
+          "sending": {
+            "p50": 0.035854,
+            "p95": 4.606385749999997,
+            "p99": 7.332710749999999
+          },
+          "waiting": {
+            "p50": 59.458603999999994,
+            "p95": 309.71581265,
+            "p99": 311.55886253
+          },
+          "receiving": {
+            "p50": 0.7106875,
+            "p95": 2.0604732499999994,
+            "p99": 2.53292825
+          }
+        }
+      },
+      "requestTimings": [
+        {
+          "index": 1,
+          "vu": 2,
+          "iteration": 0,
+          "durationMs": 61.106125,
+          "httpStatus": 202
+        },
+        {
+          "index": 0,
+          "vu": 1,
+          "iteration": 0,
+          "durationMs": 60.789125,
+          "httpStatus": 202
+        },
+        {
+          "index": 3,
+          "vu": 2,
+          "iteration": 1,
+          "durationMs": 305.225375,
+          "httpStatus": 202
+        },
+        {
+          "index": 2,
+          "vu": 1,
+          "iteration": 1,
+          "durationMs": 313.313584,
+          "httpStatus": 202
+        },
+        {
+          "index": 5,
+          "vu": 2,
+          "iteration": 2,
+          "durationMs": 200.283834,
+          "httpStatus": 202
+        },
+        {
+          "index": 4,
+          "vu": 1,
+          "iteration": 2,
+          "durationMs": 307.070125,
+          "httpStatus": 202
+        },
+        {
+          "index": 7,
+          "vu": 2,
+          "iteration": 3,
+          "durationMs": 34.806417,
+          "httpStatus": 202
+        },
+        {
+          "index": 6,
+          "vu": 1,
+          "iteration": 3,
+          "durationMs": 22.724417,
+          "httpStatus": 202
+        },
+        {
+          "index": 9,
+          "vu": 2,
+          "iteration": 4,
+          "durationMs": 16.794583,
+          "httpStatus": 202
+        },
+        {
+          "index": 8,
+          "vu": 1,
+          "iteration": 4,
+          "durationMs": 16.696208,
+          "httpStatus": 202
+        }
+      ],
+      "dltBefore": [
+        0,
+        0,
+        0
+      ],
+      "dltAfter": [
+        0,
+        0,
+        0
+      ],
+      "lagSamples": [
+        {
+          "startedMs": 2922.153,
+          "completedMs": 4503.831167,
+          "rows": [
+            {
+              "partition": 0,
+              "currentOffset": 1183,
+              "endOffset": 1183,
+              "lag": 0
+            },
+            {
+              "partition": 1,
+              "currentOffset": 1916,
+              "endOffset": 1916,
+              "lag": 0
+            },
+            {
+              "partition": 2,
+              "currentOffset": 2606,
+              "endOffset": 2606,
+              "lag": 0
+            }
+          ]
+        },
+        {
+          "startedMs": 10247.958084,
+          "completedMs": 13002.134709,
+          "rows": [
+            {
+              "partition": 0,
+              "currentOffset": 1183,
+              "endOffset": 1183,
+              "lag": 0
+            },
+            {
+              "partition": 1,
+              "currentOffset": 1916,
+              "endOffset": 1916,
+              "lag": 0
+            },
+            {
+              "partition": 2,
+              "currentOffset": 2616,
+              "endOffset": 2616,
+              "lag": 0
+            }
+          ]
+        },
+        {
+          "startedMs": 19054.0335,
+          "completedMs": 20365.135292,
+          "rows": [
+            {
+              "partition": 0,
+              "currentOffset": 1183,
+              "endOffset": 1183,
+              "lag": 0
+            },
+            {
+              "partition": 1,
+              "currentOffset": 1916,
+              "endOffset": 1916,
+              "lag": 0
+            },
+            {
+              "partition": 2,
+              "currentOffset": 2616,
+              "endOffset": 2616,
+              "lag": 0
+            }
+          ]
+        }
+      ],
+      "commandTrace": {
+        "complete": true,
+        "successful": true,
+        "count": 31,
+        "sqlOrFailed": [
+          {
+            "commandId": 14,
+            "operation": "SCOPED_SQL",
+            "startedMs": 5726.7875,
+            "completedMs": 5916.9175,
+            "durationMs": 190.1299999999992,
+            "timeoutMs": 5000,
+            "outcome": "SUCCEEDED",
+            "exitCode": 0,
+            "signal": null
+          },
+          {
+            "commandId": 27,
+            "operation": "SCOPED_SQL",
+            "startedMs": 18865.778375,
+            "completedMs": 19053.134,
+            "durationMs": 187.3556249999965,
+            "timeoutMs": 5000,
+            "outcome": "SUCCEEDED",
+            "exitCode": 0,
+            "signal": null
+          }
+        ]
+      },
+      "browser": {
+        "valid": true,
+        "code": "CONVERGED",
+        "samples": [
+          {
+            "role": "A",
+            "finalFrameMs": 12250.390167,
+            "finalScreenMs": 12255.826459,
+            "frameFromStartMs": 2008.8899999999994,
+            "screenFromStartMs": 2014.3262919999997,
+            "remainingAfterLoadMs": 0,
+            "convergedBeforeLoadEnd": true,
+            "frameToScreenMs": 5.436292000000321
+          },
+          {
+            "role": "B",
+            "finalFrameMs": 12248.15225,
+            "finalScreenMs": 12255.032542,
+            "frameFromStartMs": 2006.652082999999,
+            "screenFromStartMs": 2013.5323750000007,
+            "remainingAfterLoadMs": 0,
+            "convergedBeforeLoadEnd": true,
+            "frameToScreenMs": 6.880292000001646
+          }
+        ],
+        "screens": {
+          "A": 12255.826459,
+          "B": 12255.032542
+        }
+      },
+      "failures": [],
+      "restoration": {
+        "verified": true,
+        "apiChanged": false,
+        "pid": 22700
+      },
+      "sql": {
+        "requests": 10,
+        "ledgers": 10,
+        "results": 10,
+        "pending": 0,
+        "auction": {
+          "auctionId": "cb83775f-42a7-42f2-90cf-f74b1be67b33",
+          "status": "ACTIVE",
+          "currentPrice": 510000,
+          "version": 6,
+          "endsAt": "2026-11-23T09:26:28.471+00:00",
+          "winnerIsFinalBidder": true
+        },
+        "final": {
+          "id": "d923a0f9-54e0-48bd-b5b4-bd09d756497c",
+          "price": 510000,
+          "version": 6
+        }
+      },
+      "browserEvidence": {
+        "error": null,
+        "frameCount": 12,
+        "matchedFrames": [
+          {
+            "role": "B",
+            "auctionId": "cb83775f-42a7-42f2-90cf-f74b1be67b33",
+            "eventId": "d923a0f9-54e0-48bd-b5b4-bd09d756497c",
+            "type": "auction.updated",
+            "version": 6,
+            "price": 510000,
+            "endsAt": "2026-11-23T09:26:28.471Z",
+            "atMs": 12248.15225
+          },
+          {
+            "role": "A",
+            "auctionId": "cb83775f-42a7-42f2-90cf-f74b1be67b33",
+            "eventId": "d923a0f9-54e0-48bd-b5b4-bd09d756497c",
+            "type": "auction.updated",
+            "version": 6,
+            "price": 510000,
+            "endsAt": "2026-11-23T09:26:28.471Z",
+            "atMs": 12250.390167
+          }
+        ],
+        "screenCheckCount": 4,
+        "screenChecks": [
+          {
+            "role": "B",
+            "auctionId": "cb83775f-42a7-42f2-90cf-f74b1be67b33",
+            "eventId": "d923a0f9-54e0-48bd-b5b4-bd09d756497c",
+            "price": 510000,
+            "atMs": 12255.032542
+          },
+          {
+            "role": "A",
+            "auctionId": "cb83775f-42a7-42f2-90cf-f74b1be67b33",
+            "eventId": "d923a0f9-54e0-48bd-b5b4-bd09d756497c",
+            "price": 510000,
+            "atMs": 12255.826459
+          }
+        ]
+      },
+      "runtime": {
+        "host": {
+          "model": "Mac15,12",
+          "arch": "arm64",
+          "cpus": 8,
+          "memoryBytes": 17179869184,
+          "os": "25.5.0"
+        },
+        "java": "openjdk 21.0.7 2025-04-15 LTS",
+        "node": "v24.18.0",
+        "docker": "27.5.1 8 8217858048",
+        "k6": "k6 v0.54.0 (commit/baba871c8a, go1.23.1, linux/arm64)",
+        "profile": "local",
+        "clock": "system",
+        "delayMs": 100,
+        "jarSha256": "08efe30e379ff23ddac6de84de20d4c9f1ac5ae3c7e5dd8ab1aca9d668abbadd"
+      },
+      "rawEvidenceSha256": "480ddcbed802781313f70f084219596aff8394adfb5987433e80ec480cf76acd"
+    }
+  ]
+}
