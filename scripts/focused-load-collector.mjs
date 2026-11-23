@@ -3,6 +3,7 @@ import {resolve,dirname,basename,relative,isAbsolute} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {focusedConfig,planFocused,judgeFocused,judgeResources} from './focused-thousand.mjs';
 import {isUuid} from './final-settlement.mjs';
+import {diagnosticCorrelationId} from './bid-ingress-observation.mjs';
 import {snapshotFailureCodes} from './concurrent-browser-sql.mjs';
 import {summarizeTrace,summarizePhases} from './command-trace.mjs';
 
@@ -26,6 +27,7 @@ export function parseReceipt(line,runId,mode) {
   const r=JSON.parse(line),plan=planFocused(runId,mode,r?.vu,r?.iteration);
   if(Object.keys(plan).some(k=>r[k]!==plan[k]))throw Error('invalid plan');
   return {...plan,requestId:isUuid(r.requestId)?r.requestId:null,
+    correlationId:diagnosticCorrelationId(r.correlationId),
     httpStatus:Number.isInteger(r.httpStatus)&&r.httpStatus>=0&&r.httpStatus<600?r.httpStatus:0,
     receiptStatus:r.receiptStatus==='RECEIVED'?'RECEIVED':null,
     durationMs:Number.isFinite(r.durationMs)&&r.durationMs>=0?r.durationMs:null};

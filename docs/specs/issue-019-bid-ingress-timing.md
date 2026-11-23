@@ -1,6 +1,6 @@
 # 입찰 접수 서버 구간 계측 사양
 
-- 상태: 검토 대기. 기존 [#19](https://github.com/dev-baek/bidflow/issues/19)의 [요청별 진단](../reports/issue-019-smoke-http-diagnosis.md)을 근거로 한다.
+- 상태: #307 병합 승인 후 구현. 기존 [#19](https://github.com/dev-baek/bidflow/issues/19)의 [요청별 진단](../reports/issue-019-smoke-http-diagnosis.md)을 근거로 한다.
 
 ## S. 사용자 동작
 
@@ -27,3 +27,10 @@
 ## T. TDD 및 승인 경계
 
 기존 필터·컨트롤러 테스트에서 가짜 단조 시계로 경계/순서를 검사한다. 비활성/다른 경로에서 추가 기록 없음, 202와 실패 응답/예외 보존, MDC 정리, 중복·누락 ID와 민감 필드 거부, 기존 수집기 판정 불변을 확인한다. `make verify`를 통과한 뒤 구현과 테스트 결과를 보고한다. 병합은 계측 구현·테스트 승인 범위이며, 새 입찰 부하·API 재시작·AWS 실행은 별도 승인이다.
+
+## 구현 결과
+
+- 서버 opt-in은 단일 `local` 프로필과 `bidflow.bid.ingress-timing=true`를 함께 요구한다. UUID가 포함된 정확한 입찰 POST 경로와 UUID 상관 ID에만 새 로그를 남긴다. URL 원문은 기록하지 않는다. 기존 접수 로그·상관 ID 응답은 그대로다.
+- `bid.ingress.timing`의 `httpNanos`는 필터 내 경과 시간이다. `receiveStartNanos`와 `receiveEndNanos`는 같은 시작점 기준 오프셋으로, 서비스에 진입한 경우만 존재한다. 처리하지 못한 예외는 `CHAIN_THREW`로 표시하고 최종 status를 추정하지 않는다. 로깅 자체가 기존 응답을 바꾸지 않는다.
+- k6와 기존 파서는 UUID 상관 ID만 보존한다. `joinBidIngress`는 202에서 상관 ID별 접수·타이밍 로그가 각각 한 개이고 요청 ID와 중첩 경계가 일치하는 표본만 반환한다. 같은 requestId의 정상 재전송을 상관 ID로 분리하며, 누락과 충돌은 `complete=false`다. 이 판정은 기존 부하 성공 조건과 별도다.
+- 실행기의 API 검사에는 기존 인자 뒤에 붙는 `--bidflow.bid.ingress-timing=true` 하나만 추가 허용한다. 기존 인자와 다른 변경은 거부하며, 실제 허용된 모드는 runtime 메타데이터에 남는다. 이번에는 기존 API를 교체하거나 실제 계측 부하를 실행하지 않았다.

@@ -1,5 +1,6 @@
 package com.bidflow.runtime;
 import com.bidflow.application.bid.*;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.UUID;
 import java.util.Map;
 import java.security.Principal;
@@ -17,12 +18,22 @@ class BidRequestController {
     BidRequestController(BidRequestIdempotencyService service) { this.service = service; }
     @PostMapping("/{auctionId}/bid-requests")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    Response create(Principal actor, @RequestHeader("Idempotency-Key") String key, @PathVariable UUID auctionId, @RequestBody Request request) {
+    Response create(Principal actor, @RequestHeader("Idempotency-Key") String key, @PathVariable UUID auctionId,
+            @RequestBody Request request, HttpServletRequest servletRequest) {
         if (key.isBlank()) throw new IllegalArgumentException("invalid request headers");
-        BidRequestValidation.validate(new BidRequestCommand(auctionId, request.bidKind(), request.amount()));
+        var command = new BidRequestCommand(auctionId, request.bidKind(), request.amount());
+        BidRequestValidation.validate(command);
         String correlationId = MDC.get("correlationId");
         if (correlationId == null) correlationId = java.util.UUID.randomUUID().toString();
-        UUID bidRequestId = service.receive(actor.getName(), key, correlationId, new BidRequestCommand(auctionId, request.bidKind(), request.amount()));
+        String bidder = actor.getName();
+        var timing = (BidIngressTiming) servletRequest.getAttribute(BidIngressTiming.ATTRIBUTE);
+        UUID bidRequestId = null;
+        if (timing != null) timing.beginReceive();
+        try {
+            bidRequestId = service.receive(bidder, key, correlationId, command);
+        } finally {
+            if (timing != null) timing.endReceive(bidRequestId);
+        }
         try (LogContext.Scope ignored = LogContext.fields(Map.of("event", "bid.request.received", "bidRequestId", bidRequestId.toString(), "auctionId", auctionId.toString(), "outcome", "RECEIVED"))) {
             log.info("bid request received");
         }

@@ -1,8 +1,18 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {buildK6Args,memoryBytes,executeObserved} from '../../scripts/run-focused-load.mjs';
+import {buildK6Args,memoryBytes,executeObserved,focusedApiMode} from '../../scripts/run-focused-load.mjs';
 import {createCommandTrace} from '../../scripts/command-trace.mjs';
 import {readScopedSnapshot} from '../../scripts/concurrent-browser-sql.mjs';
+
+test('API guard accepts only the exact base invocation or the local timing opt-in',()=>{
+  const java='/jdk/bin/java',jar='/repo/runtime.jar';
+  const base=`${java} -jar ${jar} --spring.profiles.active=local --server.address=127.0.0.1 --logging.level.com.bidflow.runtime.OutboxScheduler=INFO`;
+  assert.equal(focusedApiMode(base,java,jar),'DEFAULT');
+  assert.equal(focusedApiMode(base+' --bidflow.bid.ingress-timing=true',java,jar),'INGRESS_TIMING');
+  for(const command of [base.replace('active=local','active=local,e2e'),base+' --bidflow.outbox.fixed-delay-ms=200',
+    base+' --bidflow.bid.ingress-timing=true --server.address=0.0.0.0',base+' --bidflow.bid.ingress-timing=false'])
+    assert.equal(focusedApiMode(command,java,jar),null);
+});
 
 test('snapshot failures expose fixed codes only and do not retry',async()=>{
   const id='00000000-0000-4000-8000-000000000001';
