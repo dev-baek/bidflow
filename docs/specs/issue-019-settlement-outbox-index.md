@@ -1,6 +1,6 @@
 # 정산 Outbox 조회 비용 비교 사양
 
-- 상태: #317 병합 후 격리 비교를 실행했다. 작은 데이터셋 출력은 일치했으나 프로세스 제한으로 성능 비교는 미완료이며 인덱스 적용은 보류한다. [결과](../reports/issue-019-settlement-outbox-index.md). 기존 [#19](https://github.com/dev-baek/bidflow/issues/19)의 후속 작업이다.
+- 상태: 호출 점검 후 두 규모의 격리 비교 완료. 확장 사례의 전체 조회 중앙값 개선이 20% 기준에 못 미쳐 인덱스를 적용하지 않는다. [최종 비교](../reports/issue-019-settlement-outbox-comparison.md)와 [첫 실행의 미완료 결과](../reports/issue-019-settlement-outbox-index.md)는 별도로 남긴다. 기존 [#19](https://github.com/dev-baek/bidflow/issues/19)의 후속 작업이다.
 - 근거: [#316 실측](../reports/issue-019-settlement-gate-live.md), [중복 조건 비교](../reports/issue-019-scoped-sql-plan-diagnosis.md), [Outbox 실행 계획](issue-019-scoped-sql-reliability.md#발견한-사실과-남은-질문).
 
 #316은 Kafka Lag 0과 입찰 완료 1,000건을 확인한 뒤에도 정산 SQL이 PostgreSQL의 4초 제한으로 취소됐다. 부하가 끝난 뒤 다른 1,000건 경매의 기존·후보 SQL은 약 32ms였고 두 계획 모두 Outbox를 순차 스캔했다. 이 차이만으로 취소 원인을 판단할 수 없다. 이번에는 **다른 경매의 이벤트가 늘어날 때, 현재 경매의 정산 이벤트만 찾는 부분 인덱스가 전체 조회 비용을 실제로 줄이는지** 한 가지 변수만 바꿔 확인한다.
