@@ -1,0 +1,426 @@
+{
+  "status": "MEASURED",
+  "startedAt": "2026-11-25T04:24:38.964Z",
+  "limits": {
+    "statementMs": 4000,
+    "processMs": 5000
+  },
+  "cases": [
+    {
+      "background": 2000,
+      "samples": [
+        {
+          "round": 1,
+          "mode": "PLAIN",
+          "stdoutBytes": 706758,
+          "sha256": "f2a9464c79a825f6ce78b78fd231735e6d40affbb98317fd996d9e2676d79687",
+          "elapsedMs": 215.703
+        },
+        {
+          "round": 1,
+          "mode": "NONE",
+          "stdoutBytes": 27250,
+          "planningMs": 1.95,
+          "executionMs": 31.196,
+          "serialization": null,
+          "elapsedMs": 207.342
+        },
+        {
+          "round": 1,
+          "mode": "TEXT",
+          "stdoutBytes": 27667,
+          "planningMs": 1.837,
+          "executionMs": 32.096,
+          "serialization": {
+            "ms": 3.429,
+            "kB": 691
+          },
+          "elapsedMs": 211.111
+        },
+        {
+          "round": 2,
+          "mode": "NONE",
+          "stdoutBytes": 27250,
+          "planningMs": 2.819,
+          "executionMs": 36.631,
+          "serialization": null,
+          "elapsedMs": 233.92
+        },
+        {
+          "round": 2,
+          "mode": "TEXT",
+          "stdoutBytes": 27673,
+          "planningMs": 6.783,
+          "executionMs": 83.919,
+          "serialization": {
+            "ms": 5.592,
+            "kB": 691
+          },
+          "elapsedMs": 283.268
+        },
+        {
+          "round": 2,
+          "mode": "PLAIN",
+          "stdoutBytes": 706758,
+          "sha256": "f2a9464c79a825f6ce78b78fd231735e6d40affbb98317fd996d9e2676d79687",
+          "elapsedMs": 240.354
+        },
+        {
+          "round": 3,
+          "mode": "TEXT",
+          "stdoutBytes": 27673,
+          "planningMs": 2.077,
+          "executionMs": 46.144,
+          "serialization": {
+            "ms": 3.387,
+            "kB": 691
+          },
+          "elapsedMs": 220.726
+        },
+        {
+          "round": 3,
+          "mode": "PLAIN",
+          "stdoutBytes": 706758,
+          "sha256": "f2a9464c79a825f6ce78b78fd231735e6d40affbb98317fd996d9e2676d79687",
+          "elapsedMs": 435.749
+        },
+        {
+          "round": 3,
+          "mode": "NONE",
+          "stdoutBytes": 27250,
+          "planningMs": 1.859,
+          "executionMs": 39.564,
+          "serialization": null,
+          "elapsedMs": 220.287
+        }
+      ],
+      "gate": {
+        "mode": "PLAIN",
+        "elapsedMs": 223.35,
+        "stdoutBytes": 706758,
+        "sha256": "f2a9464c79a825f6ce78b78fd231735e6d40affbb98317fd996d9e2676d79687"
+      },
+      "stablePlanNodes": [
+        {
+          "type": "Seq Scan",
+          "relation": "outbox_event",
+          "rows": 1000,
+          "loops": 1,
+          "removedByFilter": 2000,
+          "sharedHit": 147,
+          "sharedRead": 0,
+          "tempRead": 0,
+          "tempWritten": 0
+        },
+        {
+          "type": "Aggregate",
+          "relation": null,
+          "rows": 1,
+          "loops": 1,
+          "removedByFilter": 0,
+          "sharedHit": 25,
+          "sharedRead": 0,
+          "tempRead": 0,
+          "tempWritten": 0
+        },
+        {
+          "type": "Aggregate",
+          "relation": null,
+          "rows": 1,
+          "loops": 1,
+          "removedByFilter": 0,
+          "sharedHit": 19,
+          "sharedRead": 0,
+          "tempRead": 0,
+          "tempWritten": 0
+        },
+        {
+          "type": "Aggregate",
+          "relation": null,
+          "rows": 1,
+          "loops": 1,
+          "removedByFilter": 0,
+          "sharedHit": 147,
+          "sharedRead": 0,
+          "tempRead": 0,
+          "tempWritten": 0
+        },
+        {
+          "type": "Aggregate",
+          "relation": null,
+          "rows": 1,
+          "loops": 1,
+          "removedByFilter": 0,
+          "sharedHit": 3,
+          "sharedRead": 0,
+          "tempRead": 4,
+          "tempWritten": 28
+        },
+        {
+          "type": "Hash Join",
+          "relation": null,
+          "rows": 1000,
+          "loops": 1,
+          "removedByFilter": 0,
+          "sharedHit": 3,
+          "sharedRead": 0,
+          "tempRead": 4,
+          "tempWritten": 28
+        },
+        {
+          "type": "Hash Join",
+          "relation": null,
+          "rows": 1000,
+          "loops": 1,
+          "removedByFilter": 0,
+          "sharedHit": 3,
+          "sharedRead": 0,
+          "tempRead": 0,
+          "tempWritten": 0
+        },
+        {
+          "type": "Aggregate",
+          "relation": null,
+          "rows": 1000,
+          "loops": 1,
+          "removedByFilter": 0,
+          "sharedHit": 3,
+          "sharedRead": 0,
+          "tempRead": 0,
+          "tempWritten": 0
+        },
+        {
+          "type": "Aggregate",
+          "relation": null,
+          "rows": 1000,
+          "loops": 1,
+          "removedByFilter": 0,
+          "sharedHit": 0,
+          "sharedRead": 0,
+          "tempRead": 4,
+          "tempWritten": 28
+        }
+      ],
+      "stablePlanBlocks": {
+        "sharedHit": 195,
+        "sharedRead": 0,
+        "tempRead": 4,
+        "tempWritten": 28
+      }
+    },
+    {
+      "background": 100000,
+      "samples": [
+        {
+          "round": 1,
+          "mode": "PLAIN",
+          "stdoutBytes": 706758,
+          "sha256": "f2a9464c79a825f6ce78b78fd231735e6d40affbb98317fd996d9e2676d79687",
+          "elapsedMs": 239.956
+        },
+        {
+          "round": 1,
+          "mode": "NONE",
+          "stdoutBytes": 27262,
+          "planningMs": 1.87,
+          "executionMs": 56.804,
+          "serialization": null,
+          "elapsedMs": 234.098
+        },
+        {
+          "round": 1,
+          "mode": "TEXT",
+          "stdoutBytes": 27679,
+          "planningMs": 1.912,
+          "executionMs": 61.68,
+          "serialization": {
+            "ms": 4.527,
+            "kB": 691
+          },
+          "elapsedMs": 236.179
+        },
+        {
+          "round": 2,
+          "mode": "NONE",
+          "stdoutBytes": 27262,
+          "planningMs": 1.662,
+          "executionMs": 54.809,
+          "serialization": null,
+          "elapsedMs": 223.85
+        },
+        {
+          "round": 2,
+          "mode": "TEXT",
+          "stdoutBytes": 27679,
+          "planningMs": 1.817,
+          "executionMs": 64.368,
+          "serialization": {
+            "ms": 4.419,
+            "kB": 691
+          },
+          "elapsedMs": 242.21
+        },
+        {
+          "round": 2,
+          "mode": "PLAIN",
+          "stdoutBytes": 706758,
+          "sha256": "f2a9464c79a825f6ce78b78fd231735e6d40affbb98317fd996d9e2676d79687",
+          "elapsedMs": 236.868
+        },
+        {
+          "round": 3,
+          "mode": "TEXT",
+          "stdoutBytes": 27685,
+          "planningMs": 1.911,
+          "executionMs": 79.489,
+          "serialization": {
+            "ms": 3.683,
+            "kB": 691
+          },
+          "elapsedMs": 261.237
+        },
+        {
+          "round": 3,
+          "mode": "PLAIN",
+          "stdoutBytes": 706758,
+          "sha256": "f2a9464c79a825f6ce78b78fd231735e6d40affbb98317fd996d9e2676d79687",
+          "elapsedMs": 246.022
+        },
+        {
+          "round": 3,
+          "mode": "NONE",
+          "stdoutBytes": 27262,
+          "planningMs": 1.747,
+          "executionMs": 55.265,
+          "serialization": null,
+          "elapsedMs": 232.77
+        }
+      ],
+      "gate": {
+        "mode": "PLAIN",
+        "elapsedMs": 274.497,
+        "stdoutBytes": 706758,
+        "sha256": "f2a9464c79a825f6ce78b78fd231735e6d40affbb98317fd996d9e2676d79687"
+      },
+      "stablePlanNodes": [
+        {
+          "type": "Seq Scan",
+          "relation": "outbox_event",
+          "rows": 1000,
+          "loops": 1,
+          "removedByFilter": 100000,
+          "sharedHit": 4810,
+          "sharedRead": 0,
+          "tempRead": 0,
+          "tempWritten": 0
+        },
+        {
+          "type": "Aggregate",
+          "relation": null,
+          "rows": 1,
+          "loops": 1,
+          "removedByFilter": 0,
+          "sharedHit": 25,
+          "sharedRead": 0,
+          "tempRead": 0,
+          "tempWritten": 0
+        },
+        {
+          "type": "Aggregate",
+          "relation": null,
+          "rows": 1,
+          "loops": 1,
+          "removedByFilter": 0,
+          "sharedHit": 19,
+          "sharedRead": 0,
+          "tempRead": 0,
+          "tempWritten": 0
+        },
+        {
+          "type": "Aggregate",
+          "relation": null,
+          "rows": 1,
+          "loops": 1,
+          "removedByFilter": 0,
+          "sharedHit": 4810,
+          "sharedRead": 0,
+          "tempRead": 0,
+          "tempWritten": 0
+        },
+        {
+          "type": "Aggregate",
+          "relation": null,
+          "rows": 1,
+          "loops": 1,
+          "removedByFilter": 0,
+          "sharedHit": 3,
+          "sharedRead": 0,
+          "tempRead": 4,
+          "tempWritten": 28
+        },
+        {
+          "type": "Hash Join",
+          "relation": null,
+          "rows": 1000,
+          "loops": 1,
+          "removedByFilter": 0,
+          "sharedHit": 3,
+          "sharedRead": 0,
+          "tempRead": 4,
+          "tempWritten": 28
+        },
+        {
+          "type": "Hash Join",
+          "relation": null,
+          "rows": 1000,
+          "loops": 1,
+          "removedByFilter": 0,
+          "sharedHit": 3,
+          "sharedRead": 0,
+          "tempRead": 0,
+          "tempWritten": 0
+        },
+        {
+          "type": "Aggregate",
+          "relation": null,
+          "rows": 1000,
+          "loops": 1,
+          "removedByFilter": 0,
+          "sharedHit": 3,
+          "sharedRead": 0,
+          "tempRead": 0,
+          "tempWritten": 0
+        },
+        {
+          "type": "Aggregate",
+          "relation": null,
+          "rows": 1000,
+          "loops": 1,
+          "removedByFilter": 0,
+          "sharedHit": 0,
+          "sharedRead": 0,
+          "tempRead": 4,
+          "tempWritten": 28
+        }
+      ],
+      "stablePlanBlocks": {
+        "sharedHit": 4858,
+        "sharedRead": 0,
+        "tempRead": 4,
+        "tempWritten": 28
+      }
+    }
+  ],
+  "isolationVerified": true,
+  "server": "17.5",
+  "cleanupVerified": true,
+  "existingServicesUnchanged": true,
+  "finishedAt": "2026-11-25T04:24:50.606Z",
+  "sourceBase": "3ebea538dfd4259bd763f279be3bf5cf700d7bbc",
+  "sourceSha256": {
+    "scripts/run-settlement-sql-phases.mjs": "cf48944bdd802747aa4443de6c525600c0448720c8e57c0d18bb323b18b6c764",
+    "scripts/settlement-sql-phases.mjs": "fd3bb1ec0112cb14373aa6a5ad375a9a079e7009eb9b146ec08e18fd1c5f5b88",
+    "scripts/settlement-sql-phases-fixture.mjs": "fe9f95dc83421b720f088af7f1320bfe0ecb9f71cd45109572bdf3ad77091e5a",
+    "scripts/concurrent-browser-sql.mjs": "119a708597187e282a2650e16eb4f82a2921661eff16bfd9b15e077d0ea6274a"
+  }
+}
