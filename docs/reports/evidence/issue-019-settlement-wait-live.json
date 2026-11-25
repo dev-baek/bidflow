@@ -1,0 +1,957 @@
+{
+  "source": "ea155e2b6833a6182876365a7b44f35b96a931cf",
+  "startedAt": "2026-11-25T01:39:49.407Z",
+  "completedAt": "2026-11-25T01:41:08.635Z",
+  "original": {
+    "pid": 74776,
+    "hash": "5251be8d60c6fc0f3a7afb13415c72e2438713b973a854a54f411009065f08c4",
+    "stopped": true
+  },
+  "test": {
+    "hash": "12d60d9c3a15286b5a0b28f746393ec542dde926d04cc90f6040b616ed68657a",
+    "pid": 39084
+  },
+  "restored": {
+    "pid": 39825,
+    "verified": true
+  },
+  "cleanup": {
+    "verified": true,
+    "servicesUnchanged": true,
+    "loadGone": true,
+    "browsersGone": true,
+    "viteGone": true
+  },
+  "verification": {
+    "nodeTests": 144,
+    "vitestTests": 71,
+    "buildPassed": true,
+    "waitEvidenceFailClosedChecks": true
+  },
+  "k6Image": "sha256:1f40432b1cbe7234e977f96c362c9bc550a2d2b583d014dd8669fe40d3e9e755",
+  "fullStarted": true,
+  "runnerError": "TRIAL_FAILED",
+  "overallPassed": false,
+  "privateTimingsSha256": "f0192e4461f14b8235698f4633354f16cd3eaace6c031d3b1b942dd55482a163",
+  "trials": [
+    {
+      "mode": "smoke",
+      "exitCode": 0,
+      "valid": true,
+      "browserObservationValid": true,
+      "fullVerified": false,
+      "owned": true,
+      "cleanup": true,
+      "gateComplete": true,
+      "waitsComplete": true,
+      "waitsStatus": "OBSERVED",
+      "snapshotCalls": 1,
+      "ingressComplete": true,
+      "joined": 10,
+      "startedAt": "2026-11-25T01:40:01.992Z",
+      "completedAt": "2026-11-25T01:40:25.165Z",
+      "apiMode": "INGRESS_TIMING",
+      "k6Exit": 0,
+      "observationValid": true,
+      "diagnosticsComplete": true,
+      "performancePassed": true,
+      "consistency": {
+        "valid": true,
+        "total": 10,
+        "accepted": 10,
+        "rejected": 0
+      },
+      "http": {
+        "count": 10,
+        "iterations": 10,
+        "received": 10,
+        "p50": 23.631979,
+        "p95": 87.52756685,
+        "p99": 87.54994697000001,
+        "errorRate": 0
+      },
+      "phaseSummary": {
+        "complete": true,
+        "phases": {
+          "blocked": {
+            "p50": 0.008687,
+            "p95": 3.26556685,
+            "p99": 3.49944697
+          },
+          "connecting": {
+            "p50": 0,
+            "p95": 1.0785829999999998,
+            "p99": 1.121783
+          },
+          "sending": {
+            "p50": 0.0403125,
+            "p95": 0.52803155,
+            "p99": 0.53290631
+          },
+          "waiting": {
+            "p50": 22.777917000000002,
+            "p95": 85.6102564,
+            "p99": 85.65065127999999
+          },
+          "receiving": {
+            "p50": 1.0285415,
+            "p95": 1.7324520499999998,
+            "p99": 1.8441568099999999
+          }
+        }
+      },
+      "failures": [],
+      "error": null,
+      "clock": {
+        "loadStartedMs": 11462.466292,
+        "loadEndedMs": 13518.383542,
+        "recoveredMs": 22510.633
+      },
+      "gate": {
+        "complete": true,
+        "readyAfterZero": true,
+        "snapshotAfterReady": true,
+        "snapshotCalls": 1,
+        "ready": {
+          "startedMs": 20491.48925,
+          "completedMs": 20725.30625,
+          "requestCount": 10,
+          "completedCount": 10
+        },
+        "preLagCommandId": 26,
+        "preLagSample": {
+          "startedMs": 19146.342083,
+          "completedMs": 20491.38,
+          "rows": [
+            {
+              "partition": 0,
+              "currentOffset": 1183,
+              "endOffset": 1183,
+              "lag": 0
+            },
+            {
+              "partition": 1,
+              "currentOffset": 2926,
+              "endOffset": 2926,
+              "lag": 0
+            },
+            {
+              "partition": 2,
+              "currentOffset": 3646,
+              "endOffset": 3646,
+              "lag": 0
+            }
+          ]
+        },
+        "readinessCommandId": 27,
+        "snapshotCommand": {
+          "commandId": 28,
+          "operation": "SCOPED_SQL",
+          "startedMs": 20792.0325,
+          "completedMs": 21082.206208,
+          "durationMs": 290.17370799999844,
+          "timeoutMs": 5000,
+          "outcome": "SUCCEEDED",
+          "exitCode": 0,
+          "signal": null
+        },
+        "postLagCommandId": 29,
+        "postLagSample": {
+          "startedMs": 21195.355,
+          "completedMs": 22510.396458,
+          "rows": [
+            {
+              "partition": 0,
+              "currentOffset": 1183,
+              "endOffset": 1183,
+              "lag": 0
+            },
+            {
+              "partition": 1,
+              "currentOffset": 2926,
+              "endOffset": 2926,
+              "lag": 0
+            },
+            {
+              "partition": 2,
+              "currentOffset": 3646,
+              "endOffset": 3646,
+              "lag": 0
+            }
+          ]
+        },
+        "recoveryDltCommandId": 30,
+        "dltUnchanged": true
+      },
+      "waits": {
+        "complete": true,
+        "linked": true,
+        "validSamples": true,
+        "matchedCounts": true,
+        "cleanupVerified": true,
+        "status": "OBSERVED",
+        "counts": {
+          "NO_TARGET": 2,
+          "NO_WAIT_OBSERVED": 1
+        },
+        "activeSamples": 1,
+        "samples": [
+          {
+            "sentOffsetMs": 1.5482499999998254,
+            "receivedOffsetMs": 4.097125000000233,
+            "category": "NO_TARGET"
+          },
+          {
+            "sentOffsetMs": 103.38516700000037,
+            "receivedOffsetMs": 105.19974999999977,
+            "category": "NO_WAIT_OBSERVED"
+          },
+          {
+            "sentOffsetMs": 205.60512499999822,
+            "receivedOffsetMs": 207.4710419999974,
+            "category": "NO_TARGET"
+          }
+        ],
+        "errors": 0,
+        "discarded": 0,
+        "maxGapMs": 102.27129199999763,
+        "commandId": 28,
+        "cancelReason": null
+      },
+      "readinessChecks": [
+        {
+          "startedMs": 20491.48925,
+          "completedMs": 20725.30625,
+          "requestCount": 10,
+          "completedCount": 10
+        }
+      ],
+      "recoveryCommands": [
+        {
+          "commandId": 26,
+          "operation": "KAFKA_LAG",
+          "startedMs": 19146.346417,
+          "completedMs": 20491.243083,
+          "durationMs": 1344.8966660000006,
+          "timeoutMs": 12000,
+          "outcome": "SUCCEEDED",
+          "exitCode": 0,
+          "signal": null
+        },
+        {
+          "commandId": 27,
+          "operation": "SETTLEMENT_READINESS",
+          "startedMs": 20491.669167,
+          "completedMs": 20725.281583,
+          "durationMs": 233.61241599999994,
+          "timeoutMs": 5000,
+          "outcome": "SUCCEEDED",
+          "exitCode": 0,
+          "signal": null
+        },
+        {
+          "commandId": 28,
+          "operation": "SCOPED_SQL",
+          "startedMs": 20792.0325,
+          "completedMs": 21082.206208,
+          "durationMs": 290.17370799999844,
+          "timeoutMs": 5000,
+          "outcome": "SUCCEEDED",
+          "exitCode": 0,
+          "signal": null
+        },
+        {
+          "commandId": 29,
+          "operation": "KAFKA_LAG",
+          "startedMs": 21195.366708,
+          "completedMs": 22510.180792,
+          "durationMs": 1314.8140839999978,
+          "timeoutMs": 12000,
+          "outcome": "SUCCEEDED",
+          "exitCode": 0,
+          "signal": null
+        },
+        {
+          "commandId": 30,
+          "operation": "KAFKA_DLT",
+          "startedMs": 22510.680917,
+          "completedMs": 23710.095375,
+          "durationMs": 1199.4144579999993,
+          "timeoutMs": 12000,
+          "outcome": "SUCCEEDED",
+          "exitCode": 0,
+          "signal": null
+        }
+      ],
+      "resourcesValid": true,
+      "commandTrace": {
+        "count": 32,
+        "complete": true,
+        "successful": true,
+        "sqlOrFailed": [
+          {
+            "commandId": 14,
+            "operation": "SCOPED_SQL",
+            "startedMs": 6771.671792,
+            "completedMs": 6964.944958,
+            "durationMs": 193.27316599999995,
+            "timeoutMs": 5000,
+            "outcome": "SUCCEEDED",
+            "exitCode": 0,
+            "signal": null
+          },
+          {
+            "commandId": 28,
+            "operation": "SCOPED_SQL",
+            "startedMs": 20792.0325,
+            "completedMs": 21082.206208,
+            "durationMs": 290.17370799999844,
+            "timeoutMs": 5000,
+            "outcome": "SUCCEEDED",
+            "exitCode": 0,
+            "signal": null
+          }
+        ]
+      },
+      "peakLag": 0,
+      "finalLag": [
+        0,
+        0,
+        0
+      ],
+      "dltBefore": [
+        0,
+        0,
+        0
+      ],
+      "dltAfter": [
+        0,
+        0,
+        0
+      ],
+      "recoveryObservedMs": 8992.249458000002,
+      "sql": {
+        "requests": 10,
+        "ledgers": 10,
+        "results": 10,
+        "auction": {
+          "status": "ACTIVE",
+          "version": 11,
+          "price": 510000
+        },
+        "final": {
+          "price": 510000,
+          "version": 11
+        }
+      },
+      "browser": {
+        "valid": true,
+        "code": "CONVERGED",
+        "samples": [
+          {
+            "role": "A",
+            "finalFrameMs": 12963.971125,
+            "finalScreenMs": 12994.22875,
+            "frameFromStartMs": 1501.5048330000009,
+            "screenFromStartMs": 1531.762458000001,
+            "remainingAfterLoadMs": 0,
+            "convergedBeforeLoadEnd": true,
+            "frameToScreenMs": 30.25762500000019
+          },
+          {
+            "role": "B",
+            "finalFrameMs": 12973.834667,
+            "finalScreenMs": 12997.977958,
+            "frameFromStartMs": 1511.368375,
+            "screenFromStartMs": 1535.5116660000003,
+            "remainingAfterLoadMs": 0,
+            "convergedBeforeLoadEnd": true,
+            "frameToScreenMs": 24.143291000000318
+          }
+        ],
+        "screens": {
+          "A": 12994.22875,
+          "B": 12997.977958
+        }
+      },
+      "browserFrameCount": 22,
+      "finalFrames": [
+        {
+          "role": "A",
+          "version": 11,
+          "price": 510000,
+          "atMs": 12963.971125
+        },
+        {
+          "role": "B",
+          "version": 11,
+          "price": 510000,
+          "atMs": 12973.834667
+        }
+      ],
+      "finalScreenChecks": [
+        {
+          "role": "A",
+          "price": 510000,
+          "atMs": 12994.22875
+        },
+        {
+          "role": "B",
+          "price": 510000,
+          "atMs": 12997.977958
+        }
+      ],
+      "ingress": {
+        "complete": true,
+        "exactScope": true,
+        "malformed": 0,
+        "expected": 10,
+        "receiptCount": 10,
+        "uniqueCorrelationCount": 10,
+        "receivedCount": 10,
+        "timingCount": 10,
+        "joined": 10,
+        "timingDistribution": {
+          "clientDurationMs": {
+            "count": 10,
+            "p50": 21.707375,
+            "p95": 87.555542,
+            "p99": 87.555542
+          },
+          "serverDurationMs": {
+            "count": 10,
+            "p50": 15.930875,
+            "p95": 80.300667,
+            "p99": 80.300667
+          },
+          "receiveDurationMs": {
+            "count": 10,
+            "p50": 14.235167,
+            "p95": 42.455,
+            "p99": 42.455
+          }
+        },
+        "samplesOver300ms": 0
+      },
+      "evidenceHash": "ad9d59cd85feb149752c83162df294c914541b76dcae4519112308369c17c429",
+      "finalScopeConsistent": true
+    },
+    {
+      "mode": "full",
+      "exitCode": 1,
+      "valid": false,
+      "browserObservationValid": false,
+      "fullVerified": false,
+      "owned": true,
+      "cleanup": true,
+      "gateComplete": false,
+      "waitsComplete": true,
+      "waitsStatus": "OBSERVED",
+      "snapshotCalls": 1,
+      "ingressComplete": true,
+      "joined": 1000,
+      "startedAt": "2026-11-25T01:40:25.902Z",
+      "completedAt": "2026-11-25T01:40:59.937Z",
+      "apiMode": "INGRESS_TIMING",
+      "k6Exit": 0,
+      "observationValid": false,
+      "diagnosticsComplete": true,
+      "consistency": {
+        "valid": false
+      },
+      "http": {
+        "count": 1000,
+        "iterations": 1000,
+        "received": 1000,
+        "p50": 18.474249999999998,
+        "p95": 165.66227465,
+        "p99": 939.74006992,
+        "errorRate": 0
+      },
+      "phaseSummary": {
+        "complete": true,
+        "phases": {
+          "blocked": {
+            "p50": 0.007334,
+            "p95": 0.02870144999999997,
+            "p99": 2.9120188399999987
+          },
+          "connecting": {
+            "p50": 0,
+            "p95": 0,
+            "p99": 1.6330608299999996
+          },
+          "sending": {
+            "p50": 0.0282705,
+            "p95": 0.12262354999999997,
+            "p99": 0.6519745899999996
+          },
+          "waiting": {
+            "p50": 17.9401875,
+            "p95": 165.3953479,
+            "p99": 939.6486470899999
+          },
+          "receiving": {
+            "p50": 0.145021,
+            "p95": 1.890850349999999,
+            "p99": 7.270964159999995
+          }
+        }
+      },
+      "failures": [
+        {
+          "source": "snapshot",
+          "kind": "FAILED",
+          "code": "SQL_QUERY_CANCELED"
+        }
+      ],
+      "error": "COLLECTION_FAILED",
+      "clock": {
+        "loadStartedMs": 10870.664125,
+        "loadEndedMs": 20854.726625,
+        "recoveredMs": null
+      },
+      "gate": {
+        "complete": false,
+        "readyAfterZero": true,
+        "snapshotAfterReady": true,
+        "snapshotCalls": 1,
+        "ready": {
+          "startedMs": 29845.5725,
+          "completedMs": 30041.205542,
+          "requestCount": 1000,
+          "completedCount": 1000
+        },
+        "preLagCommandId": 36,
+        "preLagSample": {
+          "startedMs": 27178.147084,
+          "completedMs": 29845.442959,
+          "rows": [
+            {
+              "partition": 0,
+              "currentOffset": 2183,
+              "endOffset": 2183,
+              "lag": 0
+            },
+            {
+              "partition": 1,
+              "currentOffset": 2926,
+              "endOffset": 2926,
+              "lag": 0
+            },
+            {
+              "partition": 2,
+              "currentOffset": 3646,
+              "endOffset": 3646,
+              "lag": 0
+            }
+          ]
+        },
+        "readinessCommandId": 37,
+        "snapshotCommand": {
+          "commandId": 38,
+          "operation": "SCOPED_SQL",
+          "startedMs": 30114.335292,
+          "completedMs": 34278.064292,
+          "durationMs": 4163.729000000003,
+          "timeoutMs": 5000,
+          "outcome": "FAILED",
+          "exitCode": 1,
+          "signal": null
+        },
+        "postLagCommandId": null,
+        "postLagSample": null,
+        "recoveryDltCommandId": null,
+        "dltUnchanged": null
+      },
+      "waits": {
+        "complete": true,
+        "linked": true,
+        "validSamples": true,
+        "matchedCounts": true,
+        "cleanupVerified": true,
+        "status": "OBSERVED",
+        "counts": {
+          "NO_TARGET": 2,
+          "IO": 1,
+          "NO_WAIT_OBSERVED": 38
+        },
+        "activeSamples": 39,
+        "samples": [
+          {
+            "sentOffsetMs": 1.9871249999996508,
+            "receivedOffsetMs": 4.435832999999548,
+            "category": "NO_TARGET"
+          },
+          {
+            "sentOffsetMs": 103.51729200000045,
+            "receivedOffsetMs": 105.98283300000185,
+            "category": "NO_WAIT_OBSERVED"
+          },
+          {
+            "sentOffsetMs": 205.5761249999996,
+            "receivedOffsetMs": 207.45716700000048,
+            "category": "NO_WAIT_OBSERVED"
+          },
+          {
+            "sentOffsetMs": 307.5690829999985,
+            "receivedOffsetMs": 309.50616699999955,
+            "category": "NO_WAIT_OBSERVED"
+          },
+          {
+            "sentOffsetMs": 408.9971250000017,
+            "receivedOffsetMs": 410.9316250000011,
+            "category": "NO_WAIT_OBSERVED"
+          },
+          {
+            "sentOffsetMs": 510.3804999999993,
+            "receivedOffsetMs": 512.1111249999994,
+            "category": "NO_WAIT_OBSERVED"
+          },
+          {
+            "sentOffsetMs": 612.7044580000002,
+            "receivedOffsetMs": 615.0631250000006,
+            "category": "NO_WAIT_OBSERVED"
+          },
+          {
+            "sentOffsetMs": 714.1537080000016,
+            "receivedOffsetMs": 716.0552500000013,
+            "category": "NO_WAIT_OBSERVED"
+          },
+          {
+            "sentOffsetMs": 815.484542000002,
+            "receivedOffsetMs": 817.2166670000006,
+            "category": "NO_WAIT_OBSERVED"
+          },
+          {
+            "sentOffsetMs": 917.7452499999999,
+            "receivedOffsetMs": 919.572500000002,
+            "category": "NO_WAIT_OBSERVED"
+          },
+          {
+            "sentOffsetMs": 1020.1147500000006,
+            "receivedOffsetMs": 1021.8305,
+            "category": "NO_WAIT_OBSERVED"
+          },
+          {
+            "sentOffsetMs": 1121.757958000002,
+            "receivedOffsetMs": 1123.763750000002,
+            "category": "NO_WAIT_OBSERVED"
+          },
+          {
+            "sentOffsetMs": 1222.8366669999996,
+            "receivedOffsetMs": 1224.9654579999988,
+            "category": "NO_WAIT_OBSERVED"
+          },
+          {
+            "sentOffsetMs": 1323.559792,
+            "receivedOffsetMs": 1325.930292000001,
+            "category": "NO_WAIT_OBSERVED"
+          },
+          {
+            "sentOffsetMs": 1424.2849999999999,
+            "receivedOffsetMs": 1426.494125000001,
+            "category": "NO_WAIT_OBSERVED"
+          },
+          {
+            "sentOffsetMs": 1525.9614169999986,
+            "receivedOffsetMs": 1528.4789579999997,
+            "category": "NO_WAIT_OBSERVED"
+          },
+          {
+            "sentOffsetMs": 1627.544750000001,
+            "receivedOffsetMs": 1630.0375420000018,
+            "category": "NO_WAIT_OBSERVED"
+          },
+          {
+            "sentOffsetMs": 1729.1362919999992,
+            "receivedOffsetMs": 1731.5338330000013,
+            "category": "NO_WAIT_OBSERVED"
+          },
+          {
+            "sentOffsetMs": 1830.5054170000003,
+            "receivedOffsetMs": 1832.6006249999991,
+            "category": "NO_WAIT_OBSERVED"
+          },
+          {
+            "sentOffsetMs": 1930.7223330000015,
+            "receivedOffsetMs": 1932.4114579999987,
+            "category": "NO_WAIT_OBSERVED"
+          },
+          {
+            "sentOffsetMs": 2032.6533750000017,
+            "receivedOffsetMs": 2034.4306250000009,
+            "category": "NO_WAIT_OBSERVED"
+          },
+          {
+            "sentOffsetMs": 2134.8315829999992,
+            "receivedOffsetMs": 2136.5369580000006,
+            "category": "NO_WAIT_OBSERVED"
+          },
+          {
+            "sentOffsetMs": 2236.4381250000006,
+            "receivedOffsetMs": 2238.3814999999995,
+            "category": "NO_WAIT_OBSERVED"
+          },
+          {
+            "sentOffsetMs": 2339.156332999999,
+            "receivedOffsetMs": 2340.936708000001,
+            "category": "IO"
+          },
+          {
+            "sentOffsetMs": 2440.518167000002,
+            "receivedOffsetMs": 2442.2263329999987,
+            "category": "NO_WAIT_OBSERVED"
+          },
+          {
+            "sentOffsetMs": 2542.6979170000013,
+            "receivedOffsetMs": 2544.3513329999987,
+            "category": "NO_WAIT_OBSERVED"
+          },
+          {
+            "sentOffsetMs": 2643.8343749999985,
+            "receivedOffsetMs": 2646.0002080000013,
+            "category": "NO_WAIT_OBSERVED"
+          },
+          {
+            "sentOffsetMs": 2744.450249999998,
+            "receivedOffsetMs": 2746.1860419999975,
+            "category": "NO_WAIT_OBSERVED"
+          },
+          {
+            "sentOffsetMs": 2846.4887080000008,
+            "receivedOffsetMs": 2849.4240830000017,
+            "category": "NO_WAIT_OBSERVED"
+          },
+          {
+            "sentOffsetMs": 2948.744499999997,
+            "receivedOffsetMs": 2950.5682080000006,
+            "category": "NO_WAIT_OBSERVED"
+          },
+          {
+            "sentOffsetMs": 3050.486832999999,
+            "receivedOffsetMs": 3052.2238749999997,
+            "category": "NO_WAIT_OBSERVED"
+          },
+          {
+            "sentOffsetMs": 3152.431625000001,
+            "receivedOffsetMs": 3153.8844169999975,
+            "category": "NO_WAIT_OBSERVED"
+          },
+          {
+            "sentOffsetMs": 3252.611166999999,
+            "receivedOffsetMs": 3254.516249999997,
+            "category": "NO_WAIT_OBSERVED"
+          },
+          {
+            "sentOffsetMs": 3354.913666999997,
+            "receivedOffsetMs": 3356.800707999999,
+            "category": "NO_WAIT_OBSERVED"
+          },
+          {
+            "sentOffsetMs": 3456.756250000002,
+            "receivedOffsetMs": 3458.559167000003,
+            "category": "NO_WAIT_OBSERVED"
+          },
+          {
+            "sentOffsetMs": 3558.5665830000034,
+            "receivedOffsetMs": 3560.134083000001,
+            "category": "NO_WAIT_OBSERVED"
+          },
+          {
+            "sentOffsetMs": 3660.5624579999967,
+            "receivedOffsetMs": 3662.1910830000015,
+            "category": "NO_WAIT_OBSERVED"
+          },
+          {
+            "sentOffsetMs": 3761.957624999999,
+            "receivedOffsetMs": 3763.5622079999994,
+            "category": "NO_WAIT_OBSERVED"
+          },
+          {
+            "sentOffsetMs": 3862.867792000001,
+            "receivedOffsetMs": 3864.677166999998,
+            "category": "NO_WAIT_OBSERVED"
+          },
+          {
+            "sentOffsetMs": 3964.3390420000032,
+            "receivedOffsetMs": 3965.9628330000014,
+            "category": "NO_WAIT_OBSERVED"
+          },
+          {
+            "sentOffsetMs": 4065.551875000001,
+            "receivedOffsetMs": 4067.240916999999,
+            "category": "NO_TARGET"
+          }
+        ],
+        "errors": 0,
+        "discarded": 0,
+        "maxGapMs": 103.23804100000416,
+        "commandId": 38,
+        "cancelReason": "STATEMENT_TIMEOUT"
+      },
+      "readinessChecks": [
+        {
+          "startedMs": 29845.5725,
+          "completedMs": 30041.205542,
+          "requestCount": 1000,
+          "completedCount": 1000
+        }
+      ],
+      "recoveryCommands": [
+        {
+          "commandId": 36,
+          "operation": "KAFKA_LAG",
+          "startedMs": 27178.152584,
+          "completedMs": 29845.275834,
+          "durationMs": 2667.1232500000006,
+          "timeoutMs": 12000,
+          "outcome": "SUCCEEDED",
+          "exitCode": 0,
+          "signal": null
+        },
+        {
+          "commandId": 37,
+          "operation": "SETTLEMENT_READINESS",
+          "startedMs": 29845.7015,
+          "completedMs": 30041.162875,
+          "durationMs": 195.4613750000026,
+          "timeoutMs": 5000,
+          "outcome": "SUCCEEDED",
+          "exitCode": 0,
+          "signal": null
+        },
+        {
+          "commandId": 38,
+          "operation": "SCOPED_SQL",
+          "startedMs": 30114.335292,
+          "completedMs": 34278.064292,
+          "durationMs": 4163.729000000003,
+          "timeoutMs": 5000,
+          "outcome": "FAILED",
+          "exitCode": 1,
+          "signal": null
+        }
+      ],
+      "resourcesValid": false,
+      "commandTrace": {
+        "count": 40,
+        "complete": true,
+        "successful": false,
+        "sqlOrFailed": [
+          {
+            "commandId": 14,
+            "operation": "SCOPED_SQL",
+            "startedMs": 6515.719875,
+            "completedMs": 6688.194792,
+            "durationMs": 172.47491700000046,
+            "timeoutMs": 5000,
+            "outcome": "SUCCEEDED",
+            "exitCode": 0,
+            "signal": null
+          },
+          {
+            "commandId": 38,
+            "operation": "SCOPED_SQL",
+            "startedMs": 30114.335292,
+            "completedMs": 34278.064292,
+            "durationMs": 4163.729000000003,
+            "timeoutMs": 5000,
+            "outcome": "FAILED",
+            "exitCode": 1,
+            "signal": null
+          }
+        ]
+      },
+      "peakLag": 137,
+      "finalLag": [
+        0,
+        0,
+        0
+      ],
+      "dltBefore": [
+        0,
+        0,
+        0
+      ],
+      "recoveryObservedMs": null,
+      "sql": null,
+      "browserFrameCount": 192,
+      "finalFrames": [
+        {
+          "role": "B",
+          "version": 96,
+          "price": 50010000,
+          "atMs": 29105.146042
+        },
+        {
+          "role": "A",
+          "version": 96,
+          "price": 50010000,
+          "atMs": 29106.866584
+        }
+      ],
+      "finalScreenChecks": [
+        {
+          "role": "B",
+          "price": 50010000,
+          "atMs": 29110.355292
+        },
+        {
+          "role": "A",
+          "price": 50010000,
+          "atMs": 29111.6635
+        }
+      ],
+      "ingress": {
+        "complete": true,
+        "exactScope": true,
+        "malformed": 0,
+        "expected": 1000,
+        "receiptCount": 1000,
+        "uniqueCorrelationCount": 1000,
+        "receivedCount": 1000,
+        "timingCount": 1000,
+        "joined": 1000,
+        "timingDistribution": {
+          "clientDurationMs": {
+            "count": 1000,
+            "p50": 18.470375,
+            "p95": 165.662208,
+            "p99": 939.705417
+          },
+          "serverDurationMs": {
+            "count": 1000,
+            "p50": 14.844375,
+            "p95": 143.955542,
+            "p99": 927.16525
+          },
+          "receiveDurationMs": {
+            "count": 1000,
+            "p50": 13.613416,
+            "p95": 137.6735,
+            "p99": 924.580292
+          }
+        },
+        "samplesOver300ms": 24
+      },
+      "evidenceHash": "5ba73be55c69016deba836a4c16731995f12860a5399c145d13feb3b09b8d1b1",
+      "finalScopeConsistent": true,
+      "dltAfter": null,
+      "browser": null,
+      "postgresStatementTimeoutAt": "2026-11-25T01:40:59.542Z"
+    }
+  ],
+  "separateFixtures": true,
+  "configuration": {
+    "profile": "local",
+    "clock": "system",
+    "outboxDelayMs": 100,
+    "logging": "INFO",
+    "ingressTiming": true,
+    "settlementWaits": true,
+    "statementTimeoutMs": 4000,
+    "processTimeoutMs": 5000,
+    "recoveryBudgetMs": 60000
+  }
+}

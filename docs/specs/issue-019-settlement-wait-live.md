@@ -1,6 +1,6 @@
 # 정산 SQL 대기 관측 실제 부하 검증 계획
 
-- 상태: 별도 실행 승인 대기. 기존 [#19](https://github.com/dev-baek/bidflow/issues/19)의 범위다.
+- 상태: #323 병합 승인 후 스모크와 별도 경매 누적 1,000건을 각각 한 번 실행했다. 본 실행 대기 관측은 확보했으나 정산 SQL 취소로 전체 미통과다. [실측 결과](../reports/issue-019-settlement-wait-live.md). 기존 [#19](https://github.com/dev-baek/bidflow/issues/19)의 범위다.
 - 근거: [#316 실제 서버 취소](../reports/issue-019-settlement-gate-live.md), [#320 인덱스 비교](../reports/issue-019-settlement-outbox-comparison.md), [#322 계측과 격리 검증](../reports/issue-019-settlement-wait-observation.md).
 
 #316에서는 Kafka 적체 0과 요청 완료 1,000건을 확인한 뒤 정산 SQL이 서버의 4초 제한에 걸렸다. #322의 관측기는 격리 DB의 합성 잠금은 포착했지만, 이전 부하의 원인을 입증하지 못한다. 이번에는 같은 로컬 부하 조건에서 **정산 SELECT의 성공 여부와, 해당 명령 중 실제로 관측한 대기**를 한 실행에서 별도로 기록한다. 채택 보류한 인덱스와 기존 판정 기준은 바꾸지 않는다.
