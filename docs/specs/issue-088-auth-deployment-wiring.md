@@ -18,7 +18,7 @@ Terraform이 가진 Cognito 공개 값과 확인용 API FQDN·CloudFront 도메�
 | Cognito issuer와 Client ID | `VITE_COGNITO_ISSUER`, `VITE_COGNITO_CLIENT_ID` | `BIDFLOW_COGNITO_ISSUER_URI`, `BIDFLOW_COGNITO_CLIENT_ID` |
 | Cognito 로그인 origin과 callback URL | `VITE_COGNITO_ORIGIN`, `VITE_COGNITO_REDIRECT_URI` | 주입하지 않음 |
 | 승인된 API FQDN | `VITE_API_BASE_URL=https://<host>`, `VITE_WS_BASE_URL=wss://<host>` | 주입하지 않음 |
-| CloudFront HTTPS origin | callback과 logout 반환 경로의 기준 | REST CORS와 STOMP의 동일 허용 origin |
+| CloudFront HTTPS origin | callback과 logout 반환 경로의 기준 | `BIDFLOW_VERIFICATION_WEB_ORIGIN`: REST CORS와 STOMP의 동일 허용 origin |
 | 실행 모드 | `VITE_AUTH_MODE=cognito` | `SPRING_PROFILES_ACTIVE=verification` |
 
 브로커가 `/ws`를 붙이므로 WebSocket 기본 주소에는 경로를 넣지 않는다. Vite 값은 빌드 시 번들에 포함되는 공개 값이므로 필요한 키만 명시적으로 사용한다. 인증 정보가 누락되면 배포용 빌드 준비 단계에서 차단하고 로컬 로그인으로 대체하지 않는다. 토큰·비밀번호·Secret의 내용은 Vite, Terraform 출력, EC2 User Data에 넣지 않는다. [Vite 환경 변수 계약](https://vite.dev/guide/env-and-mode.html).
@@ -26,6 +26,7 @@ Terraform이 가진 Cognito 공개 값과 확인용 API FQDN·CloudFront 도메�
 ## B. Spring의 정확한 origin 경계
 
 - `verification` 프로필에서 검증한 단일 HTTPS CloudFront origin을 REST와 WebSocket에 함께 사용한다. 누락·경로 포함·와일드카드·루프백·다중 origin은 거부한다. 로컬 프로필의 기존 origin과 개발자 ID 동작은 유지한다.
+- `verification`에 `local` 또는 `e2e`를 함께 지정하면 시작을 중단한다. WebSocket 업그레이드는 `Origin`이 없거나 중복되어도 거부한다.
 - REST는 `/api/v1/**`의 현재 화면 요청 `GET`·`POST`와 preflight만 이 origin에 허용한다. `Authorization`, `Content-Type`, `Idempotency-Key`를 허용하고 쿠키 기반 CORS 및 `X-Actor-Id`는 허용하지 않는다. `/api/internal/**`과 Actuator에 새 허용 규칙을 만들지 않는다.
 - CORS preflight는 JWT 필터보다 먼저 평가해 토큰 없이 성공할 수 있다. 실제 보호 요청에 대한 JWT 검증과 소유권 인가는 그대로다. STOMP는 `/ws` 업그레이드의 origin을 검사하고, CONNECT에서 기존 토큰 검증을 계속한다. [Spring Security의 CORS 처리](https://docs.spring.io/spring-security/reference/servlet/integrations/cors.html).
 
