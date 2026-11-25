@@ -1,6 +1,6 @@
 # Cognito 프런트엔드 로그인과 로컬 검증 사양
 
-- 상태: 검토 대기. 기존 [#5](https://github.com/dev-baek/bidflow/issues/5)의 프런트엔드 범위다.
+- 상태: 구현 병합(#326–#328), 실제 AWS 검증 대기. 기존 [#5](https://github.com/dev-baek/bidflow/issues/5)의 프런트엔드 범위다.
 - 기반: [인증·인가 계약](issue-005-authentication.md), [#39 Cognito 설정](https://github.com/dev-baek/bidflow/issues/39), [#91 AWS 스모크](https://github.com/dev-baek/bidflow/issues/91).
 
 현재 React에는 개발자 ID로 세션을 만드는 로컬 로그인만 있다. Spring Boot의 Cognito 검증은 그대로 두고, 프런트엔드에 로그인 왕복·세션 정리와 REST 및 STOMP의 Access Token 전달을 추가한다. AWS 계정을 연결하기 전에 로컬 대역으로 이 계약을 검증한다.
@@ -37,3 +37,13 @@ Cognito 모드에 필요한 공개 계약은 issuer URL, 관리형 로그인 HTT
 | 세션 상태 | 초기·처리 중·실패·성공·만료·로그아웃을 가짜 시계와 대역으로 재현한다. 지연된 성공/401은 다른 세션을 덮지 않는다. 새로고침 후 토큰 저장 흔적이 없다. |
 | 전송 | 보호 REST/STOMP는 Access Token만 사용한다. 토큰 없음·만료·잘못된 설정은 차단되고, 공개 조회·외부 업로드에 자격 증명이 새지 않는다. 기존 로컬 개발자 로그인과 인수 테스트는 유지한다. |
 | 검증 | Vitest 상태/어댑터·헤더 테스트, 로컬 콜백 흐름, `make verify`를 통과한다. 대역 통과는 실제 Cognito 또는 AWS 배포 통과로 기록하지 않는다. |
+
+### 로컬 Chromium 재현
+
+프런트엔드 의존성 설치 후 Chromium이 없다면 `npm --prefix apps/web exec -- playwright install chromium`을 실행한다. 저장소 루트에서 다음 명령을 실행한다.
+
+```sh
+npm --prefix apps/web run test:e2e -- --config playwright.cognito.config.ts
+```
+
+별도 localhost 포트 4175에서 배포용 프런트엔드 빌드를 띄운다. Playwright가 합성 로그인·API·STOMP 응답을 제공하므로 기존 로컬 E2E, 실행 중인 API, DB와 AWS 계정을 사용하지 않는다. 일치하는 콜백의 PKCE 교환, 공개 검색/상세의 토큰 제외, 보호 입찰·STOMP의 토큰 전달, 401 후 연결 종료, 불일치 콜백의 교환 차단을 검증한다. 실제 Cognito·ALB의 CORS·WebSocket 설정은 이 대역 검증의 범위가 아니다.
