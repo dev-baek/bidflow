@@ -13,7 +13,7 @@ export function HomePage() {
         </p>
         {state.mode === "AUTHENTICATED" ? (
           <div className="auth-summary">
-            <p><strong>{state.subject}</strong>으로 로그인했습니다.</p>
+            <p>{state.provider === "LOCAL" ? <><strong>{state.subject}</strong>으로 로그인했습니다.</> : "Cognito로 로그인했습니다."}</p>
             <button type="button" onClick={signOut}>로그아웃</button>
           </div>
         ) : (

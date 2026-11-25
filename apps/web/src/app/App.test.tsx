@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { cleanup, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 import { App } from "./App";
 
@@ -12,6 +12,7 @@ const validConfig = {
 
 describe("App", () => {
   afterEach(() => {
+    cleanup();
     window.history.replaceState({}, "", "/");
   });
 
@@ -45,5 +46,16 @@ describe("App", () => {
     expect(
       screen.getByRole("heading", { name: "페이지를 찾을 수 없습니다" }),
     ).toBeInTheDocument();
+  });
+
+  it("rejects a Cognito callback origin different from the app without falling back to local login", () => {
+    render(<App configResult={{
+      ok: true, value: { ...validConfig.value, cognito: {
+        issuer: "https://issuer.example.test/pool", origin: "https://login.example.test", clientId: "publicclient",
+        redirectUri: "https://elsewhere.example.test/auth/callback",
+      } },
+    }} />);
+    expect(screen.getByRole("alert")).toHaveTextContent("Cognito 로그인 환경을 확인하세요.");
+    expect(screen.queryByText("로컬 로그인")).not.toBeInTheDocument();
   });
 });

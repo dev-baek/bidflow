@@ -9,5 +9,8 @@ export function RequireAuthenticated() {
     return <Navigate to="/login" replace state={{ from: location.pathname }} />;
   }
 
+  if (state.provider === "COGNITO") return <main className="app-shell">
+    <p role="status">Cognito 세션의 보호 요청 연결은 아직 지원하지 않습니다.</p>
+  </main>;
   return <Outlet />;
 }

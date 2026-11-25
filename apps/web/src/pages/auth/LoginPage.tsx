@@ -4,11 +4,24 @@ import { useAuth } from "../../features/auth/auth-context";
 
 export function LoginPage() {
   const [actorId, setActorId] = useState("");
-  const { state, signInLocal } = useAuth();
+  const { state, signInLocal, cognitoEnabled, signInCognito } = useAuth();
   const navigate = useNavigate();
 
   if (state.mode === "AUTHENTICATED") {
     return <Navigate to="/" replace />;
+  }
+
+  if (cognitoEnabled) {
+    return <main className="app-shell">
+      <section className="listing-form auth-card" aria-labelledby="login-title">
+        <h1 id="login-title">로그인</h1>
+        {state.mode === "EXPIRED" && <p role="alert">세션이 만료되었습니다. 다시 로그인하세요.</p>}
+        {state.mode === "FAILED" && <p role="alert">{state.message}</p>}
+        <button type="button" disabled={state.mode === "AUTHENTICATING"} onClick={() => void signInCognito()}>
+          Cognito 로그인
+        </button>
+      </section>
+    </main>;
   }
 
   const submit = (event: FormEvent<HTMLFormElement>) => {
