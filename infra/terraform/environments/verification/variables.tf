@@ -160,3 +160,19 @@ variable "cognito_domain_prefix" {
     error_message = "Enabled Cognito requires a valid 1–63 character Cognito domain prefix, not a URL."
   }
 }
+
+variable "verification_api_fqdn" {
+  description = "Browser API hostname with a matching certificate on the verification ALB."
+  type        = string
+  default     = null
+
+  validation {
+    condition = !var.enable_cognito || try(
+      length(var.verification_api_fqdn) <= 253 &&
+      can(regex("^([a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?\\.)+[a-z][a-z0-9]{1,62}$", var.verification_api_fqdn)) &&
+      !can(regex("\\.(localhost|local|internal|elb\\.amazonaws\\.com)$", var.verification_api_fqdn)),
+      false
+    )
+    error_message = "Cognito requires a verification API FQDN, not an ALB default DNS name, local address, URL, port, or wildcard."
+  }
+}

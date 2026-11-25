@@ -8,6 +8,10 @@ aws secretsmanager get-secret-value \
   --query SecretString \
   --output text > /etc/bidflow/runtime.env
 chmod 0600 /etc/bidflow/runtime.env
+%{ if verification_auth_env_base64 != "" ~}
+${verification_guard}
+check_verification_runtime_env /etc/bidflow/runtime.env
+%{ endif ~}
 
 aws secretsmanager get-secret-value \
   --region '${region}' \
@@ -27,6 +31,10 @@ database_password=$(jq -r '.password' /etc/bidflow/rds-secret.json)
   printf 'BIDFLOW_DATABASE_PASSWORD=%s\n' "$database_password"
 } > /etc/bidflow/runtime-complete.env
 chmod 0600 /etc/bidflow/runtime-complete.env
+%{ if verification_auth_env_base64 != "" ~}
+printf '\n' >> /etc/bidflow/runtime-complete.env
+printf '%s' '${verification_auth_env_base64}' | base64 -d >> /etc/bidflow/runtime-complete.env
+%{ endif ~}
 
 %{ if enable_managed_redis ~}
 aws secretsmanager get-secret-value --region '${region}' --secret-id '${redis_secret_arn}' --query SecretString --output text > /etc/bidflow/redis-secret.json

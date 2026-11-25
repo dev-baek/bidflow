@@ -12,6 +12,10 @@ provider "aws" {
   }
 }
 
+locals {
+  cognito_public_config = one(module.cognito[*].public_config)
+}
+
 data "aws_caller_identity" "current" {}
 
 data "aws_region" "current" {}
@@ -90,7 +94,12 @@ module "private_runtime" {
   redis_endpoint                    = module.managed_redis.endpoint
   redis_secret_arn                  = module.managed_redis.secret_arn
   target_group_arn                  = module.application_edge.target_group_arn
-  vpc_id                            = module.network.vpc_id
+  verification_auth = var.enable_cognito ? {
+    issuer_uri = local.cognito_public_config.issuer_uri
+    client_id  = local.cognito_public_config.client_id
+    web_origin = "https://${module.web_delivery.cloudfront_domain_name}"
+  } : null
+  vpc_id = module.network.vpc_id
 }
 
 module "private_rds" {

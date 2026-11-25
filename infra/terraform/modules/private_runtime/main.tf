@@ -1,5 +1,12 @@
 locals {
   image_registry = split("@", var.application_image)[0]
+  verification_auth_env = var.verification_auth == null ? "" : join("\n", [
+    "SPRING_PROFILES_ACTIVE=verification",
+    "BIDFLOW_COGNITO_ISSUER_URI=${var.verification_auth.issuer_uri}",
+    "BIDFLOW_COGNITO_CLIENT_ID=${var.verification_auth.client_id}",
+    "BIDFLOW_VERIFICATION_WEB_ORIGIN=${var.verification_auth.web_origin}",
+    "",
+  ])
 }
 
 resource "aws_launch_template" "application" {
@@ -7,18 +14,20 @@ resource "aws_launch_template" "application" {
   image_id      = var.ami_id
   instance_type = var.instance_type
   user_data = base64encode(templatefile("${path.module}/user-data.sh.tftpl", {
-    application_image       = var.application_image
-    database_secret_arn     = var.database_secret_arn
-    enable_managed_redis    = var.enable_managed_redis
-    enable_managed_kafka    = var.enable_managed_kafka
-    enable_managed_search   = var.enable_managed_search
-    image_registry          = local.image_registry
-    kafka_bootstrap_brokers = var.kafka_bootstrap_brokers
-    region                  = var.region
-    redis_endpoint          = var.redis_endpoint
-    redis_secret_arn        = var.redis_secret_arn
-    opensearch_endpoint     = var.opensearch_endpoint
-    runtime_secret_arn      = var.runtime_secret_arn
+    application_image            = var.application_image
+    database_secret_arn          = var.database_secret_arn
+    enable_managed_redis         = var.enable_managed_redis
+    enable_managed_kafka         = var.enable_managed_kafka
+    enable_managed_search        = var.enable_managed_search
+    image_registry               = local.image_registry
+    kafka_bootstrap_brokers      = var.kafka_bootstrap_brokers
+    region                       = var.region
+    redis_endpoint               = var.redis_endpoint
+    redis_secret_arn             = var.redis_secret_arn
+    opensearch_endpoint          = var.opensearch_endpoint
+    runtime_secret_arn           = var.runtime_secret_arn
+    verification_auth_env_base64 = base64encode(local.verification_auth_env)
+    verification_guard           = file("${path.module}/verification-runtime-guard.sh")
   }))
 
   iam_instance_profile {

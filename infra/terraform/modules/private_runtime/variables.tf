@@ -64,6 +64,25 @@ variable "runtime_secret_arn" {
   type        = string
 }
 
+variable "verification_auth" {
+  description = "Public verification auth configuration owned by Terraform, not Runtime Secret."
+  type = object({
+    issuer_uri = string
+    client_id  = string
+    web_origin = string
+  })
+  default = null
+
+  validation {
+    condition = var.verification_auth == null ? true : (
+      can(regex("^https://cognito-idp\\.ap-northeast-1\\.amazonaws\\.com/ap-northeast-1_[A-Za-z0-9]+$", var.verification_auth.issuer_uri)) &&
+      can(regex("^[A-Za-z0-9]{1,128}$", var.verification_auth.client_id)) &&
+      can(regex("^https://d[a-z0-9]{1,62}\\.cloudfront\\.net$", var.verification_auth.web_origin))
+    )
+    error_message = "Verification auth requires a Tokyo Cognito issuer, public client ID, and exact CloudFront HTTPS origin."
+  }
+}
+
 variable "database_secret_arn" {
   description = "RDS-managed PostgreSQL credential secret read only at instance boot."
   type        = string

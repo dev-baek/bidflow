@@ -38,13 +38,14 @@ variables {
   application_image              = "123456789012.dkr.ecr.ap-northeast-1.amazonaws.com/bidflow@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
   application_runtime_secret_arn = "arn:aws:secretsmanager:ap-northeast-1:123456789012:secret:mock-only"
   enable_nat_gateway             = true
+  verification_api_fqdn          = "api.example.test"
 }
 
 run "default_creates_no_cognito_module_or_config" {
   command = plan
 
   assert {
-    condition     = length(module.cognito) == 0 && output.cognito_public_config == null
+    condition     = length(module.cognito) == 0 && output.cognito_public_config == null && output.verification_web_build_env == null
     error_message = "Verification must not create Cognito or expose settings until enabled."
   }
 }
@@ -88,6 +89,31 @@ run "enabled_config_uses_the_real_web_delivery_output" {
     }
     error_message = "Enabled Cognito must publish exactly the five settings derived from the mocked provider and existing CloudFront module."
   }
+
+  assert {
+    condition     = output.verification_web_build_env.VITE_API_BASE_URL == "https://api.example.test" && output.verification_web_build_env.VITE_WS_BASE_URL == "wss://api.example.test" && output.verification_web_build_env.VITE_COGNITO_ISSUER == output.cognito_public_config.issuer_uri && output.verification_web_build_env.VITE_COGNITO_CLIENT_ID == output.cognito_public_config.client_id
+    error_message = "Vite must receive the same Cognito configuration and path-free API endpoints."
+  }
+}
+
+run "enabled_without_api_fqdn_is_rejected" {
+  command = plan
+  variables {
+    enable_cognito        = true
+    cognito_domain_prefix = "bidflow-mock-test"
+    verification_api_fqdn = null
+  }
+  expect_failures = [var.verification_api_fqdn]
+}
+
+run "enabled_with_api_url_or_port_is_rejected" {
+  command = plan
+  variables {
+    enable_cognito        = true
+    cognito_domain_prefix = "bidflow-mock-test"
+    verification_api_fqdn = "https://api.example.test:443"
+  }
+  expect_failures = [var.verification_api_fqdn]
 }
 
 run "enabled_cognito_requires_the_verification_account" {
