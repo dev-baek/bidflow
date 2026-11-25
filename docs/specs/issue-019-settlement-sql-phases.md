@@ -1,6 +1,6 @@
 # 정산 검증 SELECT 비용 분리 진단 사양
 
-- 상태: 검토 대기. 기존 [#19](https://github.com/dev-baek/bidflow/issues/19)의 후속 진단이다. 이 PR은 사양만 추가한다.
+- 상태: #331 사양 병합, 격리 측정 완료. [측정 결과와 재현 명령](../reports/issue-019-settlement-sql-phases.md). 기존 [#19](https://github.com/dev-baek/bidflow/issues/19)의 후속 진단이다.
 - 근거: [#316 서버 취소](../reports/issue-019-settlement-gate-live.md), [#320 인덱스 비교](../reports/issue-019-settlement-outbox-comparison.md), [#324 실제 부하 관측](../reports/issue-019-settlement-wait-live.md).
 
 #316과 #324에서는 Kafka Lag 0과 입찰 처리 상태 1,000건을 확인했지만, 검증용 정산 SELECT가 서버의 4초 제한에 걸려 같은 실행의 원장·A/B 화면을 대조하지 못했다. #324의 활성 표본 39개 중 I/O는 1개였고 나머지는 표시된 대기가 없었다. I/O가 원인이었다거나 나머지 시간을 CPU가 모두 사용했다고 볼 수 없다. #320의 인덱스 후보는 채택 기준에 미달했으므로 다시 적용하지 않는다.
