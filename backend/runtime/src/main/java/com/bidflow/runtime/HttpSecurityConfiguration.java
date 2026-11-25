@@ -6,6 +6,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -63,8 +64,10 @@ class CognitoJwtDecoderConfiguration {
 @Profile("!local")
 class CognitoHttpSecurityConfiguration {
     @Bean
-    SecurityFilterChain cognitoSecurityFilterChain(HttpSecurity http, ObjectProvider<JwtDecoder> decoder) throws Exception {
+    SecurityFilterChain cognitoSecurityFilterChain(HttpSecurity http, ObjectProvider<JwtDecoder> decoder,
+            Environment environment) throws Exception {
         ApiSecurityErrorHandler errors = new ApiSecurityErrorHandler();
+        if (environment.matchesProfiles("verification")) http.cors(Customizer.withDefaults());
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
