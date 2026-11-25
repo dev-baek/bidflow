@@ -30,7 +30,9 @@ describe("AuctionDetailPage", () => {
     } else {
       expect(await screen.findByText("내가 낙찰받았습니다.")).toBeVisible();
     }
-    const [[publicUrl, publicInit], [privateUrl, privateInit]] = request.mock.calls;
+    expect(request).toHaveBeenCalledTimes(2);
+    const [publicUrl, publicInit] = request.mock.calls[0]!;
+    const [privateUrl, privateInit] = request.mock.calls[1]!;
     expect(publicUrl).toBe("https://api.example.test/api/v1/auctions/auction-1");
     expect(privateUrl).toBe(`https://api.example.test${status === "ACTIVE" ? "/api/v1/auctions/auction-1/bid-requests" : outcomePath}`);
     expect(new Headers(publicInit?.headers).get("Authorization")).toBeNull();

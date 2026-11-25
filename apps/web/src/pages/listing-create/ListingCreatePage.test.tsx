@@ -29,7 +29,7 @@ describe("ListingCreatePage", () => {
 
     for (const [label, value] of [["상품 제목", "경매 카메라"], ["상품 설명", "정상 동작하는 카메라를 판매합니다."],
       ["카테고리", "DIGITAL"], ["상품 상태", "GOOD"], ["시작가 (원)", "10000"],
-      ["시작 시각 (UTC)", "2030-01-02T00:00"], ["종료 시각 (UTC)", "2030-01-03T00:00"]]) {
+      ["시작 시각 (UTC)", "2030-01-02T00:00"], ["종료 시각 (UTC)", "2030-01-03T00:00"]] as const) {
       fireEvent.change(screen.getByLabelText(label), { target: { value } });
     }
     fireEvent.change(screen.getByLabelText("이미지"), {
