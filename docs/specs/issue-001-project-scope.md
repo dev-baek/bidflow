@@ -384,18 +384,21 @@ Redis와 OpenSearch 데이터는 PostgreSQL 원본으로 복원할 수 있어야
 
 ### 12.6 현재 증적과 남은 성공 기준
 
-2026년 11월 22일 기준이다. 목표 자체를 낮추지 않고, 측정한 환경·부하·지연 구간을 구분한다. 아래는 기존 증적 요약이며 새 실행이나 전체 프로젝트 완료 선언이 아니다.
+2026년 11월 25일 기준이다. 목표 자체를 낮추지 않고, 측정한 환경·부하·지연 구간을 구분한다. 아래는 기존 증적 요약이며 새 실행이나 전체 프로젝트 완료 선언이 아니다.
 
 | 기준 | 확보한 증적 | 남은 범위 |
 |---|---|---|
-| 등록부터 낙찰까지 기능 | [로컬 기능 5개](../reports/issue-020-local-functional-regression.md)와 원장/결과 교차 검사 통과 | Cognito·AWS 실제 사용자 여정은 #91 승인 후 실행 |
-| 같은 경매 1,000건 | [20 VU 누적 1,000건](../reports/issue-019-instrumented-rerun.md): 요청/원장/결과 일치, 미처리/중복 0 | 12.2의 1,000건 전체 동시 HTTP는 미검증. 어댑터 테스트와도 구분 |
-| 접수 API P95 300ms 이하 | 위 로컬 본 실행 290.48ms, 오류율 0% | 한 번의 공유 Mac 실측. P99 713.15ms, 안정적 여유/운영 SLA 보장 아님 |
+| 등록부터 낙찰까지 기능 | [로컬 테스트 인증으로 기능 5개](../reports/issue-020-local-functional-regression.md)와 원장/결과 교차 검사 통과 | 배포 환경의 동일 사용자 여정은 [#20](https://github.com/dev-baek/bidflow/issues/20)·[#91](https://github.com/dev-baek/bidflow/issues/91)에 남아 있음 |
+| Cognito 인증 | [로컬 Chromium 대역](issue-005-cognito-frontend.md#로컬-chromium-재현) 2개 시나리오를 각각 두 번 통과. PKCE, 공개/보호 요청 경계, 401 뒤 STOMP 연결 종료 확인 | 실제 User Pool·App Client와 배포 환경의 토큰 교환은 [#39](https://github.com/dev-baek/bidflow/issues/39)·[#91](https://github.com/dev-baek/bidflow/issues/91) 승인 후 확인 |
+| 같은 경매 1,000건 | [기준 실행](../reports/issue-019-instrumented-rerun.md): 20 VU 누적 1,000건, 요청/원장/결과 일치, 미처리/중복 0 | [별도 대기 관측 실행](../reports/issue-019-settlement-wait-live.md)은 서버의 정산 검증 SELECT 4초 제한으로 원장·화면 대조 미완료. 12.2의 1,000건 전체 동시 HTTP도 미검증 |
+| 접수 API P95 300ms 이하 | 기준 실행 290.48ms, 대기 관측 실행 165.66ms. 두 실행의 접수 HTTP 오류율은 각각 0% | 각각의 공유 Mac 실측. 별도 관측 조건이므로 개선율·운영 SLA로 해석하지 않으며, 접수 통과를 정산 통과로 세지 않음 |
 | 최종 WebSocket 전달 P95 2초 이하 | [두 사용자·총 20건](../reports/issue-019-concurrent-snapshot-fix.md)의 화면 수렴 관측 P95 443.33ms | polling 포함 관측이며 순수 전송 시간 아님. 1,000건 부하에서의 전달 P95는 미검증 |
 | Lag 60초 내 0 | 누적 1,000건에서 종료 관측 약 9.67초 뒤 SQL/Lag 0 확인 | 조회 완료 시각이며 정확한 회복 시각 아님. 다른 부하/AWS 일반화 금지 |
 | CloudWatch·AWS 배포/삭제·10만 원 | Terraform/Runbook의 설계·정적 검증 | 실제 계정에서의 실행·알람·청구·잔존 리소스 확인은 모두 별도 승인 대기 |
 
 첫 누적 1,000건 시도의 [585건 중단](../reports/issue-019-focused-load-collector.md)은 별도 실패로 보존한다. 새 실행의 성공은 과거 원인 해결 증명이 아니다. 기능/부하 증적의 병합만으로 AWS 완료 조건이나 상위 #1 전체를 완료 처리하지 않는다.
+
+남은 실행은 나눠 승인한다. 로컬 [#19](https://github.com/dev-baek/bidflow/issues/19)의 후속 진단은 정산 검증 SELECT 시간 초과의 원인과 같은 실행의 원장·A/B 화면 대조에 한정한다. 입찰 처리 실패로 판정하거나 부하를 자동 재실행하지 않는다. AWS는 별도 단계로, [배포·삭제 Runbook](issue-017-aws-deployment.md)에 따라 계정과 리전, 실행 시간, 10만 원 상한 내 예상 비용과 삭제 계획을 먼저 검토한다. 이 상태에서 AWS 자격 증명 제출이나 리소스 생성을 요청하지 않는다.
 
 ## 13. 4주 완료 경계
 

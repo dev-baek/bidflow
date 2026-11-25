@@ -27,6 +27,7 @@ API는 PostgreSQL에 입찰 요청과 Outbox를 함께 저장한 뒤 `202 RECEIV
 | [집중 HTTP 부하](issue-019-focused-load-baseline.md) | 단일 경매, 20건 모두 접수. 접수 P50/P95/P99 **75.09 / 78.14 / 78.65ms**, 처리 시작 P95 **886.47ms**. 승인 1건·거절 19건, 미처리·중복 원장 0건. | Lag는 전·후 0, 중간 피크 미측정. 승인 표본 1건이라 가격 단조성의 증거로 쓰지 않음. |
 | [분산 HTTP 부하](issue-019-distributed-load-baseline.md) | 6경매, 20 VU 2분 유지, 2,535건 접수·HTTP 실패 0건. 접수 P50/P95/P99 **12.77 / 41.88 / 105.65ms**, 처리 시작 P95 **1,338.53ms**. 미처리·중복 원장 0건. Lag 최대 관측 10건. | 종료 약 2.04초 뒤 첫 사후 조회에서 Lag 0. 파티션 1에 약 67%가 유입됐지만 병목 원인까지 측정하지는 않음. |
 | [단일 경매 누적 1,000건 HTTP](issue-019-instrumented-rerun.md) | 20 VU × 50회. 요청/원장/결과 각각 1,000개, 승인 207·정상 거절 793·미처리 0. 접수 P50/P95/P99 **17.73 / 290.48 / 713.15ms**, HTTP 오류율 0%. 명령 40개 모두 성공, DLT 불변, 관측 Lag 최대 합계 241 → 최종 0. | local/100ms·공유 Mac 한 번의 결과. 1,000건 전체 동시 HTTP가 아니다. P95 기준 여유는 약 9.52ms. 부하 종료 관측 약 9.67초 뒤 최종 SQL/Lag 0을 확인했지만 정확한 커밋/회복 시각은 아님. |
+| [별도 정산 대기 관측](issue-019-settlement-wait-live.md) | 20 VU × 50회. HTTP 접수·계측 1,000/1,000, 접수 P95 **165.66ms**, 오류율 0%. 확인용 정산 SELECT는 서버의 4초 제한에 걸려 전체 검증 미통과. | 같은 요청의 원장·두 화면 대조와 후속 Lag/DLT는 미완료. 활성 표본 39개 중 I/O 1개로는 원인이나 대기 시간을 확정할 수 없음. |
 
 `202`는 입찰 승인과 다르다. 처리 시작 지표는 서버의 요청 기록부터 Consumer 처리 시작까지이며, **최종 DB 커밋·WebSocket 전달 시간은 포함하지 않는다.** 각 부하의 패턴이 다르므로 P95를 서로 비교해 개선율이나 처리량 한계로 해석하지 않는다.
 
@@ -48,6 +49,7 @@ API는 PostgreSQL에 입찰 요청과 Outbox를 함께 저장한 뒤 `202 RECEIV
 | 구분 | 확인한 것 | 확인하지 않은 것 |
 |---|---|---|
 | 로컬 실행 | Browser E2E, 부하·장애 재현, 원장과 파생 상태 비교 | 1,000건 동시 HTTP, 장시간 포화·장애, 최종 결과 전달 P95 |
+| Cognito 대역 | [로컬 Chromium](../specs/issue-005-cognito-frontend.md#로컬-chromium-재현)에서 두 시나리오를 두 번씩 통과. PKCE·토큰 전달 경계·401 연결 종료 확인 | 실제 User Pool, 배포된 로그인 도메인·CORS·WebSocket |
 | AWS 설계·정적 검증 | [Terraform 구성](../../infra/terraform/README.md), [Runbook](../specs/issue-017-aws-deployment.md), 기존 [Budget #175](https://github.com/dev-baek/bidflow/pull/175)·[OpenSearch 런타임 #212](https://github.com/dev-baek/bidflow/pull/212) PR의 `terraform validate`·계약 테스트 기록 | AWS 계정에서의 Plan·Apply, 실서비스 연결 및 비용 |
 | 실제 AWS 검증 | 미실행. [#97 비용 예시](issue-097-kafka-performance-cost.md#aws-요금-예시--실측-청구액-아님)는 공개 요금과 가정만 사용 | 10만 원 전체 예산 적합성, 실제 배포·Smoke Test·청구·Destroy 결과 |
 
