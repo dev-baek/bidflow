@@ -42,3 +42,8 @@ output "postgres_master_user_secret_arn" {
   description = "RDS-managed credential secret ARN; value retrieval is restricted to the EC2 runtime role."
   value       = module.private_rds.master_user_secret_arn
 }
+
+output "cognito_public_config" {
+  description = "Public issuer, client and return URLs for the verification build; absent when Cognito is disabled."
+  value       = one(module.cognito[*].public_config)
+}

@@ -44,6 +44,18 @@ module "web_delivery" {
   bucket_name  = "bidflow-${var.environment}-${data.aws_caller_identity.current.account_id}-web"
 }
 
+module "cognito" {
+  source = "../../modules/cognito"
+  count  = var.enable_cognito ? 1 : 0
+
+  name          = "bidflow-${var.environment}"
+  region        = var.region
+  domain_prefix = var.cognito_domain_prefix
+  web_origin    = "https://${module.web_delivery.cloudfront_domain_name}"
+
+  depends_on = [terraform_data.verification_guard]
+}
+
 module "application_edge" {
   source = "../../modules/application_edge"
 

@@ -1,6 +1,6 @@
 # [Issue #39] Cognito 검증 환경 Terraform 사양
 
-- 상태: 검토 대기. [#39 Terraform 인증 구성](https://github.com/dev-baek/bidflow/issues/39)의 구현 전 사양이다.
+- 상태: #334 사양 병합. 이 문서는 [#39 Terraform 인증 구성](https://github.com/dev-baek/bidflow/issues/39)의 계약이며, 재현 명령은 [Terraform 검증 안내](../../infra/terraform/README.md#cognito-모의-검증)에 있다.
 - 근거: [인증·인가](issue-005-authentication.md), [프런트엔드 인증·Chromium 대역](issue-005-cognito-frontend.md), [AWS 배포·삭제 Runbook](issue-017-aws-deployment.md).
 
 React의 PKCE와 Spring Boot의 JWT 검증은 구현됐다. 검증 환경 Terraform에는 아직 User Pool, 브라우저용 App Client 및 로그인 도메인이 없고, 브라우저와 백엔드가 같은 풀을 쓰기 위한 공개 출력도 없다. 이번 범위는 이 연결 계약을 코드로 정의하고 실계정 없이 검사하는 데까지다.
