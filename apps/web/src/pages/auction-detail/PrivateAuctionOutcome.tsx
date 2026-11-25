@@ -10,8 +10,8 @@ const messages = {
 } as const;
 
 type Outcome = keyof typeof messages;
-type Result = { status: "LOADING" | "AUTH_REQUIRED" | "ERROR" } | { status: "READY"; outcome: Outcome };
-type Props = Readonly<{ auctionId: string; actorId: string; client: ApiClient }>;
+type Result = { status: "LOADING" | "AUTH_REQUIRED" | "FORBIDDEN" | "ERROR" } | { status: "READY"; outcome: Outcome };
+type Props = Readonly<{ auctionId: string; actorId?: string; client: ApiClient }>;
 
 export function PrivateAuctionOutcome({ auctionId, actorId, client }: Props) {
   const [result, setResult] = useState<Result>({ status: "LOADING" });
@@ -19,17 +19,16 @@ export function PrivateAuctionOutcome({ auctionId, actorId, client }: Props) {
 
   useEffect(() => {
     let active = true;
-    client.get<{ auctionId: string; outcome: Outcome }>(`/api/v1/me/auctions/${auctionId}/outcome`, {
-      "X-Actor-Id": actorId,
-    }).then(response => {
+    client.get<{ auctionId: string; outcome: Outcome }>(`/api/v1/me/auctions/${auctionId}/outcome`,
+      actorId ? { "X-Actor-Id": actorId } : undefined).then(response => {
       if (!active) return;
       setResult(response.auctionId === auctionId && Object.hasOwn(messages, response.outcome)
         ? { status: "READY", outcome: response.outcome }
         : { status: "ERROR" });
     }).catch((error: unknown) => {
       if (!active) return;
-      setResult({ status: error instanceof ApiError && (error.status === 401 || error.status === 403)
-        ? "AUTH_REQUIRED" : "ERROR" });
+      setResult({ status: error instanceof ApiError && error.status === 401 ? "AUTH_REQUIRED"
+        : error instanceof ApiError && error.status === 403 ? "FORBIDDEN" : "ERROR" });
     });
     return () => { active = false; };
   }, [actorId, attempt, auctionId, client]);
@@ -38,6 +37,7 @@ export function PrivateAuctionOutcome({ auctionId, actorId, client }: Props) {
     {result.status === "LOADING" ? <p role="status">본인 결과를 조회하고 있습니다.</p> : null}
     {result.status === "READY" ? <p role="status">{messages[result.outcome]}</p> : null}
     {result.status === "AUTH_REQUIRED" ? <p role="alert">본인 결과를 보려면 <a href="/login">다시 로그인</a>하세요.</p> : null}
+    {result.status === "FORBIDDEN" ? <p role="alert">본인 결과를 조회할 권한이 없습니다.</p> : null}
     {result.status === "ERROR" ? <>
       <p role="alert">본인 결과를 불러오지 못했습니다.</p>
       <button type="button" onClick={() => {

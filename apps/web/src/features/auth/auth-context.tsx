@@ -1,4 +1,5 @@
-import { createContext, useCallback, useContext, useEffect, useReducer, useRef, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useReducer, useRef, type ReactNode } from "react";
+import type { AccessTokenSource } from "../../shared/api/api-client";
 import { authReducer, createAuthState, type AuthState } from "./auth-state";
 import type { createCognitoFlow } from "./cognito-flow";
 
@@ -11,6 +12,7 @@ export type CognitoBrowser = Readonly<{
 type AuthContextValue = Readonly<{
   state: AuthState;
   cognitoEnabled: boolean;
+  cognitoAccess?: AccessTokenSource & { id: number };
   signInLocal(actorId: string): void;
   signInCognito(): Promise<void>;
   completeCognito(url: string): Promise<void>;
@@ -43,6 +45,15 @@ export function AuthProvider({ children, cognito }: Readonly<{ children: ReactNo
     } catch { fail(attempt); }
   }, [cognito, reset]);
   const session = state.mode === "AUTHENTICATED" && state.provider === "COGNITO" ? state.session : undefined;
+  const cognitoAccess = useMemo(() => {
+    if (!session) return undefined;
+    const id = generation.current;
+    return {
+      id,
+      token: () => id === generation.current && Date.now() < session.expiresAt ? session.accessToken : undefined,
+      unauthorized: () => { if (id === generation.current) reset("SESSION_EXPIRED"); },
+    };
+  }, [session, reset]);
   useEffect(() => {
     if (!session) return;
     const attempt = generation.current;
@@ -59,6 +70,7 @@ export function AuthProvider({ children, cognito }: Readonly<{ children: ReactNo
   const value: AuthContextValue = {
     state,
     cognitoEnabled: !!cognito,
+    cognitoAccess,
     signInLocal(actorId) {
       if (cognito) return;
       dispatch({ type: "LOCAL_SIGN_IN_REQUESTED", actorId });

@@ -3,6 +3,11 @@ export type ApiClient = Readonly<{
   post<T>(path: string, body: unknown, headers?: Record<string, string>): Promise<T>;
 }>;
 
+export type AccessTokenSource = Readonly<{
+  token(): string | undefined;
+  unauthorized(): void;
+}>;
+
 export class ApiError extends Error {
   readonly status: number;
 
@@ -40,4 +45,22 @@ export function createApiClient(baseUrl: string, request: typeof fetch): ApiClie
       return response.json() as Promise<T>;
     },
   };
+}
+
+export function createProtectedApiClient(baseUrl: string, request: typeof fetch, access: AccessTokenSource): ApiClient {
+  return createApiClient(baseUrl, async (input, init) => {
+    const base = new URL(baseUrl);
+    const url = new URL(String(input));
+    if (base.protocol !== "https:" || base.username || base.password || base.search || base.hash || url.origin !== base.origin) {
+      throw new Error("Invalid protected API destination");
+    }
+    const token = access.token();
+    if (!token) throw new ApiError(401);
+    const headers = new Headers(init?.headers);
+    headers.delete("X-Actor-Id");
+    headers.set("Authorization", `Bearer ${token}`);
+    const response = await request(url.href, { ...init, headers, credentials: "omit", redirect: "error" });
+    if (response.status === 401) access.unauthorized();
+    return response;
+  });
 }

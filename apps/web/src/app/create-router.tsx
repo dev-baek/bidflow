@@ -39,14 +39,14 @@ export function createAppRouter(apiBaseUrl: string, wsBaseUrl: string) {
 }
 
 function ListingCreateRoute({ apiBaseUrl }: Readonly<{ apiBaseUrl: string }>) {
-  const { state } = useAuth();
+  const { state, cognitoAccess } = useAuth();
   const localActorId = state.mode === "AUTHENTICATED" && state.provider === "LOCAL" ? state.subject : undefined;
-  return <ListingCreatePage apiBaseUrl={apiBaseUrl} localActorId={localActorId} />;
+  return <ListingCreatePage key={cognitoAccess ? `cognito:${cognitoAccess.id}` : `local:${localActorId}`} apiBaseUrl={apiBaseUrl} localActorId={localActorId} cognitoAccess={cognitoAccess} />;
 }
 
 function AuctionDetailRoute({ apiBaseUrl, wsBaseUrl }: Readonly<{ apiBaseUrl: string; wsBaseUrl: string }>) {
   const { auctionId } = useParams();
-  const { state } = useAuth();
+  const { state, cognitoAccess } = useAuth();
   const localActorId = state.mode === "AUTHENTICATED" && state.provider === "LOCAL" ? state.subject : undefined;
-  return auctionId ? <AuctionDetailPage auctionId={auctionId} apiBaseUrl={apiBaseUrl} wsBaseUrl={wsBaseUrl} localActorId={localActorId} /> : <NotFoundPage />;
+  return auctionId ? <AuctionDetailPage key={cognitoAccess ? `cognito:${cognitoAccess.id}` : `local:${localActorId}`} auctionId={auctionId} apiBaseUrl={apiBaseUrl} wsBaseUrl={wsBaseUrl} localActorId={localActorId} cognitoAccess={cognitoAccess} /> : <NotFoundPage />;
 }

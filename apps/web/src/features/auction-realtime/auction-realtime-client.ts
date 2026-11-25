@@ -35,19 +35,39 @@ export function parseBidResultMessage(raw: string): BidResultMessage | null {
 export function subscribeAuctionUpdates(
   wsBaseUrl: string,
   auctionId: string,
-  localActorId: string,
+  credential: string | (() => string | undefined),
   refreshSnapshot: () => void,
   onBidResult: (result: BidResultMessage) => void,
 ): () => void {
+  const brokerURL = `${wsBaseUrl.replace(/\/$/, "")}/ws`;
+  if (typeof credential === "function") {
+    const broker = URL.parse(wsBaseUrl);
+    if (!broker || broker.protocol !== "wss:" || broker.username || broker.password || broker.search || broker.hash) return () => {};
+  }
+  const getToken = typeof credential === "string" ? () => credential : credential;
+  let stopped = false;
   let connectedBefore = false;
+  const stop = () => {
+    if (stopped) return;
+    stopped = true;
+    client.connectHeaders = {};
+    void client.deactivate();
+  };
   const client = new Client({
-    brokerURL: `${wsBaseUrl}/ws`, reconnectDelay: 5_000,
-    connectHeaders: { Authorization: `Bearer ${localActorId}` },
+    brokerURL, reconnectDelay: 5_000,
+    beforeConnect: () => {
+      const token = stopped ? undefined : getToken();
+      if (!token) return stop();
+      client.connectHeaders = { Authorization: `Bearer ${token}` };
+    },
     onConnect: () => {
+      if (stopped) return;
+      if (!getToken()) return stop();
       client.subscribe(`/topic/auctions/${auctionId}`, (frame) => {
-        if (parsePublicAuctionMessage(frame.body)?.auctionId === auctionId) refreshSnapshot();
+        if (!stopped && getToken() && parsePublicAuctionMessage(frame.body)?.auctionId === auctionId) refreshSnapshot();
       });
       client.subscribe("/user/queue/bid-results", (frame) => {
+        if (stopped || !getToken()) return;
         const result = parseBidResultMessage(frame.body);
         if (result?.auctionId === auctionId) onBidResult(result);
       });
@@ -57,5 +77,5 @@ export function subscribeAuctionUpdates(
     },
   });
   client.activate();
-  return () => { void client.deactivate(); };
+  return stop;
 }

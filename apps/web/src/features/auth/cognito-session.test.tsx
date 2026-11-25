@@ -6,6 +6,7 @@ import { CognitoCallbackPage } from "../../pages/auth/CognitoCallbackPage";
 import { LoginPage } from "../../pages/auth/LoginPage";
 import { HomePage } from "../../pages/home/HomePage";
 import { RequireAuthenticated } from "../../pages/auth/RequireAuthenticated";
+import { createProtectedApiClient, type AccessTokenSource } from "../../shared/api/api-client";
 
 afterEach(cleanup);
 
@@ -14,12 +15,15 @@ function setup(route: string, complete = vi.fn(async () => ({
 }))) {
   const redirect = vi.fn(), clear = vi.fn(), begin = vi.fn(async () => "https://login.example.test/oauth2/authorize");
   const logoutUrl = "https://login.example.test/logout";
+  let access: AccessTokenSource | undefined;
   function Controls() {
-    const { signOut, signInLocal, state } = useAuth();
+    const { signOut, signInLocal, state, cognitoAccess, completeCognito } = useAuth();
+    access = cognitoAccess;
     return <>
       <output aria-label="session state">{state.mode}</output>
       <button onClick={signOut}>세션 지우기</button>
       <button onClick={() => signInLocal("not-a-cognito-user")}>로컬 요청</button>
+      <button onClick={() => void completeCognito("https://example.test/auth/callback")}>다시 인증</button>
     </>;
   }
   render(<AuthProvider cognito={{ flow: { begin, complete, clear }, logoutUrl, redirect }}>
@@ -35,7 +39,7 @@ function setup(route: string, complete = vi.fn(async () => ({
       </Routes>
     </MemoryRouter>
   </AuthProvider>);
-  return { begin, complete, clear, redirect, logoutUrl };
+  return { begin, complete, clear, redirect, logoutUrl, access: () => access! };
 }
 
 it("starts managed login and never accepts a local developer ID in Cognito mode", async () => {
@@ -59,11 +63,32 @@ it("completes the callback and signs out without rendering the access token", as
   expect(screen.getByLabelText("session state")).toHaveTextContent("ANONYMOUS");
 });
 
-it("does not mount local-only protected UI for a Cognito session", async () => {
+it("mounts protected UI for an authenticated Cognito session", async () => {
   setup("/auth/callback");
   fireEvent.click(await screen.findByRole("link", { name: "상품 등록 화면 열기" }));
-  expect(screen.getByText("Cognito 세션의 보호 요청 연결은 아직 지원하지 않습니다.")).toBeInTheDocument();
-  expect(screen.queryByText("보호된 등록 폼")).not.toBeInTheDocument();
+  expect(screen.getByText("보호된 등록 폼")).toBeInTheDocument();
+});
+
+it("ignores a delayed 401 from an older session but expires the current session on 401", async () => {
+  const { access } = setup("/auth/callback");
+  await screen.findByRole("button", { name: "로그아웃" });
+  const oldAccess = access();
+  let finish!: (response: Response) => void;
+  const oldClient = createProtectedApiClient("https://api.example.test",
+    () => new Promise(resolve => { finish = resolve; }), oldAccess);
+  const oldRequest = oldClient.get("/api/v1/me").catch(error => error);
+  fireEvent.click(screen.getByText("다시 인증"));
+  await waitFor(() => expect(access()).not.toBe(oldAccess));
+  await waitFor(() => expect(access()?.token()).toBe("private-token"));
+  expect(oldAccess.token()).toBeUndefined();
+  await act(async () => { finish(new Response(null, { status: 401 })); await oldRequest; });
+  expect(screen.getByLabelText("session state")).toHaveTextContent("AUTHENTICATED");
+  const currentClient = createProtectedApiClient("https://api.example.test",
+    async () => new Response(null, { status: 401 }), access());
+  await act(async () => {
+    await expect(currentClient.get("/api/v1/me")).rejects.toMatchObject({ status: 401 });
+  });
+  expect(screen.getByLabelText("session state")).toHaveTextContent("EXPIRED");
 });
 
 it("shows a safe login error when the callback is rejected", async () => {

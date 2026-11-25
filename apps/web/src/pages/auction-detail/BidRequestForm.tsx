@@ -3,7 +3,7 @@ import { bidRequestReducer, createBidRequestState, type BidSettlement } from "..
 import { type ApiClient } from "../../shared/api/api-client";
 
 type BidResponse = Readonly<{ bidRequestId: string; status: "RECEIVED" }>;
-export type BidRequestFormProps = Readonly<{ auctionId: string; actorId: string; client: ApiClient; settlement?: BidSettlement }>;
+export type BidRequestFormProps = Readonly<{ auctionId: string; actorId?: string; client: ApiClient; settlement?: BidSettlement }>;
 
 export function BidRequestForm({ auctionId, actorId, client, settlement }: BidRequestFormProps) {
   const [state, dispatch] = useReducer(bidRequestReducer, undefined, createBidRequestState);
@@ -18,7 +18,7 @@ export function BidRequestForm({ auctionId, actorId, client, settlement }: BidRe
     const key = idempotencyKey.current ??= globalThis.crypto.randomUUID();
     dispatch({ type: "SUBMIT_REQUESTED", retry });
     void client.post<BidResponse>(`/api/v1/auctions/${auctionId}/bid-requests`, { bidKind: state.kind, amount }, {
-      "Idempotency-Key": key, "X-Actor-Id": actorId,
+      "Idempotency-Key": key, ...(actorId ? { "X-Actor-Id": actorId } : {}),
     }).then((response) => {
       idempotencyKey.current = undefined;
       dispatch({ type: "RECEIVED", bidRequestId: response.bidRequestId });

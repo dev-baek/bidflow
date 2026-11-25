@@ -1,5 +1,5 @@
-import { act, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { ApiError, type ApiClient } from "../../shared/api/api-client";
 import { AuctionDetailPage } from "./AuctionDetailPage";
 
@@ -12,7 +12,33 @@ vi.mock("../../features/auction-realtime/auction-realtime-client", () => ({
   subscribeAuctionUpdates: () => () => {},
 }));
 
+afterEach(() => { cleanup(); vi.unstubAllGlobals(); });
+
 describe("AuctionDetailPage", () => {
+  it.each(["ACTIVE", "ENDED"] as const)("keeps the %s snapshot public and authenticates the private action", async (status) => {
+    const request = vi.fn<typeof fetch>()
+      .mockResolvedValueOnce(Response.json(status === "ACTIVE" ? detail : sold))
+      .mockResolvedValueOnce(Response.json(status === "ACTIVE" ? { bidRequestId: "bid-1", status: "RECEIVED" }
+        : { auctionId: "auction-1", outcome: "WON" }));
+    vi.stubGlobal("fetch", request);
+    render(<AuctionDetailPage {...baseProps} apiBaseUrl="https://api.example.test" wsBaseUrl="wss://api.example.test"
+      cognitoAccess={{ token: () => "access-token", unauthorized: vi.fn() }} />);
+    if (status === "ACTIVE") {
+      fireEvent.change(await screen.findByLabelText("입찰 금액"), { target: { value: "24000" } });
+      fireEvent.click(screen.getByRole("button", { name: "입찰 요청" }));
+      expect(await screen.findByText(/입찰 요청을 접수했습니다/)).toBeVisible();
+    } else {
+      expect(await screen.findByText("내가 낙찰받았습니다.")).toBeVisible();
+    }
+    expect(request).toHaveBeenCalledTimes(2);
+    const [publicUrl, publicInit] = request.mock.calls[0]!;
+    const [privateUrl, privateInit] = request.mock.calls[1]!;
+    expect(publicUrl).toBe("https://api.example.test/api/v1/auctions/auction-1");
+    expect(privateUrl).toBe(`https://api.example.test${status === "ACTIVE" ? "/api/v1/auctions/auction-1/bid-requests" : outcomePath}`);
+    expect(new Headers(publicInit?.headers).get("Authorization")).toBeNull();
+    expect(new Headers(privateInit?.headers).get("Authorization")).toBe("Bearer access-token");
+  });
+
   it("renders the PostgreSQL snapshot after its loading state", async () => {
     const client: ApiClient = { get: async <T,>() => detail as T, post: async <T,>() => detail as T };
     render(<AuctionDetailPage auctionId="auction-1" apiBaseUrl="http://api" wsBaseUrl="ws://api" client={client} />);

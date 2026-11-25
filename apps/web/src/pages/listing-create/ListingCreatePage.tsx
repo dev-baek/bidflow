@@ -6,12 +6,13 @@ import {
   type ListingImage,
   validateListingDraft,
 } from "../../features/listing-form/listing-form-state";
-import { createApiClient, type ApiClient } from "../../shared/api/api-client";
+import { createApiClient, createProtectedApiClient, type AccessTokenSource, type ApiClient } from "../../shared/api/api-client";
 
 export type ListingCreatePageProps = Readonly<{
   now?: () => Date;
   apiBaseUrl?: string;
   localActorId?: string;
+  cognitoAccess?: AccessTokenSource;
   client?: ApiClient;
   upload?: typeof fetch;
 }>;
@@ -34,15 +35,17 @@ const conditionGrades = [
   ["POOR", "사용감 많음"],
 ] as const;
 
-export function ListingCreatePage({ now = () => new Date(), apiBaseUrl = "", localActorId, client, upload = fetch }: ListingCreatePageProps) {
+export function ListingCreatePage({ now = () => new Date(), apiBaseUrl = "", localActorId, cognitoAccess, client, upload = fetch }: ListingCreatePageProps) {
   const [state, dispatch] = useReducer(
     listingFormReducer,
     undefined,
     () => createListingFormState(createIdempotencyKey()),
   );
   const files = useRef(new Map<string, File>());
-  const defaultClient = useMemo(() => createApiClient(apiBaseUrl, fetch), [apiBaseUrl]);
+  const defaultClient = useMemo(() => cognitoAccess ? createProtectedApiClient(apiBaseUrl, fetch, cognitoAccess)
+    : createApiClient(apiBaseUrl, fetch), [apiBaseUrl, cognitoAccess]);
   const resolvedClient = client ?? defaultClient;
+  const actorHeaders: Record<string, string> = !cognitoAccess && localActorId ? { "X-Actor-Id": localActorId } : {};
 
   const changeField = (field: Exclude<ListingField, "images">) => (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     dispatch({ type: "FIELD_CHANGED", field, value: event.target.value });
@@ -61,17 +64,23 @@ export function ListingCreatePage({ now = () => new Date(), apiBaseUrl = "", loc
       if (file) files.current.set(image.localId, file);
     }
     dispatch({ type: "IMAGES_SELECTED", images });
-    if (localActorId) images.forEach((image) => void uploadImage(image.localId, localActorId));
+    if (cognitoAccess || localActorId) images.forEach((image) => void uploadImage(image.localId));
   };
 
-  const uploadImage = async (localId: string, actorId: string) => {
+  const uploadImage = async (localId: string) => {
     const file = files.current.get(localId);
     if (!file) return;
     dispatch({ type: "IMAGE_UPLOAD_STARTED", localId });
     try {
-      const presigned = await resolvedClient.post<PresignedUpload>("/api/v1/uploads/presign", { contentType: file.type, contentLength: file.size }, { "X-Actor-Id": actorId });
+      const presigned = await resolvedClient.post<PresignedUpload>("/api/v1/uploads/presign", { contentType: file.type, contentLength: file.size }, actorHeaders);
       try {
-        const response = await upload(presigned.uploadUrl, { method: "PUT", headers: presigned.requiredHeaders, body: file });
+        if (cognitoAccess && !cognitoAccess.token()) throw new Error("session ended");
+        const headers = cognitoAccess ? new Headers(presigned.requiredHeaders) : presigned.requiredHeaders;
+        if (headers instanceof Headers) {
+          headers.delete("Authorization");
+          headers.delete("X-Actor-Id");
+        }
+        const response = await upload(presigned.uploadUrl, { method: "PUT", headers, body: file, ...(cognitoAccess ? { credentials: "omit" } : {}) });
         if (!response.ok) throw new Error("upload failed");
         dispatch({ type: "IMAGE_UPLOAD_COMPLETED", localId, uploadId: presigned.uploadId, objectKey: presigned.objectKey });
       } catch { dispatch({ type: "IMAGE_UPLOAD_FAILED", localId, errorCode: "OBJECT_UPLOAD_FAILED" }); }
@@ -83,13 +92,13 @@ export function ListingCreatePage({ now = () => new Date(), apiBaseUrl = "", loc
     const currentNow = now();
     const errors = validateListingDraft(state.draft, currentNow);
     dispatch({ type: "SUBMIT_REQUESTED", now: currentNow });
-    if (Object.keys(errors).length > 0 || !localActorId) return;
+    if (Object.keys(errors).length > 0 || (!cognitoAccess && !localActorId)) return;
     void resolvedClient.post<ListingResponse>("/api/v1/listings", {
       title: state.draft.title, description: state.draft.description, categoryId: state.draft.categoryId,
       conditionGrade: state.draft.conditionGrade, startingPrice: Number(state.draft.startingPrice),
       startsAt: `${state.draft.startsAt}:00Z`, endsAt: `${state.draft.endsAt}:00Z`,
       images: state.draft.images.map((image) => ({ uploadId: image.uploadId })),
-    }, { "Idempotency-Key": state.idempotencyKey, "X-Actor-Id": localActorId })
+    }, { "Idempotency-Key": state.idempotencyKey, ...actorHeaders })
       .then((result) => dispatch({ type: "SUBMIT_SUCCEEDED", auctionId: result.auctionId }))
       .catch(() => dispatch({ type: "SUBMIT_FAILED" }));
   };
