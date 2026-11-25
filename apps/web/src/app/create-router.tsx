@@ -4,6 +4,7 @@ import { ListingCreatePage } from "../pages/listing-create/ListingCreatePage";
 import { ListingSearchPage } from "../pages/listing-search/ListingSearchPage";
 import { NotFoundPage } from "../pages/not-found/NotFoundPage";
 import { LoginPage } from "../pages/auth/LoginPage";
+import { CognitoCallbackPage } from "../pages/auth/CognitoCallbackPage";
 import { RequireAuthenticated } from "../pages/auth/RequireAuthenticated";
 import { AuctionDetailPage } from "../pages/auction-detail/AuctionDetailPage";
 import { useAuth } from "../features/auth/auth-context";
@@ -18,6 +19,7 @@ export function createAppRouter(apiBaseUrl: string, wsBaseUrl: string) {
       path: "/login",
       element: <LoginPage />,
     },
+    { path: "/auth/callback", element: <CognitoCallbackPage /> },
     {
       element: <RequireAuthenticated />,
       children: [

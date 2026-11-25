@@ -23,7 +23,7 @@ describe("authReducer", () => {
 
   it("moves an authenticated session to expired and allows a new sign-in attempt", () => {
     const expired = authReducer(
-      { mode: "AUTHENTICATED", subject: "cognito-subject", provider: "COGNITO" },
+      { mode: "AUTHENTICATED", session: { accessToken: "mock", expiresAt: 100 }, provider: "COGNITO" },
       { type: "SESSION_EXPIRED" },
     );
     const retrying = authReducer(expired, { type: "COGNITO_SIGN_IN_REQUESTED" });

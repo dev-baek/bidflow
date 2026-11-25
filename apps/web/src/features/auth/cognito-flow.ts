@@ -1,4 +1,4 @@
-type CognitoConfig = Readonly<{ issuer: string; origin: string; clientId: string; redirectUri: string }>;
+export type CognitoConfig = Readonly<{ issuer: string; origin: string; clientId: string; redirectUri: string }>;
 type FlowDependencies = Readonly<{
   now: () => number;
   random: Pick<Crypto, "getRandomValues" | "subtle">;
@@ -6,7 +6,7 @@ type FlowDependencies = Readonly<{
   scrub: (cleanUrl: string) => void;
   storage: Pick<Storage, "getItem" | "setItem" | "removeItem">;
 }>;
-type Grant = Readonly<{ accessToken: string; expiresAt: number }>;
+export type CognitoGrant = Readonly<{ accessToken: string; expiresAt: number }>;
 
 const storageKey = "bidflow.cognito.pending";
 const transactionMs = 5 * 60_000;
@@ -20,7 +20,7 @@ export async function pkceChallenge(verifier: string, subtle: Pick<SubtleCrypto,
   return urlSafe(new Uint8Array(await subtle.digest("SHA-256", new TextEncoder().encode(verifier))));
 }
 
-function validate(config: CognitoConfig) {
+export function validateCognitoConfig(config: CognitoConfig) {
   const origin = new URL(config.origin), issuer = new URL(config.issuer), callback = new URL(config.redirectUri);
   if ([origin, issuer, callback].some(url => url.username || url.password || url.search || url.hash)
     || origin.protocol !== "https:" || origin.pathname !== "/" || issuer.protocol !== "https:"
@@ -31,7 +31,7 @@ function validate(config: CognitoConfig) {
 
 export function createCognitoFlow(config: CognitoConfig, deps: FlowDependencies) {
   const { origin, issuer, redirectUri, clientId } = (() => {
-    try { return validate(config); }
+    try { return validateCognitoConfig(config); }
     catch { throw failed(); }
   })();
   const scope = JSON.stringify([origin, issuer, redirectUri, clientId]);
@@ -63,7 +63,7 @@ export function createCognitoFlow(config: CognitoConfig, deps: FlowDependencies)
         throw failed();
       }
     },
-    async complete(callbackUrl: string): Promise<Grant> {
+    async complete(callbackUrl: string): Promise<CognitoGrant> {
       try {
         const url = new URL(callbackUrl);
         if (url.origin + url.pathname !== redirectUri || url.username || url.password) throw failed();
