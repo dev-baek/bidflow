@@ -67,8 +67,8 @@ describe("AuctionDetailPage", () => {
   });
 
   it("keeps the public price while a private request fails, then retries with the current actor", async () => {
-    let rejectLookup: (reason: unknown) => void = () => {};
-    const firstResult = new Promise((_, reject) => { rejectLookup = reject; });
+    let rejectLookup!: (reason: unknown) => void;
+    const firstResult = new Promise<unknown>((_, reject) => { rejectLookup = reject; });
     const outcome = vi.fn().mockReturnValueOnce(firstResult).mockRejectedValueOnce(new ApiError(401));
     const get = vi.fn((path: string, headers?: Record<string, string>) => path === outcomePath
       ? outcome(headers)
@@ -76,13 +76,18 @@ describe("AuctionDetailPage", () => {
     const { container } = render(<AuctionDetailPage {...baseProps} client={{ get, post: vi.fn() }} localActorId="bidder-a" />);
     const page = within(container);
 
-    expect(await page.findByText("본인 결과를 조회하고 있습니다.")).toBeVisible();
+    // Loading can render before the effect subscribes to the request promise.
+    await waitFor(() => expect(outcome).toHaveBeenCalledTimes(1));
+    expect(page.getByText("본인 결과를 조회하고 있습니다.")).toBeVisible();
     await act(async () => { rejectLookup(new ApiError(503)); });
     expect(await page.findByRole("alert")).toHaveTextContent("본인 결과를 불러오지 못했습니다.");
     expect(page.getByText("낙찰 · 21,000원")).toBeVisible();
     fireEvent.click(page.getByRole("button", { name: "본인 결과 재조회" }));
     expect(await page.findByRole("link", { name: "다시 로그인" })).toHaveAttribute("href", "/login");
-    expect(get).toHaveBeenCalledWith(outcomePath, { "X-Actor-Id": "bidder-a" });
+    expect(outcome.mock.calls).toEqual([
+      [{ "X-Actor-Id": "bidder-a" }],
+      [{ "X-Actor-Id": "bidder-a" }],
+    ]);
   });
 
   it("ignores a private result from a previous actor or auction", async () => {
