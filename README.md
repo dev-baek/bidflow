@@ -15,6 +15,7 @@ BidFlow는 단순한 CRUD 경매 서비스가 아니라 **동시 입찰의 정�
 | 입찰 엔진 | 구현됨 | Redis Lua 직접/자동 입찰, 요청 재실행, Redis 복구 |
 | 자동 연장·종료 | 구현됨 | 마감까지 5분 미만일 때 입찰 승인 시 기존 종료 시각 +5분. 낙찰·유찰 확정, 본인 결과 조회 |
 | Kafka·Outbox | 구현됨 | 경매별 Key, Consumer 멱등성, DLT 계약 |
+| Cognito 인증 | 구현·로컬 대역 검증 | PKCE와 보호 REST·STOMP 연동. 실제 User Pool 로그인은 미검증 |
 | Browser E2E | 로컬 검증 | 검색 포함 기능 5개와 새 경매의 원장·이벤트 교차 검사 통과 |
 | k6·장애 실험 | 로컬 실측 | 단일 경매 20 VU 누적 1,000건, 분산 입찰과 정산 Consumer·Redis·OpenSearch 중단 후 복구 |
 | AWS 배포 | 설계·정적 검증 | Terraform과 검증 Runbook 준비. 실제 배포·청구·Destroy 검증은 미실행 |
@@ -31,7 +32,9 @@ BidFlow는 단순한 CRUD 경매 서비스가 아니라 **동시 입찰의 정�
 
 - **분산 입찰:** 경매 6개, 20 VU 유지 구간 2분. 2,535건 모두 접수됐고, 접수 P95는 **41.88ms**, 서버 요청 기록부터 처리 시작까지 P95는 **1,338.53ms**였다. 미처리와 중복 원장은 0건이었다. 최종 DB 커밋이나 브라우저 결과 전달 지연은 측정하지 않았다. [부하 실측](docs/reports/issue-019-distributed-load-baseline.md)
 - **단일 경매 누적 1,000건:** 20 VU × 50회, 요청·원장·결과 각각 1,000개. 승인 207건·정상 거절 793건·미처리 0건, 접수 P95 **290.48ms**·P99 **713.15ms**, HTTP 오류율 0%였다. 공유 로컬 환경 한 번의 결과이며 P95 기준 여유는 약 9.52ms뿐이다. [실행·복원 증적](docs/reports/issue-019-instrumented-rerun.md)
+- **별도 정산 대기 관측:** 20 VU 누적 1,000건을 모두 접수했고 P95는 **165.66ms**였다. 같은 실행에서 검증용 정산 SELECT가 서버의 4초 제한에 걸려 원장·화면 대조를 끝내지 못했다. 기준 실행 대비 성능 개선이나 정산 자체의 실패로 해석하지 않는다. [대기 관측 결과](docs/reports/issue-019-settlement-wait-live.md)
 - **기능 E2E:** 등록/유찰·자동입찰/낙찰·직접입찰 재시도·재연결·검색의 5개가 실패/skip/retry 없이 통과했다. 새 경매 8개의 원장·이벤트도 사후 SQL로 대조했다. 로컬 테스트 인증/Clock 조건이며 Cognito/AWS 검증은 아니다. [회귀 결과](docs/reports/issue-020-local-functional-regression.md)
+- **인증 브라우저 테스트:** 합성 로그인·API·STOMP로 정상 PKCE 로그인과 잘못된 콜백 차단을 각각 두 번 검증했다. 실제 Cognito 서비스나 기존 로컬 DB는 사용하지 않았다. [재현 방법](docs/specs/issue-005-cognito-frontend.md#로컬-chromium-재현)
 - **장애 복구:** 정산 Consumer만 멈춰도 입찰 접수는 유지됐고, 재시작 후 대기 3건이 중복 없이 정산됐다. 반면 검색 그룹 Lag가 0이어도 DLT로 이동한 이벤트의 문서는 검색에서 빠졌다. [장애 사례와 회고](docs/reports/issue-102-portfolio-retrospective.md)
 
 ## 핵심 흐름
