@@ -142,3 +142,21 @@ variable "enable_managed_search" {
   type        = bool
   default     = false
 }
+
+variable "enable_cognito" {
+  description = "Enables the temporary Cognito user pool only for an explicitly approved verification run."
+  type        = bool
+  default     = false
+  nullable    = false
+}
+
+variable "cognito_domain_prefix" {
+  description = "Cognito-provided login domain prefix, required only when Cognito is enabled."
+  type        = string
+  default     = null
+
+  validation {
+    condition     = !var.enable_cognito || can(regex("^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?$", var.cognito_domain_prefix))
+    error_message = "Enabled Cognito requires a valid 1–63 character Cognito domain prefix, not a URL."
+  }
+}
