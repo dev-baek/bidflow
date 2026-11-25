@@ -42,6 +42,28 @@ test('collector joins a complete smoke without pretending it is a thousand-reque
   assert.equal(e.resources.valid,true);assert.equal(e.performancePassed,true);assert.equal(f.restored,1);
   assert.equal(f.saved.at(-1).restoration.verified,true);
   assert.equal(e.diagnosticsComplete,true);assert.equal(e.commandTrace.complete,true);assert.equal(e.phaseSummary.complete,true);
+  assert.equal(Object.hasOwn(e,'settlementWait'),false);
+});
+
+test('optional wait observation runs once after readiness and does not replace SQL or restoration verdicts',async()=>{
+  for(const fail of [false,true]){
+    const f=fake(),base=f.io.readiness;
+    let ready=false,calls=0;
+    f.io.readiness=async()=>{ready=true;return base();};
+    f.io.snapshot=()=>assert.fail('duplicate default snapshot');
+    f.io.snapshotWithWaits=async(auction,deadline,budget,record)=>{
+      assert(ready);assert.equal(auction,f.snapshot.auction.auctionId);
+      assert(deadline>f.io.now()+5000);
+      budget();calls++;record({status:'UNAVAILABLE',cleanupVerified:true});
+      if(fail)throw Object.assign(Error('private SQL'),{code:'SQL_QUERY_CANCELED'});
+      return f.snapshot;
+    };
+    const e=await collectFocused('smoke',f.io);
+    assert.equal(calls,1);assert.equal(f.restored,1);assert.equal(e.valid,!fail);
+    assert.deepEqual(e.settlementWait,f.saved.at(-1).settlementWait);
+    if(fail)assert(e.failures.some(x=>x.source==='snapshot'&&x.code==='SQL_QUERY_CANCELED'));
+    assert.doesNotMatch(JSON.stringify(e),/private SQL/);
+  }
 });
 
 test('checks fresh lag then scoped counts before doing the full snapshot exactly once',async()=>{

@@ -1,0 +1,501 @@
+{
+  "parent": "465d74a2e6837f46101ff9afc782dbd4816f5846",
+  "image": "sha256:6567bca8d7bc8c82c5922425a0baee57be8402df92bae5eacad5f01ae9544daa",
+  "startedAt": "2026-11-23T15:37:04.462Z",
+  "tests": {
+    "fast": {
+      "diagnostic": {
+        "status": "NO_ACTIVE_SAMPLES",
+        "command": {
+          "commandId": 1,
+          "startedMs": 3049.950459,
+          "completedMs": 3225.685292
+        },
+        "samples": [
+          {
+            "sentOffsetMs": 1.7297499999999673,
+            "receivedOffsetMs": 6.064374999999927,
+            "category": "NO_TARGET"
+          },
+          {
+            "sentOffsetMs": 103.90845799999988,
+            "receivedOffsetMs": 106.28583299999991,
+            "category": "NO_TARGET"
+          }
+        ],
+        "counts": {
+          "NO_TARGET": 2
+        },
+        "activeSamples": 0,
+        "errors": 0,
+        "maxGapMs": 100.22145799999998,
+        "discarded": 0,
+        "cleanupVerified": true,
+        "cancelReason": null
+      },
+      "command": {
+        "commandId": 1,
+        "operation": "SCOPED_SQL",
+        "startedMs": 3049.950459,
+        "completedMs": 3225.685292,
+        "durationMs": 175.73483299999998,
+        "timeoutMs": 5000,
+        "outcome": "SUCCEEDED",
+        "exitCode": 0,
+        "signal": null
+      },
+      "errorCode": null,
+      "sameSnapshot": true
+    },
+    "otherStatement": {
+      "diagnostic": {
+        "status": "NO_ACTIVE_SAMPLES",
+        "command": {
+          "commandId": 1,
+          "startedMs": 3713.9885,
+          "completedMs": 4744.416375
+        },
+        "samples": [
+          {
+            "sentOffsetMs": 2.13733400000001,
+            "receivedOffsetMs": 6.485167000000274,
+            "category": "NO_TARGET"
+          },
+          {
+            "sentOffsetMs": 103.986625,
+            "receivedOffsetMs": 107.99362500000007,
+            "category": "NO_TARGET"
+          },
+          {
+            "sentOffsetMs": 204.33333399999992,
+            "receivedOffsetMs": 207.1868340000001,
+            "category": "OTHER_STATEMENT"
+          },
+          {
+            "sentOffsetMs": 306.08050000000003,
+            "receivedOffsetMs": 308.31616699999995,
+            "category": "OTHER_STATEMENT"
+          },
+          {
+            "sentOffsetMs": 406.7631670000005,
+            "receivedOffsetMs": 410.86791700000003,
+            "category": "OTHER_STATEMENT"
+          },
+          {
+            "sentOffsetMs": 508.22066700000005,
+            "receivedOffsetMs": 511.54529200000025,
+            "category": "OTHER_STATEMENT"
+          },
+          {
+            "sentOffsetMs": 609.8280419999996,
+            "receivedOffsetMs": 613.6390420000002,
+            "category": "OTHER_STATEMENT"
+          },
+          {
+            "sentOffsetMs": 711.6562090000002,
+            "receivedOffsetMs": 714.5713339999998,
+            "category": "OTHER_STATEMENT"
+          },
+          {
+            "sentOffsetMs": 813.9059170000005,
+            "receivedOffsetMs": 817.307875,
+            "category": "OTHER_STATEMENT"
+          },
+          {
+            "sentOffsetMs": 914.4537919999998,
+            "receivedOffsetMs": 921.2943339999997,
+            "category": "NO_TARGET"
+          },
+          {
+            "sentOffsetMs": 1016.56025,
+            "receivedOffsetMs": 1020.4806249999997,
+            "category": "NO_TARGET"
+          }
+        ],
+        "counts": {
+          "NO_TARGET": 4,
+          "OTHER_STATEMENT": 7
+        },
+        "activeSamples": 0,
+        "errors": 0,
+        "maxGapMs": 103.98645899999974,
+        "discarded": 0,
+        "cleanupVerified": true,
+        "cancelReason": null
+      },
+      "command": {
+        "commandId": 1,
+        "operation": "SCOPED_SQL",
+        "startedMs": 3713.9885,
+        "completedMs": 4744.416375,
+        "durationMs": 1030.4278749999999,
+        "timeoutMs": 5000,
+        "outcome": "SUCCEEDED",
+        "exitCode": 0,
+        "signal": null
+      },
+      "errorCode": null
+    },
+    "release": {
+      "diagnostic": {
+        "status": "OBSERVED",
+        "command": {
+          "commandId": 1,
+          "startedMs": 5292.825375,
+          "completedMs": 6266.394084
+        },
+        "samples": [
+          {
+            "sentOffsetMs": 1.4669169999997393,
+            "receivedOffsetMs": 2.9193749999994907,
+            "category": "NO_TARGET"
+          },
+          {
+            "sentOffsetMs": 102.40404199999921,
+            "receivedOffsetMs": 104.8380419999994,
+            "category": "LOCK"
+          },
+          {
+            "sentOffsetMs": 204.12595899999997,
+            "receivedOffsetMs": 206.40499999999975,
+            "category": "LOCK"
+          },
+          {
+            "sentOffsetMs": 305.65541699999994,
+            "receivedOffsetMs": 307.67404199999964,
+            "category": "LOCK"
+          },
+          {
+            "sentOffsetMs": 406.92012499999964,
+            "receivedOffsetMs": 410.916792,
+            "category": "LOCK"
+          },
+          {
+            "sentOffsetMs": 507.5458749999998,
+            "receivedOffsetMs": 512.0520839999999,
+            "category": "LOCK"
+          },
+          {
+            "sentOffsetMs": 608.5602919999992,
+            "receivedOffsetMs": 613.0428750000001,
+            "category": "LOCK"
+          },
+          {
+            "sentOffsetMs": 710.3848339999995,
+            "receivedOffsetMs": 715.1434999999992,
+            "category": "LOCK"
+          },
+          {
+            "sentOffsetMs": 810.4840839999997,
+            "receivedOffsetMs": 814.3033339999993,
+            "category": "LOCK"
+          },
+          {
+            "sentOffsetMs": 912.4929169999996,
+            "receivedOffsetMs": 915.1837089999999,
+            "category": "NO_TARGET"
+          }
+        ],
+        "counts": {
+          "NO_TARGET": 2,
+          "LOCK": 8
+        },
+        "activeSamples": 8,
+        "errors": 0,
+        "maxGapMs": 103.24275000000034,
+        "discarded": 0,
+        "cleanupVerified": true,
+        "cancelReason": null
+      },
+      "command": {
+        "commandId": 1,
+        "operation": "SCOPED_SQL",
+        "startedMs": 5292.825375,
+        "completedMs": 6266.394084,
+        "durationMs": 973.5687089999992,
+        "timeoutMs": 5000,
+        "outcome": "SUCCEEDED",
+        "exitCode": 0,
+        "signal": null
+      },
+      "errorCode": null,
+      "sameSnapshot": true
+    },
+    "timeout": {
+      "diagnostic": {
+        "status": "OBSERVED",
+        "command": {
+          "commandId": 1,
+          "startedMs": 6803.809709,
+          "completedMs": 10971.773459
+        },
+        "samples": [
+          {
+            "sentOffsetMs": 1.1730829999996786,
+            "receivedOffsetMs": 2.705957999999555,
+            "category": "NO_TARGET"
+          },
+          {
+            "sentOffsetMs": 102.83566599999995,
+            "receivedOffsetMs": 104.80687500000022,
+            "category": "LOCK"
+          },
+          {
+            "sentOffsetMs": 205.04308299999957,
+            "receivedOffsetMs": 207.30970799999977,
+            "category": "LOCK"
+          },
+          {
+            "sentOffsetMs": 306.5331249999999,
+            "receivedOffsetMs": 311.0691660000002,
+            "category": "LOCK"
+          },
+          {
+            "sentOffsetMs": 407.8408330000002,
+            "receivedOffsetMs": 411.93712499999947,
+            "category": "LOCK"
+          },
+          {
+            "sentOffsetMs": 509.11974999999984,
+            "receivedOffsetMs": 511.6423329999998,
+            "category": "LOCK"
+          },
+          {
+            "sentOffsetMs": 610.9379159999999,
+            "receivedOffsetMs": 613.375,
+            "category": "LOCK"
+          },
+          {
+            "sentOffsetMs": 711.7241249999997,
+            "receivedOffsetMs": 714.4432500000003,
+            "category": "LOCK"
+          },
+          {
+            "sentOffsetMs": 813.6659159999999,
+            "receivedOffsetMs": 817.0321249999997,
+            "category": "LOCK"
+          },
+          {
+            "sentOffsetMs": 915.2837499999996,
+            "receivedOffsetMs": 919.1912080000002,
+            "category": "LOCK"
+          },
+          {
+            "sentOffsetMs": 1017.0984159999998,
+            "receivedOffsetMs": 1019.3883329999999,
+            "category": "LOCK"
+          },
+          {
+            "sentOffsetMs": 1118.6092909999998,
+            "receivedOffsetMs": 1121.1256249999997,
+            "category": "LOCK"
+          },
+          {
+            "sentOffsetMs": 1220.3405830000002,
+            "receivedOffsetMs": 1223.3769999999995,
+            "category": "LOCK"
+          },
+          {
+            "sentOffsetMs": 1322.0860409999996,
+            "receivedOffsetMs": 1324.4391660000001,
+            "category": "LOCK"
+          },
+          {
+            "sentOffsetMs": 1423.893583,
+            "receivedOffsetMs": 1426.2581249999994,
+            "category": "LOCK"
+          },
+          {
+            "sentOffsetMs": 1525.5024160000003,
+            "receivedOffsetMs": 1527.5148330000002,
+            "category": "LOCK"
+          },
+          {
+            "sentOffsetMs": 1626.743707999999,
+            "receivedOffsetMs": 1631.0477079999991,
+            "category": "LOCK"
+          },
+          {
+            "sentOffsetMs": 1727.7212910000007,
+            "receivedOffsetMs": 1730.964332999999,
+            "category": "LOCK"
+          },
+          {
+            "sentOffsetMs": 1828.4477500000003,
+            "receivedOffsetMs": 1832.6404580000008,
+            "category": "LOCK"
+          },
+          {
+            "sentOffsetMs": 1930.2518329999994,
+            "receivedOffsetMs": 1932.484125,
+            "category": "LOCK"
+          },
+          {
+            "sentOffsetMs": 2031.7205829999994,
+            "receivedOffsetMs": 2034.084749999999,
+            "category": "LOCK"
+          },
+          {
+            "sentOffsetMs": 2133.378040999999,
+            "receivedOffsetMs": 2135.271207999999,
+            "category": "LOCK"
+          },
+          {
+            "sentOffsetMs": 2235.4789580000006,
+            "receivedOffsetMs": 2237.915582999999,
+            "category": "LOCK"
+          },
+          {
+            "sentOffsetMs": 2337.144625,
+            "receivedOffsetMs": 2340.069124999999,
+            "category": "LOCK"
+          },
+          {
+            "sentOffsetMs": 2438.7721659999997,
+            "receivedOffsetMs": 2441.336875,
+            "category": "LOCK"
+          },
+          {
+            "sentOffsetMs": 2540.4773749999995,
+            "receivedOffsetMs": 2543.2027499999995,
+            "category": "LOCK"
+          },
+          {
+            "sentOffsetMs": 2642.5076249999993,
+            "receivedOffsetMs": 2644.958958,
+            "category": "LOCK"
+          },
+          {
+            "sentOffsetMs": 2744.2017499999993,
+            "receivedOffsetMs": 2747.8685830000004,
+            "category": "LOCK"
+          },
+          {
+            "sentOffsetMs": 2845.6355410000006,
+            "receivedOffsetMs": 2851.0485,
+            "category": "LOCK"
+          },
+          {
+            "sentOffsetMs": 2946.797374999999,
+            "receivedOffsetMs": 2951.0528750000003,
+            "category": "LOCK"
+          },
+          {
+            "sentOffsetMs": 3048.3674999999994,
+            "receivedOffsetMs": 3051.6161660000007,
+            "category": "LOCK"
+          },
+          {
+            "sentOffsetMs": 3149.3973749999996,
+            "receivedOffsetMs": 3151.7593750000005,
+            "category": "LOCK"
+          },
+          {
+            "sentOffsetMs": 3251.069166,
+            "receivedOffsetMs": 3253.154458,
+            "category": "LOCK"
+          },
+          {
+            "sentOffsetMs": 3351.4151250000004,
+            "receivedOffsetMs": 3353.5087909999993,
+            "category": "LOCK"
+          },
+          {
+            "sentOffsetMs": 3452.5049580000004,
+            "receivedOffsetMs": 3455.8525409999993,
+            "category": "LOCK"
+          },
+          {
+            "sentOffsetMs": 3553.9923329999992,
+            "receivedOffsetMs": 3557.520125,
+            "category": "LOCK"
+          },
+          {
+            "sentOffsetMs": 3655.7732910000004,
+            "receivedOffsetMs": 3659.362333,
+            "category": "LOCK"
+          },
+          {
+            "sentOffsetMs": 3757.6731659999996,
+            "receivedOffsetMs": 3759.6606249999995,
+            "category": "LOCK"
+          },
+          {
+            "sentOffsetMs": 3858.8574579999995,
+            "receivedOffsetMs": 3860.7888749999993,
+            "category": "LOCK"
+          },
+          {
+            "sentOffsetMs": 3960.9572500000004,
+            "receivedOffsetMs": 3963.1911250000003,
+            "category": "LOCK"
+          },
+          {
+            "sentOffsetMs": 4062.3144999999995,
+            "receivedOffsetMs": 4064.889333,
+            "category": "NO_TARGET"
+          },
+          {
+            "sentOffsetMs": 4164.057374999999,
+            "receivedOffsetMs": 4166.671791,
+            "category": "NO_TARGET"
+          }
+        ],
+        "counts": {
+          "NO_TARGET": 3,
+          "LOCK": 39
+        },
+        "activeSamples": 39,
+        "errors": 0,
+        "maxGapMs": 103.75945800000045,
+        "discarded": 0,
+        "cleanupVerified": true,
+        "cancelReason": "STATEMENT_TIMEOUT"
+      },
+      "command": {
+        "commandId": 1,
+        "operation": "SCOPED_SQL",
+        "startedMs": 6803.809709,
+        "completedMs": 10971.773459,
+        "durationMs": 4167.96375,
+        "timeoutMs": 5000,
+        "outcome": "FAILED",
+        "exitCode": 1,
+        "signal": null
+      },
+      "errorCode": "SQL_QUERY_CANCELED"
+    },
+    "processDeadline": {
+      "shortTestTimerMs": 50,
+      "realSnapshotTimeoutArgMs": 5000,
+      "outcome": "TIMED_OUT",
+      "errorCode": "SQL_PROCESS_TIMEOUT"
+    }
+  },
+  "reviewSources": {
+    "scripts/concurrent-browser-sql.mjs": "119a708597187e282a2650e16eb4f82a2921661eff16bfd9b15e077d0ea6274a",
+    "scripts/settlement-wait-observation.mjs": "60495365a3c70e49c7cfa36aa4d2ef0272d08fcc8bf3525048aab44fd4774270",
+    "scripts/run-focused-load.mjs": "7c3a09524ece49caf43f2d7240d4c2f3b4dc49bc9f4cd631c9b5b1df6e1112ba",
+    "scripts/focused-load-collector.mjs": "2223e86b49c4f6314c19334e1258dd11a14ab7fd9cb29b2e466725f09089461b"
+  },
+  "postgresql": "17.5",
+  "complete": true,
+  "containerRemoved": true,
+  "existingServicesUnchanged": true,
+  "completedAt": "2026-11-23T15:37:16.504Z",
+  "initialTimeoutObservation": {
+    "startedAt": "2026-11-23T15:34:41.356Z",
+    "completedAt": "2026-11-23T15:34:53.269Z",
+    "commandDurationMs": 4283.469584,
+    "status": "OBSERVATION_FAILED",
+    "counts": {
+      "NO_TARGET": 1,
+      "LOCK": 26
+    },
+    "errors": 1,
+    "cancelReason": "STATEMENT_TIMEOUT",
+    "cleanupVerified": true
+  },
+  "existingApiReadiness": "UP",
+  "remainingExperimentContainers": 0
+}

@@ -11,6 +11,7 @@ import {isUuid} from './final-settlement.mjs';
 import {buildSettlementReadinessSql,readScopedSnapshot} from './concurrent-browser-sql.mjs';
 import {claimOutput,collectFocused,parseReceipt} from './focused-load-collector.mjs';
 import {createCommandTrace} from './command-trace.mjs';
+import {observeSettlementWait,openWaitObserver} from './settlement-wait-observation.mjs';
 
 const root=fileURLToPath(new URL('../',import.meta.url)).replace(/\/$/,'');
 const services=['postgres','kafka','redis','object-storage','opensearch'].map(s=>`bidflow-local-${s}-1`);
@@ -57,7 +58,7 @@ export function focusedApiMode(command,java,jar) {
   return null;
 }
 
-function realIo(output) {
+function realIo(output,waits) {
   const trace=createCommandTrace({now:()=>performance.now(),execute:executeObserved});
   const command=async(program,args,timeout=5000,operation='SETUP_METADATA')=>
     (await trace.run(operation,program,args,timeout)).stdout.trim();
@@ -164,6 +165,14 @@ function realIo(output) {
     },
     readiness:auctionId=>sql(buildSettlementReadinessSql(auctionId),'SETTLEMENT_READINESS'),
     snapshot:auctionId=>readScopedSnapshot(auctionId,trace.run),
+    ...(waits?{snapshotWithWaits:(auctionId,deadline,checkBudget,record)=>observeSettlementWait({
+      now:()=>performance.now(),deadline,checkBudget,record,
+      tag:'bidflow-settlement-'+randomUUID().replaceAll('-',''),
+      trace:()=>trace.snapshot().records.at(-1),
+      snapshot:tag=>readScopedSnapshot(auctionId,trace.run,tag),
+      open:()=>openWaitObserver(spawn('docker',['exec','-i','bidflow-local-postgres-1','psql','-XqAtw',
+        '-U','bidflow','-d','bidflow','-v','ON_ERROR_STOP=1'],{cwd:root,stdio:['pipe','pipe','ignore']})),
+    })}:{}),
     summary:async()=>{
       const s=JSON.parse(await readFile(output+'/summary.json','utf8')).metrics;
       const timing=s['http_req_duration{operation:bid_request}'].values;
@@ -174,15 +183,22 @@ function realIo(output) {
   };
 }
 
+export function parseFocusedArgs(argv) {
+  const waits=argv.at(-1)==='--settlement-waits', args=waits?argv.slice(0,-1):argv;
+  if(args.length<1||args.length>3||args.some(arg=>arg.startsWith('--')))
+    throw Error('usage: node scripts/run-focused-load.mjs NEW_EXTERNAL_DIRECTORY [smoke|full] [LOOPBACK_VITE_ORIGIN] [--settlement-waits]');
+  const [path,mode='full',web]=args;focusedConfig(mode);
+  return {path,mode,web,waits};
+}
+
 async function main() {
-  if(process.argv.length<3||process.argv.length>5)throw Error('usage: node scripts/run-focused-load.mjs NEW_EXTERNAL_DIRECTORY [smoke|full] [LOOPBACK_VITE_ORIGIN]');
-  const mode=process.argv[3]??'full';focusedConfig(mode);
-  const web=process.argv[4];
+  const {path,mode,web,waits}=parseFocusedArgs(process.argv.slice(2));
   const observer=web===undefined?undefined:(await import('../apps/web/e2e/load-browser-observer.mjs')).createBrowserObserver(web,()=>performance.now());
-  const output=await claimOutput(process.argv[2]);
-  const e=await collectFocused(mode,realIo(output),observer);
-  console.log(JSON.stringify({mode,valid:e.valid,fullVerified:e.fullVerified,output}));
-  if(!e.valid)process.exitCode=1;
+  const output=await claimOutput(path);
+  const e=await collectFocused(mode,realIo(output,waits),observer);
+  console.log(JSON.stringify({mode,valid:e.valid,fullVerified:e.fullVerified,output,
+    ...(waits?{waitObservation:e.settlementWait?.status??'NOT_STARTED',waitCleanupVerified:e.settlementWait?.cleanupVerified??null}:{})}));
+  if(!e.valid||e.settlementWait?.cleanupVerified===false)process.exitCode=1;
 }
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href)main().catch(()=>{
   console.error('Focused load failed. Check the new output directory and local API contract. No automatic retry.');process.exitCode=1;
