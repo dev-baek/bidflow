@@ -45,5 +45,18 @@ output "postgres_master_user_secret_arn" {
 
 output "cognito_public_config" {
   description = "Public issuer, client and return URLs for the verification build; absent when Cognito is disabled."
-  value       = one(module.cognito[*].public_config)
+  value       = local.cognito_public_config
+}
+
+output "verification_web_build_env" {
+  description = "Only the public Vite inputs used when building the Cognito verification artifact."
+  value = var.enable_cognito ? {
+    VITE_AUTH_MODE            = "cognito"
+    VITE_COGNITO_ISSUER       = local.cognito_public_config.issuer_uri
+    VITE_COGNITO_ORIGIN       = local.cognito_public_config.login_origin
+    VITE_COGNITO_CLIENT_ID    = local.cognito_public_config.client_id
+    VITE_COGNITO_REDIRECT_URI = local.cognito_public_config.callback_url
+    VITE_API_BASE_URL         = "https://${var.verification_api_fqdn}"
+    VITE_WS_BASE_URL          = "wss://${var.verification_api_fqdn}"
+  } : null
 }

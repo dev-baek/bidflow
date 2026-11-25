@@ -40,6 +40,18 @@ terraform -chdir=infra/terraform/environments/verification test
 
 모의 테스트의 `apply`와 target은 테스트 파일 안에서만 쓰인다. 실제 AWS 배포에서 부분 apply를 하라는 절차가 아니다. 공개 출력의 주입과 TLS·REST CORS·STOMP 연결은 #88, 실제 로그인과 삭제는 #91에서 검증한다.
 
+### 인증 설정과 Vite 빌드
+
+Cognito 활성화 시 ALB 인증서와 일치하는 API 호스트명을 `verification_api_fqdn`으로 지정한다. DNS·인증서 일치는 별도로 확인한다. EC2의 시작 스크립트는 Cognito issuer·Client ID와 CloudFront origin, `verification` 프로필을 Terraform에서 받아 설정한다. Runtime Secret은 기존 Docker env-file 형식 그대로이며 해당 설정이나 프로필을 덮는 키를 포함하면 앱을 시작하지 않는다.
+
+승인된 배포에서는 Terraform의 공개 출력 객체 `verification_web_build_env`만 별도 JSON 파일로 전달한다. 전체 state 또는 모든 출력값을 전달하지 않는다. 저장소 루트에서 이 파일을 사용해 빌드한다.
+
+```sh
+node scripts/build-verification-web.mjs /safe/path/verification-web-public.json
+```
+
+이 빌드는 다른 `VITE_*` 설정과 로컬 dotenv 파일을 사용하지 않으며 AWS 호출·업로드를 하지 않는다. 실제 인증과 S3 직접 업로드 검증은 [#91](https://github.com/dev-baek/bidflow/issues/91)에 남겨둔다.
+
 ### 승인 후 실제 검증 환경
 
 Terraform CLI가 설치된 환경에서 다음 명령을 사용한다. `apply`와 `destroy`는 [AWS Runbook](../../docs/specs/issue-017-aws-deployment.md)의 승인·잔여 리소스 확인 절차를 통과한 경우에만 수행한다.
