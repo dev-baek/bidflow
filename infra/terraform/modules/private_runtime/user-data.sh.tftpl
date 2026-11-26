@@ -9,9 +9,9 @@ aws secretsmanager get-secret-value \
   --query SecretString \
   --output text > /etc/bidflow/runtime.env
 chmod 0600 /etc/bidflow/runtime.env
-%{ if managed_runtime_env_base64 != "" ~}
+%{ if enable_managed_redis || managed_runtime_env_base64 != "" ~}
 ${verification_guard}
-check_verification_runtime_env /etc/bidflow/runtime.env ${enable_managed_kafka} ${enable_managed_search}
+check_verification_runtime_env /etc/bidflow/runtime.env ${enable_managed_kafka} ${enable_managed_search} ${enable_managed_redis}
 %{ endif ~}
 
 aws secretsmanager get-secret-value \
@@ -42,10 +42,16 @@ printf '%s' '${managed_runtime_env_base64}' | base64 -d >> /etc/bidflow/runtime-
 %{ endif ~}
 
 %{ if enable_managed_redis ~}
-aws secretsmanager get-secret-value --region '${region}' --secret-id '${redis_secret_arn}' --query SecretString --output text > /etc/bidflow/redis-secret.json
-chmod 0600 /etc/bidflow/redis-secret.json
-redis_auth_token=$(jq -r '.redis_auth_token' /etc/bidflow/redis-secret.json)
+if ! redis_auth_token=$(
+  aws secretsmanager get-secret-value --region '${region}' --secret-id '${redis_secret_arn}' \
+    --version-stage AWSCURRENT --query SecretString --output text 2>/dev/null |
+  jq -ser 'select(length == 1) | .[0].redis_auth_token | strings | select(length == 32 and (test("[^A-Za-z0-9]") | not))' 2>/dev/null
+); then
+  printf '%s\n' 'Invalid or unavailable Redis AUTH in managed Secret.' >&2
+  exit 1
+fi
 printf 'SPRING_DATA_REDIS_HOST=${redis_endpoint}\nSPRING_DATA_REDIS_PORT=6379\nSPRING_DATA_REDIS_SSL_ENABLED=true\nSPRING_DATA_REDIS_PASSWORD=%s\n' "$redis_auth_token" >> /etc/bidflow/runtime-complete.env
+unset redis_auth_token
 %{ endif ~}
 
 aws ecr get-login-password --region '${region}' | \
