@@ -3,6 +3,7 @@
 - 상태: 제안됨
 - 관련 Issue: [#193 MSK 검증 모듈 S/D/B/I/T 사양](https://github.com/dev-baek/bidflow/issues/193)
 - 상위 Issue: [#89 관리형 데이터 서비스 검증 모듈](https://github.com/dev-baek/bidflow/issues/89)
+- 후속 연결 사양: [#88 Spring Boot IAM 인증, 토픽 및 배포 순서](issue-088-msk-runtime.md)
 
 ## 목적과 제외 범위
 
