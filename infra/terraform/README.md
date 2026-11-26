@@ -60,6 +60,10 @@ node scripts/build-verification-web.mjs /safe/path/verification-web-public.json
 
 `enable_managed_kafka`는 기본 비활성화다. 승인된 MSK 검증에서는 EC2를 보류한 첫 단계에 MSK를 준비하고, [#88 사양](../../docs/specs/issue-088-msk-runtime.md)의 여섯 토픽을 VPC 내부의 별도 운영 역할로 생성·확인한 뒤 EC2를 활성화한다. Terraform이 실제 클러스터에만 앱 IAM 정책을 붙이고 사설 IAM bootstrap과 `msk` 프로필을 주입한다. Runtime Secret에는 AWS 자격 증명이나 Kafka·프로필 설정을 넣지 않는다. 실제 연결·입찰·삭제 증적은 #91에 남긴다.
 
+### OpenSearch 검증 설정
+
+`enable_managed_search`는 기본 비활성화다. 승인된 검증에서 도메인을 준비하고 [#88 사양](../../docs/specs/issue-088-opensearch-runtime.md)의 인덱스·alias를 별도 운영 역할로 설정한 뒤 EC2를 활성화한다. Terraform은 앱에 사설 HTTPS 주소, 리전 및 AWS 검색 모드를 주입한다. 앱 IAM은 검색 POST와 문서 색인 PUT만 사용한다. Runtime Secret에 검색 설정이나 AWS 자격 증명을 추가하지 않는다. 실제 검색과 삭제는 #91에 남긴다.
+
 ### 승인 후 첫 배포: ECR 준비 → EC2 활성화
 
 실계정에서 원격 backend 초기화·Plan·Apply를 하기 전에 [AWS Runbook](../../docs/specs/issue-017-aws-deployment.md)에 따라 계정·리전·비용·종료 시간을 승인받는다. 두 단계 모두 같은 검증 backend와 state를 사용한다.

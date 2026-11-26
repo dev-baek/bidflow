@@ -36,11 +36,17 @@ variable "github_oidc_provider_arn" {
   }
 }
 
-variable "opensearch_domain_arn" {
-  description = "Optional private OpenSearch domain ARN that the application runtime may query."
-  type        = string
-  nullable    = true
+variable "opensearch" {
+  description = "Actual OpenSearch domain used by EC2, absent if either feature is disabled."
+  type        = object({ domain_arn = string })
   default     = null
+
+  validation {
+    condition = var.opensearch == null ? true : (
+      var.opensearch.domain_arn == "arn:aws:es:${var.region}:${var.account_id}:domain/${var.project_name}-${var.environment}-search"
+    )
+    error_message = "Managed OpenSearch requires the exact verification domain ARN from the approved account and Region."
+  }
 }
 
 variable "image_storage" {

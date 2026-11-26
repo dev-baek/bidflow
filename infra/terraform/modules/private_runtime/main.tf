@@ -4,7 +4,7 @@ locals {
     var.verification_auth != null ? "verification" : null,
     var.enable_managed_kafka ? "msk" : null,
   ])
-  managed_runtime_env = length(local.runtime_profiles) == 0 ? "" : join("\n", concat([
+  managed_runtime_env = concat(length(local.runtime_profiles) == 0 ? [] : [
     "SPRING_PROFILES_ACTIVE=${join(",", local.runtime_profiles)}",
     ], var.verification_auth == null ? [] : [
     "BIDFLOW_COGNITO_ISSUER_URI=${var.verification_auth.issuer_uri}",
@@ -15,7 +15,11 @@ locals {
     "BIDFLOW_STORAGE_VERIFICATION_REGION=${var.region}",
     ], var.enable_managed_kafka ? [
     format("BIDFLOW_MSK_BOOTSTRAP_SERVERS=%s", var.kafka_bootstrap_brokers == null ? "" : var.kafka_bootstrap_brokers),
-  ] : [], [""]))
+    ] : [], var.enable_managed_search ? [
+    "BIDFLOW_SEARCH_MODE=aws",
+    format("BIDFLOW_SEARCH_AWS_ENDPOINT=https://%s", var.opensearch_endpoint == null ? "" : var.opensearch_endpoint),
+    "BIDFLOW_SEARCH_AWS_REGION=${var.region}",
+  ] : [])
 }
 
 resource "aws_launch_template" "application" {
@@ -34,9 +38,8 @@ resource "aws_launch_template" "application" {
     region                     = var.region
     redis_endpoint             = var.redis_endpoint
     redis_secret_arn           = var.redis_secret_arn
-    opensearch_endpoint        = var.opensearch_endpoint
     runtime_secret_arn         = var.runtime_secret_arn
-    managed_runtime_env_base64 = base64encode(local.managed_runtime_env)
+    managed_runtime_env_base64 = length(local.managed_runtime_env) == 0 ? "" : base64encode(join("\n", concat(local.managed_runtime_env, [""])))
     verification_guard         = file("${path.module}/verification-runtime-guard.sh")
   }))
 
@@ -51,7 +54,7 @@ resource "aws_launch_template" "application" {
   metadata_options {
     http_endpoint               = "enabled"
     http_tokens                 = "required"
-    http_put_response_hop_limit = var.enable_managed_kafka || var.verification_image_bucket != null ? 2 : null
+    http_put_response_hop_limit = var.enable_managed_kafka || var.enable_managed_search || var.verification_image_bucket != null ? 2 : null
   }
 
   network_interfaces {

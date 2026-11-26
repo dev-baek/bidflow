@@ -9,7 +9,7 @@ image="123456789012.dkr.ecr.ap-northeast-1.amazonaws.com/bidflow-verification-ap
 registry="123456789012.dkr.ecr.ap-northeast-1.amazonaws.com"
 
 # Render the production template in an empty directory, without providers or state.
-printf '%s\n' "base64encode(templatefile(\"$template\", {region=\"ap-northeast-1\", runtime_secret_arn=\"runtime-fixture\", database_secret_arn=\"rds-fixture\", database_host=\"db.example.test\", database_port=5432, image_registry=\"$registry\", application_image=\"$image\", verification_guard=\"\", managed_runtime_env_base64=\"\", enable_managed_redis=false, enable_managed_kafka=false, enable_managed_search=false, redis_secret_arn=null, redis_endpoint=null, opensearch_endpoint=null}))" |
+printf '%s\n' "base64encode(templatefile(\"$template\", {region=\"ap-northeast-1\", runtime_secret_arn=\"runtime-fixture\", database_secret_arn=\"rds-fixture\", database_host=\"db.example.test\", database_port=5432, image_registry=\"$registry\", application_image=\"$image\", verification_guard=\"\", managed_runtime_env_base64=\"\", enable_managed_redis=false, enable_managed_kafka=false, enable_managed_search=false, redis_secret_arn=null, redis_endpoint=null}))" |
   "${TERRAFORM_BIN:-terraform}" -chdir="$scratch" console -no-color |
   jq -er '@base64d' | sed "s|/etc/bidflow|$scratch/runtime|g" > "$scratch/user-data.sh"
 

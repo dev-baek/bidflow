@@ -90,3 +90,24 @@ test('MSK boot rejects Runtime Secret Kafka and AWS credential overrides', () =>
     assert.doesNotMatch(result.stderr, /marker|not-real/);
   }
 });
+
+test('managed search alone protects its settings and the EC2 credential source', () => {
+  const guard = new URL('../../infra/terraform/modules/private_runtime/verification-runtime-guard.sh', import.meta.url);
+  for (const [line, allowed] of [
+    ['BIDFLOW_SEARCH_MODE=local-marker', false],
+    ['BIDFLOW_SEARCH_AWSENDPOINT=private-marker', false],
+    ['bidflow.search.aws-region=private-marker', false],
+    ['BIDFLOW_OPENSEARCH_ENDPOINT=private-marker', false],
+    ['AWS_EC2_METADATA_SERVICE_ENDPOINT=private-marker', false],
+    ['AWS_SECRET_ACCESS_KEY=private-marker', false],
+    ['SPRING_APPLICATION_JSON=private-marker', false],
+    ['BIDFLOW_APP_FIXTURE=private-marker', true],
+    ['SPRING_KAFKA_BOOTSTRAP_SERVERS=private-marker', true],
+  ]) {
+    const result = spawnSync('bash', ['-c', '. "$1"; check_verification_runtime_env /dev/stdin false true', 'bash', guard.pathname],
+      {encoding: 'utf8', input: line + '\n'});
+    assert.equal(result.status, allowed ? 0 : 1, line.split('=')[0]);
+    assert.equal(result.stdout, '');
+    assert.doesNotMatch(result.stderr, /marker/);
+  }
+});

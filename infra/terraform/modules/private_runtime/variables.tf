@@ -147,6 +147,14 @@ variable "enable_managed_search" { type = bool }
 variable "opensearch_endpoint" {
   type     = string
   nullable = true
+
+  validation {
+    condition = !var.enable_managed_search || (
+      var.region == "ap-northeast-1" &&
+      can(regex("^vpc-bidflow-verification-search-[a-z0-9-]+\\.ap-northeast-1\\.es\\.amazonaws\\.com$", var.opensearch_endpoint))
+    )
+    error_message = "Managed OpenSearch requires the private verification endpoint in ap-northeast-1."
+  }
 }
 
 variable "enable_nat_gateway" {
