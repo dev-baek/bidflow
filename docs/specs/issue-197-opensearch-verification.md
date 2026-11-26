@@ -3,6 +3,7 @@
 - 상태: 제안됨
 - 관련 Issue: [#197 OpenSearch 검증 모듈 S/D/B/I/T 사양](https://github.com/dev-baek/bidflow/issues/197)
 - 상위 Issue: [#89 관리형 데이터 서비스 검증 모듈](https://github.com/dev-baek/bidflow/issues/89)
+- 후속 연결 사양: [#88 사설 OpenSearch 검색·색인 연결](issue-088-opensearch-runtime.md)
 
 ## 목적과 제외 범위
 
