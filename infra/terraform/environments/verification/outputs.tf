@@ -48,6 +48,11 @@ output "cognito_public_config" {
   value       = local.cognito_public_config
 }
 
+output "verification_image_bucket_name" {
+  description = "Dedicated verification image bucket for the approved upload and cleanup checks; absent when disabled."
+  value       = one(module.listing_images[*].bucket_name)
+}
+
 output "verification_web_build_env" {
   description = "Only the public Vite inputs used when building the Cognito verification artifact."
   value = var.enable_cognito ? {

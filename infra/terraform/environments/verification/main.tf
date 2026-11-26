@@ -13,7 +13,8 @@ provider "aws" {
 }
 
 locals {
-  cognito_public_config = one(module.cognito[*].public_config)
+  cognito_public_config  = one(module.cognito[*].public_config)
+  listing_images_enabled = var.enable_listing_images && var.enable_cognito
 }
 
 data "aws_caller_identity" "current" {}
@@ -37,6 +38,7 @@ module "iam" {
 
   account_id               = data.aws_caller_identity.current.account_id
   github_oidc_provider_arn = var.github_oidc_provider_arn
+  image_storage            = local.listing_images_enabled ? { bucket_arn = module.listing_images[0].bucket_arn } : null
   opensearch_domain_arn    = module.managed_opensearch.domain_arn
   region                   = var.region
 }
@@ -46,6 +48,16 @@ module "web_delivery" {
 
   asset_prefix = var.web_asset_prefix
   bucket_name  = "bidflow-${var.environment}-${data.aws_caller_identity.current.account_id}-web"
+}
+
+module "listing_images" {
+  source = "../../modules/listing_images"
+  count  = local.listing_images_enabled ? 1 : 0
+
+  bucket_name = "bidflow-${var.environment}-${data.aws_caller_identity.current.account_id}-images"
+  web_origin  = "https://${module.web_delivery.cloudfront_domain_name}"
+
+  depends_on = [terraform_data.verification_guard]
 }
 
 module "cognito" {
@@ -94,6 +106,7 @@ module "private_runtime" {
   redis_endpoint                    = module.managed_redis.endpoint
   redis_secret_arn                  = module.managed_redis.secret_arn
   target_group_arn                  = module.application_edge.target_group_arn
+  verification_image_bucket         = one(module.listing_images[*].bucket_name)
   verification_auth = var.enable_cognito ? {
     issuer_uri = local.cognito_public_config.issuer_uri
     client_id  = local.cognito_public_config.client_id

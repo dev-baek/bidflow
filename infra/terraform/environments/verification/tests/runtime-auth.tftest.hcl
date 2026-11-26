@@ -25,6 +25,33 @@ variables {
   max_size                          = 2
 }
 
+run "images_use_role_credentials_and_managed_storage_env" {
+  command = plan
+  module {
+    source = "../../modules/private_runtime"
+  }
+  variables {
+    verification_image_bucket = "bidflow-verification-123456789012-images"
+    verification_auth = {
+      issuer_uri = "https://cognito-idp.ap-northeast-1.amazonaws.com/ap-northeast-1_test"
+      client_id  = "mockclient123"
+      web_origin = "https://d123example.cloudfront.net"
+    }
+  }
+
+  assert {
+    condition     = aws_launch_template.application.metadata_options[0].http_tokens == "required" && aws_launch_template.application.metadata_options[0].http_put_response_hop_limit == 2
+    error_message = "Docker must be able to reach IMDSv2 without enabling IMDSv1."
+  }
+  assert {
+    condition = strcontains(
+      base64decode(aws_launch_template.application.user_data),
+      base64encode("SPRING_PROFILES_ACTIVE=verification\nBIDFLOW_COGNITO_ISSUER_URI=https://cognito-idp.ap-northeast-1.amazonaws.com/ap-northeast-1_test\nBIDFLOW_COGNITO_CLIENT_ID=mockclient123\nBIDFLOW_VERIFICATION_WEB_ORIGIN=https://d123example.cloudfront.net\nBIDFLOW_STORAGE_VERIFICATION_BUCKET=bidflow-verification-123456789012-images\nBIDFLOW_STORAGE_VERIFICATION_REGION=ap-northeast-1\n")
+    )
+    error_message = "EC2 must receive the public image bucket and region, not credentials."
+  }
+}
+
 run "disabled_does_not_change_runtime_env_handling" {
   command = plan
   module {

@@ -45,8 +45,49 @@ run "default_creates_no_cognito_module_or_config" {
   command = plan
 
   assert {
-    condition     = length(module.cognito) == 0 && output.cognito_public_config == null && output.verification_web_build_env == null
+    condition     = length(module.cognito) == 0 && output.cognito_public_config == null && output.verification_web_build_env == null && length(module.listing_images) == 0 && output.verification_image_bucket_name == null
     error_message = "Verification must not create Cognito or expose settings until enabled."
+  }
+}
+
+run "image_storage_requires_cognito" {
+  command = plan
+  variables {
+    enable_listing_images = true
+  }
+  expect_failures = [var.enable_listing_images]
+}
+
+run "enabled_images_use_the_verification_bucket_name" {
+  command = apply
+
+  plan_options {
+    target = [module.listing_images]
+  }
+
+  variables {
+    enable_listing_images = true
+    enable_cognito        = true
+    cognito_domain_prefix = "bidflow-mock-test"
+  }
+
+  assert {
+    condition     = length(module.listing_images) == 1 && output.verification_image_bucket_name == "bidflow-verification-123456789012-images"
+    error_message = "The dedicated image bucket must use the application naming contract."
+  }
+}
+
+run "image_configuration_can_plan_with_unknown_bucket_arn" {
+  command = plan
+  variables {
+    enable_listing_images = true
+    enable_cognito        = true
+    cognito_domain_prefix = "bidflow-mock-test"
+  }
+
+  assert {
+    condition     = length(module.listing_images) == 1
+    error_message = "The full verification plan must not need an already-known image bucket ARN to determine resource counts."
   }
 }
 
