@@ -1,13 +1,11 @@
 data "aws_partition" "current" {}
 
 locals {
-  resource_prefix    = "${var.project_name}-${var.environment}"
-  ecr_repository_arn = "arn:${data.aws_partition.current.partition}:ecr:${var.region}:${var.account_id}:repository/${local.resource_prefix}"
-  secret_arn_pattern = "arn:${data.aws_partition.current.partition}:secretsmanager:${var.region}:${var.account_id}:secret:${local.resource_prefix}/*"
-  log_group_arn      = "arn:${data.aws_partition.current.partition}:logs:${var.region}:${var.account_id}:log-group:/aws/${local.resource_prefix}"
-  kafka_cluster_arn  = "arn:${data.aws_partition.current.partition}:kafka:${var.region}:${var.account_id}:cluster/${local.resource_prefix}/*"
-  kafka_topic_arn    = "arn:${data.aws_partition.current.partition}:kafka:${var.region}:${var.account_id}:topic/${local.resource_prefix}/*"
-  kafka_group_arn    = "arn:${data.aws_partition.current.partition}:kafka:${var.region}:${var.account_id}:group/${local.resource_prefix}/*"
+  resource_prefix   = "${var.project_name}-${var.environment}"
+  log_group_arn     = "arn:${data.aws_partition.current.partition}:logs:${var.region}:${var.account_id}:log-group:/aws/${local.resource_prefix}"
+  kafka_cluster_arn = "arn:${data.aws_partition.current.partition}:kafka:${var.region}:${var.account_id}:cluster/${local.resource_prefix}/*"
+  kafka_topic_arn   = "arn:${data.aws_partition.current.partition}:kafka:${var.region}:${var.account_id}:topic/${local.resource_prefix}/*"
+  kafka_group_arn   = "arn:${data.aws_partition.current.partition}:kafka:${var.region}:${var.account_id}:group/${local.resource_prefix}/*"
 }
 
 data "aws_iam_policy_document" "github_actions_trust" {
@@ -62,31 +60,6 @@ resource "aws_iam_instance_profile" "application" {
 }
 
 data "aws_iam_policy_document" "application_runtime" {
-  statement {
-    sid       = "EcrAuthentication"
-    effect    = "Allow"
-    actions   = ["ecr:GetAuthorizationToken"]
-    resources = ["*"]
-  }
-
-  statement {
-    sid    = "EcrReadBidFlowImage"
-    effect = "Allow"
-    actions = [
-      "ecr:BatchCheckLayerAvailability",
-      "ecr:BatchGetImage",
-      "ecr:GetDownloadUrlForLayer",
-    ]
-    resources = [local.ecr_repository_arn]
-  }
-
-  statement {
-    sid       = "ReadRuntimeSecrets"
-    effect    = "Allow"
-    actions   = ["secretsmanager:GetSecretValue"]
-    resources = [local.secret_arn_pattern]
-  }
-
   statement {
     sid       = "WriteApplicationLogs"
     effect    = "Allow"
@@ -147,6 +120,33 @@ resource "aws_iam_role_policy" "application_runtime" {
   name   = "${local.resource_prefix}-application-runtime"
   role   = aws_iam_role.application.id
   policy = data.aws_iam_policy_document.application_runtime.json
+}
+
+resource "aws_iam_role_policy" "application_bootstrap" {
+  count = var.runtime_bootstrap == null ? 0 : 1
+
+  name = "${local.resource_prefix}-application-bootstrap"
+  role = aws_iam_role.application.id
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      { Effect = "Allow", Action = ["ecr:GetAuthorizationToken"], Resource = ["*"] },
+      {
+        Effect   = "Allow"
+        Action   = ["ecr:BatchCheckLayerAvailability", "ecr:BatchGetImage", "ecr:GetDownloadUrlForLayer"]
+        Resource = [var.runtime_bootstrap.ecr_repository_arn]
+      },
+      {
+        Effect = "Allow"
+        Action = ["secretsmanager:GetSecretValue"]
+        Resource = distinct(compact([
+          var.runtime_bootstrap.runtime_secret_arn,
+          var.runtime_bootstrap.rds_secret_arn,
+          var.runtime_bootstrap.redis_secret_arn,
+        ]))
+      },
+    ]
+  })
 }
 
 resource "aws_iam_role_policy" "application_image_storage" {

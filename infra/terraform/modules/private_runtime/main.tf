@@ -1,5 +1,5 @@
 locals {
-  image_registry = split("@", var.application_image)[0]
+  image_registry = split("/", var.application_image)[0]
   verification_auth_env = var.verification_auth == null ? "" : join("\n", concat([
     "SPRING_PROFILES_ACTIVE=verification",
     "BIDFLOW_COGNITO_ISSUER_URI=${var.verification_auth.issuer_uri}",
@@ -18,6 +18,8 @@ resource "aws_launch_template" "application" {
   user_data = base64encode(templatefile("${path.module}/user-data.sh.tftpl", {
     application_image            = var.application_image
     database_secret_arn          = var.database_secret_arn
+    database_host                = var.database_host
+    database_port                = var.database_port
     enable_managed_redis         = var.enable_managed_redis
     enable_managed_kafka         = var.enable_managed_kafka
     enable_managed_search        = var.enable_managed_search

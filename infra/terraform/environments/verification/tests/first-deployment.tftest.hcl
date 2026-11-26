@@ -15,7 +15,10 @@ mock_provider "aws" {
     defaults = { partition = "aws" }
   }
   mock_resource "aws_ecr_repository" {
-    defaults = { repository_url = "123456789012.dkr.ecr.ap-northeast-1.amazonaws.com/bidflow-verification-application" }
+    defaults = {
+      repository_url = "123456789012.dkr.ecr.ap-northeast-1.amazonaws.com/bidflow-verification-application"
+      arn            = "arn:aws:ecr:ap-northeast-1:123456789012:repository/bidflow-verification-application"
+    }
   }
   mock_resource "aws_lb" {
     defaults = { arn = "arn:aws:elasticloadbalancing:ap-northeast-1:123456789012:loadbalancer/app/bidflow/0011223344556677" }
@@ -28,6 +31,7 @@ mock_provider "aws" {
   }
   mock_resource "aws_db_instance" {
     defaults = {
+      address = "db.example.test"
       master_user_secret = [{
         secret_arn = "arn:aws:secretsmanager:ap-northeast-1:123456789012:secret:rds-mock"
       }]

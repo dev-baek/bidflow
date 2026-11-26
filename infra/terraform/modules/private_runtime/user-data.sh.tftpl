@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
+umask 077
 
 install -d -m 0700 /etc/bidflow
 aws secretsmanager get-secret-value \
@@ -20,13 +21,17 @@ aws secretsmanager get-secret-value \
   --output text > /etc/bidflow/rds-secret.json
 chmod 0600 /etc/bidflow/rds-secret.json
 
-database_host=$(jq -r '.host' /etc/bidflow/rds-secret.json)
-database_port=$(jq -r '.port' /etc/bidflow/rds-secret.json)
-database_username=$(jq -r '.username' /etc/bidflow/rds-secret.json)
-database_password=$(jq -r '.password' /etc/bidflow/rds-secret.json)
+read_rds_credential() {
+  jq -ser --arg field "$1" 'select(length == 1) | .[0][$field] | strings | select(length > 0 and (test("[[:cntrl:]]") | not))' \
+    /etc/bidflow/rds-secret.json 2>/dev/null
+}
+if ! database_username=$(read_rds_credential username) || ! database_password=$(read_rds_credential password); then
+  printf '%s\n' 'Invalid RDS credentials in managed Secret.' >&2
+  exit 1
+fi
 {
   cat /etc/bidflow/runtime.env
-  printf 'BIDFLOW_DATABASE_URL=jdbc:postgresql://%s:%s/bidflow\n' "$database_host" "$database_port"
+  printf '\n%s\n' 'BIDFLOW_DATABASE_URL=jdbc:postgresql://${database_host}:${database_port}/bidflow'
   printf 'BIDFLOW_DATABASE_USER=%s\n' "$database_username"
   printf 'BIDFLOW_DATABASE_PASSWORD=%s\n' "$database_password"
 } > /etc/bidflow/runtime-complete.env

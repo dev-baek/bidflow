@@ -102,6 +102,26 @@ variable "database_secret_arn" {
   type        = string
 }
 
+variable "database_host" {
+  description = "Private RDS endpoint used for the JDBC URL."
+  type        = string
+
+  validation {
+    condition     = can(regex("^[A-Za-z0-9][A-Za-z0-9.-]*$", var.database_host))
+    error_message = "database_host must be an RDS hostname, without URL or port."
+  }
+}
+
+variable "database_port" {
+  description = "Private RDS PostgreSQL port used for the JDBC URL."
+  type        = number
+
+  validation {
+    condition     = var.database_port != null && try(var.database_port >= 1 && var.database_port <= 65535 && floor(var.database_port) == var.database_port, false)
+    error_message = "database_port must be an integer from 1 to 65535."
+  }
+}
+
 variable "enable_managed_redis" { type = bool }
 variable "redis_endpoint" {
   type     = string

@@ -70,6 +70,11 @@ run "runtime_has_no_image_policy_when_disabled" {
     condition     = length(aws_iam_role_policy.application_image_storage) == 0
     error_message = "No image-bucket permissions should be attached before enabling uploads."
   }
+
+  assert {
+    condition     = length(aws_iam_role_policy.application_bootstrap) == 0
+    error_message = "A deferred runtime must not have credentials for boot resources."
+  }
 }
 
 run "runtime_role_gets_only_the_dedicated_image_permissions" {
@@ -90,5 +95,65 @@ run "runtime_role_gets_only_the_dedicated_image_permissions" {
       { Effect = "Allow", Action = ["s3:GetObject", "s3:PutObject"], Resource = ["arn:aws:s3:::bidflow-verification-123456789012-images/products/*"] },
     ]
     error_message = "Listing is bucket-scoped; GET/PUT are limited to products and must not grant deletes."
+  }
+}
+
+run "runtime_bootstrap_allows_only_exact_ecr_and_secrets" {
+  command = plan
+  module {
+    source = "../../modules/iam"
+  }
+  variables {
+    account_id               = "123456789012"
+    region                   = "ap-northeast-1"
+    github_oidc_provider_arn = "arn:aws:iam::123456789012:oidc-provider/token.actions.githubusercontent.com"
+    runtime_bootstrap = {
+      ecr_repository_arn = "arn:aws:ecr:ap-northeast-1:123456789012:repository/bidflow-verification-application"
+      runtime_secret_arn = "arn:aws:secretsmanager:ap-northeast-1:123456789012:secret:runtime-abcdef"
+      rds_secret_arn     = "arn:aws:secretsmanager:ap-northeast-1:123456789012:secret:rds!db-fixture-abcdef"
+    }
+  }
+
+  assert {
+    condition = jsondecode(aws_iam_role_policy.application_bootstrap[0].policy).Statement == [
+      { Effect = "Allow", Action = ["ecr:GetAuthorizationToken"], Resource = ["*"] },
+      { Effect = "Allow", Action = ["ecr:BatchCheckLayerAvailability", "ecr:BatchGetImage", "ecr:GetDownloadUrlForLayer"], Resource = ["arn:aws:ecr:ap-northeast-1:123456789012:repository/bidflow-verification-application"] },
+      {
+        Effect = "Allow"
+        Action = ["secretsmanager:GetSecretValue"]
+        Resource = [
+          "arn:aws:secretsmanager:ap-northeast-1:123456789012:secret:runtime-abcdef",
+          "arn:aws:secretsmanager:ap-northeast-1:123456789012:secret:rds!db-fixture-abcdef",
+        ]
+      },
+    ]
+    error_message = "EC2 may pull only from the actual repository and read exactly the supplied Secrets."
+  }
+}
+
+run "runtime_bootstrap_adds_only_the_enabled_redis_secret" {
+  command = plan
+  module {
+    source = "../../modules/iam"
+  }
+  variables {
+    account_id               = "123456789012"
+    region                   = "ap-northeast-1"
+    github_oidc_provider_arn = "arn:aws:iam::123456789012:oidc-provider/token.actions.githubusercontent.com"
+    runtime_bootstrap = {
+      ecr_repository_arn = "arn:aws:ecr:ap-northeast-1:123456789012:repository/bidflow-verification-application"
+      runtime_secret_arn = "arn:aws:secretsmanager:ap-northeast-1:123456789012:secret:runtime-abcdef"
+      rds_secret_arn     = "arn:aws:secretsmanager:ap-northeast-1:123456789012:secret:rds!db-fixture-abcdef"
+      redis_secret_arn   = "arn:aws:secretsmanager:ap-northeast-1:123456789012:secret:bidflow-verification/redis-abcdef"
+    }
+  }
+
+  assert {
+    condition = one([for statement in jsondecode(aws_iam_role_policy.application_bootstrap[0].policy).Statement : statement if contains(statement.Action, "secretsmanager:GetSecretValue")]).Resource == [
+      "arn:aws:secretsmanager:ap-northeast-1:123456789012:secret:runtime-abcdef",
+      "arn:aws:secretsmanager:ap-northeast-1:123456789012:secret:rds!db-fixture-abcdef",
+      "arn:aws:secretsmanager:ap-northeast-1:123456789012:secret:bidflow-verification/redis-abcdef",
+    ]
+    error_message = "Redis adds exactly one Secret ARN."
   }
 }
