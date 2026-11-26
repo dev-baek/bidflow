@@ -43,6 +43,12 @@ module "iam" {
   image_storage            = local.listing_images_enabled ? { bucket_arn = module.listing_images[0].bucket_arn } : null
   opensearch_domain_arn    = module.managed_opensearch.domain_arn
   region                   = var.region
+  runtime_bootstrap = var.enable_application_runtime ? {
+    ecr_repository_arn = module.application_edge.ecr_repository_arn
+    runtime_secret_arn = var.application_runtime_secret_arn
+    rds_secret_arn     = module.private_rds.master_user_secret_arn
+    redis_secret_arn   = module.managed_redis.secret_arn
+  } : null
 }
 
 module "web_delivery" {
@@ -100,6 +106,8 @@ module "private_runtime" {
   application_subnet_ids            = module.network.application_subnet_ids
   desired_capacity                  = var.application_desired_capacity
   database_secret_arn               = module.private_rds.master_user_secret_arn
+  database_host                     = module.private_rds.endpoint
+  database_port                     = module.private_rds.port
   enable_managed_redis              = var.enable_managed_redis
   enable_managed_kafka              = var.enable_managed_kafka
   enable_managed_search             = var.enable_managed_search

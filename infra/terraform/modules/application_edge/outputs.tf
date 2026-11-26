@@ -2,6 +2,10 @@ output "ecr_repository_url" {
   value = aws_ecr_repository.application.repository_url
 }
 
+output "ecr_repository_arn" {
+  value = aws_ecr_repository.application.arn
+}
+
 output "target_group_arn" {
   value = aws_lb_target_group.application.arn
 }

@@ -48,3 +48,14 @@ variable "image_storage" {
   type        = object({ bucket_arn = string })
   default     = null
 }
+
+variable "runtime_bootstrap" {
+  description = "Actual ECR and Secret ARNs consumed by EC2 at boot, absent while runtime is deferred."
+  type = object({
+    ecr_repository_arn = string
+    runtime_secret_arn = string
+    rds_secret_arn     = string
+    redis_secret_arn   = optional(string)
+  })
+  default = null
+}

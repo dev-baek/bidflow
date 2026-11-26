@@ -12,6 +12,8 @@ variables {
   application_image                 = "123456789012.dkr.ecr.ap-northeast-1.amazonaws.com/bidflow@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
   runtime_secret_arn                = "arn:aws:secretsmanager:ap-northeast-1:123456789012:secret:mock-only"
   database_secret_arn               = "arn:aws:secretsmanager:ap-northeast-1:123456789012:secret:db-mock-only"
+  database_host                     = "db.example.test"
+  database_port                     = 6543
   enable_managed_kafka              = false
   enable_managed_redis              = false
   enable_managed_search             = false
@@ -61,6 +63,10 @@ run "disabled_does_not_change_runtime_env_handling" {
   assert {
     condition     = !strcontains(base64decode(aws_launch_template.application.user_data), "check_verification_runtime_env")
     error_message = "The verification guard must not run when Cognito is disabled."
+  }
+  assert {
+    condition     = strcontains(base64decode(aws_launch_template.application.user_data), "jdbc:postgresql://db.example.test:6543/bidflow") && strcontains(base64decode(aws_launch_template.application.user_data), "docker login --username AWS --password-stdin '123456789012.dkr.ecr.ap-northeast-1.amazonaws.com'")
+    error_message = "Launch data must use the RDS endpoint and port and only the registry host for login."
   }
 }
 

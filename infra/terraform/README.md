@@ -7,7 +7,7 @@ Terraform은 AWS 검증 환경에만 사용한다. 로컬 개발은 [Docker Comp
 - `bootstrap`: S3 state bucket과 DynamoDB lock table을 만든다. `prevent_destroy`가 적용되어 verification 환경 종료 시에도 남는다.
 - `environments/verification`: 검증용 리소스를 조립한다. account/Region/environment guard, backend 계약과 Network Module을 포함한다.
 - `modules/network`: 두 AZ의 public ALB/application/data subnet과 최소 Security Group을 만든다. NAT Gateway는 `enable_nat_gateway=false`가 기본이며, 활성화해도 application subnet에만 경로를 추가한다.
-- `modules/iam`: GitHub OIDC trust role과 EC2 application instance profile을 분리한다. Runtime은 ECR·S3 image prefix·Secrets Manager·CloudWatch Logs·MSK IAM 인증만 허용하며 PostgreSQL은 Security Group과 Secret 기반 JDBC로 접근한다.
+- `modules/iam`: GitHub OIDC trust role과 EC2 application instance profile을 분리한다. EC2를 켜면 실제 검증 ECR의 pull과 Runtime·RDS·선택형 Redis Secret의 정확한 ARN만 부팅 정책에 추가한다. PostgreSQL은 Security Group과 Secret 기반 JDBC로 접근한다.
 - `modules/budget`: 계정 전체 월간 비용의 80%·100% 실제/예측 알림을 만든다. 기본 한도는 `100000 KRW`지만 apply 전 계정 청구 통화를 확인한다.
 - `modules/web_delivery`: Vite build artifact를 담는 private S3 bucket과 CloudFront OAC를 만든다. CloudFront만 읽을 수 있고, artifact upload와 invalidation은 후속 배포 workflow의 책임이다.
 - `modules/listing_images`: Cognito와 `enable_listing_images`가 모두 켜졌을 때만 검증용 이미지 버킷을 추가한다. 웹 버킷과 분리하고 지정 CloudFront origin의 PUT만 CORS에서 허용한다. [#88 이미지 저장소 사양](../../docs/specs/issue-088-verification-image-storage.md)
@@ -41,6 +41,8 @@ terraform -chdir=infra/terraform/environments/verification test
 ```
 
 모의 테스트의 `apply`와 target은 테스트 파일 안에서만 쓰인다. 실제 AWS 배포에서 부분 apply를 하라는 절차가 아니다. 공개 출력의 주입과 TLS·REST CORS·STOMP 연결은 #88, 실제 로그인과 삭제는 #91에서 검증한다.
+
+Terraform CLI와 `jq`가 있으면 저장소 루트에서 `CHECKPOINT_DISABLE=1 bash tests/scripts/runtime-bootstrap.test.sh`로 EC2 부팅 스크립트도 확인할 수 있다. 빈 디렉터리에서 템플릿을 렌더링하며 AWS CLI와 Docker는 대역으로 실행한다.
 
 ### 인증 설정과 Vite 빌드
 
