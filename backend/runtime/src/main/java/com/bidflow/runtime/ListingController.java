@@ -4,6 +4,7 @@ import com.bidflow.application.listing.IdentifierGenerator;
 import com.bidflow.application.listing.ListingRegistrationCommand;
 import com.bidflow.application.listing.ListingRegistrationResult;
 import com.bidflow.application.listing.ListingRegistrationService;
+import com.bidflow.application.listing.UploadNotReadyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,4 +28,10 @@ class ListingController {
     record CreateListingRequest(String title, String description, String categoryId, String conditionGrade, long startingPrice, Instant startsAt, Instant endsAt, List<ImageRequest> images) {}
     record ImageRequest(UUID uploadId) {}
     record ListingResponse(UUID productId, UUID auctionId, String status) {}
+
+    @ExceptionHandler(UploadNotReadyException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    ListingError uploadNotReady() { return new ListingError("UPLOAD_NOT_READY"); }
+
+    record ListingError(String code) {}
 }

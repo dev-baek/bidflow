@@ -5,6 +5,8 @@ import com.bidflow.application.storage.PresignUploadCommand;
 import com.bidflow.application.storage.PresignedUpload;
 import com.bidflow.application.storage.StoredObject;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 import java.net.URI;
 import java.time.Instant;
@@ -68,6 +70,18 @@ class ListingRegistrationServiceTest {
                 .isInstanceOf(UploadNotReadyException.class);
     }
 
+    @ParameterizedTest
+    @CsvSource({"image/gif,5", "image/png,0", "image/webp,10485761"})
+    void rejectsInvalidStoredMetadataBeforeSaving(String type, long length) {
+        InMemoryRepository repository = new InMemoryRepository();
+        var storage = new ExistingUploadStorage(SELLER_ID, UPLOAD_ID, type, length);
+        var service = new ListingRegistrationService(repository, storage);
+
+        assertThatThrownBy(() -> service.register(command("request-1"), SELLER_ID, NOW, ids()))
+                .isInstanceOf(UploadNotReadyException.class);
+        assertThat(repository.saved).isEmpty();
+    }
+
     private static ListingRegistrationCommand command(String idempotencyKey) {
         return command(idempotencyKey, "중고 카메라");
     }
@@ -102,10 +116,18 @@ class ListingRegistrationServiceTest {
     private static final class ExistingUploadStorage implements ObjectStorage {
         private final String owner;
         private final UUID uploadId;
+        private final String type;
+        private final long length;
 
         private ExistingUploadStorage(String owner, UUID uploadId) {
+            this(owner, uploadId, "image/jpeg", 5L);
+        }
+
+        private ExistingUploadStorage(String owner, UUID uploadId, String type, long length) {
             this.owner = owner;
             this.uploadId = uploadId;
+            this.type = type;
+            this.length = length;
         }
 
         @Override
@@ -117,7 +139,7 @@ class ListingRegistrationServiceTest {
         public Optional<StoredObject> headObject(String objectKey) {
             String expected = "products/" + owner + "/" + uploadId;
             return expected.equals(objectKey)
-                    ? Optional.of(new StoredObject(objectKey, "image/jpeg", 5L))
+                    ? Optional.of(new StoredObject(objectKey, type, length))
                     : Optional.empty();
         }
     }
