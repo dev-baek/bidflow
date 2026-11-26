@@ -56,6 +56,10 @@ node scripts/build-verification-web.mjs /safe/path/verification-web-public.json
 
 이 빌드는 다른 `VITE_*` 설정과 로컬 dotenv 파일을 사용하지 않으며 AWS 호출·업로드를 하지 않는다. 실제 인증과 S3 직접 업로드 검증은 [#91](https://github.com/dev-baek/bidflow/issues/91)에 남겨둔다.
 
+### MSK 검증 설정
+
+`enable_managed_kafka`는 기본 비활성화다. 승인된 MSK 검증에서는 EC2를 보류한 첫 단계에 MSK를 준비하고, [#88 사양](../../docs/specs/issue-088-msk-runtime.md)의 여섯 토픽을 VPC 내부의 별도 운영 역할로 생성·확인한 뒤 EC2를 활성화한다. Terraform이 실제 클러스터에만 앱 IAM 정책을 붙이고 사설 IAM bootstrap과 `msk` 프로필을 주입한다. Runtime Secret에는 AWS 자격 증명이나 Kafka·프로필 설정을 넣지 않는다. 실제 연결·입찰·삭제 증적은 #91에 남긴다.
+
 ### 승인 후 첫 배포: ECR 준비 → EC2 활성화
 
 실계정에서 원격 backend 초기화·Plan·Apply를 하기 전에 [AWS Runbook](../../docs/specs/issue-017-aws-deployment.md)에 따라 계정·리전·비용·종료 시간을 승인받는다. 두 단계 모두 같은 검증 backend와 state를 사용한다.

@@ -1,14 +1,21 @@
 locals {
   image_registry = split("/", var.application_image)[0]
-  verification_auth_env = var.verification_auth == null ? "" : join("\n", concat([
-    "SPRING_PROFILES_ACTIVE=verification",
+  runtime_profiles = compact([
+    var.verification_auth != null ? "verification" : null,
+    var.enable_managed_kafka ? "msk" : null,
+  ])
+  managed_runtime_env = length(local.runtime_profiles) == 0 ? "" : join("\n", concat([
+    "SPRING_PROFILES_ACTIVE=${join(",", local.runtime_profiles)}",
+    ], var.verification_auth == null ? [] : [
     "BIDFLOW_COGNITO_ISSUER_URI=${var.verification_auth.issuer_uri}",
     "BIDFLOW_COGNITO_CLIENT_ID=${var.verification_auth.client_id}",
     "BIDFLOW_VERIFICATION_WEB_ORIGIN=${var.verification_auth.web_origin}",
     ], var.verification_image_bucket == null ? [] : [
     "BIDFLOW_STORAGE_VERIFICATION_BUCKET=${var.verification_image_bucket}",
     "BIDFLOW_STORAGE_VERIFICATION_REGION=${var.region}",
-  ], [""]))
+    ], var.enable_managed_kafka ? [
+    format("BIDFLOW_MSK_BOOTSTRAP_SERVERS=%s", var.kafka_bootstrap_brokers == null ? "" : var.kafka_bootstrap_brokers),
+  ] : [], [""]))
 }
 
 resource "aws_launch_template" "application" {
@@ -16,22 +23,21 @@ resource "aws_launch_template" "application" {
   image_id      = var.ami_id
   instance_type = var.instance_type
   user_data = base64encode(templatefile("${path.module}/user-data.sh.tftpl", {
-    application_image            = var.application_image
-    database_secret_arn          = var.database_secret_arn
-    database_host                = var.database_host
-    database_port                = var.database_port
-    enable_managed_redis         = var.enable_managed_redis
-    enable_managed_kafka         = var.enable_managed_kafka
-    enable_managed_search        = var.enable_managed_search
-    image_registry               = local.image_registry
-    kafka_bootstrap_brokers      = var.kafka_bootstrap_brokers
-    region                       = var.region
-    redis_endpoint               = var.redis_endpoint
-    redis_secret_arn             = var.redis_secret_arn
-    opensearch_endpoint          = var.opensearch_endpoint
-    runtime_secret_arn           = var.runtime_secret_arn
-    verification_auth_env_base64 = base64encode(local.verification_auth_env)
-    verification_guard           = file("${path.module}/verification-runtime-guard.sh")
+    application_image          = var.application_image
+    database_secret_arn        = var.database_secret_arn
+    database_host              = var.database_host
+    database_port              = var.database_port
+    enable_managed_redis       = var.enable_managed_redis
+    enable_managed_kafka       = var.enable_managed_kafka
+    enable_managed_search      = var.enable_managed_search
+    image_registry             = local.image_registry
+    region                     = var.region
+    redis_endpoint             = var.redis_endpoint
+    redis_secret_arn           = var.redis_secret_arn
+    opensearch_endpoint        = var.opensearch_endpoint
+    runtime_secret_arn         = var.runtime_secret_arn
+    managed_runtime_env_base64 = base64encode(local.managed_runtime_env)
+    verification_guard         = file("${path.module}/verification-runtime-guard.sh")
   }))
 
   iam_instance_profile {
@@ -45,7 +51,7 @@ resource "aws_launch_template" "application" {
   metadata_options {
     http_endpoint               = "enabled"
     http_tokens                 = "required"
-    http_put_response_hop_limit = var.verification_image_bucket == null ? null : 2
+    http_put_response_hop_limit = var.enable_managed_kafka || var.verification_image_bucket != null ? 2 : null
   }
 
   network_interfaces {

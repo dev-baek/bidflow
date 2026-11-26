@@ -135,6 +135,11 @@ variable "enable_managed_kafka" { type = bool }
 variable "kafka_bootstrap_brokers" {
   type     = string
   nullable = true
+
+  validation {
+    condition     = !var.enable_managed_kafka || can(regex("^[A-Za-z0-9.-]+:9098(, *[A-Za-z0-9.-]+:9098)*$", var.kafka_bootstrap_brokers))
+    error_message = "MSK requires a nonempty list of private IAM bootstrap addresses on port 9098."
+  }
 }
 
 variable "enable_managed_search" { type = bool }

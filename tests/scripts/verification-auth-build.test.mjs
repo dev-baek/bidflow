@@ -55,6 +55,8 @@ test('the EC2 guard rejects collisions without printing any Runtime Secret value
       ['bidflow.storage.verification-region=secret-marker', false],
       ['BIDFLOW_COGNITO_CLIENT_ID', false],
       ['SPRING_APPLICATION_JSON=secret-marker', false],
+      ['SPRING_KAFKA_BOOTSTRAP_SERVERS=secret-marker', true],
+      ['AWS_REGION=not-real', true],
     ]) {
       writeFileSync(envFile, line + '\n', {mode: 0o600});
       const result = spawnSync('bash', ['-c', '. "$1"; check_verification_runtime_env "$2"', 'bash', guard.pathname, envFile],
@@ -64,4 +66,27 @@ test('the EC2 guard rejects collisions without printing any Runtime Secret value
       assert.doesNotMatch(result.stderr, /marker|not-real/);
     }
   } finally { rmSync(directory, {recursive: true}); }
+});
+
+test('MSK boot rejects Runtime Secret Kafka and AWS credential overrides', () => {
+  const guard = new URL('../../infra/terraform/modules/private_runtime/verification-runtime-guard.sh', import.meta.url);
+  for (const [line, allowed] of [
+    ['BIDFLOW_MSK_BOOTSTRAP_SERVERS=secret-marker', false],
+    ['BIDFLOW_KAFKA_BOOTSTRAP_SERVERS=secret-marker', false],
+    ['spring.kafka.properties[sasl.jaas.config]=secret-marker', false],
+    ['SPRING_KAFKA_CONSUMER_PROPERTIES_SECURITY_PROTOCOL=secret-marker', false],
+    ['AWS_ACCESS_KEY_ID=secret-marker', false],
+    ['AWS_PROFILE=secret-marker', false],
+    ['AWS_CONTAINER_CREDENTIALS_FULL_URI=secret-marker', false],
+    ['AWS_EC2_METADATA_DISABLED=secret-marker', false],
+    ['SPRING_PROFILES_ACTIVE=secret-marker', false],
+    ['BIDFLOW_DATA_FIXTURE=not-real', true],
+    ['# AWS_ACCESS_KEY_ID=secret-marker', true],
+  ]) {
+    const result = spawnSync('bash', ['-c', '. "$1"; check_verification_runtime_env /dev/stdin true', 'bash', guard.pathname],
+      {encoding: 'utf8', input: line + '\n'});
+    assert.equal(result.status, allowed ? 0 : 1, line.split('=')[0]);
+    assert.equal(result.stdout, '');
+    assert.doesNotMatch(result.stderr, /marker|not-real/);
+  }
 });
