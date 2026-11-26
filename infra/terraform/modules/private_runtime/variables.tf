@@ -176,3 +176,14 @@ variable "max_size" {
   description = "Maximum private runtime instances during verification."
   type        = number
 }
+
+variable "cloudwatch_log_group" {
+  description = "Pre-created CloudWatch log group for optional verification telemetry."
+  type        = string
+  default     = null
+
+  validation {
+    condition     = var.cloudwatch_log_group == null ? true : can(regex("^/aws/bidflow-[A-Za-z0-9_-]+$", var.cloudwatch_log_group))
+    error_message = "Use a pre-created BidFlow log group under /aws/bidflow-."
+  }
+}

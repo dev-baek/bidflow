@@ -9,9 +9,9 @@ aws secretsmanager get-secret-value \
   --query SecretString \
   --output text > /etc/bidflow/runtime.env
 chmod 0600 /etc/bidflow/runtime.env
-%{ if enable_managed_redis || managed_runtime_env_base64 != "" ~}
+%{ if enable_managed_redis || managed_runtime_env_base64 != "" || cloudwatch_log_group != null ~}
 ${verification_guard}
-check_verification_runtime_env /etc/bidflow/runtime.env ${enable_managed_kafka} ${enable_managed_search} ${enable_managed_redis}
+check_verification_runtime_env /etc/bidflow/runtime.env ${enable_managed_kafka} ${enable_managed_search} ${enable_managed_redis} ${cloudwatch_log_group != null}
 %{ endif ~}
 
 aws secretsmanager get-secret-value \
@@ -61,4 +61,13 @@ docker rm -f bidflow >/dev/null 2>&1 || true
 docker run --detach --name bidflow --restart unless-stopped \
   --env-file /etc/bidflow/runtime-complete.env \
   --publish 8080:8080 \
+%{ if cloudwatch_log_group != null ~}
+  --log-driver awslogs --log-opt 'awslogs-region=${region}' \
+  --log-opt 'awslogs-group=${cloudwatch_log_group}' --log-opt awslogs-create-group=false \
+  --log-opt mode=non-blocking --log-opt max-buffer-size=1m \
+  '${application_image}' \
+  --spring.main.banner-mode=off --logging.structured.format.console=logstash \
+  --logging.structured.json.include=@timestamp,level,logger_name,event,outcome,correlationId,bidRequestId,eventId,auctionId
+%{ else ~}
   '${application_image}'
+%{ endif ~}

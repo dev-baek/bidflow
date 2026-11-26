@@ -13,3 +13,7 @@ output "target_group_arn" {
 output "alb_dns_name" {
   value = aws_lb.application.dns_name
 }
+
+output "alb_arn_suffix" {
+  value = aws_lb.application.arn_suffix
+}

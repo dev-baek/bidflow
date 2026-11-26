@@ -56,19 +56,18 @@ resource "aws_iam_instance_profile" "application" {
   role = aws_iam_role.application.name
 }
 
-data "aws_iam_policy_document" "application_runtime" {
-  statement {
-    sid       = "WriteApplicationLogs"
-    effect    = "Allow"
-    actions   = ["logs:CreateLogStream", "logs:PutLogEvents"]
-    resources = ["${local.log_group_arn}:log-stream:*"]
-  }
-}
-
 resource "aws_iam_role_policy" "application_runtime" {
-  name   = "${local.resource_prefix}-application-runtime"
-  role   = aws_iam_role.application.id
-  policy = data.aws_iam_policy_document.application_runtime.json
+  name = "${local.resource_prefix}-application-runtime"
+  role = aws_iam_role.application.id
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Sid      = "WriteApplicationLogs"
+      Effect   = "Allow"
+      Action   = ["logs:CreateLogStream", "logs:PutLogEvents"]
+      Resource = ["${local.log_group_arn}:log-stream:*"]
+    }]
+  })
 }
 
 resource "aws_iam_role_policy" "application_opensearch" {

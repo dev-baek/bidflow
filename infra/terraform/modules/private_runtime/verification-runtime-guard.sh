@@ -1,5 +1,5 @@
 check_verification_runtime_env() {
-  if ! LC_ALL=C awk -F= -v msk="${2:-false}" -v search="${3:-false}" -v redis="${4:-false}" '
+  if ! LC_ALL=C awk -F= -v msk="${2:-false}" -v search="${3:-false}" -v redis="${4:-false}" -v cloudwatch="${5:-false}" '
     {
       key = $1
       if (NR == 1) sub(/^\357\273\277/, "", key)
@@ -15,6 +15,8 @@ check_verification_runtime_env() {
       if (search == "true" && key ~ /^(BIDFLOW_SEARCH([^[:alnum:]].*)?|BIDFLOW_OPENSEARCH_?ENDPOINT)$/)
         exit 1
       if (redis == "true" && key ~ /^(SPRING_DATA_REDIS|BIDFLOW_REDIS)([^[:alnum:]].*)?$/)
+        exit 1
+      if (cloudwatch == "true" && key ~ /^LOGGING_/)
         exit 1
     }
   ' "$1"; then
