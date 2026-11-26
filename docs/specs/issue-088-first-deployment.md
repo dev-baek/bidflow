@@ -3,6 +3,7 @@
 - 상태: 제안. 이 문서는 Terraform 변경이나 AWS 접속을 승인하지 않는다.
 - 작업 이슈: [#88 배포 구성](https://github.com/dev-baek/bidflow/issues/88). 실제 배포·Smoke·삭제 증적은 [#91](https://github.com/dev-baek/bidflow/issues/91)에 남긴다.
 - 선행 사양: [인증 배포 연결](issue-088-auth-deployment-wiring.md), [상품 이미지 S3](issue-088-verification-image-storage.md), [AWS 배포·삭제 Runbook](issue-017-aws-deployment.md).
+- 후속 사양: [EC2 부팅의 ECR·Secret 권한과 RDS 연결](issue-088-runtime-bootstrap-access.md).
 
 ## 문제
 
