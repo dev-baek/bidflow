@@ -1,0 +1,16 @@
+spring:
+  kafka:
+    properties:
+      "[security.protocol]": SASL_SSL
+      "[sasl.mechanism]": AWS_MSK_IAM
+      "[sasl.jaas.config]": "software.amazon.msk.auth.iam.IAMLoginModule required;"
+      "[sasl.client.callback.handler.class]": software.amazon.msk.auth.iam.IAMClientCallbackHandler
+    producer:
+      acks: all
+      properties:
+        "[enable.idempotence]": "true"
+    consumer:
+      properties:
+        "[allow.auto.create.topics]": "false"
+    admin:
+      auto-create: false

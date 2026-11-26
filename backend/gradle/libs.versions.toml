@@ -7,6 +7,7 @@ flyway = "11.10.2"
 testcontainers = "1.21.3"
 postgresql = "42.7.7"
 aws-sdk = "2.57.3"
+aws-msk-iam-auth = "2.4.0"
 
 [libraries]
 spring-boot-dependencies = { module = "org.springframework.boot:spring-boot-dependencies", version.ref = "spring-boot" }
@@ -20,6 +21,7 @@ testcontainers-junit-jupiter = { module = "org.testcontainers:junit-jupiter", ve
 postgresql = { module = "org.postgresql:postgresql", version.ref = "postgresql" }
 aws-sdk-s3 = { module = "software.amazon.awssdk:s3", version.ref = "aws-sdk" }
 aws-sdk-url-connection-client = { module = "software.amazon.awssdk:url-connection-client", version.ref = "aws-sdk" }
+aws-msk-iam-auth = { module = "software.amazon.msk:aws-msk-iam-auth", version.ref = "aws-msk-iam-auth" }
 
 [plugins]
 spring-boot = { id = "org.springframework.boot", version.ref = "spring-boot" }
