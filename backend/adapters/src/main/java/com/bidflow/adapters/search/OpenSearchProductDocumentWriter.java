@@ -3,30 +3,19 @@ package com.bidflow.adapters.search;
 import com.bidflow.application.search.ProductSearchDocument;
 import com.bidflow.application.search.ProductSearchDocumentWriter;
 
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-
 public final class OpenSearchProductDocumentWriter implements ProductSearchDocumentWriter {
-    private final HttpClient client;
-    private final URI endpoint;
+    private final OpenSearchTransport transport;
 
-    public OpenSearchProductDocumentWriter(HttpClient client, URI endpoint) {
-        this.client = client;
-        this.endpoint = endpoint;
+    public OpenSearchProductDocumentWriter(OpenSearchTransport transport) {
+        this.transport = transport;
     }
 
     @Override
     public void upsert(ProductSearchDocument document) {
-        HttpRequest request = HttpRequest.newBuilder(endpoint.resolve("/bidflow-products-write/_doc/" + document.productId()))
-                .header("Content-Type", "application/json")
-                .PUT(HttpRequest.BodyPublishers.ofString(json(document)))
-                .build();
         try {
-            int status = client.send(request, HttpResponse.BodyHandlers.discarding()).statusCode();
-            if (status < 200 || status >= 300) {
-                throw new IllegalStateException("OpenSearch document upsert failed: " + status);
+            var response = transport.execute("PUT", "/bidflow-products-write/_doc/" + document.productId(), json(document));
+            if (!response.successful()) {
+                throw new IllegalStateException("OpenSearch document upsert failed: " + response.status());
             }
         } catch (InterruptedException exception) {
             Thread.currentThread().interrupt();

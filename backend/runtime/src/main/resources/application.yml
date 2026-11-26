@@ -38,6 +38,9 @@ bidflow:
     secret-key: ${OBJECT_STORAGE_SECRET_KEY:bidflow-local-secret}
     region: ${BIDFLOW_STORAGE_REGION:us-east-1}
   search:
+    mode: ${BIDFLOW_SEARCH_MODE:local}
     endpoint: ${BIDFLOW_OPENSEARCH_ENDPOINT:http://localhost:9200}
+    aws-endpoint: ${BIDFLOW_SEARCH_AWS_ENDPOINT:}
+    aws-region: ${BIDFLOW_SEARCH_AWS_REGION:}
   realtime:
     allowed-origin-patterns: ${BIDFLOW_REALTIME_ALLOWED_ORIGIN_PATTERNS:http://localhost:5173,http://127.0.0.1:5173}

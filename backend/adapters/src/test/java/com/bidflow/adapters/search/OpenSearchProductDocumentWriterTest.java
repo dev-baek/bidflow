@@ -34,7 +34,8 @@ class OpenSearchProductDocumentWriterTest {
         server.start();
         try {
             UUID productId = UUID.fromString("00000000-0000-0000-0000-000000000001");
-            OpenSearchProductDocumentWriter writer = new OpenSearchProductDocumentWriter(HttpClient.newHttpClient(), URI.create("http://localhost:" + server.getAddress().getPort()));
+            var transport = OpenSearchTransport.local(HttpClient.newHttpClient(), URI.create("http://localhost:" + server.getAddress().getPort()));
+            var writer = new OpenSearchProductDocumentWriter(transport);
             ProductSearchDocument document = new ProductSearchDocument(
                             productId, UUID.fromString("00000000-0000-0000-0000-000000000002"), "seller-1", "중고 \"카메라\"", "DIGITAL", "GOOD", null,
                             50_000L, 55_000L, "ACTIVE", true,

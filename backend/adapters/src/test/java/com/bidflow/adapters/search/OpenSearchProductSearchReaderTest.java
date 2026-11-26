@@ -39,8 +39,8 @@ class OpenSearchProductSearchReaderTest {
         });
         server.start();
         try {
-            var reader = new OpenSearchProductSearchReader(HttpClient.newHttpClient(),
-                    URI.create("http://localhost:" + server.getAddress().getPort()), mapper);
+            var transport = OpenSearchTransport.local(HttpClient.newHttpClient(), URI.create("http://localhost:" + server.getAddress().getPort()));
+            var reader = new OpenSearchProductSearchReader(transport, mapper);
             var query = new SearchListingsQuery("", Optional.empty(), Optional.empty(), Optional.empty(),
                     Optional.empty(), Optional.empty(), SearchSort.RELEVANCE, 20, Optional.empty());
             var page = reader.search(query);
