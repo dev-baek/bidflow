@@ -5,6 +5,7 @@ import {
   searchSorts, searchStatuses, type SearchFilters, type SearchItem,
 } from "../../features/listing-search/search-state";
 import { ApiError, createApiClient, type ApiClient } from "../../shared/api/api-client";
+import { StatusMessage } from "../../shared/ui/Feedback";
 
 type ApiResponse = { items: SearchItem[]; nextCursor: string | null };
 export type ListingSearchPageProps = Readonly<{ apiBaseUrl: string; client?: ApiClient }>;
@@ -116,9 +117,9 @@ function SearchResults({ search, client }: { search: string; client: ApiClient }
             <button type="button" onClick={() => setSearchParams({}, { replace: !search })}>필터 초기화</button>
           </div>
         </form>
-        {mode === "LOADING" && <p role="status">검색 중입니다.</p>}
-        {mode === "EMPTY" && <p role="status">조건에 맞는 상품이 없습니다.</p>}
-        {mode === "ERROR" && <p role="alert">{state.message}</p>}
+        {mode === "LOADING" && <StatusMessage kind="loading">검색 중입니다.</StatusMessage>}
+        {mode === "EMPTY" && <StatusMessage kind="empty">조건에 맞는 상품이 없습니다.</StatusMessage>}
+        {mode === "ERROR" && <StatusMessage kind="error">{state.message ?? "검색 결과를 불러오지 못했습니다."}</StatusMessage>}
         {retry && <button type="button" onClick={() => void load(filters, retry.cursor)}>다시 시도</button>}
         <ul>
           {items.map(item => (

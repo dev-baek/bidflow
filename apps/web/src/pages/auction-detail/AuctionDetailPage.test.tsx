@@ -45,6 +45,7 @@ describe("AuctionDetailPage", () => {
     expect(screen.getByRole("status")).toHaveTextContent("불러오는 중");
     expect(await screen.findByRole("heading", { name: "카메라" })).toBeInTheDocument();
     expect(screen.getByText("21,000원")).toBeInTheDocument();
+    expect(screen.getByText("진행 중")).toHaveClass("ui-badge");
     expect(screen.getByText(/2030/).closest("time")).toHaveAttribute("datetime", detail.endsAt);
   });
 
