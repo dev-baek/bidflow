@@ -11,7 +11,7 @@ aws secretsmanager get-secret-value \
 chmod 0600 /etc/bidflow/runtime.env
 %{ if enable_managed_redis || managed_runtime_env_base64 != "" || cloudwatch_log_group != null ~}
 ${verification_guard}
-check_verification_runtime_env /etc/bidflow/runtime.env ${enable_managed_kafka} ${enable_managed_search} ${enable_managed_redis} ${cloudwatch_log_group != null}
+check_verification_runtime_env /etc/bidflow/runtime.env ${enable_managed_kafka} ${enable_managed_search} ${enable_managed_redis}%{ if cloudwatch_log_group != null } true%{ endif }
 %{ endif ~}
 
 aws secretsmanager get-secret-value \
