@@ -1,9 +1,12 @@
-import { useState, type FormEvent } from "react";
+import { useRef, useState, type FormEvent } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import { useAuth } from "../../features/auth/auth-context";
+import { Button } from "../../shared/ui/Button";
+import { Field } from "../../shared/ui/Field";
 
 export function LoginPage() {
   const [actorId, setActorId] = useState("");
+  const actorInput = useRef<HTMLInputElement>(null);
   const { state, signInLocal, cognitoEnabled, signInCognito } = useAuth();
   const navigate = useNavigate();
 
@@ -17,9 +20,9 @@ export function LoginPage() {
         <h1 id="login-title">로그인</h1>
         {state.mode === "EXPIRED" && <p role="alert">세션이 만료되었습니다. 다시 로그인하세요.</p>}
         {state.mode === "FAILED" && <p role="alert">{state.message}</p>}
-        <button type="button" disabled={state.mode === "AUTHENTICATING"} onClick={() => void signInCognito()}>
+        <Button pendingLabel={state.mode === "AUTHENTICATING" ? "로그인 시작 중" : undefined} onClick={() => void signInCognito()}>
           Cognito 로그인
-        </button>
+        </Button>
       </section>
     </main>;
   }
@@ -29,6 +32,8 @@ export function LoginPage() {
     signInLocal(actorId);
     if (actorId.trim().length > 0) {
       navigate("/", { replace: true });
+    } else {
+      actorInput.current?.focus();
     }
   };
 
@@ -42,19 +47,18 @@ export function LoginPage() {
         </p>
 
         {state.mode === "EXPIRED" ? <p className="form-alert" role="alert">세션이 만료되었습니다. 다시 로그인하세요.</p> : null}
-        {state.mode === "FAILED" ? <p className="form-alert" role="alert">{state.message}</p> : null}
 
         <form onSubmit={submit} noValidate>
-          <div className="form-field">
-            <label htmlFor="local-actor-id">로컬 개발자 ID</label>
-            <input
-              id="local-actor-id"
+          <Field id="local-actor-id" label="로컬 개발자 ID" error={state.mode === "FAILED" && !actorId.trim() ? state.message : undefined}>
+            {control => <input
+              {...control}
+              ref={actorInput}
               value={actorId}
               onChange={(event) => setActorId(event.target.value)}
               autoComplete="username"
-            />
-          </div>
-          <button type="submit">로컬 로그인</button>
+            />}
+          </Field>
+          <Button type="submit">로컬 로그인</Button>
         </form>
 
         <p className="field-help">

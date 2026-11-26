@@ -17,5 +17,9 @@ describe("LoginPage", () => {
     fireEvent.click(screen.getByRole("button", { name: "로컬 로그인" }));
 
     expect(screen.getByRole("alert")).toHaveTextContent("로컬 개발자 ID를 입력하세요.");
+    const input = screen.getByRole("textbox", { name: "로컬 개발자 ID" });
+    expect(input).toHaveFocus();
+    expect(input).toHaveAttribute("aria-invalid", "true");
+    expect(input).toHaveAccessibleDescription("로컬 개발자 ID를 입력하세요.");
   });
 });
