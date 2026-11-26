@@ -59,3 +59,17 @@ variable "runtime_bootstrap" {
   })
   default = null
 }
+
+variable "msk" {
+  description = "Actual MSK cluster used by EC2, absent if either feature is disabled."
+  type        = object({ cluster_arn = string })
+  default     = null
+
+  validation {
+    condition = var.msk == null ? true : can(regex(
+      "^arn:[a-z0-9-]+:kafka:${var.region}:${var.account_id}:cluster/[A-Za-z0-9-]+/[A-Za-z0-9-]+$",
+      var.msk.cluster_arn
+    ))
+    error_message = "MSK requires an exact cluster ARN from the verification account and Region."
+  }
+}

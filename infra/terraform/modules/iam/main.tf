@@ -1,11 +1,8 @@
 data "aws_partition" "current" {}
 
 locals {
-  resource_prefix   = "${var.project_name}-${var.environment}"
-  log_group_arn     = "arn:${data.aws_partition.current.partition}:logs:${var.region}:${var.account_id}:log-group:/aws/${local.resource_prefix}"
-  kafka_cluster_arn = "arn:${data.aws_partition.current.partition}:kafka:${var.region}:${var.account_id}:cluster/${local.resource_prefix}/*"
-  kafka_topic_arn   = "arn:${data.aws_partition.current.partition}:kafka:${var.region}:${var.account_id}:topic/${local.resource_prefix}/*"
-  kafka_group_arn   = "arn:${data.aws_partition.current.partition}:kafka:${var.region}:${var.account_id}:group/${local.resource_prefix}/*"
+  resource_prefix = "${var.project_name}-${var.environment}"
+  log_group_arn   = "arn:${data.aws_partition.current.partition}:logs:${var.region}:${var.account_id}:log-group:/aws/${local.resource_prefix}"
 }
 
 data "aws_iam_policy_document" "github_actions_trust" {
@@ -67,37 +64,6 @@ data "aws_iam_policy_document" "application_runtime" {
     resources = ["${local.log_group_arn}:log-stream:*"]
   }
 
-  statement {
-    sid    = "ConnectToBidFlowKafka"
-    effect = "Allow"
-    actions = [
-      "kafka-cluster:Connect",
-      "kafka-cluster:DescribeCluster",
-    ]
-    resources = [local.kafka_cluster_arn]
-  }
-
-  statement {
-    sid    = "ReadAndWriteBidFlowKafkaTopics"
-    effect = "Allow"
-    actions = [
-      "kafka-cluster:DescribeTopic",
-      "kafka-cluster:ReadData",
-      "kafka-cluster:WriteData",
-    ]
-    resources = [local.kafka_topic_arn]
-  }
-
-  statement {
-    sid    = "ManageBidFlowKafkaGroups"
-    effect = "Allow"
-    actions = [
-      "kafka-cluster:AlterGroup",
-      "kafka-cluster:DescribeGroup",
-    ]
-    resources = [local.kafka_group_arn]
-  }
-
   dynamic "statement" {
     for_each = var.opensearch_domain_arn == null ? [] : [var.opensearch_domain_arn]
 
@@ -120,6 +86,37 @@ resource "aws_iam_role_policy" "application_runtime" {
   name   = "${local.resource_prefix}-application-runtime"
   role   = aws_iam_role.application.id
   policy = data.aws_iam_policy_document.application_runtime.json
+}
+
+resource "aws_iam_role_policy" "application_msk" {
+  count = var.msk == null ? 0 : 1
+
+  name = "${local.resource_prefix}-application-msk"
+  role = aws_iam_role.application.id
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect   = "Allow"
+        Action   = ["kafka-cluster:Connect", "kafka-cluster:DescribeCluster", "kafka-cluster:WriteDataIdempotently"]
+        Resource = [var.msk.cluster_arn]
+      },
+      {
+        Effect = "Allow"
+        Action = ["kafka-cluster:DescribeTopic", "kafka-cluster:ReadData", "kafka-cluster:WriteData"]
+        Resource = [for topic in ["bid-command", "bid-event", "listing-event", "bid-command.DLT", "bid-event.DLT", "listing-event.DLT"] :
+          "${replace(var.msk.cluster_arn, ":cluster/", ":topic/")}/${topic}"
+        ]
+      },
+      {
+        Effect = "Allow"
+        Action = ["kafka-cluster:DescribeGroup", "kafka-cluster:AlterGroup"]
+        Resource = [for group in ["bid-settlement", "realtime-projection", "auction-finalization", "search-projection"] :
+          "${replace(var.msk.cluster_arn, ":cluster/", ":group/")}/${group}"
+        ]
+      },
+    ]
+  })
 }
 
 resource "aws_iam_role_policy" "application_bootstrap" {

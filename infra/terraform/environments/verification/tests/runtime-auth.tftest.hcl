@@ -85,7 +85,7 @@ run "enabled_launch_template_guards_and_writes_only_the_managed_values" {
 
   assert {
     condition = can(regex(
-      "check_verification_runtime_env /etc/bidflow/runtime\\.env\n+aws secretsmanager",
+      "check_verification_runtime_env /etc/bidflow/runtime\\.env false\n+aws secretsmanager",
       base64decode(aws_launch_template.application.user_data)
       )) && strcontains(
       base64decode(aws_launch_template.application.user_data),
@@ -93,4 +93,61 @@ run "enabled_launch_template_guards_and_writes_only_the_managed_values" {
     )
     error_message = "The launch script must stop on a Runtime Secret collision before assembling the exact public environment."
   }
+}
+
+run "msk_enables_only_its_profile_and_uses_imdsv2" {
+  command = plan
+  module {
+    source = "../../modules/private_runtime"
+  }
+  variables {
+    enable_managed_kafka    = true
+    kafka_bootstrap_brokers = "boot-mock.kafka-serverless.ap-northeast-1.amazonaws.com:9098"
+  }
+  assert {
+    condition     = aws_launch_template.application.metadata_options[0].http_tokens == "required" && aws_launch_template.application.metadata_options[0].http_put_response_hop_limit == 2
+    error_message = "MSK alone needs the container IMDSv2 hop limit."
+  }
+  assert {
+    condition = (
+      strcontains(base64decode(aws_launch_template.application.user_data), "check_verification_runtime_env /etc/bidflow/runtime.env true") &&
+      strcontains(base64decode(aws_launch_template.application.user_data), base64encode("SPRING_PROFILES_ACTIVE=msk\nBIDFLOW_MSK_BOOTSTRAP_SERVERS=boot-mock.kafka-serverless.ap-northeast-1.amazonaws.com:9098\n")) &&
+      !strcontains(base64decode(aws_launch_template.application.user_data), "SPRING_KAFKA_PROPERTIES_SECURITY_PROTOCOL")
+    )
+    error_message = "The Terraform-managed MSK profile and actual IAM bootstrap must replace hardcoded Spring security env variables."
+  }
+}
+
+run "msk_and_cognito_compose_one_profile_setting" {
+  command = plan
+  module {
+    source = "../../modules/private_runtime"
+  }
+  variables {
+    enable_managed_kafka    = true
+    kafka_bootstrap_brokers = "boot-mock.kafka-serverless.ap-northeast-1.amazonaws.com:9098"
+    verification_auth = {
+      issuer_uri = "https://cognito-idp.ap-northeast-1.amazonaws.com/ap-northeast-1_test"
+      client_id  = "mockclient123"
+      web_origin = "https://d123example.cloudfront.net"
+    }
+  }
+  assert {
+    condition = strcontains(
+      base64decode(aws_launch_template.application.user_data),
+      base64encode("SPRING_PROFILES_ACTIVE=verification,msk\nBIDFLOW_COGNITO_ISSUER_URI=https://cognito-idp.ap-northeast-1.amazonaws.com/ap-northeast-1_test\nBIDFLOW_COGNITO_CLIENT_ID=mockclient123\nBIDFLOW_VERIFICATION_WEB_ORIGIN=https://d123example.cloudfront.net\nBIDFLOW_MSK_BOOTSTRAP_SERVERS=boot-mock.kafka-serverless.ap-northeast-1.amazonaws.com:9098\n")
+    )
+    error_message = "Cognito and MSK require one combined profile value and both sets of configuration."
+  }
+}
+
+run "msk_rejects_missing_iam_bootstrap" {
+  command = plan
+  module {
+    source = "../../modules/private_runtime"
+  }
+  variables {
+    enable_managed_kafka = true
+  }
+  expect_failures = [var.kafka_bootstrap_brokers]
 }

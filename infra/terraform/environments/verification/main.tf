@@ -43,6 +43,9 @@ module "iam" {
   image_storage            = local.listing_images_enabled ? { bucket_arn = module.listing_images[0].bucket_arn } : null
   opensearch_domain_arn    = module.managed_opensearch.domain_arn
   region                   = var.region
+  msk = var.enable_application_runtime && var.enable_managed_kafka ? {
+    cluster_arn = module.managed_kafka.cluster_arn
+  } : null
   runtime_bootstrap = var.enable_application_runtime ? {
     ecr_repository_arn = module.application_edge.ecr_repository_arn
     runtime_secret_arn = var.application_runtime_secret_arn

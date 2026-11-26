@@ -9,9 +9,9 @@ aws secretsmanager get-secret-value \
   --query SecretString \
   --output text > /etc/bidflow/runtime.env
 chmod 0600 /etc/bidflow/runtime.env
-%{ if verification_auth_env_base64 != "" ~}
+%{ if managed_runtime_env_base64 != "" ~}
 ${verification_guard}
-check_verification_runtime_env /etc/bidflow/runtime.env
+check_verification_runtime_env /etc/bidflow/runtime.env ${enable_managed_kafka}
 %{ endif ~}
 
 aws secretsmanager get-secret-value \
@@ -36,9 +36,9 @@ fi
   printf 'BIDFLOW_DATABASE_PASSWORD=%s\n' "$database_password"
 } > /etc/bidflow/runtime-complete.env
 chmod 0600 /etc/bidflow/runtime-complete.env
-%{ if verification_auth_env_base64 != "" ~}
+%{ if managed_runtime_env_base64 != "" ~}
 printf '\n' >> /etc/bidflow/runtime-complete.env
-printf '%s' '${verification_auth_env_base64}' | base64 -d >> /etc/bidflow/runtime-complete.env
+printf '%s' '${managed_runtime_env_base64}' | base64 -d >> /etc/bidflow/runtime-complete.env
 %{ endif ~}
 
 %{ if enable_managed_redis ~}
@@ -46,10 +46,6 @@ aws secretsmanager get-secret-value --region '${region}' --secret-id '${redis_se
 chmod 0600 /etc/bidflow/redis-secret.json
 redis_auth_token=$(jq -r '.redis_auth_token' /etc/bidflow/redis-secret.json)
 printf 'SPRING_DATA_REDIS_HOST=${redis_endpoint}\nSPRING_DATA_REDIS_PORT=6379\nSPRING_DATA_REDIS_SSL_ENABLED=true\nSPRING_DATA_REDIS_PASSWORD=%s\n' "$redis_auth_token" >> /etc/bidflow/runtime-complete.env
-%{ endif ~}
-
-%{ if enable_managed_kafka ~}
-printf 'SPRING_KAFKA_BOOTSTRAP_SERVERS=${kafka_bootstrap_brokers}\nSPRING_KAFKA_PROPERTIES_SECURITY_PROTOCOL=SASL_SSL\nSPRING_KAFKA_PROPERTIES_SASL_MECHANISM=AWS_MSK_IAM\n' >> /etc/bidflow/runtime-complete.env
 %{ endif ~}
 
 %{ if enable_managed_search ~}

@@ -74,6 +74,33 @@ run "prepare_repository_without_instances" {
   }
 }
 
+run "managed_kafka_can_plan_with_runtime_deferred" {
+  command = plan
+  variables {
+    enable_managed_kafka       = true
+    enable_application_runtime = false
+  }
+  assert {
+    condition     = length(module.private_runtime) == 0
+    error_message = "The broker can be prepared before EC2 starts."
+  }
+}
+
+run "managed_kafka_can_plan_with_unknown_cluster_values" {
+  command = plan
+  variables {
+    enable_managed_kafka           = true
+    application_ami_id             = "ami-123abc"
+    application_image              = "${run.prepare_repository_without_instances.application_ecr_repository_url}@sha256:${sha256("mock image")}"
+    application_runtime_secret_arn = "arn:aws:secretsmanager:ap-northeast-1:123456789012:secret:mock-only"
+    enable_nat_gateway             = true
+  }
+  assert {
+    condition     = length(module.private_runtime) == 1
+    error_message = "The full plan must not need the cluster ARN or bootstrap value to decide resource counts."
+  }
+}
+
 run "default_runtime_requires_inputs" {
   command         = plan
   expect_failures = [var.application_ami_id, var.application_image, var.application_runtime_secret_arn]

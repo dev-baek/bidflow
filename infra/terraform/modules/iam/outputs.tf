@@ -9,5 +9,5 @@ output "application_role_arn" {
 output "application_instance_profile_name" {
   value = aws_iam_instance_profile.application.name
 
-  depends_on = [aws_iam_role_policy.application_bootstrap, aws_iam_role_policy.application_image_storage]
+  depends_on = [aws_iam_role_policy.application_bootstrap, aws_iam_role_policy.application_image_storage, aws_iam_role_policy.application_msk]
 }
