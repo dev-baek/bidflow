@@ -1,4 +1,5 @@
 @import "./styles/tokens.css";
+@import "./styles/form-controls.css";
 
 :root {
   color: var(--color-text);
@@ -146,7 +147,7 @@ h1 {
   color: #566176;
 }
 
-.listing-form button {
+.listing-form button:not(.ui-button) {
   width: 100%;
   margin-top: 32px;
   padding: 14px 18px;
@@ -158,9 +159,15 @@ h1 {
   font-weight: 800;
 }
 
-.listing-form button:disabled {
+.listing-form button:not(.ui-button):disabled {
   cursor: not-allowed;
   opacity: 0.65;
+}
+
+.auth-card .ui-field { margin-block-start: var(--space-6); }
+.auth-card .ui-button {
+  inline-size: 100%;
+  margin-block-start: var(--space-8);
 }
 
 .auth-summary {
