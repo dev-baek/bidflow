@@ -3,6 +3,7 @@
 - 상태: 제안됨
 - 관련 Issue: [#189 ElastiCache Redis 검증 모듈 구성](https://github.com/dev-baek/bidflow/issues/189)
 - 상위 Issue: [#89 관리형 데이터 서비스 검증 모듈](https://github.com/dev-baek/bidflow/issues/89)
+- 후속 연결 사양: [#88 ElastiCache Redis 부팅·TLS 연결](issue-088-redis-runtime.md).
 
 ## 목적과 제외 범위
 
