@@ -29,8 +29,8 @@ output "application_alb_dns_name" {
 }
 
 output "application_autoscaling_group_name" {
-  description = "ALB-backed private runtime group; use for instance-refresh and SSM verification only."
-  value       = module.private_runtime.autoscaling_group_name
+  description = "ALB-backed private runtime group; absent while the runtime is disabled."
+  value       = one(module.private_runtime[*].autoscaling_group_name)
 }
 
 output "postgres_endpoint" {

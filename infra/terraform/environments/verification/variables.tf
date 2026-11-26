@@ -92,19 +92,47 @@ variable "alb_certificate_arn" {
   }
 }
 
+variable "enable_application_runtime" {
+  description = "Set false only to prepare the verification ECR repository before the first private runtime deployment."
+  type        = bool
+  default     = true
+  nullable    = false
+}
+
 variable "application_ami_id" {
-  description = "Pre-baked ARM64 AMI with Docker and AWS CLI for the private runtime."
+  description = "Pre-baked ARM64 AMI with Docker, AWS CLI, and jq for the private runtime."
   type        = string
+  default     = null
+
+  validation {
+    condition     = !var.enable_application_runtime || can(regex("^ami-[0-9a-f]+$", var.application_ami_id))
+    error_message = "Enabled private runtime requires application_ami_id to identify an AMI."
+  }
 }
 
 variable "application_image" {
   description = "Immutable ECR application image URI with sha256 digest."
   type        = string
+  default     = null
+
+  validation {
+    condition = !var.enable_application_runtime || (
+      try(split("@", var.application_image)[0] == local.application_repository_uri, false) &&
+      can(regex("^[^@]+@sha256:[0-9a-f]{64}$", var.application_image))
+    )
+    error_message = "Enabled private runtime requires an immutable sha256 image URI from this verification ECR repository."
+  }
 }
 
 variable "application_runtime_secret_arn" {
-  description = "Secrets Manager ARN holding the private runtime environment JSON."
+  description = "Secrets Manager ARN holding the private runtime Docker env-file."
   type        = string
+  default     = null
+
+  validation {
+    condition     = !var.enable_application_runtime || can(regex("^arn:aws:secretsmanager:${var.region}:${var.expected_account_id}:secret:[A-Za-z0-9/_+=.@-]+$", var.application_runtime_secret_arn))
+    error_message = "Enabled private runtime requires a Secrets Manager secret ARN from the approved verification account and Region."
+  }
 }
 
 variable "application_min_size" {

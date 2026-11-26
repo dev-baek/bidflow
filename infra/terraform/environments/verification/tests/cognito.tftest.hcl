@@ -35,7 +35,7 @@ variables {
   github_oidc_provider_arn       = "arn:aws:iam::123456789012:oidc-provider/token.actions.githubusercontent.com"
   alb_certificate_arn            = "arn:aws:acm:ap-northeast-1:123456789012:certificate/11111111-2222-4333-8444-555555555555"
   application_ami_id             = "ami-123abc"
-  application_image              = "123456789012.dkr.ecr.ap-northeast-1.amazonaws.com/bidflow@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  application_image              = "123456789012.dkr.ecr.ap-northeast-1.amazonaws.com/bidflow-verification-application@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
   application_runtime_secret_arn = "arn:aws:secretsmanager:ap-northeast-1:123456789012:secret:mock-only"
   enable_nat_gateway             = true
   verification_api_fqdn          = "api.example.test"
@@ -165,9 +165,10 @@ run "enabled_cognito_requires_the_verification_account" {
   }
 
   variables {
-    enable_cognito        = true
-    cognito_domain_prefix = "bidflow-mock-test"
-    expected_account_id   = "999999999999"
+    enable_cognito             = true
+    cognito_domain_prefix      = "bidflow-mock-test"
+    expected_account_id        = "999999999999"
+    enable_application_runtime = false
   }
 
   expect_failures = [terraform_data.verification_guard]

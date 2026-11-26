@@ -13,8 +13,10 @@ provider "aws" {
 }
 
 locals {
-  cognito_public_config  = one(module.cognito[*].public_config)
-  listing_images_enabled = var.enable_listing_images && var.enable_cognito
+  cognito_public_config      = one(module.cognito[*].public_config)
+  listing_images_enabled     = var.enable_listing_images && var.enable_cognito
+  verification_name          = "bidflow-${var.environment}"
+  application_repository_uri = "${var.expected_account_id}.dkr.ecr.${var.region}.amazonaws.com/${local.verification_name}-application"
 }
 
 data "aws_caller_identity" "current" {}
@@ -77,13 +79,19 @@ module "application_edge" {
 
   alb_security_group_id = module.network.security_group_ids.alb
   certificate_arn       = var.alb_certificate_arn
-  name                  = "bidflow-${var.environment}"
+  name                  = local.verification_name
   public_subnet_ids     = module.network.public_subnet_ids
   vpc_id                = module.network.vpc_id
 }
 
+moved {
+  from = module.private_runtime
+  to   = module.private_runtime[0]
+}
+
 module "private_runtime" {
   source = "../../modules/private_runtime"
+  count  = var.enable_application_runtime ? 1 : 0
 
   ami_id                            = var.application_ami_id
   application_image                 = var.application_image

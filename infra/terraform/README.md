@@ -54,9 +54,15 @@ node scripts/build-verification-web.mjs /safe/path/verification-web-public.json
 
 이 빌드는 다른 `VITE_*` 설정과 로컬 dotenv 파일을 사용하지 않으며 AWS 호출·업로드를 하지 않는다. 실제 인증과 S3 직접 업로드 검증은 [#91](https://github.com/dev-baek/bidflow/issues/91)에 남겨둔다.
 
-### 승인 후 실제 검증 환경
+### 승인 후 첫 배포: ECR 준비 → EC2 활성화
 
-Terraform CLI가 설치된 환경에서 다음 명령을 사용한다. `apply`와 `destroy`는 [AWS Runbook](../../docs/specs/issue-017-aws-deployment.md)의 승인·잔여 리소스 확인 절차를 통과한 경우에만 수행한다.
+실계정에서 원격 backend 초기화·Plan·Apply를 하기 전에 [AWS Runbook](../../docs/specs/issue-017-aws-deployment.md)에 따라 계정·리전·비용·종료 시간을 승인받는다. 두 단계 모두 같은 검증 backend와 state를 사용한다.
+
+1. **ECR 준비:** 저장소 밖의 첫 단계 tfvars에 `enable_application_runtime = false`를 지정한다. `application_ami_id`, `application_image`, `application_runtime_secret_arn`은 아직 생략할 수 있다. ASG와 Launch Template이 계획에 없는지 확인한다. ALB·RDS 등 다른 리소스는 만들어질 수 있으므로 이 단계도 비용 승인과 Plan 검토가 필요하다.
+2. **ARM64 이미지 게시:** 첫 단계 Apply 후 `application_ecr_repository_url`에 이미지를 게시하고, 해당 저장소에서 게시된 digest와 소스 커밋을 확인한다. 임시 digest나 태그를 EC2 입력으로 사용하지 않는다.
+3. **EC2 활성화:** `enable_application_runtime = true`와 `enable_nat_gateway = true`를 설정하고 위 세 입력을 제공한다. AMI에는 Docker·AWS CLI·jq가 필요하고, 이미지 주소는 위 ECR에 게시된 `<repository-url>@sha256:<digest>` 형식이어야 한다. Runtime Secret에는 Docker env-file 형식(`KEY=value`)을 쓰고 tfvars에는 ARN만 넣는다. 새 Plan에서 변경을 확인한 뒤 승인받아 Apply한다.
+
+기본값은 runtime 활성화다. 이미 EC2를 활성화한 환경에 첫 단계 설정을 다시 적용하면 기존 ASG와 Launch Template 제거가 계획된다. 일반 업데이트에 이 설정을 재사용하지 않는다. 각 단계에서 아래와 같이 일반 Plan을 만들고 `-target`이나 `-auto-approve`에 의존하지 않는다.
 
 ```bash
 terraform -chdir=infra/terraform/bootstrap fmt -check

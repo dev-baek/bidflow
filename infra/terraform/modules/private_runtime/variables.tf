@@ -60,7 +60,7 @@ variable "application_image" {
 }
 
 variable "runtime_secret_arn" {
-  description = "Secrets Manager ARN whose JSON value becomes the root-owned Docker environment file."
+  description = "Secrets Manager ARN whose SecretString contains the root-owned Docker env-file."
   type        = string
 }
 
