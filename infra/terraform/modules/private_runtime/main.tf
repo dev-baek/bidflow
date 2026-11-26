@@ -1,12 +1,14 @@
 locals {
   image_registry = split("@", var.application_image)[0]
-  verification_auth_env = var.verification_auth == null ? "" : join("\n", [
+  verification_auth_env = var.verification_auth == null ? "" : join("\n", concat([
     "SPRING_PROFILES_ACTIVE=verification",
     "BIDFLOW_COGNITO_ISSUER_URI=${var.verification_auth.issuer_uri}",
     "BIDFLOW_COGNITO_CLIENT_ID=${var.verification_auth.client_id}",
     "BIDFLOW_VERIFICATION_WEB_ORIGIN=${var.verification_auth.web_origin}",
-    "",
-  ])
+    ], var.verification_image_bucket == null ? [] : [
+    "BIDFLOW_STORAGE_VERIFICATION_BUCKET=${var.verification_image_bucket}",
+    "BIDFLOW_STORAGE_VERIFICATION_REGION=${var.region}",
+  ], [""]))
 }
 
 resource "aws_launch_template" "application" {
@@ -39,8 +41,9 @@ resource "aws_launch_template" "application" {
   }
 
   metadata_options {
-    http_endpoint = "enabled"
-    http_tokens   = "required"
+    http_endpoint               = "enabled"
+    http_tokens                 = "required"
+    http_put_response_hop_limit = var.verification_image_bucket == null ? null : 2
   }
 
   network_interfaces {

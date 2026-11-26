@@ -83,6 +83,20 @@ variable "verification_auth" {
   }
 }
 
+variable "verification_image_bucket" {
+  description = "The provisioned image bucket for the Tokyo verification profile, or null."
+  type        = string
+  default     = null
+
+  validation {
+    condition = var.verification_image_bucket == null ? true : (
+      var.verification_auth != null && var.region == "ap-northeast-1" &&
+      can(regex("^bidflow-verification-[0-9]{12}-images$", var.verification_image_bucket))
+    )
+    error_message = "The image bucket requires the Tokyo verification authentication configuration."
+  }
+}
+
 variable "database_secret_arn" {
   description = "RDS-managed PostgreSQL credential secret read only at instance boot."
   type        = string

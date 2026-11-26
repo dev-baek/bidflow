@@ -150,6 +150,18 @@ variable "enable_cognito" {
   nullable    = false
 }
 
+variable "enable_listing_images" {
+  description = "Creates the dedicated image bucket only for an approved Cognito verification run."
+  type        = bool
+  default     = false
+  nullable    = false
+
+  validation {
+    condition     = !var.enable_listing_images || var.enable_cognito
+    error_message = "Verification listing images require Cognito to be enabled."
+  }
+}
+
 variable "cognito_domain_prefix" {
   description = "Cognito-provided login domain prefix, required only when Cognito is enabled."
   type        = string

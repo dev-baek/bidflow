@@ -51,6 +51,8 @@ test('the EC2 guard rejects collisions without printing any Runtime Secret value
       ['  bidflow.cognito.issuer-uri =secret-marker', false],
       ['\uFEFFSPRING_PROFILES_ACTIVE=local-marker', false],
       ['BIDFLOW_COGNITO_CLIENTID=secret-marker', false],
+      ['BIDFLOW_STORAGE_VERIFICATION_BUCKET=secret-marker', false],
+      ['bidflow.storage.verification-region=secret-marker', false],
       ['BIDFLOW_COGNITO_CLIENT_ID', false],
       ['SPRING_APPLICATION_JSON=secret-marker', false],
     ]) {

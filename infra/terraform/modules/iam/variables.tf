@@ -42,3 +42,9 @@ variable "opensearch_domain_arn" {
   nullable    = true
   default     = null
 }
+
+variable "image_storage" {
+  description = "The actual dedicated image bucket ARN, present only when uploads are enabled."
+  type        = object({ bucket_arn = string })
+  default     = null
+}

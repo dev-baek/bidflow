@@ -10,6 +10,7 @@ Terraform은 AWS 검증 환경에만 사용한다. 로컬 개발은 [Docker Comp
 - `modules/iam`: GitHub OIDC trust role과 EC2 application instance profile을 분리한다. Runtime은 ECR·S3 image prefix·Secrets Manager·CloudWatch Logs·MSK IAM 인증만 허용하며 PostgreSQL은 Security Group과 Secret 기반 JDBC로 접근한다.
 - `modules/budget`: 계정 전체 월간 비용의 80%·100% 실제/예측 알림을 만든다. 기본 한도는 `100000 KRW`지만 apply 전 계정 청구 통화를 확인한다.
 - `modules/web_delivery`: Vite build artifact를 담는 private S3 bucket과 CloudFront OAC를 만든다. CloudFront만 읽을 수 있고, artifact upload와 invalidation은 후속 배포 workflow의 책임이다.
+- `modules/listing_images`: Cognito와 `enable_listing_images`가 모두 켜졌을 때만 검증용 이미지 버킷을 추가한다. 웹 버킷과 분리하고 지정 CloudFront origin의 PUT만 CORS에서 허용한다. [#88 이미지 저장소 사양](../../docs/specs/issue-088-verification-image-storage.md)
 - `modules/cognito`: 기본 비활성화 상태의 검증용 User Pool, 공개 App Client, 로그인 도메인이다. 활성화 시 `cognito_domain_prefix`를 지정하고, `cognito_public_config`에서 CloudFront의 고정 반환 URL과 공개 인증 값을 확인한다. [#39 계약](../../docs/specs/issue-039-cognito-terraform-contract.md)
 - `modules/application_edge`: immutable·scan-on-push ECR repository와 public HTTPS ALB/readiness Target Group을 만든다. EC2 Auto Scaling Group은 image digest를 받아 다음 구현 단위에서 연결한다.
 - `modules/private_runtime`: private subnet의 ARM64 EC2 Auto Scaling Group을 immutable ECR digest로 기동한다. 부팅 시 RDS-managed Secret을 읽어 root-owned JDBC 환경 파일을 조립하므로 credential은 tfvars·User Data에 남지 않는다. AMI에는 Docker, AWS CLI, `jq`가 사전 설치돼야 한다. 현재 첫 검증 구현은 ECR·Secrets 접근을 위해 `enable_nat_gateway=true`를 명시적으로 요구하며, 해당 비용은 VPC Endpoint 구현 전 승인 대상이다.
@@ -24,6 +25,7 @@ Terraform은 AWS 검증 환경에만 사용한다. 로컬 개발은 [Docker Comp
 5. Plan을 검토한 뒤에만 apply하며 `-auto-approve`는 사용하지 않는다.
 6. Destroy 뒤에는 NAT Gateway, Elastic IP, RDS Snapshot, CloudWatch Log Group의 잔존 비용을 Tag inventory와 Cost Explorer로 확인한다.
 7. web asset bucket은 versioning이 켜져 있다. `destroy` 전에 release prefix와 object version·delete marker를 먼저 비워야 하며, Terraform이 임의의 artifact를 강제 삭제하지 않는다.
+8. 이미지 업로드를 켠 검증은 `verification_image_bucket_name` 출력이 승인된 전용 버킷과 일치하는지 먼저 확인한다. 승인된 정리 역할로 그 버킷만 비운 뒤 Destroy하고, 앱 역할에는 삭제 권한을 주지 않는다.
 
 ## 검증 명령
 

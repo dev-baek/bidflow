@@ -1,6 +1,6 @@
 # [Issue #88] 검증 환경 상품 이미지 S3 계약
 
-- 상태: 검토 대기. [#88 배포 조립](https://github.com/dev-baek/bidflow/issues/88)의 후속 사양이다.
+- 상태: #339 사양 병합, #340 앱 구현 병합. [#88 배포 조립](https://github.com/dev-baek/bidflow/issues/88)에서 Terraform 구현과 실제 검증을 이어간다.
 - 선행: [상품 등록 사양](issue-046-listing-registration.md), [인증 배포 연결](issue-088-auth-deployment-wiring.md), [AWS 배포·삭제 Runbook](issue-017-aws-deployment.md).
 
 현재 등록 코드는 `products/{sellerId}/{uploadId}`로 읽고 쓰지만 Terraform의 앱 역할은 `images/*`를 허용한다. 업로드 어댑터는 SeaweedFS용 endpoint와 고정 credentials만 사용한다. 정적 웹 파일과 별도의 비공개 S3 버킷에, 실제 키와 일치하는 권한 및 EC2 역할 기반 서명을 연결한다.
@@ -30,6 +30,8 @@
 검증 S3는 명시적인 스위치로 기본 비활성화한다. 활성화에는 검증 Cognito 구성도 필요하다. 버킷 이름과 리전은 EC2에 공개 설정으로 전달하고, 액세스 키를 Runtime Secret·User Data·Vite에 넣지 않는다. 컨테이너의 EC2 역할 접근에 필요한 IMDSv2 토큰 응답 hop limit 2는 이 경로를 켤 때만 적용하고 토큰 필수 설정과 기존 네트워크 경계는 유지한다. [EC2 컨테이너의 IMDSv2 접근](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instancedata-data-retrieval.html).
 
 앱이 받는 공개 설정은 `BIDFLOW_STORAGE_VERIFICATION_BUCKET` (`bidflow-verification-<account-id>-images`)과 `BIDFLOW_STORAGE_VERIFICATION_REGION` (`ap-northeast-1`)이다. 버킷이 비어 있으면 서버는 S3 서명을 발급하지 않는다. Terraform 버킷·IAM·EC2 주입은 앱 구현과 분리한다.
+
+Terraform 입력은 `enable_listing_images`이며 기본값은 `false`다. 활성화하면 `verification_image_bucket_name`은 승인된 스모크/정리에서 사용할 전용 버킷 이름만 공개한다.
 
 실제 버킷 생성과 권한 변경은 계정·리전·시간·비용·삭제 계획의 승인 이후에만 한다. 종료 시 앱 역할이 아닌 승인된 정리 권한으로 해당 검증 버킷의 객체와 존재하는 버전·삭제 마커를 확인하고 비운다. 다른 버킷은 건드리지 않으며, 대상 버킷과 비용 리소스가 남으면 성공으로 기록하지 않는다.
 

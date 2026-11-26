@@ -2,7 +2,6 @@ data "aws_partition" "current" {}
 
 locals {
   resource_prefix    = "${var.project_name}-${var.environment}"
-  object_bucket_arn  = "arn:${data.aws_partition.current.partition}:s3:::${local.resource_prefix}-images"
   ecr_repository_arn = "arn:${data.aws_partition.current.partition}:ecr:${var.region}:${var.account_id}:repository/${local.resource_prefix}"
   secret_arn_pattern = "arn:${data.aws_partition.current.partition}:secretsmanager:${var.region}:${var.account_id}:secret:${local.resource_prefix}/*"
   log_group_arn      = "arn:${data.aws_partition.current.partition}:logs:${var.region}:${var.account_id}:log-group:/aws/${local.resource_prefix}"
@@ -82,20 +81,6 @@ data "aws_iam_policy_document" "application_runtime" {
   }
 
   statement {
-    sid       = "ListBidFlowImageBucket"
-    effect    = "Allow"
-    actions   = ["s3:ListBucket"]
-    resources = [local.object_bucket_arn]
-  }
-
-  statement {
-    sid       = "ReadAndWriteBidFlowImages"
-    effect    = "Allow"
-    actions   = ["s3:GetObject", "s3:PutObject"]
-    resources = ["${local.object_bucket_arn}/images/*"]
-  }
-
-  statement {
     sid       = "ReadRuntimeSecrets"
     effect    = "Allow"
     actions   = ["secretsmanager:GetSecretValue"]
@@ -162,6 +147,20 @@ resource "aws_iam_role_policy" "application_runtime" {
   name   = "${local.resource_prefix}-application-runtime"
   role   = aws_iam_role.application.id
   policy = data.aws_iam_policy_document.application_runtime.json
+}
+
+resource "aws_iam_role_policy" "application_image_storage" {
+  count = var.image_storage == null ? 0 : 1
+
+  name = "${local.resource_prefix}-image-storage"
+  role = aws_iam_role.application.id
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      { Effect = "Allow", Action = ["s3:ListBucket"], Resource = [var.image_storage.bucket_arn] },
+      { Effect = "Allow", Action = ["s3:GetObject", "s3:PutObject"], Resource = ["${var.image_storage.bucket_arn}/products/*"] },
+    ]
+  })
 }
 
 resource "aws_iam_role_policy_attachment" "application_ssm" {
