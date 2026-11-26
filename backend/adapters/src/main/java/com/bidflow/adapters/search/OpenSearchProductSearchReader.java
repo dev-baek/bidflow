@@ -3,28 +3,26 @@ package com.bidflow.adapters.search;
 import com.bidflow.application.search.*;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.time.Instant;
 import java.util.*;
 
 public final class OpenSearchProductSearchReader implements ProductSearchReader {
-    private final HttpClient client; private final URI endpoint; private final ObjectMapper mapper;
-    public OpenSearchProductSearchReader(HttpClient client, URI endpoint, ObjectMapper mapper) { this.client = client; this.endpoint = endpoint; this.mapper = mapper; }
+    private final OpenSearchTransport transport; private final ObjectMapper mapper;
+    public OpenSearchProductSearchReader(OpenSearchTransport transport, ObjectMapper mapper) { this.transport = transport; this.mapper = mapper; }
     @Override public SearchListingsPage search(SearchListingsQuery query) {
         try {
-            HttpRequest request = HttpRequest.newBuilder(endpoint.resolve("/bidflow-products-read/_search"))
-                    .header("Content-Type", "application/json").POST(HttpRequest.BodyPublishers.ofString(mapper.writeValueAsString(body(query)))).build();
-            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-            if (response.statusCode() < 200 || response.statusCode() >= 300) throw new SearchUnavailableException("OpenSearch status " + response.statusCode());
+            var response = transport.execute("POST", "/bidflow-products-read/_search", mapper.writeValueAsString(body(query)));
+            if (!response.successful()) throw new SearchUnavailableException("OpenSearch status " + response.status());
             return page(query, mapper.readTree(response.body()));
         } catch (SearchUnavailableException | InvalidSearchQueryException exception) { throw exception;
-        } catch (InterruptedException exception) { Thread.currentThread().interrupt(); throw new SearchUnavailableException(exception);
-        } catch (Exception exception) { throw new SearchUnavailableException(exception); }
+        } catch (InterruptedException exception) {
+            Thread.currentThread().interrupt();
+            throw new SearchUnavailableException("OpenSearch request interrupted.");
+        } catch (Exception exception) {
+            throw new SearchUnavailableException("OpenSearch search failed.");
+        }
     }
     private Map<String, Object> body(SearchListingsQuery query) {
         List<Map<String, Object>> filters = new ArrayList<>();

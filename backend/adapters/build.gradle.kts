@@ -7,6 +7,7 @@ dependencies {
     implementation(libs.flyway.database.postgresql)
     implementation(libs.aws.sdk.s3)
     implementation(libs.aws.sdk.url.connection.client)
+    implementation(libs.aws.sdk.http.auth.aws)
     implementation("org.springframework:spring-jdbc")
     implementation("org.springframework:spring-tx")
     implementation("org.springframework.data:spring-data-redis")
