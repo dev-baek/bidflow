@@ -22,7 +22,9 @@ rg -q 'database_secret_arn' "$module_dir/user-data.sh.tftpl"
 rg -q 'BIDFLOW_DATABASE_URL' "$module_dir/user-data.sh.tftpl"
 rg -q 'jq -r' "$module_dir/user-data.sh.tftpl"
 rg -q 'enable_managed_search' "$module_dir"
-rg -q 'BIDFLOW_OPENSEARCH_ENDPOINT' "$module_dir/user-data.sh.tftpl"
+rg -q 'BIDFLOW_SEARCH_MODE=aws' "$module_dir/main.tf"
+rg -q 'BIDFLOW_SEARCH_AWS_ENDPOINT' "$module_dir/main.tf"
+rg -q 'BIDFLOW_SEARCH_AWS_REGION' "$module_dir/main.tf"
 rg -q 'enable_nat_gateway' "$module_dir"
 rg -q 'module "private_runtime"' infra/terraform/environments/verification/main.tf
 rg -q 'application_autoscaling_group_name' infra/terraform/environments/verification/outputs.tf

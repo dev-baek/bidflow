@@ -63,29 +63,34 @@ data "aws_iam_policy_document" "application_runtime" {
     actions   = ["logs:CreateLogStream", "logs:PutLogEvents"]
     resources = ["${local.log_group_arn}:log-stream:*"]
   }
-
-  dynamic "statement" {
-    for_each = var.opensearch_domain_arn == null ? [] : [var.opensearch_domain_arn]
-
-    content {
-      sid    = "QueryBidFlowOpenSearch"
-      effect = "Allow"
-      actions = [
-        "es:ESHttpDelete",
-        "es:ESHttpGet",
-        "es:ESHttpHead",
-        "es:ESHttpPost",
-        "es:ESHttpPut",
-      ]
-      resources = ["${statement.value}/*"]
-    }
-  }
 }
 
 resource "aws_iam_role_policy" "application_runtime" {
   name   = "${local.resource_prefix}-application-runtime"
   role   = aws_iam_role.application.id
   policy = data.aws_iam_policy_document.application_runtime.json
+}
+
+resource "aws_iam_role_policy" "application_opensearch" {
+  count = var.opensearch == null ? 0 : 1
+
+  name = "${local.resource_prefix}-application-opensearch"
+  role = aws_iam_role.application.id
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect   = "Allow"
+        Action   = ["es:ESHttpPost"]
+        Resource = ["${var.opensearch.domain_arn}/bidflow-products-read/_search"]
+      },
+      {
+        Effect   = "Allow"
+        Action   = ["es:ESHttpPut"]
+        Resource = ["${var.opensearch.domain_arn}/bidflow-products-write/_doc/*"]
+      },
+    ]
+  })
 }
 
 resource "aws_iam_role_policy" "application_msk" {

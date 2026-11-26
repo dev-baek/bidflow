@@ -106,6 +106,34 @@ run "default_runtime_requires_inputs" {
   expect_failures = [var.application_ami_id, var.application_image, var.application_runtime_secret_arn]
 }
 
+run "search_domain_can_be_planned_before_ec2" {
+  command = plan
+  variables {
+    enable_application_runtime = false
+    enable_managed_search      = true
+  }
+  assert {
+    condition     = length(module.private_runtime) == 0
+    error_message = "The search domain can be prepared before EC2 without the runtime inputs."
+  }
+}
+
+run "search_and_kafka_can_plan_with_unknown_endpoints" {
+  command = plan
+  variables {
+    enable_managed_search          = true
+    enable_managed_kafka           = true
+    application_ami_id             = "ami-123abc"
+    application_image              = "${run.prepare_repository_without_instances.application_ecr_repository_url}@sha256:${sha256("mock image")}"
+    application_runtime_secret_arn = "arn:aws:secretsmanager:ap-northeast-1:123456789012:secret:mock-only"
+    enable_nat_gateway             = true
+  }
+  assert {
+    condition     = length(module.private_runtime) == 1
+    error_message = "The managed runtime can plan before the service ARNs and endpoints are known."
+  }
+}
+
 run "runtime_rejects_image_tag" {
   command = plan
   variables {

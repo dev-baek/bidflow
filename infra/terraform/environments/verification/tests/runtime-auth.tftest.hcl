@@ -85,7 +85,7 @@ run "enabled_launch_template_guards_and_writes_only_the_managed_values" {
 
   assert {
     condition = can(regex(
-      "check_verification_runtime_env /etc/bidflow/runtime\\.env false\n+aws secretsmanager",
+      "check_verification_runtime_env /etc/bidflow/runtime\\.env false false\n+aws secretsmanager",
       base64decode(aws_launch_template.application.user_data)
       )) && strcontains(
       base64decode(aws_launch_template.application.user_data),
@@ -150,4 +150,38 @@ run "msk_rejects_missing_iam_bootstrap" {
     enable_managed_kafka = true
   }
   expect_failures = [var.kafka_bootstrap_brokers]
+}
+
+run "managed_search_alone_injects_only_its_signed_endpoint_configuration" {
+  command = plan
+  module {
+    source = "../../modules/private_runtime"
+  }
+  variables {
+    enable_managed_search = true
+    opensearch_endpoint   = "vpc-bidflow-verification-search-mock.ap-northeast-1.es.amazonaws.com"
+  }
+  assert {
+    condition     = aws_launch_template.application.metadata_options[0].http_tokens == "required" && aws_launch_template.application.metadata_options[0].http_put_response_hop_limit == 2
+    error_message = "The search container must use the EC2 role via IMDSv2."
+  }
+  assert {
+    condition = (
+      strcontains(base64decode(aws_launch_template.application.user_data), "check_verification_runtime_env /etc/bidflow/runtime.env false true") &&
+      strcontains(base64decode(aws_launch_template.application.user_data), base64encode("BIDFLOW_SEARCH_MODE=aws\nBIDFLOW_SEARCH_AWS_ENDPOINT=https://vpc-bidflow-verification-search-mock.ap-northeast-1.es.amazonaws.com\nBIDFLOW_SEARCH_AWS_REGION=ap-northeast-1\n"))
+    )
+    error_message = "Search alone must guard and inject its three values without forcing Cognito or MSK profiles."
+  }
+}
+
+run "managed_search_rejects_a_public_endpoint" {
+  command = plan
+  module {
+    source = "../../modules/private_runtime"
+  }
+  variables {
+    enable_managed_search = true
+    opensearch_endpoint   = "search-bidflow-verification-search-mock.ap-northeast-1.es.amazonaws.com"
+  }
+  expect_failures = [var.opensearch_endpoint]
 }
