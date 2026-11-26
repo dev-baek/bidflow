@@ -10,7 +10,7 @@ registry="123456789012.dkr.ecr.ap-northeast-1.amazonaws.com"
 
 # Render the production template in an empty directory, without providers or state.
 render() {
-  printf '%s\n' "base64encode(templatefile(\"$template\", {region=\"ap-northeast-1\", runtime_secret_arn=\"runtime-fixture\", database_secret_arn=\"rds-fixture\", database_host=\"db.example.test\", database_port=5432, image_registry=\"$registry\", application_image=\"$image\", verification_guard=file(\"$root/infra/terraform/modules/private_runtime/verification-runtime-guard.sh\"), managed_runtime_env_base64=\"\", enable_managed_redis=$1, enable_managed_kafka=false, enable_managed_search=false, redis_secret_arn=\"redis-fixture\", redis_endpoint=\"redis.example.cache.amazonaws.com\"}))" |
+  printf '%s\n' "base64encode(templatefile(\"$template\", {region=\"ap-northeast-1\", runtime_secret_arn=\"runtime-fixture\", database_secret_arn=\"rds-fixture\", database_host=\"db.example.test\", database_port=5432, image_registry=\"$registry\", application_image=\"$image\", verification_guard=file(\"$root/infra/terraform/modules/private_runtime/verification-runtime-guard.sh\"), managed_runtime_env_base64=\"\", enable_managed_redis=$1, enable_managed_kafka=false, enable_managed_search=false, redis_secret_arn=\"redis-fixture\", redis_endpoint=\"redis.example.cache.amazonaws.com\", cloudwatch_log_group=${2:-null}}))" |
     "${TERRAFORM_BIN:-terraform}" -chdir="$scratch" console -no-color |
     jq -er '@base64d' | sed "s|/etc/bidflow|$scratch/runtime|g" > "$scratch/user-data.sh"
 }
@@ -60,7 +60,24 @@ if grep -q '^SPRING_DATA_REDIS_' "$scratch/runtime/runtime-complete.env"; then e
 grep -Fx "login --username AWS --password-stdin $registry" "$DOCKER_TRACE"
 grep -Fx "pull $image" "$DOCKER_TRACE"
 grep -q '^run ' "$DOCKER_TRACE"
+if grep -Eq 'awslogs|logging\.structured' "$DOCKER_TRACE"; then exit 1; fi
 if grep -Eq 'fake-ecr-token|fixture-password' "$scratch/boot-log"; then exit 1; fi
+
+render false '"/aws/bidflow-verification"'
+bash -n "$scratch/user-data.sh"
+export DOCKER_TRACE="$scratch/cloudwatch-docker-trace"
+RDS_FIXTURE='{"username":"fixture-user","password":"fixture-password"}' \
+  bash "$scratch/user-data.sh" > "$scratch/boot-log" 2>&1
+grep -Fq -- '--log-driver awslogs --log-opt awslogs-region=ap-northeast-1' "$DOCKER_TRACE"
+grep -Fq -- '--log-opt awslogs-group=/aws/bidflow-verification --log-opt awslogs-create-group=false' "$DOCKER_TRACE"
+grep -Fq -- "--log-opt mode=non-blocking --log-opt max-buffer-size=1m $image --spring.main.banner-mode=off --logging.structured.format.console=logstash --logging.structured.json.include=@timestamp,level,logger_name,event,outcome,correlationId,bidRequestId,eventId,auctionId" "$DOCKER_TRACE"
+if grep -Eq 'fake-ecr-token|fixture-password' "$scratch/boot-log"; then exit 1; fi
+export DOCKER_TRACE="$scratch/unexpected-cloudwatch-docker-trace"
+if RUNTIME_FIXTURE='LOGGING_CONFIG=never-log-me' RDS_FIXTURE='{}' bash "$scratch/user-data.sh" > "$scratch/boot-log" 2>&1; then exit 1; fi
+test ! -e "$DOCKER_TRACE"
+grep -Fxq 'Runtime Secret must not override managed verification settings.' "$scratch/boot-log"
+if grep -Fq 'never-log-me' "$scratch/boot-log"; then exit 1; fi
+render false
 
 for invalid_secret in '{}' '{"username":null,"password":"never-log-me"}' '{"username":"fixture-user","password":""}' '{"username":"fixture-user","password":"never-log-me\nBAD=value"}' '{"password": "never-log-me",' '{"username":"u","password":"p"} {"username":"u","password":"p"}'; do
   export DOCKER_TRACE="$scratch/unexpected-docker-trace"

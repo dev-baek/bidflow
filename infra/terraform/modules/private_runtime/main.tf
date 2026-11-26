@@ -28,6 +28,7 @@ resource "aws_launch_template" "application" {
   instance_type = var.instance_type
   user_data = base64encode(templatefile("${path.module}/user-data.sh.tftpl", {
     application_image          = var.application_image
+    cloudwatch_log_group       = var.cloudwatch_log_group
     database_secret_arn        = var.database_secret_arn
     database_host              = var.database_host
     database_port              = var.database_port

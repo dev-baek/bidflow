@@ -68,6 +68,12 @@ node scripts/build-verification-web.mjs /safe/path/verification-web-public.json
 
 `enable_managed_redis`는 기본 비활성화다. 활성화하면 EC2는 관리형 Secret 값이 준비된 뒤 시작하며, 부팅 시 private endpoint와 TLS, 검증한 AUTH 토큰을 기존 Lettuce 설정에 전달한다. Runtime Secret에는 Redis URL·인증·클러스터 설정을 넣지 않는다. 잘못된 토큰이나 충돌은 Docker 시작 전에 차단한다. 토큰은 민감한 Plan/state와 EC2의 root 전용 env-file로 취급하며 로그에 남기지 않는다. [#353 연결 계약](../../docs/specs/issue-088-redis-runtime.md)
 
+### CloudWatch 검증 설정
+
+CloudWatch는 기본 비활성화다. 승인된 검증 창의 EC2 활성화 단계에서만 `enable_cloudwatch = true`를 설정한다. Terraform은 7일 보존 로그 그룹, 입찰 지표 필터, 대시보드와 알람을 만든다. MSK가 꺼져 있으면 적체 위젯·알람은 만들지 않는다. 알림 검증 때만 이미 준비된 동일 계정·리전의 SNS 표준 토픽 ARN을 `cloudwatch_alarm_topic_arn`으로 지정한다. 이 구성은 SNS 토픽과 구독을 만들거나 삭제하지 않는다.
+
+EC2는 Docker의 컨테이너별 스트림을 사용한다. 전달용 JSON에는 메시지와 스택 트레이스를 포함하지 않는다. 애플리케이션 로그 누락이나 타깃 등록 전 지표 공백은 정상으로 간주하지 않는다. 실전송·수신은 [#359](https://github.com/dev-baek/bidflow/issues/359)에서 합성 데이터로 확인하고, 검증 종료 때 로그 그룹·필터·대시보드·알람을 함께 삭제한다. [관측 사양](../../docs/specs/issue-358-verification-cloudwatch.md)
+
 ### 승인 후 첫 배포: ECR 준비 → EC2 활성화
 
 실계정에서 원격 backend 초기화·Plan·Apply를 하기 전에 [AWS Runbook](../../docs/specs/issue-017-aws-deployment.md)에 따라 계정·리전·비용·종료 시간을 승인받는다. 두 단계 모두 같은 검증 backend와 state를 사용한다.

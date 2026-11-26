@@ -109,6 +109,7 @@ module "private_runtime" {
   application_instance_profile_name = module.iam.application_instance_profile_name
   application_security_group_id     = module.network.security_group_ids.application
   application_subnet_ids            = module.network.application_subnet_ids
+  cloudwatch_log_group              = one(aws_cloudwatch_log_group.verification[*].name)
   desired_capacity                  = var.application_desired_capacity
   database_secret_arn               = module.private_rds.master_user_secret_arn
   database_host                     = module.private_rds.endpoint
@@ -134,6 +135,8 @@ module "private_runtime" {
     web_origin = "https://${module.web_delivery.cloudfront_domain_name}"
   } : null
   vpc_id = module.network.vpc_id
+
+  depends_on = [aws_cloudwatch_log_metric_filter.bid, module.iam]
 }
 
 module "private_rds" {
