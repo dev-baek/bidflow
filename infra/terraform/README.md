@@ -64,6 +64,10 @@ node scripts/build-verification-web.mjs /safe/path/verification-web-public.json
 
 `enable_managed_search`는 기본 비활성화다. 승인된 검증에서 도메인을 준비하고 [#88 사양](../../docs/specs/issue-088-opensearch-runtime.md)의 인덱스·alias를 별도 운영 역할로 설정한 뒤 EC2를 활성화한다. Terraform은 앱에 사설 HTTPS 주소, 리전 및 AWS 검색 모드를 주입한다. 앱 IAM은 검색 POST와 문서 색인 PUT만 사용한다. Runtime Secret에 검색 설정이나 AWS 자격 증명을 추가하지 않는다. 실제 검색과 삭제는 #91에 남긴다.
 
+### Redis 검증 설정
+
+`enable_managed_redis`는 기본 비활성화다. 활성화하면 EC2는 관리형 Secret 값이 준비된 뒤 시작하며, 부팅 시 private endpoint와 TLS, 검증한 AUTH 토큰을 기존 Lettuce 설정에 전달한다. Runtime Secret에는 Redis URL·인증·클러스터 설정을 넣지 않는다. 잘못된 토큰이나 충돌은 Docker 시작 전에 차단한다. 토큰은 민감한 Plan/state와 EC2의 root 전용 env-file로 취급하며 로그에 남기지 않는다. [#353 연결 계약](../../docs/specs/issue-088-redis-runtime.md)
+
 ### 승인 후 첫 배포: ECR 준비 → EC2 활성화
 
 실계정에서 원격 backend 초기화·Plan·Apply를 하기 전에 [AWS Runbook](../../docs/specs/issue-017-aws-deployment.md)에 따라 계정·리전·비용·종료 시간을 승인받는다. 두 단계 모두 같은 검증 backend와 state를 사용한다.

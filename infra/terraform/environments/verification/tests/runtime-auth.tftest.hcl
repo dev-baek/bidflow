@@ -85,7 +85,7 @@ run "enabled_launch_template_guards_and_writes_only_the_managed_values" {
 
   assert {
     condition = can(regex(
-      "check_verification_runtime_env /etc/bidflow/runtime\\.env false false\n+aws secretsmanager",
+      "check_verification_runtime_env /etc/bidflow/runtime\\.env false false false\n+aws secretsmanager",
       base64decode(aws_launch_template.application.user_data)
       )) && strcontains(
       base64decode(aws_launch_template.application.user_data),

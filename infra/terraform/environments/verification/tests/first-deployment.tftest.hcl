@@ -60,6 +60,10 @@ run "first_plan_needs_no_runtime_inputs" {
     condition     = length(module.private_runtime) == 0 && output.application_autoscaling_group_name == null
     error_message = "The first plan must omit the entire runtime module (ASG and Launch Template)."
   }
+  assert {
+    condition     = module.managed_redis.endpoint == null && module.managed_redis.secret_arn == null
+    error_message = "Disabled Redis must not expose an endpoint or a Secret ARN."
+  }
 }
 
 run "prepare_repository_without_instances" {
@@ -104,6 +108,33 @@ run "managed_kafka_can_plan_with_unknown_cluster_values" {
 run "default_runtime_requires_inputs" {
   command         = plan
   expect_failures = [var.application_ami_id, var.application_image, var.application_runtime_secret_arn]
+}
+
+run "managed_redis_can_plan_before_ec2" {
+  command = plan
+  variables {
+    enable_application_runtime = false
+    enable_managed_redis       = true
+  }
+  assert {
+    condition     = length(module.private_runtime) == 0
+    error_message = "Redis and its Secret can be prepared before EC2."
+  }
+}
+
+run "managed_redis_can_plan_with_unknown_endpoint_and_secret" {
+  command = plan
+  variables {
+    enable_managed_redis           = true
+    application_ami_id             = "ami-123abc"
+    application_image              = "${run.prepare_repository_without_instances.application_ecr_repository_url}@sha256:${sha256("mock image")}"
+    application_runtime_secret_arn = "arn:aws:secretsmanager:ap-northeast-1:123456789012:secret:mock-only"
+    enable_nat_gateway             = true
+  }
+  assert {
+    condition     = length(module.private_runtime) == 1
+    error_message = "New Redis endpoint and Secret outputs may be unknown in the initial EC2 plan."
+  }
 }
 
 run "search_domain_can_be_planned_before_ec2" {
