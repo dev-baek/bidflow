@@ -1,6 +1,7 @@
 package com.bidflow.application.listing;
 
 import com.bidflow.application.storage.ObjectStorage;
+import com.bidflow.application.storage.ProductImagePolicy;
 import com.bidflow.domain.listing.Auction;
 import com.bidflow.domain.listing.AuctionDraft;
 import com.bidflow.domain.listing.ConditionGrade;
@@ -44,7 +45,7 @@ public final class ListingRegistrationService {
         List<String> objectKeys = command.uploadIds().stream()
                 .map(uploadId -> "products/" + sellerId + "/" + uploadId)
                 .toList();
-        if (objectKeys.stream().anyMatch(key -> objectStorage.headObject(key).isEmpty())) {
+        if (objectKeys.stream().anyMatch(key -> objectStorage.headObject(key).filter(ProductImagePolicy::accepts).isEmpty())) {
             throw new UploadNotReadyException();
         }
 

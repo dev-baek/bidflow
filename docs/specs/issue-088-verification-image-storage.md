@@ -29,6 +29,8 @@
 
 검증 S3는 명시적인 스위치로 기본 비활성화한다. 활성화에는 검증 Cognito 구성도 필요하다. 버킷 이름과 리전은 EC2에 공개 설정으로 전달하고, 액세스 키를 Runtime Secret·User Data·Vite에 넣지 않는다. 컨테이너의 EC2 역할 접근에 필요한 IMDSv2 토큰 응답 hop limit 2는 이 경로를 켤 때만 적용하고 토큰 필수 설정과 기존 네트워크 경계는 유지한다. [EC2 컨테이너의 IMDSv2 접근](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instancedata-data-retrieval.html).
 
+앱이 받는 공개 설정은 `BIDFLOW_STORAGE_VERIFICATION_BUCKET` (`bidflow-verification-<account-id>-images`)과 `BIDFLOW_STORAGE_VERIFICATION_REGION` (`ap-northeast-1`)이다. 버킷이 비어 있으면 서버는 S3 서명을 발급하지 않는다. Terraform 버킷·IAM·EC2 주입은 앱 구현과 분리한다.
+
 실제 버킷 생성과 권한 변경은 계정·리전·시간·비용·삭제 계획의 승인 이후에만 한다. 종료 시 앱 역할이 아닌 승인된 정리 권한으로 해당 검증 버킷의 객체와 존재하는 버전·삭제 마커를 확인하고 비운다. 다른 버킷은 건드리지 않으며, 대상 버킷과 비용 리소스가 남으면 성공으로 기록하지 않는다.
 
 ## T. 구현 및 완료 기준
