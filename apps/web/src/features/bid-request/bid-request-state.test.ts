@@ -1,5 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { bidRequestReducer, createBidRequestState } from "./bid-request-state";
+import { bidRequestReducer, createBidRequestState, parseBidAmount } from "./bid-request-state";
+
+it("accepts only a whole-won amount the client can send exactly", () => {
+  expect(parseBidAmount("1000")).toBe(1000);
+  for (const invalid of ["", "999", "1e3", "1000.5", "9007199254740992"]) {
+    expect(parseBidAmount(invalid)).toBeUndefined();
+  }
+});
 
 describe("bidRequestReducer", () => {
   it("keeps the current price untouched while a request is only received", () => {

@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { ApiError, type ApiClient } from "../../shared/api/api-client";
+import { Button } from "../../shared/ui/Button";
+import { StatusMessage } from "../../shared/ui/Feedback";
 
 const messages = {
   WON: "내가 낙찰받았습니다.",
@@ -33,17 +35,21 @@ export function PrivateAuctionOutcome({ auctionId, actorId, client }: Props) {
     return () => { active = false; };
   }, [actorId, attempt, auctionId, client]);
 
-  return <section aria-label="본인 입찰 결과">
-    {result.status === "LOADING" ? <p role="status">본인 결과를 조회하고 있습니다.</p> : null}
-    {result.status === "READY" ? <p role="status">{messages[result.outcome]}</p> : null}
-    {result.status === "AUTH_REQUIRED" ? <p role="alert">본인 결과를 보려면 <a href="/login">다시 로그인</a>하세요.</p> : null}
-    {result.status === "FORBIDDEN" ? <p role="alert">본인 결과를 조회할 권한이 없습니다.</p> : null}
+  return <section className="auction-private-result" aria-labelledby="auction-private-result-title">
+    <h2 id="auction-private-result-title">본인 입찰 결과</h2>
+    {result.status === "LOADING" && <StatusMessage kind="loading">본인 결과를 조회하고 있습니다.</StatusMessage>}
+    {result.status === "READY" && <StatusMessage kind={result.outcome === "WON" ? "success" : "empty"}>{messages[result.outcome]}</StatusMessage>}
+    {result.status === "AUTH_REQUIRED" && <div className="auction-detail-message">
+      <StatusMessage kind="error">본인 결과를 보려면 다시 로그인해 주세요.</StatusMessage>
+      <a className="ui-button ui-button--secondary ui-button--md" href="/login">다시 로그인</a>
+    </div>}
+    {result.status === "FORBIDDEN" && <StatusMessage kind="error">본인 결과를 조회할 권한이 없습니다.</StatusMessage>}
     {result.status === "ERROR" ? <>
-      <p role="alert">본인 결과를 불러오지 못했습니다.</p>
-      <button type="button" onClick={() => {
+      <StatusMessage kind="error">본인 결과를 불러오지 못했습니다.</StatusMessage>
+      <Button variant="secondary" onClick={() => {
         setResult({ status: "LOADING" });
         setAttempt(value => value + 1);
-      }}>본인 결과 재조회</button>
+      }}>본인 결과 재조회</Button>
     </> : null}
   </section>;
 }

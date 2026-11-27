@@ -57,7 +57,7 @@
 }
 
 .auction-detail__thumbs button:focus-visible,
-.auction-detail__trade .bid-request-form :is(input, select, button):focus-visible {
+.bid-request-form__review h3:focus-visible {
   outline: var(--focus-width) solid var(--color-focus);
   outline-offset: var(--focus-offset);
 }
@@ -115,42 +115,75 @@
   text-decoration: none;
 }
 
-.auction-detail__trade .bid-request-form {
+.bid-request-form,
+.bid-request-form__fields,
+.auction-private-result {
   display: grid;
-  gap: var(--space-2);
+  gap: var(--space-3);
 }
 
-.auction-detail__trade .bid-request-form label {
-  display: grid;
-  gap: var(--space-1);
+.bid-request-form__fields {
+  min-inline-size: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.bid-request-form__fields legend,
+.auction-private-result h2 {
+  margin: 0;
+  padding: 0;
+  font-weight: var(--font-weight-bold);
+  font-size: var(--type-body-size);
+  line-height: var(--type-body-leading);
+}
+
+.bid-request-form__fields legend {
+  margin-block-end: var(--space-2);
+}
+
+.bid-request-form__review {
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-card);
+  background: var(--color-surface-subtle);
+}
+
+.bid-request-form__review h3,
+.bid-request-form__review p {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.bid-request-form__review h3 {
+  font-size: var(--type-label-size);
+  line-height: var(--type-label-leading);
+}
+
+.bid-request-form__review p {
+  margin-block-start: var(--space-1);
+  color: var(--color-text-muted);
   font-size: var(--type-label-size);
 }
 
-.auction-detail__trade .bid-request-form :is(input, select, button) {
-  width: 100%;
-  min-inline-size: 0;
-  min-block-size: var(--control-height-md);
-  border-radius: var(--radius-control);
-  border: 1px solid var(--color-field-border);
-  background: var(--color-surface);
+.bid-request-form__review strong {
   color: var(--color-text);
-  padding-inline: var(--control-padding-sm);
-  font: inherit;
+  font-variant-numeric: tabular-nums;
+  font-size: var(--type-card-size);
 }
 
-.auction-detail__trade .bid-request-form button {
-  color: var(--color-on-action);
-  background: var(--color-action);
-  border-color: var(--color-action);
-  font-weight: var(--font-weight-semibold);
-  cursor: pointer;
+.bid-request-form__buttons {
+  display: flex;
+  gap: var(--space-2);
 }
 
-.auction-detail__trade .bid-request-form :disabled {
-  color: var(--color-disabled-text);
-  background: var(--color-disabled-surface);
-  border-color: var(--color-disabled-surface);
-  cursor: not-allowed;
+.bid-request-form__buttons button[type="submit"] {
+  flex: 1;
+}
+
+.auction-private-result {
+  border-block-start: 1px solid var(--color-divider);
+  padding-block-start: var(--space-3);
 }
 
 @media (min-width: 1024px) {
