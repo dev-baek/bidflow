@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { test } from 'node:test';
 
 const root = new URL('../../apps/web/src/', import.meta.url);
@@ -50,10 +50,20 @@ test('semantic text, controls, and focus colors meet the proposed contrast thres
     ['on-action', 'action', 4.5], ['on-action', 'action-hover', 4.5], ['on-action', 'action-active', 4.5],
     ['info-text', 'info-surface', 4.5], ['success-text', 'success-surface', 4.5],
     ['warning-text', 'warning-surface', 4.5], ['error-text', 'error-surface', 4.5],
-    ['disabled-text', 'disabled-surface', 4.5], ['field-border', 'surface', 3], ['focus', 'surface', 3],
+    ['disabled-text', 'disabled-surface', 4.5], ['action', 'surface', 4.5], ['action', 'surface-subtle', 4.5],
+    ['field-border', 'surface', 3], ['focus', 'surface', 3], ['focus', 'page', 3],
   ]) {
     const [high, low] = [luminance(text), luminance(background)].sort((a, b) => b - a);
     const ratio = (high + 0.05) / (low + 0.05);
     assert.ok(ratio >= minimum, `${text}/${background}: ${ratio.toFixed(2)} < ${minimum}`);
+  }
+});
+
+test('declares literal palette colors only in the shared token file', () => {
+  const styles = new URL('styles/', root);
+  const paths = [new URL('styles.css', root), ...readdirSync(styles)
+    .filter(name => name.endsWith('.css') && name !== 'tokens.css').map(name => new URL(name, styles))];
+  for (const path of paths) {
+    assert.doesNotMatch(readFileSync(path, 'utf8'), /:\s*#[\da-f]{3,8}\b/i, path.pathname);
   }
 });

@@ -23,7 +23,9 @@ crash.log
 data/
 coverage/
 playwright-report/
+playwright-report-ui/
 test-results/
+test-results-ui/
 
 # Codex working files
 work/
