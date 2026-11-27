@@ -1,5 +1,13 @@
 import { describe, expect, it } from "vitest";
-import { createSearchState, readSearchFilters, searchParamsFrom, searchReducer } from "./search-state";
+import { createSearchState, readSearchFilters, remainingTime, searchParamsFrom, searchReducer } from "./search-state";
+
+it("formats remaining time without inferring an auction state or rounding up", () => {
+  expect(remainingTime(59_999, 0)).toBe("1분 미만");
+  expect(remainingTime(66 * 60_000, 0)).toBe("1시간 6분");
+  expect(remainingTime(26 * 60 * 60_000, 0)).toBe("1일 2시간");
+  expect(remainingTime(0, 0)).toBe("마감 시각 지남");
+  expect(remainingTime(Number.NaN, 0)).toBeUndefined();
+});
 
 describe("search query", () => {
   it("round-trips filters including a zero bound and converts the deadline to UTC", () => {

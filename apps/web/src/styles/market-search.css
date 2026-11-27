@@ -1,0 +1,179 @@
+.ui-page:has(> .market-search) {
+  background: var(--color-surface);
+}
+
+.market-search h1,
+.market-search h2,
+.market-search h3,
+.market-search p {
+  margin-block: 0;
+}
+
+.market-search h1 {
+  font-size: var(--type-section-size);
+  line-height: var(--type-section-leading);
+}
+
+.market-search h2 {
+  font-size: var(--type-card-size);
+  line-height: var(--type-card-leading);
+}
+
+.market-search__keyword,
+.market-search__sort {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: var(--space-2);
+}
+
+.market-search__keyword {
+  max-inline-size: var(--layout-form-max);
+  margin-block: var(--space-3) var(--space-6);
+}
+
+.market-search__workspace {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.market-search__filters,
+.market-search__results {
+  min-inline-size: 0;
+}
+
+.market-search__filters h2,
+.market-search__controls[data-expanded="false"] {
+  display: none;
+}
+
+.market-search__controls {
+  display: grid;
+  gap: var(--space-3);
+  margin-block-start: var(--space-3);
+}
+
+.market-search__result-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  justify-content: space-between;
+  gap: var(--space-3);
+  border-block-start: 1px solid var(--color-divider);
+  border-block-end: 1px solid var(--color-divider);
+  padding-block: var(--space-3);
+}
+
+.market-search__result-header p,
+.market-search__trade p {
+  font-size: var(--type-label-size);
+  line-height: var(--type-label-leading);
+  color: var(--color-text-muted);
+}
+
+.market-search__sort {
+  flex: 0 1 18rem;
+  min-inline-size: min(100%, 14rem);
+}
+
+.market-search__applied {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-block-start: var(--space-3);
+}
+
+.market-search__results > .ui-status {
+  margin-block-start: var(--space-4);
+}
+
+.market-search__list {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0 var(--space-4);
+  margin-block: var(--space-2) 0;
+  padding: 0;
+  list-style: none;
+}
+
+.market-search__card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+  align-content: start;
+  align-items: start;
+  gap: var(--space-3);
+  padding-block: var(--space-3);
+  border-block-end: 1px solid var(--color-divider);
+}
+
+.market-search__card .auction-photo img {
+  object-fit: cover;
+}
+
+.market-search__trade {
+  display: grid;
+  gap: var(--space-1);
+  min-inline-size: 0;
+  overflow-wrap: anywhere;
+}
+
+.market-search__trade h3 {
+  font-size: var(--type-body-size);
+  line-height: var(--type-body-leading);
+}
+
+.market-search__trade a {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: var(--touch-target-min);
+  color: var(--color-action);
+}
+
+.market-search__trade time {
+  display: block;
+  font-size: var(--type-caption-size);
+  line-height: var(--type-caption-leading);
+}
+
+.market-search__price strong {
+  color: var(--color-text);
+  font-size: var(--type-card-size);
+  line-height: var(--type-card-leading);
+  font-variant-numeric: tabular-nums;
+}
+
+.market-search__card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.market-search__next {
+  display: flex;
+  justify-content: center;
+  margin-block-start: var(--space-4);
+}
+
+@media (min-width: 768px) {
+  .market-search__workspace {
+    grid-template-columns: minmax(0, 15rem) minmax(0, 1fr);
+    gap: var(--space-6);
+  }
+
+  .market-search__filters {
+    padding-block-start: var(--space-3);
+    padding-inline-end: var(--space-4);
+    border-inline-end: 1px solid var(--color-divider);
+  }
+
+  .market-search__filters h2 { display: block; }
+  .market-search__filters .market-search__toggle { display: none; }
+  .market-search__controls[data-expanded="false"] { display: grid; }
+  .market-search__list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .market-search__card { grid-template-columns: minmax(0, 1fr); }
+}
+
+@media (min-width: 1024px) {
+  .market-search__list { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}

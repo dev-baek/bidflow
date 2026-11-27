@@ -33,6 +33,36 @@ it("uses the auction thumbnail route and falls back without losing search result
   expect(screen.getByRole("link", { name: "카메라" })).toBeVisible();
 });
 
+it("separates the applied filters from drafts and uses the same search for filter submission", async () => {
+  const get = createGet().mockResolvedValue({ items: [item], nextCursor: null });
+  mount(get, "/listings?q=카메라&categoryId=DIGITAL&sort=ENDING_SOON");
+  const toggle = screen.getByRole("button", { name: "검색 조건" });
+  expect(toggle).toHaveAttribute("aria-expanded", "false");
+  fireEvent.click(toggle);
+  expect(toggle).toHaveAttribute("aria-expanded", "true");
+  expect(await screen.findByRole("region", { name: "검색 결과" })).toBeVisible();
+  const applied = screen.getByRole("group", { name: "적용된 검색 조건" });
+  expect(applied).toHaveTextContent("디지털·가전");
+  change("카테고리", "HOBBY");
+  expect(applied).toHaveTextContent("디지털·가전");
+  expect(applied).not.toHaveTextContent("취미·컬렉션");
+  fireEvent.click(screen.getByRole("button", { name: "조건 적용" }));
+  await screen.findByRole("link", { name: "카메라" });
+  expect(screen.getByRole("group", { name: "적용된 검색 조건" })).toHaveTextContent("취미·컬렉션");
+  expect(query(get, 1).get("categoryId")).toBe("HOBBY");
+});
+
+it("does not replace the server status when the displayed deadline has passed", async () => {
+  const get = createGet().mockResolvedValue({
+    items: [{ ...item, endsAt: "2000-01-01T12:30:00Z" }], nextCursor: null,
+  });
+  mount(get, "/listings?q=카메라");
+  const card = (await screen.findByRole("link", { name: "카메라" })).closest("li")!;
+  expect(within(card).getByText("현재가")).toBeVisible();
+  expect(within(card).getByText("마감 시각 지남")).toBeVisible();
+  expect(within(card).getByText("진행 중")).toBeVisible();
+});
+
 it("applies all filters with an empty query only on submit and restores them on history navigation", async () => {
   const get = createGet().mockResolvedValue({ items: [item], nextCursor: null });
   mount(get, "/listings?q=이전&sort=RELEVANCE");

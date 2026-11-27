@@ -4,6 +4,7 @@
 @import "./styles/site.css";
 @import "./styles/auth.css";
 @import "./styles/errors.css";
+@import "./styles/market-search.css";
 
 :root {
   color: var(--color-text);
@@ -318,14 +319,6 @@ h1 {
   width: 100%;
   height: 100%;
   object-fit: contain;
-}
-
-.auction-search-thumbnail {
-  max-inline-size: 10rem;
-}
-
-.auction-search-thumbnail img {
-  object-fit: cover;
 }
 
 .auction-detail-photos {
