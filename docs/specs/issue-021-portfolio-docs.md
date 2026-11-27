@@ -42,9 +42,9 @@ BidFlow는 **경매 마감 직전의 동시 입찰을 Kafka 순서와 Redis Lua 
 | 자동 연장 | 5분 미만 승인 시 기존 종료 시각 +5분 | [자동 연장 보고서](../reports/issue-104-auction-extension.md) |
 | 종료/낙찰 | Scheduler가 한 번만 `SOLD/UNSOLD` 확정 | [종료 사양](issue-015-auction-close.md), 종료 Repository 통합 테스트 |
 
-[#99 Playwright 실행 문서](../reports/issue-099-playwright-e2e.md)에 로컬 화면 시나리오가 있다. 시연 영상·이미지를 추가할 때는 실제 로컬 실행에서 촬영한 것만 사용한다.
+[#376 경매 마켓 검증](../reports/issue-376-marketplace-ui-regression.md)에 현재 UI의 모바일·데스크톱 캡처와 사진 업로드부터 낙찰까지의 실행 증적이 있다. [#99 Playwright 문서](../reports/issue-099-playwright-e2e.md)는 핵심 흐름의 재현 절차를 제공한다.
 
-[#21 시연 캡처](../../README.md#핵심-시연과-결과)는 같은 로컬 테스트 경매의 낙찰자·패찰자 세션을 담는다. 실제 AWS 화면이나 운영 데이터가 아니다.
+[README 시연 캡처](../../README.md#핵심-시연과-결과)는 현재 UI를 먼저 보여주고, 같은 로컬 경매의 낙찰자·패찰자 세션은 이전 증적으로 구분해 남긴다. 실제 AWS 화면이나 운영 데이터가 아니다.
 
 ## 4. D/B. 기술 선택과 면접 답변 근거
 
