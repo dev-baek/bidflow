@@ -7,7 +7,7 @@ export default defineConfig({
   workers: 1,
   outputDir: "test-results-ui",
   reporter: [["list"], ["html", { outputFolder: "playwright-report-ui", open: "never" }]],
-  use: { baseURL, screenshot: "only-on-failure", serviceWorkers: "block" },
+  use: { baseURL, screenshot: "only-on-failure", trace: "retain-on-failure", serviceWorkers: "block" },
   webServer: {
     command: "npm exec -- vite --host 127.0.0.1 --port 4176 --strictPort",
     url: baseURL,
