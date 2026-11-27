@@ -128,7 +128,8 @@ class JdbcAuctionRecoverySnapshotRepositoryIntegrationTest {
         assertThat(result.code()).isEqualTo(DirectBidResultCode.ACCEPTED);
         transaction.executeWithoutResult(ignored -> {
             assertThat(new JdbcBidLedgerRepository(jdbc, transaction, new ObjectMapper(), UUID::randomUUID)
-                    .persist(new BidSettlementCommand(requestId, auctionId, bidder, amount, result, NOW, "recovery-test"))).isTrue();
+                    .persist(new BidSettlementCommand(requestId, auctionId, bidder, amount, result, NOW, "recovery-test")))
+                    .contains(DirectBidResultCode.ACCEPTED);
             if (automatic) maxima.save(new AutoBidMaximum(auctionId, bidder, amount));
         });
         return result;

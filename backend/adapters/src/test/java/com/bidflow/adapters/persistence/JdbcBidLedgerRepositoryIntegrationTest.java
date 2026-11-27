@@ -129,7 +129,7 @@ class JdbcBidLedgerRepositoryIntegrationTest {
         Fixture fixture = fixture(1L);
         BidSettlementCommand command = acceptedCommand(fixture);
 
-        assertThat(repository.persist(command)).isTrue();
+        assertThat(repository.persist(command)).contains(DirectBidResultCode.ACCEPTED);
 
         assertThat(jdbc.queryForObject("select status from bid_request where bid_request_id = ?", String.class, fixture.requestId())).isEqualTo("ACCEPTED");
         assertThat(jdbc.queryForMap("select current_price, current_winner_id, effective_winner_maximum, ends_at, version from auction where auction_id = ?", fixture.auctionId()))
@@ -147,8 +147,8 @@ class JdbcBidLedgerRepositoryIntegrationTest {
         Fixture fixture = fixture(1L);
         BidSettlementCommand command = acceptedCommand(fixture);
 
-        assertThat(repository.persist(command)).isTrue();
-        assertThat(repository.persist(command)).isFalse();
+        assertThat(repository.persist(command)).contains(DirectBidResultCode.ACCEPTED);
+        assertThat(repository.persist(command)).isEmpty();
 
         assertThat(jdbc.queryForObject("select count(*) from bid_ledger where bid_request_id = ?", Integer.class, fixture.requestId())).isEqualTo(1);
         assertThat(jdbc.queryForObject("select count(*) from outbox_event where aggregate_id = ? and topic = 'bid-event'", Integer.class, fixture.auctionId())).isEqualTo(2);
@@ -161,10 +161,15 @@ class JdbcBidLedgerRepositoryIntegrationTest {
         Fixture fixture = fixture(1L, originalEndsAt);
         BidSettlementCommand command = acceptedCommand(fixture, originalEndsAt.plusSeconds(300));
 
-        assertThat(repository.persist(command)).isTrue();
-        AuctionCloseRepository closer = new JdbcAuctionCloseRepository(jdbc,
-                new TransactionTemplate(new DataSourceTransactionManager(jdbc.getDataSource())),
-                new ObjectMapper(), UUID::randomUUID);
+        var transaction = new TransactionTemplate(new DataSourceTransactionManager(jdbc.getDataSource()));
+        AuctionCloseRepository closer = new JdbcAuctionCloseRepository(jdbc, transaction, new ObjectMapper(), UUID::randomUUID);
+        try (var worker = Executors.newSingleThreadExecutor()) {
+            transaction.executeWithoutResult(status -> {
+                assertThat(repository.persist(command)).contains(DirectBidResultCode.ACCEPTED);
+                assertThat(worker.submit(() -> closer.closeExpired(originalEndsAt, 10))).succeedsWithin(java.time.Duration.ofSeconds(5))
+                        .isEqualTo(0);
+            });
+        }
 
         assertThat(closer.closeExpired(originalEndsAt, 10)).isZero();
         assertThat(jdbc.queryForObject("select status from auction where auction_id = ?", String.class, fixture.auctionId())).isEqualTo("ACTIVE");
@@ -172,6 +177,8 @@ class JdbcBidLedgerRepositoryIntegrationTest {
                 .isEqualTo(originalEndsAt.plusSeconds(300));
         assertThat(jdbc.queryForObject("select count(*) from outbox_event where aggregate_id = ? and event_type = 'AuctionExtended'", Integer.class, fixture.auctionId()))
                 .isEqualTo(1);
+        assertThat(closer.closeExpired(originalEndsAt.plusSeconds(300), 10)).isEqualTo(1);
+        assertThat(closer.closeExpired(originalEndsAt.plusSeconds(300), 10)).isZero();
     }
 
     @Test
@@ -182,7 +189,7 @@ class JdbcBidLedgerRepositoryIntegrationTest {
                 new DirectBidResult(DirectBidResultCode.BID_TOO_LOW, 12_000L, "bidder-1", 12_000L, PROCESSED_AT.plusSeconds(600), 1L),
                 PROCESSED_AT, "correlation-1");
 
-        assertThat(repository.persist(command)).isTrue();
+        assertThat(repository.persist(command)).contains(DirectBidResultCode.BID_TOO_LOW);
 
         assertThat(jdbc.queryForObject("select status from bid_request where bid_request_id = ?", String.class, fixture.requestId())).isEqualTo("REJECTED");
         assertThat(jdbc.queryForMap("select decision, rejection_reason from bid_ledger where bid_request_id = ?", fixture.requestId()))
@@ -193,10 +200,51 @@ class JdbcBidLedgerRepositoryIntegrationTest {
     }
 
     @Test
+    void recordsOneRejectionIfCloseCommitsBeforeAStaleRedisApprovalCanSettle() {
+        Instant endsAt = PROCESSED_AT.plusSeconds(120);
+        Fixture fixture = fixture(1L, endsAt);
+        BidSettlementCommand candidate = acceptedCommand(fixture, endsAt.plusSeconds(300));
+        var closer = new JdbcAuctionCloseRepository(jdbc,
+                new TransactionTemplate(new DataSourceTransactionManager(jdbc.getDataSource())),
+                new ObjectMapper(), UUID::randomUUID);
+        assertThat(closer.closeExpired(endsAt, 10)).isEqualTo(1);
+
+        var generated = new java.util.concurrent.atomic.AtomicInteger();
+        var failing = new JdbcBidLedgerRepository(jdbc,
+                new TransactionTemplate(new DataSourceTransactionManager(jdbc.getDataSource())), new ObjectMapper(),
+                () -> {
+                    if (generated.getAndIncrement() == 0) return UUID.randomUUID();
+                    throw new IllegalStateException("rejection outbox id generation failed");
+                });
+        assertThatThrownBy(() -> failing.persist(candidate)).hasMessage("rejection outbox id generation failed");
+        assertThat(jdbc.queryForObject("select status from bid_request where bid_request_id = ?", String.class, fixture.requestId()))
+                .isEqualTo("RECEIVED");
+        assertThat(jdbc.queryForObject("select count(*) from bid_ledger where bid_request_id = ?", Integer.class, fixture.requestId()))
+                .isZero();
+
+        assertThat(repository.persist(candidate)).contains(DirectBidResultCode.AUCTION_ENDED);
+        assertThat(repository.persist(candidate)).isEmpty();
+
+        assertThat(jdbc.queryForMap("select status, current_price, version, ends_at from auction where auction_id = ?", fixture.auctionId()))
+                .containsEntry("status", "ENDED").containsEntry("current_price", 12_000L)
+                .containsEntry("version", 2L).containsEntry("ends_at", Timestamp.from(endsAt));
+        assertThat(jdbc.queryForObject("select outcome from auction_result where auction_id = ?", String.class, fixture.auctionId()))
+                .isEqualTo("UNSOLD");
+        assertThat(jdbc.queryForObject("select status from bid_request where bid_request_id = ?", String.class, fixture.requestId()))
+                .isEqualTo("REJECTED");
+        assertThat(jdbc.queryForMap("select decision, rejection_reason from bid_ledger where bid_request_id = ?", fixture.requestId()))
+                .containsEntry("decision", "REJECTED").containsEntry("rejection_reason", "AUCTION_ENDED");
+        assertThat(jdbc.queryForList("select event_type from outbox_event where aggregate_id = ? and topic = 'bid-event'",
+                String.class, fixture.auctionId())).containsExactlyInAnyOrder("AuctionEnded", "BidRejected");
+        assertThat(jdbc.queryForObject("select payload->>'reason' from outbox_event where aggregate_id = ? and event_type = 'BidRejected'",
+                String.class, fixture.auctionId())).isEqualTo("AUCTION_ENDED");
+    }
+
+    @Test
     void recordsLateRejectionWithoutChangingTheSoldResult() {
         Instant endsAt = PROCESSED_AT.plusSeconds(120);
         Fixture fixture = fixture(1L, endsAt);
-        assertThat(repository.persist(acceptedCommand(fixture, endsAt))).isTrue();
+        assertThat(repository.persist(acceptedCommand(fixture, endsAt))).contains(DirectBidResultCode.ACCEPTED);
         AuctionCloseRepository closer = new JdbcAuctionCloseRepository(jdbc,
                 new TransactionTemplate(new DataSourceTransactionManager(jdbc.getDataSource())),
                 new ObjectMapper(), UUID::randomUUID);
@@ -210,7 +258,7 @@ class JdbcBidLedgerRepositoryIntegrationTest {
                 new DirectBidResult(DirectBidResultCode.AUCTION_ENDED, 13_000L, "bidder-2", 13_000L, endsAt, 3L),
                 endsAt.plusSeconds(1), "correlation-late");
 
-        assertThat(repository.persist(late)).isTrue();
+        assertThat(repository.persist(late)).contains(DirectBidResultCode.AUCTION_ENDED);
         assertThat(jdbc.queryForObject("select status from bid_request where bid_request_id = ?", String.class, lateRequestId))
                 .isEqualTo("REJECTED");
         assertThat(jdbc.queryForMap("select decision, rejection_reason from bid_ledger where bid_request_id = ?", lateRequestId))

@@ -1,13 +1,16 @@
 package com.bidflow.adapters.persistence;
 
 import com.bidflow.application.bid.BidLedgerRepository;
+import com.bidflow.application.bid.DirectBidResultCode;
 import com.bidflow.application.bid.BidSettlementCommand;
+import com.bidflow.domain.listing.AuctionStatus;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Supplier;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -28,38 +31,38 @@ public final class JdbcBidLedgerRepository implements BidLedgerRepository {
     }
 
     @Override
-    public boolean persist(BidSettlementCommand command) {
-        Boolean persisted = transaction.execute(status -> persistInTransaction(command));
-        return Boolean.TRUE.equals(persisted);
+    public Optional<DirectBidResultCode> persist(BidSettlementCommand command) {
+        return Optional.ofNullable(transaction.execute(status -> persistInTransaction(command)));
     }
 
-    private boolean persistInTransaction(BidSettlementCommand command) {
+    private DirectBidResultCode persistInTransaction(BidSettlementCommand command) {
+        AuctionSnapshot before = command.accepted() ? lockAuction(command.auctionId()) : null;
+        boolean endedBeforeSettlement = before != null && before.status() == AuctionStatus.ENDED;
+        DirectBidResultCode decision = endedBeforeSettlement ? DirectBidResultCode.AUCTION_ENDED : command.result().code();
+        boolean accepted = decision == DirectBidResultCode.ACCEPTED;
         int inserted = jdbc.update("""
                 insert into bid_ledger (bid_ledger_id, bid_request_id, auction_id, bidder_id, decision, requested_amount, current_price, rejection_reason, decided_at)
                 values (?, ?, ?, ?, ?, ?, ?, ?, ?)
                 on conflict (bid_request_id) do nothing
                 """, ids.get(), command.bidRequestId(), command.auctionId(), command.bidderId(),
-                command.accepted() ? "ACCEPTED" : "REJECTED", command.requestedAmount(),
-                command.accepted() ? command.result().currentPrice() : null,
-                command.accepted() ? null : command.result().code().name(), Timestamp.from(command.processedAt()));
+                accepted ? "ACCEPTED" : "REJECTED", command.requestedAmount(),
+                accepted ? command.result().currentPrice() : null,
+                accepted ? null : decision.name(), Timestamp.from(command.processedAt()));
         if (inserted == 0) {
-            return false;
+            return null;
         }
 
         int requestUpdated = jdbc.update("""
                 update bid_request set status = ?, processed_at = ?
                 where bid_request_id = ? and status = 'RECEIVED'
-                """, command.accepted() ? "ACCEPTED" : "REJECTED", Timestamp.from(command.processedAt()), command.bidRequestId());
+                """, accepted ? "ACCEPTED" : "REJECTED", Timestamp.from(command.processedAt()), command.bidRequestId());
         if (requestUpdated != 1) {
             throw new IllegalStateException("bid request was not in RECEIVED state");
         }
 
-        if (command.accepted()) {
-            AuctionSnapshot before = jdbc.queryForObject("""
-                    select ends_at, version from auction where auction_id = ? for update
-                    """, (resultSet, rowNum) -> new AuctionSnapshot(
-                    resultSet.getTimestamp("ends_at").toInstant(), resultSet.getLong("version")), command.auctionId());
-            if (before == null || before.version() != command.result().version() - 1) {
+        if (accepted) {
+            if (before == null || (before.status() != AuctionStatus.SCHEDULED && before.status() != AuctionStatus.ACTIVE)
+                    || before.version() != command.result().version() - 1) {
                 throw new IllegalStateException("auction version does not match the Lua decision");
             }
             int auctionUpdated = jdbc.update("""
@@ -77,9 +80,18 @@ public final class JdbcBidLedgerRepository implements BidLedgerRepository {
                 insertOutbox(command, "AuctionExtended", extensionPayload(command, before.endsAt()));
             }
         } else {
-            insertOutbox(command, "BidRejected", rejectedPayload(command));
+            long version = endedBeforeSettlement ? before.version() : command.result().version();
+            insertOutbox(command, "BidRejected", rejectedPayload(command, decision, version));
         }
-        return true;
+        return decision;
+    }
+
+    private AuctionSnapshot lockAuction(UUID auctionId) {
+        // Exclude close/settlement writers without blocking FK checks for ledger inserts.
+        return jdbc.queryForObject("""
+                select status, ends_at, version from auction where auction_id = ? for no key update
+                """, (resultSet, rowNum) -> new AuctionSnapshot(AuctionStatus.valueOf(resultSet.getString("status")),
+                resultSet.getTimestamp("ends_at").toInstant(), resultSet.getLong("version")), auctionId);
     }
 
     private void insertOutbox(BidSettlementCommand command, String eventType, String payload) {
@@ -100,10 +112,10 @@ public final class JdbcBidLedgerRepository implements BidLedgerRepository {
         return json(payload);
     }
 
-    private String rejectedPayload(BidSettlementCommand command) {
+    private String rejectedPayload(BidSettlementCommand command, DirectBidResultCode decision, long version) {
         Map<String, Object> payload = basePayload(command);
-        payload.put("reason", command.result().code().name());
-        payload.put("auctionVersion", command.result().version());
+        payload.put("reason", decision.name());
+        payload.put("auctionVersion", version);
         payload.put("processedAt", command.processedAt().toString());
         return json(payload);
     }
@@ -133,6 +145,6 @@ public final class JdbcBidLedgerRepository implements BidLedgerRepository {
         }
     }
 
-    private record AuctionSnapshot(Instant endsAt, long version) {
+    private record AuctionSnapshot(AuctionStatus status, Instant endsAt, long version) {
     }
 }

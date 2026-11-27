@@ -1,7 +1,9 @@
 package com.bidflow.application.bid;
 
-/** Durable settlement boundary for one Lua decision. */
+import java.util.Optional;
+
+/** Durable settlement boundary for one Lua decision candidate. */
 public interface BidLedgerRepository {
-    /** @return {@code true} only when this call created the durable ledger entry. */
-    boolean persist(BidSettlementCommand command);
+    /** @return the final decision if a ledger entry was created, otherwise empty for a replay. */
+    Optional<DirectBidResultCode> persist(BidSettlementCommand command);
 }
