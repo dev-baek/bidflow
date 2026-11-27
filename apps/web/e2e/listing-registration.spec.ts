@@ -34,8 +34,8 @@ test.describe("상품 등록·입찰 Browser 흐름", () => {
       expect(await readAuction(request, auctionId)).toMatchObject({ status: "SCHEDULED", outcome: null });
 
       await setE2eClock(request, "2030-01-01T12:30:00Z");
-      await expect(observer.page.getByText("ENDED", { exact: true })).toBeVisible({ timeout: 15_000 });
-      await expect(observer.page.getByRole("status")).toHaveText("유찰");
+      await expect(observer.page.locator('.auction-summary [data-auction-status="ENDED"]')).toHaveText("종료", { timeout: 15_000 });
+      await expect(observer.page.getByText("유찰", { exact: true })).toBeVisible();
       await expect(observer.page.getByRole("form", { name: "입찰 요청" })).toHaveCount(0);
       expect(await readAuction(request, auctionId)).toMatchObject({
         status: "ENDED", outcome: "UNSOLD", finalPrice: null, endsAt: "2030-01-01T12:30:00Z",
@@ -83,7 +83,7 @@ test.describe("상품 등록·입찰 Browser 흐름", () => {
 
       await setE2eClock(request, "2030-01-01T12:35:00Z");
       for (const bidder of [bidderA, bidderB]) {
-        await expect(bidder.page.getByText("ENDED", { exact: true })).toBeVisible({ timeout: 15_000 });
+        await expect(bidder.page.locator('.auction-summary [data-auction-status="ENDED"]')).toHaveText("종료", { timeout: 15_000 });
         await expect(bidder.page.getByText("낙찰 · 21,000원", { exact: true })).toBeVisible();
         await expect(bidder.page.getByRole("form", { name: "입찰 요청" })).toHaveCount(0);
       }
@@ -441,6 +441,7 @@ test.describe("상품 등록·입찰 Browser 흐름", () => {
     offline = true;
     if (!disconnect) throw new Error("관찰 브라우저의 WebSocket을 찾지 못했습니다.");
     await disconnect();
+    await expect(page.getByText("실시간 연결을 다시 시도하고 있어요.")).toBeVisible();
 
     const bidder = await openBidderPage(browser, auctionId, "e2e-reconnect-bidder");
     try {
@@ -454,6 +455,7 @@ test.describe("상품 등록·입찰 Browser 흐름", () => {
       offline = false;
       expect(await (await reloaded).json()).toMatchObject({ auctionId, currentPrice: 12_000 });
       await expect(page.getByText("12,000원")).toBeVisible();
+      await expect(page.getByText("실시간 연결을 다시 시도하고 있어요.")).toBeHidden();
     } finally {
       await bidder.context.close();
     }

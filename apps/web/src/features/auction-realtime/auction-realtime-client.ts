@@ -38,6 +38,7 @@ export function subscribeAuctionUpdates(
   credential: string | (() => string | undefined),
   refreshSnapshot: () => void,
   onBidResult: (result: BidResultMessage) => void,
+  onReconnecting?: (reconnecting: boolean) => void,
 ): () => void {
   const brokerURL = `${wsBaseUrl.replace(/\/$/, "")}/ws`;
   if (typeof credential === "function") {
@@ -55,6 +56,9 @@ export function subscribeAuctionUpdates(
   };
   const client = new Client({
     brokerURL, reconnectDelay: 5_000,
+    onWebSocketClose: () => {
+      if (!stopped && getToken()) onReconnecting?.(true);
+    },
     beforeConnect: () => {
       const token = stopped ? undefined : getToken();
       if (!token) return stop();
@@ -74,6 +78,7 @@ export function subscribeAuctionUpdates(
       // shortcut: Spring's simple broker has no SUBSCRIBE receipt; revisit if broker-confirmed recovery is required.
       if (connectedBefore) refreshSnapshot();
       connectedBefore = true;
+      onReconnecting?.(false);
     },
   });
   client.activate();

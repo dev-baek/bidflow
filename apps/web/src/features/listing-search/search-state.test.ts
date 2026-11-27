@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { createSearchState, readSearchFilters, remainingTime, searchParamsFrom, searchReducer } from "./search-state";
+import { createSearchState, readSearchFilters, searchParamsFrom, searchReducer } from "./search-state";
+import { remainingTime } from "../../shared/auction-time";
 
 it("formats remaining time without inferring an auction state or rounding up", () => {
   expect(remainingTime(59_999, 0)).toBe("1분 미만");

@@ -78,7 +78,7 @@ export function createBrowserObserver(web,now) {
         navigate=true;
         await page.waitForURL(detailUrl,{timeout:timeout()});
         await locator.and(page.getByText('10,000원',{exact:true})).waitFor({timeout:timeout()});
-        await page.locator('.auction-summary dd').nth(1).and(page.getByText('ACTIVE',{exact:true})).waitFor({timeout:timeout()});
+        await page.locator('.auction-summary [data-auction-status="ACTIVE"]').waitFor({timeout:timeout()});
         while(!ready&&!journal.error()&&now()<deadline)await wait(25);
         if(!ready||journal.error()||now()>=deadline){journal.fail('BROWSER_NOT_READY');throw Error('observer not ready');}
       }));
