@@ -5,6 +5,11 @@ import { BidRequestForm } from "./BidRequestForm";
 
 afterEach(cleanup);
 
+function submitBid(view: Pick<typeof screen, "getByRole">) {
+  fireEvent.click(view.getByRole("button", { name: "입찰 내용 확인" }));
+  fireEvent.click(view.getByRole("button", { name: "입찰 요청" }));
+}
+
 describe("BidRequestForm", () => {
   it.each([true, false])("labels an approved result as a past processing-time fact (highest=%s)", async (isHighestBidder) => {
     const client: ApiClient = { get: async <T,>() => ({} as T),
@@ -12,7 +17,7 @@ describe("BidRequestForm", () => {
     const { container, rerender } = render(<BidRequestForm auctionId="auction-1" actorId="bidder" client={client} />);
     const form = within(container);
     fireEvent.change(form.getByLabelText("입찰 금액"), { target: { value: "12000" } });
-    fireEvent.click(form.getByRole("button", { name: "입찰 요청" }));
+    submitBid(form);
     await form.findByText(/요청 번호: request-1/);
     rerender(<BidRequestForm auctionId="auction-1" actorId="bidder" client={client}
       settlement={{ bidRequestId: "request-1", decision: "ACCEPTED", isHighestBidder }} />);
@@ -28,11 +33,11 @@ describe("BidRequestForm", () => {
     const { container, rerender } = render(<BidRequestForm auctionId="auction-1" actorId="bidder" client={client} />);
     const form = within(container);
     fireEvent.change(form.getByLabelText("입찰 금액"), { target: { value: "12000" } });
-    fireEvent.click(form.getByRole("button", { name: "입찰 요청" }));
+    submitBid(form);
     await form.findByText(/요청 번호: rejected/);
     rerender(<BidRequestForm auctionId="auction-1" actorId="bidder" client={client}
-      settlement={{ bidRequestId: "rejected", decision: "REJECTED", isHighestBidder: true }} />);
-    expect(await form.findByRole("alert")).toHaveTextContent("입찰이 거절되었습니다.");
+      settlement={{ bidRequestId: "rejected", decision: "REJECTED", isHighestBidder: true, reason: "BID_TOO_LOW" }} />);
+    expect(await form.findByRole("alert")).toHaveTextContent("입찰이 거절되었습니다. 입찰 금액이 낮습니다.");
     expect(form.queryByText(/입찰이 승인되었습니다|처리 당시|현재 최고 입찰자/)).not.toBeInTheDocument();
   });
 
@@ -45,13 +50,13 @@ describe("BidRequestForm", () => {
     const result = (id: string) => <BidRequestForm auctionId="auction-1" actorId="bidder" client={client}
       settlement={{ bidRequestId: id, decision: "ACCEPTED", isHighestBidder: true }} />;
     fireEvent.change(form.getByLabelText("입찰 금액"), { target: { value: "11000" } });
-    fireEvent.click(form.getByRole("button", { name: "입찰 요청" }));
+    submitBid(form);
     await form.findByText(/요청 번호: old/);
     rerender(result("old"));
     await form.findByText(/입찰이 승인되었습니다/);
     fireEvent.change(form.getByLabelText("입찰 금액"), { target: { value: "13000" } });
     expect(form.queryByText(/입찰이 승인되었습니다/)).not.toBeInTheDocument();
-    fireEvent.click(form.getByRole("button", { name: "입찰 요청" }));
+    submitBid(form);
     await form.findByText(/요청 번호: new/);
     rerender(result("old"));
     expect(form.queryByText(/입찰이 승인되었습니다/)).not.toBeInTheDocument();
@@ -68,7 +73,7 @@ describe("BidRequestForm", () => {
     render(<BidRequestForm auctionId="auction-1" actorId="local-bidder" client={client} />);
 
     fireEvent.change(screen.getByLabelText("입찰 금액"), { target: { value: "21000" } });
-    fireEvent.click(screen.getByRole("button", { name: "입찰 요청" }));
+    submitBid(screen);
 
     await waitFor(() => expect(receivedRequest).not.toEqual([]));
     expect(receivedRequest[0]).toBe("/api/v1/auctions/auction-1/bid-requests");
@@ -86,7 +91,7 @@ describe("BidRequestForm", () => {
     const form = within(container);
 
     fireEvent.change(form.getByLabelText("입찰 금액"), { target: { value: "21000" } });
-    fireEvent.click(form.getByRole("button", { name: "입찰 요청" }));
+    submitBid(form);
     await waitFor(() => expect(form.getByRole("status")).toHaveTextContent("요청 번호: request-1"));
     rerender(<BidRequestForm auctionId="auction-1" actorId="local-bidder" client={client}
       settlement={{ bidRequestId: "request-1", decision: "ACCEPTED", isHighestBidder: false }} />);
@@ -102,7 +107,7 @@ describe("BidRequestForm", () => {
     const client: ApiClient = { get: async <T,>() => ({} as T), post };
     const { container, rerender } = render(<BidRequestForm auctionId="auction-1" actorId="local-bidder" client={client} />);
     const form = within(container);
-    const submit = () => fireEvent.click(form.getByRole("button", { name: "입찰 요청" }));
+    const submit = () => submitBid(form);
     const key = (index: number) => post.mock.calls[index]?.[2]["Idempotency-Key"];
 
     fireEvent.change(form.getByLabelText("입찰 금액"), { target: { value: "12000" } });
@@ -119,5 +124,31 @@ describe("BidRequestForm", () => {
     expect(await form.findByText(/요청 번호: request-2/)).toBeVisible();
     expect(key(2)).toBeTruthy();
     expect(key(2)).not.toBe(key(0));
+  });
+
+  it("reviews the private automatic limit without posting, then posts only once after confirmation", async () => {
+    const post = vi.fn().mockImplementationOnce(() => new Promise(() => {}));
+    render(<BidRequestForm auctionId="auction-1" actorId="bidder" client={{ get: vi.fn(), post }} />);
+    const amount = screen.getByLabelText("입찰 금액");
+    fireEvent.change(amount, { target: { value: "999" } });
+    fireEvent.click(screen.getByRole("button", { name: "입찰 내용 확인" }));
+    expect(amount).toHaveAccessibleDescription(/1,000원 이상/);
+    expect(amount).toHaveFocus();
+    expect(post).not.toHaveBeenCalled();
+
+    fireEvent.change(screen.getByLabelText("입찰 방식"), { target: { value: "AUTO_MAX" } });
+    fireEvent.change(amount, { target: { value: "35000" } });
+    fireEvent.click(screen.getByRole("button", { name: "입찰 내용 확인" }));
+    expect(screen.getByRole("region", { name: "제출할 입찰" })).toHaveTextContent("자동 입찰 최대가");
+    expect(screen.getByRole("region", { name: "제출할 입찰" })).toHaveTextContent("35,000원");
+    expect(post).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByRole("button", { name: "수정하기" }));
+    expect(amount).toHaveValue("35000");
+    fireEvent.change(amount, { target: { value: "36000" } });
+    submitBid(screen);
+    fireEvent.submit(screen.getByRole("form", { name: "입찰 요청" }));
+    expect(post).toHaveBeenCalledOnce();
+    expect(post.mock.calls[0]?.[1]).toEqual({ bidKind: "AUTO_MAX", amount: 36000 });
+    expect(screen.getByRole("button", { name: "요청 보내는 중…" })).toBeDisabled();
   });
 });

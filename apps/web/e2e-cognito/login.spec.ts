@@ -109,14 +109,15 @@ test("Chromium performs PKCE and sends the access token only on protected REST a
     expect(request?.headers["x-actor-id"]).toBeUndefined();
   }
   await page.getByLabel("입찰 금액").fill("15000");
+  await page.getByRole("button", { name: "입찰 내용 확인" }).click();
   await page.getByRole("button", { name: "입찰 요청" }).click();
-  await expect(page.getByRole("main").getByRole("link", { name: "로그인" })).toBeVisible();
+  await expect(page.getByRole("main").getByRole("link", { name: "로그인하고 입찰하기" })).toBeVisible();
   const bid = auth.rest.find(request => request.path.endsWith("/bid-requests"));
   expect(bid?.headers.authorization).toBe(`Bearer ${accessToken}`);
   expect(bid?.headers["x-actor-id"]).toBeUndefined();
   expect(bid?.headers["idempotency-key"]).toBeTruthy();
   await expect.poll(auth.closed).toBe(1);
-  await page.getByRole("main").getByRole("link", { name: "로그인" }).click();
+  await page.getByRole("main").getByRole("link", { name: "로그인하고 입찰하기" }).click();
   await expect(page.getByRole("button", { name: "로그인 계속하기" })).toBeVisible();
 });
 

@@ -74,6 +74,7 @@ describe("AuctionDetailPage", () => {
       cognitoAccess={{ token: () => "access-token", unauthorized: vi.fn() }} />);
     if (status === "ACTIVE") {
       fireEvent.change(await screen.findByLabelText("입찰 금액"), { target: { value: "24000" } });
+      fireEvent.click(screen.getByRole("button", { name: "입찰 내용 확인" }));
       fireEvent.click(screen.getByRole("button", { name: "입찰 요청" }));
       expect(await screen.findByText(/입찰 요청을 접수했습니다/)).toBeVisible();
     } else {

@@ -115,19 +115,19 @@ test.describe("상품 등록·입찰 Browser 흐름", () => {
       expect(await readAuction(request, auctionId)).toEqual(closed);
 
       const personal = (viewer: Page) => viewer.getByRole("region", { name: "본인 입찰 결과" });
-      await expect(personal(bidderA.page)).toHaveText("내가 낙찰받았습니다.");
-      await expect(personal(bidderB.page)).toHaveText("패찰했습니다.");
+      await expect(personal(bidderA.page).getByRole("status")).toHaveText("내가 낙찰받았습니다.");
+      await expect(personal(bidderB.page).getByRole("status")).toHaveText("패찰했습니다.");
 
       await showAuctionDetail(page, auctionId);
       await expect(page.getByText("낙찰 · 21,000원", { exact: true })).toBeVisible();
-      await expect(personal(page)).toHaveText("승인된 입찰 내역이 없습니다.");
+      await expect(personal(page).getByRole("status")).toHaveText("승인된 입찰 내역이 없습니다.");
 
       await bidderA.page.reload();
       await expect(bidderA.page.getByText("낙찰 · 21,000원", { exact: true })).toBeVisible();
       await expect(personal(bidderA.page)).toHaveCount(0);
       await signInLocal(bidderA.page, "e2e-bidder-a");
       await showAuctionDetail(bidderA.page, auctionId);
-      await expect(personal(bidderA.page)).toHaveText("내가 낙찰받았습니다.");
+      await expect(personal(bidderA.page).getByRole("status")).toHaveText("내가 낙찰받았습니다.");
     } finally {
       await bidderA.context.close();
       await bidderB.context.close();
@@ -226,6 +226,7 @@ test.describe("상품 등록·입찰 Browser 흐름", () => {
         const approval = bidder.page.getByText("입찰이 승인되었습니다. 이 요청 처리 당시 최고 입찰자였습니다.", { exact: true });
         await bidder.page.getByLabel("입찰 금액").fill(String(amount));
         await expect(approval).toHaveCount(0);
+        await reviewBid(bidder.page);
         const frames: { result: NonNullable<ReturnType<typeof parseBidResultFrame>>; receivedAt: number }[] = [];
         const receive = ({ payload }: { payload: string | Buffer }) => {
           const result = parseBidResultFrame(payload.toString());
@@ -340,7 +341,10 @@ test.describe("상품 등록·입찰 Browser 흐름", () => {
         try {
           viewers.push(await openBidderPage(browser, auctionId, actors.A));
           viewers.push(await openBidderPage(browser, auctionId, actors.B));
-          await Promise.all(viewers.map((viewer, i) => viewer.page.getByLabel("입찰 금액").fill(String(11000 + i * 1000))));
+          await Promise.all(viewers.map(async (viewer, i) => {
+            await viewer.page.getByLabel("입찰 금액").fill(String(11000 + i * 1000));
+            await reviewBid(viewer.page);
+          }));
           phase = "COLLECTION";
           const collection = await collectConcurrentRound({ index, auctionId, now: () => performance.now(),
             subscribe(receive) {
@@ -543,12 +547,24 @@ async function showAuctionDetail(page: Page, auctionId: string) {
 async function submitAutoBid(page: Page, amount: string): Promise<void> {
   await page.getByLabel("입찰 방식").selectOption("AUTO_MAX");
   await page.getByLabel("입찰 금액").fill(amount);
-  await page.getByRole("button", { name: "입찰 요청" }).click();
-  await expect(page.getByRole("status")).toContainText("입찰 요청을 접수했습니다. 요청 번호:");
+  await reviewBid(page);
+  await expect(page.getByRole("region", { name: "제출할 입찰" })).toContainText("자동 입찰 최대가");
+  const [receipt] = await Promise.all([
+    page.waitForResponse(response => response.request().method() === "POST" && new URL(response.url()).pathname.endsWith("/bid-requests")),
+    page.getByRole("button", { name: "입찰 요청" }).click(),
+  ]);
+  expect(receipt.status()).toBe(202);
+  expect(await receipt.json()).toMatchObject({ status: "RECEIVED" });
+}
+
+async function reviewBid(page: Page) {
+  await page.getByRole("button", { name: "입찰 내용 확인" }).click();
+  await expect(page.getByRole("region", { name: "제출할 입찰" })).toBeVisible();
 }
 
 async function submitDirectBid(page: Page, auctionId: string, amount: string,observe?:(response:import('@playwright/test').Response)=>Promise<void>) {
   await page.getByLabel("입찰 금액").fill(amount);
+  await reviewBid(page);
   const [response] = await Promise.all([
     page.waitForResponse(response => new URL(response.url()).pathname === `/api/v1/auctions/${auctionId}/bid-requests`
       && response.request().method() === "POST"),
