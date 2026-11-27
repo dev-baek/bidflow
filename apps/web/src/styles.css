@@ -3,6 +3,7 @@
 @import "./styles/page-feedback.css";
 @import "./styles/site.css";
 @import "./styles/auth.css";
+@import "./styles/errors.css";
 
 :root {
   color: var(--color-text);

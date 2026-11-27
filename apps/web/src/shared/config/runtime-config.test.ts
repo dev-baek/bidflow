@@ -34,25 +34,25 @@ describe("parseRuntimeConfig", () => {
   });
 
   it.each([
-    [{ VITE_WS_BASE_URL: "wss://api.bidflow.example/ws" }, "VITE_API_BASE_URL"],
+    [{ VITE_WS_BASE_URL: "wss://api.bidflow.example/ws" }, "api-url"],
     [
       {
-        VITE_API_BASE_URL: "ftp://api.bidflow.example",
+        VITE_API_BASE_URL: "ftp://do-not-render-this-value.example.test",
         VITE_WS_BASE_URL: "wss://api.bidflow.example/ws",
       },
-      "VITE_API_BASE_URL",
+      "api-url",
     ],
     [
       {
         VITE_API_BASE_URL: "https://api.bidflow.example",
         VITE_WS_BASE_URL: "https://api.bidflow.example/ws",
       },
-      "VITE_WS_BASE_URL",
+      "ws-url",
     ],
-  ] as const)("rejects invalid %s input", (input, field) => {
+  ] as const)("rejects invalid %s input without retaining supplied values", (input, reason) => {
     expect(parseRuntimeConfig(input)).toEqual({
       ok: false,
-      message: `${field} 설정을 확인하세요.`,
+      reason,
     });
   });
 });
