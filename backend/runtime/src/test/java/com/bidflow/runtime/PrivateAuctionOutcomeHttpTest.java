@@ -12,6 +12,8 @@ import com.bidflow.application.auction.AuctionDetailSnapshot;
 import com.bidflow.application.auction.AuctionDetailSnapshotReader;
 import com.bidflow.application.auction.PrivateAuctionOutcome;
 import com.bidflow.application.auction.PrivateAuctionOutcomeReader;
+import com.bidflow.application.auction.PublicAuctionImages;
+import java.net.URI;
 import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
@@ -25,7 +27,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-@WebMvcTest({AuctionDetailController.class, PrivateAuctionOutcomeController.class})
+@WebMvcTest({AuctionDetailController.class, PrivateAuctionOutcomeController.class, PublicAuctionImagesController.class})
 @Import(LocalHttpSecurityConfiguration.class)
 @ActiveProfiles("local")
 class PrivateAuctionOutcomeHttpTest {
@@ -36,17 +38,28 @@ class PrivateAuctionOutcomeHttpTest {
     @Autowired MockMvc mvc;
     @MockitoBean AuctionDetailSnapshotReader snapshots;
     @MockitoBean PrivateAuctionOutcomeReader outcomes;
+    @MockitoBean PublicAuctionImages images;
+
+    @Test
+    void permitsPublicImageGetWithoutProvidingAnActorOrAuthorizationHeader() throws Exception {
+        when(images.thumbnail(AUCTION_ID)).thenReturn(Optional.of(URI.create("https://storage.example.test/read")));
+
+        mvc.perform(get(PUBLIC + "/images/thumbnail"))
+                .andExpect(status().isTemporaryRedirect())
+                .andExpect(header().string(HttpHeaders.LOCATION, "https://storage.example.test/read"));
+    }
 
     @Test
     void rejectsAnonymousLookupWithoutMakingPublicDetailPrivate() throws Exception {
         when(snapshots.findByAuctionId(AUCTION_ID)).thenReturn(Optional.of(new AuctionDetailSnapshot(
-                AUCTION_ID, "카메라", null, 21_000, Instant.parse("2030-01-01T12:35:00Z"), "ENDED", 3, "SOLD", 21_000L)));
+                AUCTION_ID, "카메라", false, 21_000, Instant.parse("2030-01-01T12:35:00Z"), "ENDED", 3, "SOLD", 21_000L)));
 
         mvc.perform(get(PRIVATE)).andExpect(status().isUnauthorized())
                 .andExpect(header().string(HttpHeaders.CACHE_CONTROL, containsString("no-store")))
                 .andExpect(jsonPath("$.code").value("UNAUTHENTICATED"));
         mvc.perform(get(PUBLIC)).andExpect(status().isOk())
                 .andExpect(jsonPath("$.outcome").value("SOLD"))
+                .andExpect(jsonPath("$.thumbnailObjectKey").doesNotExist())
                 .andExpect(jsonPath("$.winnerId").doesNotExist())
                 .andExpect(jsonPath("$.privateOutcome").doesNotExist());
     }

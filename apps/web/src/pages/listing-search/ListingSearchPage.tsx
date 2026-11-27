@@ -4,8 +4,9 @@ import {
   createSearchState, readSearchFilters, searchCategories, searchParamsFrom, searchReducer,
   searchSorts, searchStatuses, type SearchFilters, type SearchItem,
 } from "../../features/listing-search/search-state";
-import { ApiError, createApiClient, type ApiClient } from "../../shared/api/api-client";
+import { ApiError, createApiClient, joinApiUrl, type ApiClient } from "../../shared/api/api-client";
 import { StatusMessage } from "../../shared/ui/Feedback";
+import { AuctionPhoto } from "../../shared/ui/AuctionPhoto";
 
 type ApiResponse = { items: SearchItem[]; nextCursor: string | null };
 export type ListingSearchPageProps = Readonly<{ apiBaseUrl: string; client?: ApiClient }>;
@@ -13,10 +14,10 @@ export type ListingSearchPageProps = Readonly<{ apiBaseUrl: string; client?: Api
 export function ListingSearchPage({ apiBaseUrl, client }: ListingSearchPageProps) {
   const location = useLocation();
   const defaultClient = useMemo(() => createApiClient(apiBaseUrl, fetch), [apiBaseUrl]);
-  return <SearchResults key={location.key} search={location.search} client={client ?? defaultClient} />;
+  return <SearchResults key={location.key} search={location.search} apiBaseUrl={apiBaseUrl} client={client ?? defaultClient} />;
 }
 
-function SearchResults({ search, client }: { search: string; client: ApiClient }) {
+function SearchResults({ search, apiBaseUrl, client }: { search: string; apiBaseUrl: string; client: ApiClient }) {
   const [, setSearchParams] = useSearchParams();
   const [state, dispatch] = useReducer(searchReducer, search, value => createSearchState(readSearchFilters(new URLSearchParams(value))));
   const inFlight = useRef<symbol | undefined>(undefined);
@@ -124,6 +125,12 @@ function SearchResults({ search, client }: { search: string; client: ApiClient }
         <ul>
           {items.map(item => (
             <li key={item.productId}>
+              <div className="auction-search-thumbnail">
+                <AuctionPhoto
+                  src={item.hasThumbnail && item.auctionId
+                    ? joinApiUrl(apiBaseUrl, `/api/v1/auctions/${encodeURIComponent(item.auctionId)}/images/thumbnail`) : undefined}
+                  alt={`${item.title} 대표 사진`} />
+              </div>
               <strong>{item.auctionId ? <Link to={`/auctions/${item.auctionId}`}>{item.title}</Link> : item.title}</strong>
               <p>{searchCategories[item.categoryId as keyof typeof searchCategories] ?? item.categoryId} · {item.currentPrice.toLocaleString()}원 · {searchStatuses[item.status as keyof typeof searchStatuses] ?? item.status}</p>
               <time dateTime={item.endsAt}>{new Date(item.endsAt).toLocaleString("ko-KR", { timeZone: "UTC" })} UTC</time>

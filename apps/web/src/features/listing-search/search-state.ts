@@ -1,4 +1,4 @@
-export type SearchItem = Readonly<{ productId: string; auctionId: string | null; title: string; categoryId: string; currentPrice: number; status: string; endsAt: string }>;
+export type SearchItem = Readonly<{ productId: string; auctionId: string | null; title: string; categoryId: string; hasThumbnail?: boolean; currentPrice: number; status: string; endsAt: string }>;
 export const searchCategories = { DIGITAL: "디지털·가전", FASHION: "패션", HOBBY: "취미·컬렉션", LIVING: "생활·가구" };
 export const searchStatuses = { SCHEDULED: "예정", ACTIVE: "진행 중" };
 export const searchSorts = { RELEVANCE: "관련도순", ENDING_SOON: "마감 임박순", PRICE_ASC: "낮은 가격순", PRICE_DESC: "높은 가격순", NEWEST: "최근 공개 시작순" };

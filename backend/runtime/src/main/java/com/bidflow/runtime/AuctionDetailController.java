@@ -27,10 +27,10 @@ class AuctionDetailController {
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Error("AUCTION_NOT_FOUND")));
     }
 
-    record Response(UUID auctionId, String title, String thumbnailObjectKey, long currentPrice, Instant endsAt,
+    record Response(UUID auctionId, String title, boolean hasThumbnail, long currentPrice, Instant endsAt,
             String status, long auctionVersion, String outcome, Long finalPrice) {
         static Response from(AuctionDetailSnapshot snapshot) {
-            return new Response(snapshot.auctionId(), snapshot.title(), snapshot.thumbnailObjectKey(),
+            return new Response(snapshot.auctionId(), snapshot.title(), snapshot.hasThumbnail(),
                     snapshot.currentPrice(), snapshot.endsAt(), snapshot.status(), snapshot.auctionVersion(),
                     snapshot.outcome(), snapshot.finalPrice());
         }

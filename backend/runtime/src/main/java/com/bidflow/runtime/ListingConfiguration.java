@@ -48,6 +48,11 @@ class ListingConfiguration {
             public Optional<StoredObject> headObject(String objectKey) {
                 throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE);
             }
+
+            @Override
+            public URI presignRead(String objectKey) {
+                throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE);
+            }
         };
     }
 

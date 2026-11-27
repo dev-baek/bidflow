@@ -3,7 +3,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { ApiError, type ApiClient } from "../../shared/api/api-client";
 import { AuctionDetailPage } from "./AuctionDetailPage";
 
-const detail = { auctionId: "auction-1", title: "카메라", thumbnailObjectKey: "products/camera.jpg", currentPrice: 21_000, endsAt: "2030-01-01T12:00:00Z", status: "ACTIVE" as const, auctionVersion: 2, outcome: null, finalPrice: null };
+const detail = { auctionId: "auction-1", title: "카메라", hasThumbnail: false, currentPrice: 21_000, endsAt: "2030-01-01T12:00:00Z", status: "ACTIVE" as const, auctionVersion: 2, outcome: null, finalPrice: null };
 const sold = { ...detail, status: "ENDED", outcome: "SOLD", finalPrice: 21_000 } as const;
 const outcomePath = "/api/v1/me/auctions/auction-1/outcome";
 const baseProps = { auctionId: detail.auctionId, apiBaseUrl: "http://api", wsBaseUrl: "ws://api" };
@@ -15,6 +15,20 @@ vi.mock("../../features/auction-realtime/auction-realtime-client", () => ({
 afterEach(() => { cleanup(); vi.unstubAllGlobals(); });
 
 describe("AuctionDetailPage", () => {
+  it("renders ordered public photos and falls back for an individual missing photo", async () => {
+    const get = vi.fn()
+      .mockResolvedValueOnce({ ...detail, hasThumbnail: true })
+      .mockResolvedValueOnce({ imageIds: ["front", "back"] });
+    render(<AuctionDetailPage {...baseProps} client={{ get, post: vi.fn() }} />);
+    const first = await screen.findByRole("img", { name: "카메라 사진 1" });
+    expect(first).toHaveAttribute("src", "http://api/api/v1/auctions/auction-1/images/front");
+    expect(get).toHaveBeenLastCalledWith("/api/v1/auctions/auction-1/images");
+    fireEvent.error(first);
+    expect(screen.getByText("사진 없음")).toBeVisible();
+    expect(screen.getByRole("img", { name: "카메라 사진 2" })).toBeVisible();
+    expect(screen.getByRole("heading", { name: "카메라" })).toBeVisible();
+  });
+
   it.each(["ACTIVE", "ENDED"] as const)("keeps the %s snapshot public and authenticates the private action", async (status) => {
     const request = vi.fn<typeof fetch>()
       .mockResolvedValueOnce(Response.json(status === "ACTIVE" ? detail : sold))

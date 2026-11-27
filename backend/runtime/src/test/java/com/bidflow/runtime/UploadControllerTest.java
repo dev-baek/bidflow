@@ -32,5 +32,6 @@ class UploadControllerTest {
             return new PresignedUpload("products/seller-1/" + value.uploadId(), URI.create("http://storage/upload"), Map.of("Content-Type", value.contentType()), value.now().plusSeconds(900));
         }
         @Override public Optional<StoredObject> headObject(String objectKey) { return Optional.empty(); }
+        @Override public URI presignRead(String objectKey) { throw new UnsupportedOperationException(); }
     }
 }

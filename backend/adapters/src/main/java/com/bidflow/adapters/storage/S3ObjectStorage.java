@@ -13,11 +13,13 @@ import software.amazon.awssdk.http.urlconnection.UrlConnectionHttpClient;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.S3Configuration;
+import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.HeadObjectRequest;
 import software.amazon.awssdk.services.s3.model.NoSuchKeyException;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.model.S3Exception;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
+import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
 import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignRequest;
 import software.amazon.awssdk.utils.SdkAutoCloseable;
 
@@ -29,6 +31,7 @@ import java.util.Set;
 
 public final class S3ObjectStorage implements ObjectStorage, AutoCloseable {
     private static final Duration URL_EXPIRATION = Duration.ofMinutes(15);
+    private static final Duration READ_URL_EXPIRATION = Duration.ofMinutes(5);
 
     private final String bucket;
     private final boolean conditionalWrite;
@@ -62,7 +65,8 @@ public final class S3ObjectStorage implements ObjectStorage, AutoCloseable {
         if (endpoint != null) {
             var localConfiguration = S3Configuration.builder().pathStyleAccessEnabled(true).build();
             client.endpointOverride(endpoint).serviceConfiguration(localConfiguration);
-            signer.endpointOverride(endpoint).serviceConfiguration(localConfiguration);
+            signer.endpointOverride(endpoint).serviceConfiguration(S3Configuration.builder()
+                    .pathStyleAccessEnabled(true).checksumValidationEnabled(false).build());
         } else {
             // Keep the standard regional endpoint independent of inherited SDK endpoint overrides.
             var regionalEndpoint = URI.create("https://s3." + region + ".amazonaws.com");
@@ -97,6 +101,17 @@ public final class S3ObjectStorage implements ObjectStorage, AutoCloseable {
                         : Map.of("Content-Type", command.contentType()),
                 command.now().plus(URL_EXPIRATION)
         );
+    }
+
+    @Override
+    public URI presignRead(String objectKey) {
+        var request = presigner.presignGetObject(GetObjectPresignRequest.builder()
+                .signatureDuration(READ_URL_EXPIRATION)
+                .getObjectRequest(GetObjectRequest.builder().bucket(bucket).key(objectKey)
+                        .responseCacheControl("private, no-store").build())
+                .build());
+        if (!request.isBrowserExecutable()) throw new IllegalStateException("Image read URL requires browser-incompatible headers");
+        return URI.create(request.url().toString());
     }
 
     @Override

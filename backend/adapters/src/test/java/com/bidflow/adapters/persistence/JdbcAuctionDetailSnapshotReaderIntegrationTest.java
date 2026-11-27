@@ -43,7 +43,7 @@ class JdbcAuctionDetailSnapshotReaderIntegrationTest {
         var snapshot = reader.findByAuctionId(auctionId).orElseThrow();
 
         assertThat(snapshot.title()).isEqualTo("테스트 카메라");
-        assertThat(snapshot.thumbnailObjectKey()).isEqualTo("products/camera.jpg");
+        assertThat(snapshot.hasThumbnail()).isTrue();
         assertThat(snapshot.currentPrice()).isEqualTo(21_000);
         assertThat(snapshot.status()).isEqualTo("ENDED");
         assertThat(snapshot.outcome()).isEqualTo("SOLD");
@@ -53,6 +53,41 @@ class JdbcAuctionDetailSnapshotReaderIntegrationTest {
     @Test
     void returnsEmptyForUnknownAuction() {
         assertThat(reader.findByAuctionId(UUID.randomUUID())).isEmpty();
+    }
+
+    @Test
+    void readsOrderedPhotosOnlyForTheirPublishedAuction() {
+        var images = new JdbcPublicAuctionImageReader(jdbc);
+        UUID auctionId = fixture();
+        UUID ownPhoto = images.findImageIds(auctionId).orElseThrow().getFirst();
+        UUID second = UUID.randomUUID();
+        jdbc.update("""
+                insert into product_image (image_id, product_id, object_key, display_order, created_at)
+                select ?, product_id, 'products/back.jpg', 1, ? from auction where auction_id = ?
+                """, second, Timestamp.from(NOW), auctionId);
+        UUID anotherAuction = fixture();
+        UUID foreignPhoto = images.findImageIds(anotherAuction).orElseThrow().getFirst();
+        assertThat(images.findImageIds(auctionId)).contains(java.util.List.of(ownPhoto, second));
+        assertThat(images.findThumbnailObjectKey(auctionId)).contains("products/camera.jpg");
+        assertThat(images.findObjectKey(auctionId, second)).contains("products/back.jpg");
+        assertThat(images.findObjectKey(auctionId, foreignPhoto)).isEmpty();
+        assertThat(images.findObjectKey(auctionId, UUID.randomUUID())).isEmpty();
+        assertThat(images.findImageIds(UUID.randomUUID())).isEmpty();
+
+        jdbc.update("update auction set status = 'CANCELLED' where auction_id = ?", auctionId);
+        assertThat(images.findImageIds(auctionId)).isEmpty();
+        assertThat(images.findThumbnailObjectKey(auctionId)).isEmpty();
+        assertThat(images.findObjectKey(auctionId, ownPhoto)).isEmpty();
+
+        jdbc.update("update product set status = 'UNPUBLISHED' where product_id = (select product_id from auction where auction_id = ?)", anotherAuction);
+        assertThat(images.findImageIds(anotherAuction)).isEmpty();
+        assertThat(images.findThumbnailObjectKey(anotherAuction)).isEmpty();
+        assertThat(images.findObjectKey(anotherAuction, foreignPhoto)).isEmpty();
+
+        UUID withoutPhotos = fixture();
+        jdbc.update("delete from product_image where product_id = (select product_id from auction where auction_id = ?)", withoutPhotos);
+        assertThat(images.findImageIds(withoutPhotos)).contains(java.util.List.of());
+        assertThat(images.findThumbnailObjectKey(withoutPhotos)).isEmpty();
     }
 
     @Test
