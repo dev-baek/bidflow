@@ -48,3 +48,20 @@
 기존 API PID 30982·정확한 인자·원래 jar hash·readiness UP이 전후 같았다. API/Clock을 재시작·변경하지 않았다. 기존 개발 컨테이너 ID를 모두 유지했으며, 사후 추가 실행 컨테이너와 Testcontainers label 컨테이너는 없었다. 공유 데이터/볼륨/Redis key/Kafka offset 초기화도 없다.
 
 #295의 첫 45개 skip과 환경 보완 기록은 그대로 보존한다. 이번 엄격 정책은 opt-in 명령의 변경이며 일반 `check`의 모든 성공이 엄격 성공으로 바뀐 것은 아니다. Gradle API/모듈 구성이 바뀌면 fixture와 계약을 함께 갱신해야 한다. 기본 CI는 여전히 Docker 없는 검증이며 이번 실제 로컬 통합 실행과 구분한다. 새 부하·브라우저·OpenSearch 실서비스·AWS 검증은 실행하지 않았고 #20의 AWS 완료 조건도 그대로 남는다.
+
+## #405 병합 이후 로컬 재검증
+
+2026년 11월 27일 16:09:56–16:10:53 JST, [#405](https://github.com/dev-baek/bidflow/pull/405)가 병합된 `9147c525dbe3cf40aee98aaf88850be3f2cd2b25`에서 `make verify-integration`을 한 번 실행했다. Java 21·Node 24를 사용했으며, 이 Mac에서는 앞선 Docker 소켓 보완을 이번 호출에만 적용했다.
+
+| 모듈 | 성공 / 전체 |
+|---|---:|
+| domain | 16 / 16 |
+| application | 33 / 33 |
+| event-contract | 15 / 15 |
+| adapters | 61 / 61 |
+| runtime | 125 / 125 |
+| 전체 | **250 / 250** |
+
+완료 표식 `STRICT_INTEGRATION_COMPLETE`와 실행 시작 뒤 생성된 JUnit XML 66개의 결과가 일치했다. 실패·오류·skip은 각각 0개였고, `integration` 태그가 있는 16개 클래스 47개 테스트는 전체 250개에 포함된다. Gradle 태스크 23개가 실제 실행됐으며 재시도는 없었다. 기존 컨테이너 ID와 API 리스너 PID는 유지됐고, 종료 직후 남아 있던 임시 컨테이너가 정리된 뒤 컨테이너 목록이 실행 전과 같았다. API readiness도 HTTP 200이었다.
+
+같은 커밋의 [GitHub Verify](https://github.com/dev-baek/bidflow/actions/runs/45956445065)도 합성 UI 단계까지 통과했다. GitHub의 UI 스모크와 위 로컬 백엔드 통합은 별도 실행이다. 실제 서비스 연결 브라우저 E2E·k6 부하·AWS는 이번에 다시 실행하지 않았다.
