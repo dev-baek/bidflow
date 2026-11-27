@@ -92,18 +92,27 @@ export function judgeFailureCorrelation(state,rawSql){
 }
 export async function captureFailure(journal,io,{budgetMs=10000}={}){
   if(!Number.isFinite(budgetMs)||budgetMs<=0||budgetMs>10000)throw Error('INVALID_CAPTURE_BUDGET');
-  const state=journal.close(),deadline=Date.now()+budgetMs;
+  const state=journal.close(),deadline=performance.now()+budgetMs;
+  let budgetExpired=false;
+  const remainingBudget=()=>budgetExpired?0:deadline-performance.now();
   const attempt=async(fn,max=10000)=>{
-    const ms=Math.min(max,deadline-Date.now());if(ms<=0)return {status:'TIMEOUT'};
+    const remaining=remainingBudget();if(remaining<=0)return {status:'TIMEOUT'};
     let timer;
-    try{return await Promise.race([Promise.resolve().then(fn).then(value=>({status:'OK',value}),()=>({status:'FAILED'})),new Promise(resolve=>{timer=setTimeout(()=>resolve({status:'TIMEOUT'}),ms);})]);}finally{clearTimeout(timer);}
+    try{return await Promise.race([
+      Promise.resolve().then(fn).then(value=>({status:'OK',value}),()=>({status:'FAILED'})),
+      new Promise(resolve=>{timer=setTimeout(()=>{
+        // An expired overall budget must not reopen due to timer/clock rounding.
+        if(remaining<=max)budgetExpired=true;
+        resolve({status:'TIMEOUT'});
+      },Math.min(max,remaining));}),
+    ]);}finally{clearTimeout(timer);}
   };
   let cleanup='OK';try{io.detach();}catch{cleanup='FAILED';}
   const [sql,a,b]=await Promise.all([state.auctionId?attempt(()=>io.sql(state.auctionId),5000):Promise.resolve({status:'NOT_REGISTERED'}),...roles.map(role=>attempt(()=>io.screenshot(role),3000))]);
   const screen=r=>r.status==='OK'&&integer(r.value?.bytes)&&r.value.bytes>0&&/^[a-f0-9]{64}$/.test(r.value?.sha256)?{status:'OK',bytes:r.value.bytes,sha256:r.value.sha256}:{status:r.status==='OK'?'FAILED':r.status};
   const data={...state,correlation:judgeFailureCorrelation(state,sql.value),capture:{sql:sql.status,A:screen(a),B:screen(b),cleanup,attachmentVerification:'REPORTER_REQUIRED'}};
   let written=false,attached=false;
-  try{const path=io.write(clone(data));written=true;if(Date.now()<deadline)attached=(await attempt(()=>io.attach(path))).status==='OK';}catch{}
+  try{const path=io.write(clone(data));written=true;attached=(await attempt(()=>io.attach(path))).status==='OK';}catch{}
   const diagnosticsComplete=data.correlation.complete&&sql.status==='OK'&&data.capture.A.status==='OK'&&data.capture.B.status==='OK'&&cleanup==='OK'&&written&&attached;
   return {data,diagnosticsComplete,written,attached};
 }
