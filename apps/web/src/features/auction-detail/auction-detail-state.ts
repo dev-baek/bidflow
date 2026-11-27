@@ -1,7 +1,7 @@
 export type AuctionDetail = Readonly<{
   auctionId: string;
   title: string;
-  thumbnailObjectKey: string | null;
+  hasThumbnail?: boolean;
   currentPrice: number;
   endsAt: string;
   status: "SCHEDULED" | "ACTIVE" | "ENDED" | "CANCELLED";

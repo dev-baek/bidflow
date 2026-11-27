@@ -494,10 +494,16 @@ test.describe("상품 등록·입찰 Browser 흐름", () => {
     await expect(results.nth(1).getByRole("link", { name: title, exact: true })).toBeVisible();
     await expect(page.getByRole("link", { name: outside, exact: true })).toHaveCount(0);
     const link = page.getByRole("link", { name: title, exact: true });
+    const thumbnail = page.getByRole("img", { name: `${title} 대표 사진` });
+    await thumbnail.scrollIntoViewIfNeeded();
+    await expect(thumbnail).toHaveJSProperty("naturalWidth", 1);
     await expect(link).toHaveAttribute("href", `/auctions/${auctionId}`);
     await link.click();
     await expect(page).toHaveURL(`${webBaseUrl}/auctions/${auctionId}`);
     await expect(page.getByRole("heading", { name: title, exact: true })).toBeVisible();
+    const galleryPhoto = page.getByRole("img", { name: `${title} 사진 1` });
+    await galleryPhoto.scrollIntoViewIfNeeded();
+    await expect(galleryPhoto).toHaveJSProperty("naturalWidth", 1);
     await expect(page.getByRole("form", { name: "입찰 요청" })).toBeVisible();
     await page.goBack();
     await page.reload();
@@ -565,7 +571,10 @@ async function registerAuction(page: Page, sellerId: string, title = "e2e-camera
   await page.getByLabel("시작가 (원)").fill(startingPrice);
   await page.getByLabel("시작 시각 (UTC)").fill("2030-01-01T12:10");
   await page.getByLabel("마감 시각 (UTC)").fill("2030-01-01T12:30");
-  await page.getByLabel("사진 추가").setInputFiles({ name: "camera.png", mimeType: "image/png", buffer: Buffer.from("e2e-image") });
+  await page.getByLabel("사진 추가").setInputFiles({
+    name: "camera.png", mimeType: "image/png",
+    buffer: Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jPioAAAAASUVORK5CYII=", "base64"),
+  });
 
   await expect(page.getByText("업로드 완료")).toBeVisible();
   await page.getByRole("button", { name: "상품 등록" }).click();

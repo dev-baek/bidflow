@@ -18,9 +18,9 @@ class SearchController {
         try { return response(service.search(new SearchListingsQuery(q, Optional.ofNullable(categoryId), Optional.ofNullable(status), Optional.ofNullable(minPrice), Optional.ofNullable(maxPrice), Optional.ofNullable(endsBefore), SearchSort.valueOf(sort), size, Optional.ofNullable(cursor)))); }
         catch (IllegalArgumentException exception) { throw new InvalidSearchQueryException("invalid search query"); }
     }
-    private static SearchResponse response(SearchListingsPage page) { return new SearchResponse(page.items().stream().map(item -> new Item(item.productId(), item.auctionId(), item.title(), item.categoryId(), item.thumbnailObjectKey(), item.currentPrice(), item.status(), item.endsAt())).toList(), page.nextCursor().orElse(null)); }
+    private static SearchResponse response(SearchListingsPage page) { return new SearchResponse(page.items().stream().map(item -> new Item(item.productId(), item.auctionId(), item.title(), item.categoryId(), item.thumbnailObjectKey() != null && !item.thumbnailObjectKey().isBlank(), item.currentPrice(), item.status(), item.endsAt())).toList(), page.nextCursor().orElse(null)); }
     record SearchResponse(List<Item> items, String nextCursor) {}
-    record Item(java.util.UUID productId, java.util.UUID auctionId, String title, String categoryId, String thumbnailObjectKey, long currentPrice, String status, Instant endsAt) {}
+    record Item(java.util.UUID productId, java.util.UUID auctionId, String title, String categoryId, boolean hasThumbnail, long currentPrice, String status, Instant endsAt) {}
     @ExceptionHandler(InvalidSearchQueryException.class) @ResponseStatus(HttpStatus.BAD_REQUEST) ErrorResponse invalid(InvalidSearchQueryException exception) { return new ErrorResponse("INVALID_SEARCH_QUERY"); }
     @ExceptionHandler(SearchUnavailableException.class) @ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE) ErrorResponse unavailable(SearchUnavailableException exception) { return new ErrorResponse("SEARCH_UNAVAILABLE"); }
     record ErrorResponse(String code) {}

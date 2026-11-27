@@ -142,6 +142,11 @@ class ListingRegistrationServiceTest {
                     ? Optional.of(new StoredObject(objectKey, type, length))
                     : Optional.empty();
         }
+
+        @Override
+        public java.net.URI presignRead(String objectKey) {
+            throw new UnsupportedOperationException();
+        }
     }
 
     private static final class InMemoryRepository implements ListingRegistrationRepository {

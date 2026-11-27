@@ -23,6 +23,16 @@ function mount(get: SearchGetMock, initial = "/listings") {
   return render(<MemoryRouter initialEntries={[initial]}><History /><ListingSearchPage apiBaseUrl="http://api" client={client} /></MemoryRouter>);
 }
 
+it("uses the auction thumbnail route and falls back without losing search results", async () => {
+  const get = createGet().mockResolvedValue({ items: [{ ...item, hasThumbnail: true }], nextCursor: null });
+  mount(get, "/listings?q=카메라");
+  const photo = await screen.findByRole("img", { name: "카메라 대표 사진" });
+  expect(photo).toHaveAttribute("src", "http://api/api/v1/auctions/auction-1/images/thumbnail");
+  fireEvent.error(photo);
+  expect(screen.getByText("사진 없음")).toBeVisible();
+  expect(screen.getByRole("link", { name: "카메라" })).toBeVisible();
+});
+
 it("applies all filters with an empty query only on submit and restores them on history navigation", async () => {
   const get = createGet().mockResolvedValue({ items: [item], nextCursor: null });
   mount(get, "/listings?q=이전&sort=RELEVANCE");

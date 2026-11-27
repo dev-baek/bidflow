@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { auctionDetailReducer, createAuctionDetailState, type AuctionDetail } from "./auction-detail-state";
 
 const detail: AuctionDetail = {
-  auctionId: "auction-1", title: "카메라", thumbnailObjectKey: "products/camera.jpg", currentPrice: 21_000,
+  auctionId: "auction-1", title: "카메라", hasThumbnail: false, currentPrice: 21_000,
   endsAt: "2030-01-01T12:00:00Z", status: "ACTIVE", auctionVersion: 2, outcome: null, finalPrice: null,
 };
 

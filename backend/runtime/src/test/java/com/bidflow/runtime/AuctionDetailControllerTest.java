@@ -15,7 +15,7 @@ class AuctionDetailControllerTest {
 
     @Test
     void returnsOnlyPublicSnapshotFields() {
-        AuctionDetailSnapshot snapshot = new AuctionDetailSnapshot(AUCTION_ID, "camera", "products/camera.jpg", 21_000,
+        AuctionDetailSnapshot snapshot = new AuctionDetailSnapshot(AUCTION_ID, "camera", true, 21_000,
                 Instant.parse("2030-01-01T12:00:00Z"), "ENDED", 7, "SOLD", 21_000L);
         AuctionDetailController controller = new AuctionDetailController(id -> Optional.of(snapshot));
 
@@ -23,7 +23,7 @@ class AuctionDetailControllerTest {
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isEqualTo(new AuctionDetailController.Response(
-                AUCTION_ID, "camera", "products/camera.jpg", 21_000, Instant.parse("2030-01-01T12:00:00Z"),
+                AUCTION_ID, "camera", true, 21_000, Instant.parse("2030-01-01T12:00:00Z"),
                 "ENDED", 7, "SOLD", 21_000L));
     }
 

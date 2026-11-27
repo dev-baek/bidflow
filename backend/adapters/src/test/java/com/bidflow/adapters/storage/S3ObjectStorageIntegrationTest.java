@@ -59,6 +59,17 @@ class S3ObjectStorageIntegrationTest {
         assertThat(upload.expiresAt()).isEqualTo(Instant.parse("2026-11-12T00:15:00Z"));
         assertThat(storedObject.contentType()).isEqualTo("image/jpeg");
         assertThat(storedObject.contentLength()).isEqualTo(5L);
+
+        URI readUrl = storage.presignRead(upload.objectKey());
+        assertThat(readUrl.getRawQuery()).contains("X-Amz-Expires=300", "X-Amz-SignedHeaders=host");
+        var client = HttpClient.newHttpClient();
+        var download = client.send(HttpRequest.newBuilder(readUrl).GET().build(), HttpResponse.BodyHandlers.ofByteArray());
+        assertThat(download.statusCode()).isEqualTo(200);
+        assertThat(download.body()).containsExactly(1, 2, 3, 4, 5);
+        assertThat(download.headers().firstValue("Cache-Control")).contains("private, no-store");
+        var unsigned = client.send(HttpRequest.newBuilder(URI.create(readUrl.toString().split("\\?", 2)[0])).GET().build(),
+                HttpResponse.BodyHandlers.discarding());
+        assertThat(unsigned.statusCode()).isEqualTo(403);
     }
 
     @Test

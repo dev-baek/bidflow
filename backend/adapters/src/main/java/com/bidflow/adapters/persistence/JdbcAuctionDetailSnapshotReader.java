@@ -18,7 +18,8 @@ public final class JdbcAuctionDetailSnapshotReader implements AuctionDetailSnaps
     public Optional<AuctionDetailSnapshot> findByAuctionId(UUID auctionId) {
         return jdbc.query("""
                 select a.auction_id, p.title,
-                       (select object_key from product_image where product_id = p.product_id order by display_order limit 1) as thumbnail_object_key,
+                       (p.status = 'PUBLISHED' and a.status <> 'CANCELLED'
+                        and exists (select 1 from product_image i where i.product_id = p.product_id)) as has_thumbnail,
                        a.current_price, a.ends_at, a.status, a.version, r.outcome, r.final_price
                   from auction a
                   join product p on p.product_id = a.product_id
@@ -27,7 +28,7 @@ public final class JdbcAuctionDetailSnapshotReader implements AuctionDetailSnaps
                 """, resultSet -> resultSet.next()
                 ? Optional.of(new AuctionDetailSnapshot(
                         resultSet.getObject("auction_id", UUID.class), resultSet.getString("title"),
-                        resultSet.getString("thumbnail_object_key"), resultSet.getLong("current_price"),
+                        resultSet.getBoolean("has_thumbnail"), resultSet.getLong("current_price"),
                         resultSet.getTimestamp("ends_at").toInstant(), resultSet.getString("status"),
                         resultSet.getLong("version"), resultSet.getString("outcome"),
                         resultSet.getObject("final_price", Long.class)))
