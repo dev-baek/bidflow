@@ -1,12 +1,16 @@
-import { useMemo, useReducer, useRef, type ChangeEvent, type FormEvent, type ReactNode } from "react";
+import { useEffect, useMemo, useReducer, useRef, useState, type ChangeEvent, type FormEvent, type ReactNode } from "react";
 import {
   createListingFormState,
+  listingImageAccept,
+  listingImageLimit,
   listingFormReducer,
   type ListingField,
   type ListingImage,
   validateListingDraft,
+  validatePhotoSelection,
 } from "../../features/listing-form/listing-form-state";
 import { createApiClient, createProtectedApiClient, type AccessTokenSource, type ApiClient } from "../../shared/api/api-client";
+import { Button } from "../../shared/ui/Button";
 
 export type ListingCreatePageProps = Readonly<{
   now?: () => Date;
@@ -35,6 +39,13 @@ const conditionGrades = [
   ["POOR", "사용감 많음"],
 ] as const;
 
+const photoStatuses = {
+  PENDING: "업로드 대기",
+  UPLOADING: "업로드 중",
+  UPLOADED: "업로드 완료",
+  FAILED: "업로드 실패",
+} satisfies Record<ListingImage["status"], string>;
+
 export function ListingCreatePage({ now = () => new Date(), apiBaseUrl = "", localActorId, cognitoAccess, client, upload = fetch }: ListingCreatePageProps) {
   const [state, dispatch] = useReducer(
     listingFormReducer,
@@ -42,6 +53,7 @@ export function ListingCreatePage({ now = () => new Date(), apiBaseUrl = "", loc
     () => createListingFormState(createIdempotencyKey()),
   );
   const files = useRef(new Map<string, File>());
+  const [selectionError, setSelectionError] = useState<string>();
   const defaultClient = useMemo(() => cognitoAccess ? createProtectedApiClient(apiBaseUrl, fetch, cognitoAccess)
     : createApiClient(apiBaseUrl, fetch), [apiBaseUrl, cognitoAccess]);
   const resolvedClient = client ?? defaultClient;
@@ -52,20 +64,29 @@ export function ListingCreatePage({ now = () => new Date(), apiBaseUrl = "", loc
   };
 
   const selectImages = (event: ChangeEvent<HTMLInputElement>) => {
-    const images: ListingImage[] = Array.from(event.target.files ?? []).map((file) => ({
-      localId: createIdempotencyKey(),
-      fileName: file.name,
-      contentType: file.type,
-      size: file.size,
-      status: "PENDING",
-    }));
-    for (const image of images) {
-      const file = Array.from(event.target.files ?? []).find((candidate) => candidate.name === image.fileName);
-      if (file) files.current.set(image.localId, file);
-    }
+    const selected = Array.from(event.currentTarget.files ?? []);
+    event.currentTarget.value = "";
+    if (selected.length === 0) return;
+    const error = validatePhotoSelection(selected, state.draft.images.length);
+    setSelectionError(error);
+    if (error) return;
+
+    const images: ListingImage[] = selected.map((file) => {
+      const localId = createIdempotencyKey();
+      files.current.set(localId, file);
+      return { localId, fileName: file.name, contentType: file.type, size: file.size, status: "PENDING" };
+    });
     dispatch({ type: "IMAGES_SELECTED", images });
     if (cognitoAccess || localActorId) images.forEach((image) => void uploadImage(image.localId));
   };
+
+  const removePhoto = (localId: string) => {
+    files.current.delete(localId);
+    setSelectionError(undefined);
+    dispatch({ type: "IMAGE_REMOVED", localId });
+  };
+  const photosLocked = state.mode === "SUBMITTING" || state.mode === "SUCCEEDED";
+  const photosError = selectionError ?? state.errors.images;
 
   const uploadImage = async (localId: string) => {
     const file = files.current.get(localId);
@@ -119,6 +140,36 @@ export function ListingCreatePage({ now = () => new Date(), apiBaseUrl = "", loc
           </div>
         ) : null}
 
+        <section className="listing-photos" aria-labelledby="listing-photos-title">
+          <h2 id="listing-photos-title">사진</h2>
+          <p id="listing-photos-help" className="listing-photos-help">JPEG·PNG·WebP, 각 10 MiB 이하 · {state.draft.images.length}/{listingImageLimit}장</p>
+          {photosError && <p id="listing-photos-error" className="field-error" role={selectionError ? "alert" : undefined}>{photosError}</p>}
+          <ul className="listing-photo-grid" role="list" aria-label="출품 사진">
+              <li className="listing-photo-picker">
+                <label htmlFor="listing-images">사진 추가<span aria-hidden="true" /></label>
+                <input id="listing-images" type="file" accept={listingImageAccept} multiple onChange={selectImages}
+                  disabled={photosLocked || state.draft.images.length >= listingImageLimit}
+                  aria-invalid={Boolean(photosError)} aria-describedby={photosError ? "listing-photos-help listing-photos-error" : "listing-photos-help"} />
+              </li>
+              {state.draft.images.map((image, index) => (
+                <li className="listing-photo" key={image.localId}>
+                  <div className="listing-photo-media">
+                    <PhotoPreview file={files.current.get(image.localId)} />
+                    {index === 0 && <span className="listing-photo-cover">대표 사진</span>}
+                  </div>
+                  <p className="listing-photo-name">{image.fileName}</p>
+                  <p data-status={image.status} className="listing-photo-status" aria-live="polite">{photoStatuses[image.status]}</p>
+                  {image.status === "FAILED" && (
+                    <Button variant="secondary" disabled={photosLocked} aria-label={`${image.fileName} 다시 시도`}
+                      onClick={() => void uploadImage(image.localId)}>다시 시도</Button>
+                  )}
+                  <Button variant="ghost" disabled={photosLocked || image.status === "UPLOADING"}
+                    aria-label={`${image.fileName} 삭제`} onClick={() => removePhoto(image.localId)}>삭제</Button>
+                </li>
+              ))}
+          </ul>
+        </section>
+
         <FieldError error={state.errors.title}>
           <label htmlFor="listing-title">상품 제목</label>
           <input id="listing-title" value={state.draft.title} onChange={changeField("title")} aria-invalid={Boolean(state.errors.title)} />
@@ -147,17 +198,6 @@ export function ListingCreatePage({ now = () => new Date(), apiBaseUrl = "", loc
           </FieldError>
         </div>
 
-        <FieldError error={state.errors.images}>
-          <label htmlFor="listing-images">이미지</label>
-          <input id="listing-images" type="file" accept="image/jpeg,image/png,image/webp" multiple onChange={selectImages} aria-invalid={Boolean(state.errors.images)} />
-          <p className="field-help">JPEG·PNG·WebP, 각 10 MiB 이하, 1~10장</p>
-          {state.draft.images.length > 0 ? (
-            <ul className="image-list">
-              {state.draft.images.map((image) => <li key={image.localId}>{image.fileName} — {image.status}{image.errorCode ? ` (${image.errorCode})` : ""}</li>)}
-            </ul>
-          ) : null}
-        </FieldError>
-
         <div className="form-grid">
           <FieldError error={state.errors.startingPrice}>
             <label htmlFor="listing-starting-price">시작가 (원)</label>
@@ -180,6 +220,17 @@ export function ListingCreatePage({ now = () => new Date(), apiBaseUrl = "", loc
       </form>
     </main>
   );
+}
+
+function PhotoPreview({ file }: Readonly<{ file?: File }>) {
+  const [url, setUrl] = useState<string>();
+  useEffect(() => {
+    if (!file || !URL.createObjectURL) return;
+    const previewUrl = URL.createObjectURL(file);
+    setUrl(previewUrl);
+    return () => URL.revokeObjectURL(previewUrl);
+  }, [file]);
+  return file && url ? <img src={url} alt={`${file.name} 미리보기`} /> : null;
 }
 
 function FieldError({ children, error }: Readonly<{ children: ReactNode; error?: string }>) {

@@ -63,6 +63,10 @@ const initialDraft: ListingDraft = {
 };
 
 const allowedConditionGrades = new Set(["NEW", "LIKE_NEW", "GOOD", "FAIR", "POOR"]);
+const imageTypes = ["image/jpeg", "image/png", "image/webp"];
+export const listingImageAccept = imageTypes.join(",");
+export const listingImageLimit = 10;
+const maxImageBytes = 10 * 1024 * 1024;
 const tenMinutesInMilliseconds = 10 * 60 * 1000;
 const fourteenDaysInMilliseconds = 14 * 24 * 60 * 60 * 1000;
 
@@ -86,7 +90,7 @@ export function listingFormReducer(
     case "FIELD_CHANGED":
       return withDraft(state, { ...state.draft, [action.field]: action.value });
     case "IMAGES_SELECTED":
-      return withDraft(state, { ...state.draft, images: action.images });
+      return withDraft(state, { ...state.draft, images: [...state.draft.images, ...action.images] });
     case "IMAGE_UPLOAD_STARTED":
       return withImages(state, action.localId, (image) => ({ ...image, status: "UPLOADING", errorCode: undefined }));
     case "IMAGE_UPLOAD_COMPLETED":
@@ -109,6 +113,15 @@ export function listingFormReducer(
     }
     case "SUBMIT_SUCCEEDED": return { ...state, mode: "SUCCEEDED", auctionId: action.auctionId };
     case "SUBMIT_FAILED": return { ...state, mode: "SUBMIT_ERROR" };
+  }
+}
+
+export function validatePhotoSelection(
+  selected: readonly Readonly<{ type: string; size: number }>[], existingCount: number,
+): string | undefined {
+  if (existingCount + selected.length > listingImageLimit) return "사진은 최대 10장까지 추가할 수 있습니다.";
+  if (selected.some(({ type, size }) => !imageTypes.includes(type) || size <= 0 || size > maxImageBytes)) {
+    return "JPEG·PNG·WebP 형식의 10 MiB 이하 사진만 추가할 수 있습니다.";
   }
 }
 
@@ -146,7 +159,7 @@ export function validateListingDraft(draft: ListingDraft, now: Date): ListingErr
   } else if (end.getTime() - start.getTime() > fourteenDaysInMilliseconds) {
     errors.endsAt = "경매 기간은 14일 이하여야 합니다.";
   }
-  if (draft.images.length < 1 || draft.images.length > 10) {
+  if (draft.images.length < 1 || draft.images.length > listingImageLimit) {
     errors.images = "이미지는 1장 이상 10장 이하로 등록하세요.";
   } else if (draft.images.some((image) => image.status !== "UPLOADED")) {
     errors.images = "모든 이미지 업로드가 완료되어야 합니다.";
