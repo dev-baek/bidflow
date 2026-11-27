@@ -389,7 +389,8 @@ Redis와 OpenSearch 데이터는 PostgreSQL 원본으로 복원할 수 있어야
 | 기준 | 확보한 증적 | 남은 범위 |
 |---|---|---|
 | 등록부터 낙찰까지 기능 | [최신 로컬 통합 검증](../reports/issue-376-marketplace-ui-regression.md): 기능 5개 통과, 같은 경매에서 사진 업로드·검색/상세 사진 읽기·직접 입찰·낙찰까지 검증. 원장/이벤트 교차 검사는 [이전 별도 실행](../reports/issue-020-local-functional-regression.md) | 배포 환경의 동일 사용자 여정은 [#356](https://github.com/dev-baek/bidflow/issues/356)에서 별도 승인 후 검증 |
-| 반응형 화면과 키보드 | [로컬 Chromium UI 5개](../reports/issue-376-marketplace-ui-regression.md): 320·390·768·1280px에서 화면 폭, 포커스, 입력 오류, 화면 상태를 검증 | 스크린리더 실기기 검증과 접근성 전수 인증은 범위 밖 |
+| 백엔드 통합 회귀 | [#405 병합 이후 로컬 검증](../reports/issue-020-integration-completeness.md#405-병합-이후-로컬-재검증): 250개(통합 태그 47개 포함), 실패·오류·skip 0개 | 배포 환경 E2E·부하·복구 검증과는 별도 |
+| 반응형 화면과 키보드 | [Chromium UI 5개](../reports/issue-376-marketplace-ui-regression.md): 320·390·768·1280px에서 화면 폭, 포커스, 입력 오류, 화면 상태를 검증. [#405 병합 후 GitHub Verify](https://github.com/dev-baek/bidflow/actions/runs/45956445065)에서도 같은 합성 테스트 통과 | 스크린리더 실기기 검증과 접근성 전수 인증은 범위 밖 |
 | Cognito 인증 | [로컬 Chromium 대역](issue-005-cognito-frontend.md#로컬-chromium-재현) 2개 시나리오를 각각 두 번 통과. PKCE, 공개/보호 요청 경계, 401 뒤 STOMP 연결 종료 확인 | 실제 User Pool·App Client와 배포 환경의 토큰 교환은 [#39](https://github.com/dev-baek/bidflow/issues/39)·[#91](https://github.com/dev-baek/bidflow/issues/91) 승인 후 확인 |
 | 같은 경매 1,000건 | [기준 실행](../reports/issue-019-instrumented-rerun.md): 20 VU 누적 1,000건, 요청/원장/결과 일치, 미처리/중복 0 | [별도 대기 관측 실행](../reports/issue-019-settlement-wait-live.md)은 서버의 정산 검증 SELECT 4초 제한으로 원장·화면 대조 미완료. 12.2의 1,000건 전체 동시 HTTP도 미검증 |
 | 접수 API P95 300ms 이하 | 기준 실행 290.48ms, 대기 관측 실행 165.66ms. 두 실행의 접수 HTTP 오류율은 각각 0% | 각각의 공유 Mac 실측. 별도 관측 조건이므로 개선율·운영 SLA로 해석하지 않으며, 접수 통과를 정산 통과로 세지 않음 |
