@@ -3,15 +3,6 @@ export const searchCategories = { DIGITAL: "디지털·가전", FASHION: "패션
 export const searchStatuses = { SCHEDULED: "예정", ACTIVE: "진행 중" };
 export const searchSorts = { RELEVANCE: "관련도순", ENDING_SOON: "마감 임박순", PRICE_ASC: "낮은 가격순", PRICE_DESC: "높은 가격순", NEWEST: "최근 공개 시작순" };
 
-export function remainingTime(endsAt: number, now: number): string | undefined {
-  if (!Number.isFinite(endsAt)) return undefined;
-  if (endsAt <= now) return "마감 시각 지남";
-  const minutes = Math.floor((endsAt - now) / 60_000);
-  if (minutes >= 1440) return `${Math.floor(minutes / 1440)}일 ${Math.floor(minutes / 60) % 24}시간`;
-  if (minutes >= 60) return `${Math.floor(minutes / 60)}시간 ${minutes % 60}분`;
-  return minutes > 0 ? `${minutes}분` : "1분 미만";
-}
-
 export type SearchFilters = Readonly<{
   keyword: string; categoryId: string; status: string; minPrice: string; maxPrice: string; endsBefore: string; sort: string;
 }>;

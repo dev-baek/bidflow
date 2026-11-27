@@ -24,9 +24,44 @@ describe("AuctionDetailPage", () => {
     expect(first).toHaveAttribute("src", "http://api/api/v1/auctions/auction-1/images/front");
     expect(get).toHaveBeenLastCalledWith("/api/v1/auctions/auction-1/images");
     fireEvent.error(first);
-    expect(screen.getByText("사진 없음")).toBeVisible();
+    expect(screen.getByText("사진을 불러오지 못했어요.")).toBeVisible();
+    const next = screen.getByRole("button", { name: "사진 2 보기" });
+    fireEvent.click(next);
+    expect(next).toHaveAttribute("aria-pressed", "true");
     expect(screen.getByRole("img", { name: "카메라 사진 2" })).toBeVisible();
     expect(screen.getByRole("heading", { name: "카메라" })).toBeVisible();
+  });
+
+  it("does not show a bid form for cancelled auctions or guess an unpublished outcome", async () => {
+    for (const [status, message] of [["CANCELLED", "취소된 경매입니다."], ["ENDED", "경매 결과를 확인 중입니다."]] as const) {
+      const client = { get: vi.fn().mockResolvedValue({ ...detail, status }), post: vi.fn() };
+      const view = render(<AuctionDetailPage {...baseProps} localActorId="bidder-a" client={client} />);
+      expect(await screen.findByText(message)).toBeVisible();
+      expect(screen.queryByRole("form", { name: "입찰 요청" })).not.toBeInTheDocument();
+      expect(screen.queryByText("유찰", { exact: true })).not.toBeInTheDocument();
+      view.unmount();
+    }
+  });
+
+  it("retries an initial public snapshot error", async () => {
+    const client = { get: vi.fn().mockRejectedValueOnce(new ApiError(503)).mockResolvedValueOnce(detail), post: vi.fn() };
+    render(<AuctionDetailPage {...baseProps} client={client} />);
+    expect(await screen.findByRole("alert")).toHaveTextContent("경매 정보를 불러오지 못했습니다.");
+    fireEvent.click(screen.getByRole("button", { name: "다시 조회" }));
+    expect(await screen.findByRole("heading", { name: "카메라" })).toBeVisible();
+  });
+
+  it("keeps the trade panel visible when the photo list fails and retries only the photos", async () => {
+    const get = vi.fn().mockResolvedValueOnce({ ...detail, hasThumbnail: true })
+      .mockRejectedValueOnce(new ApiError(503)).mockResolvedValueOnce({ imageIds: [] });
+    render(<AuctionDetailPage {...baseProps} client={{ get, post: vi.fn() }} />);
+    expect(await screen.findByRole("alert")).toHaveTextContent("사진을 조회하지 못했어요.");
+    expect(screen.getByText("21,000원")).toBeVisible();
+    fireEvent.click(screen.getByRole("button", { name: "사진 다시 조회" }));
+    expect(await screen.findByText("사진 없음")).toBeVisible();
+    expect(get.mock.calls.map(([path]) => path)).toEqual([
+      "/api/v1/auctions/auction-1", "/api/v1/auctions/auction-1/images", "/api/v1/auctions/auction-1/images",
+    ]);
   });
 
   it.each(["ACTIVE", "ENDED"] as const)("keeps the %s snapshot public and authenticates the private action", async (status) => {

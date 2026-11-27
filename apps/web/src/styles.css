@@ -5,6 +5,7 @@
 @import "./styles/auth.css";
 @import "./styles/errors.css";
 @import "./styles/market-search.css";
+@import "./styles/auction-detail.css";
 
 :root {
   color: var(--color-text);
@@ -319,13 +320,6 @@ h1 {
   width: 100%;
   height: 100%;
   object-fit: contain;
-}
-
-.auction-detail-photos {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 10rem), 1fr));
-  gap: var(--space-2);
-  margin-block: var(--space-4);
 }
 
 .listing-form button:not(.ui-button) {

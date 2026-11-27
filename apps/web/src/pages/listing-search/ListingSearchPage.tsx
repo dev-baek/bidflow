@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState, type ChangeEvent, type FormEvent } from "react";
 import { Link, useLocation, useSearchParams } from "react-router-dom";
 import {
-  createSearchState, readSearchFilters, remainingTime, searchCategories, searchParamsFrom, searchReducer,
+  createSearchState, readSearchFilters, searchCategories, searchParamsFrom, searchReducer,
   searchSorts, searchStatuses, type SearchFilters, type SearchItem,
 } from "../../features/listing-search/search-state";
 import { ApiError, createApiClient, joinApiUrl, type ApiClient } from "../../shared/api/api-client";
@@ -10,6 +10,7 @@ import { AuctionPhoto } from "../../shared/ui/AuctionPhoto";
 import { Button } from "../../shared/ui/Button";
 import { Field } from "../../shared/ui/Field";
 import { PageLayout } from "../../shared/ui/PageLayout";
+import { remainingTime } from "../../shared/auction-time";
 
 type ApiResponse = { items: SearchItem[]; nextCursor: string | null };
 const dateFormat = new Intl.DateTimeFormat("ko-KR", { timeZone: "UTC", dateStyle: "medium", timeStyle: "short", hourCycle: "h23" });

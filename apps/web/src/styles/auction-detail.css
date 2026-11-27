@@ -1,0 +1,165 @@
+.ui-page:has(> .auction-detail) {
+  background: var(--color-surface);
+}
+
+.auction-detail h1,
+.auction-detail-message h1 {
+  margin: 0 0 var(--space-4);
+  font-size: var(--type-section-size);
+  line-height: var(--type-section-leading);
+  overflow-wrap: anywhere;
+}
+
+.auction-detail__workspace {
+  display: grid;
+  gap: var(--space-6);
+}
+
+.auction-detail__gallery,
+.auction-detail__trade {
+  min-inline-size: 0;
+}
+
+.auction-detail__photo-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+}
+
+.auction-detail__thumbs {
+  display: flex;
+  gap: var(--space-2);
+  overflow-inline: auto;
+  padding: var(--space-1);
+  margin-block-start: var(--space-2);
+}
+
+.auction-detail__thumbs button {
+  flex: 0 0 var(--control-height-lg);
+  min-block-size: var(--touch-target-min);
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid var(--color-field-border);
+  border-radius: var(--radius-control);
+  background: var(--color-surface);
+  cursor: pointer;
+}
+
+.auction-detail__thumbs .auction-photo img {
+  object-fit: cover;
+}
+
+.auction-detail__thumbs [aria-pressed="true"] {
+  border-color: var(--color-action);
+  box-shadow: inset 0 0 0 1px var(--color-action);
+}
+
+.auction-detail__thumbs button:focus-visible,
+.auction-detail__trade .bid-request-form :is(input, select, button):focus-visible {
+  outline: var(--focus-width) solid var(--color-focus);
+  outline-offset: var(--focus-offset);
+}
+
+.auction-summary {
+  margin: 0;
+  border-block-start: 1px solid var(--color-divider);
+}
+
+.auction-summary > div {
+  display: grid;
+  grid-template-columns: minmax(5rem, 1fr) minmax(0, 2fr);
+  align-items: center;
+  gap: var(--space-2);
+  padding-block: var(--space-2);
+  border-block-end: 1px solid var(--color-divider);
+}
+
+.auction-summary dt,
+.auction-summary time {
+  color: var(--color-text-muted);
+  font-size: var(--type-label-size);
+}
+
+.auction-summary dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+  font-variant-numeric: tabular-nums;
+}
+
+.auction-summary time {
+  display: block;
+}
+
+.auction-detail__price {
+  font-size: var(--type-price-size);
+  line-height: var(--type-price-leading);
+  font-weight: var(--font-weight-bold);
+}
+
+.auction-detail__actions,
+.auction-detail-message {
+  display: grid;
+  gap: var(--space-3);
+  margin-block-start: var(--space-3);
+}
+
+.auction-detail__actions .ui-status,
+.auction-detail-message .ui-status {
+  margin: 0;
+}
+
+.auction-detail__actions > a,
+.auction-detail-message > a {
+  text-decoration: none;
+}
+
+.auction-detail__trade .bid-request-form {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.auction-detail__trade .bid-request-form label {
+  display: grid;
+  gap: var(--space-1);
+  font-size: var(--type-label-size);
+}
+
+.auction-detail__trade .bid-request-form :is(input, select, button) {
+  width: 100%;
+  min-inline-size: 0;
+  min-block-size: var(--control-height-md);
+  border-radius: var(--radius-control);
+  border: 1px solid var(--color-field-border);
+  background: var(--color-surface);
+  color: var(--color-text);
+  padding-inline: var(--control-padding-sm);
+  font: inherit;
+}
+
+.auction-detail__trade .bid-request-form button {
+  color: var(--color-on-action);
+  background: var(--color-action);
+  border-color: var(--color-action);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+}
+
+.auction-detail__trade .bid-request-form :disabled {
+  color: var(--color-disabled-text);
+  background: var(--color-disabled-surface);
+  border-color: var(--color-disabled-surface);
+  cursor: not-allowed;
+}
+
+@media (min-width: 1024px) {
+  .auction-detail__workspace {
+    grid-template-columns: minmax(0, 6fr) minmax(0, 5fr);
+    gap: var(--space-8);
+  }
+
+  .auction-detail__thumbs button {
+    flex-basis: var(--space-16);
+  }
+}

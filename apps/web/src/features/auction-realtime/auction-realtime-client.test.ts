@@ -56,6 +56,21 @@ it("preserves the local STOMP header and ignores frames after disconnect", async
   expect(privateResult).toHaveBeenCalledOnce();
 });
 
+it("signals socket loss and clears it after reconnect while refreshing the snapshot", async () => {
+  clients.mockClear();
+  const refresh = vi.fn(), reconnecting = vi.fn();
+  const stop = subscribeAuctionUpdates("ws://localhost:8080", "auction-1", "local-user", refresh, vi.fn(), reconnecting);
+  const [, config] = clients.mock.calls[0]!;
+  config.onConnect();
+  config.onWebSocketClose();
+  config.onConnect();
+  expect(reconnecting.mock.calls).toEqual([[false], [true], [false]]);
+  expect(refresh).toHaveBeenCalledOnce();
+  stop();
+  config.onWebSocketClose();
+  expect(reconnecting).toHaveBeenCalledTimes(3);
+});
+
 describe("parsePublicAuctionMessage", () => {
   it("accepts only public auction update and end payloads", () => {
     expect(parsePublicAuctionMessage('{"type":"auction.updated","auctionId":"auction-1","auctionVersion":2}'))
