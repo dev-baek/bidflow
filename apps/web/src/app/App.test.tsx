@@ -23,12 +23,47 @@ describe("App", () => {
     render(<App configResult={validConfig} />);
 
     expect(screen.getByRole("main")).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: "지금 진행 중인 경매를 둘러보세요" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "경매 상품 찾기" })).toBeInTheDocument();
     const main = within(screen.getByRole("main"));
-    expect(main.getByRole("link", { name: "경매 둘러보기" })).toHaveClass("ui-button--primary");
+    expect(main.getByRole("button", { name: "검색" })).toHaveClass("ui-button--primary");
+    expect(main.getByRole("link", { name: "경매 둘러보기" })).toHaveAttribute("href", "/listings?sort=RELEVANCE");
     expect(main.getByRole("link", { name: "상품 등록하기" })).toHaveClass("ui-button--secondary");
     expect(within(screen.getByRole("navigation", { name: "주 메뉴" })).getByRole("link", { name: "홈" }))
       .toHaveAttribute("aria-current", "page");
+  });
+
+  it("uses search URLs for category and keyboard keyword navigation", async () => {
+    vi.spyOn(globalThis, "fetch").mockImplementation(async () => Response.json({ items: [], nextCursor: null }));
+    render(<App configResult={validConfig} />);
+    const categories = within(screen.getByRole("navigation", { name: "카테고리" }));
+    fireEvent.click(categories.getByRole("link", { name: "디지털·가전" }));
+    expect(await screen.findByText("조건에 맞는 상품이 없습니다.")).toBeVisible();
+    expect(window.location.pathname).toBe("/listings");
+    expect(new URLSearchParams(window.location.search).get("categoryId")).toBe("DIGITAL");
+    expect(screen.getByLabelText("카테고리")).toHaveValue("DIGITAL");
+    fireEvent.click(screen.getByRole("link", { name: "BidFlow 홈" }));
+    const homeSearch = screen.getByRole("search", { name: "홈 상품 검색" });
+    fireEvent.change(within(homeSearch).getByRole("searchbox"), { target: { value: "  카메라 + 렌즈  " } });
+    fireEvent.submit(homeSearch);
+    expect(await screen.findByRole("heading", { name: "상품 검색" })).toBeVisible();
+    expect(new URLSearchParams(window.location.search).get("q")).toBe("카메라 + 렌즈");
+    expect(screen.getByRole("searchbox")).toHaveValue("카메라 + 렌즈");
+  });
+
+  it("shows one global search on other routes and keeps its validation local", async () => {
+    vi.spyOn(globalThis, "fetch").mockImplementation(async () => Response.json({ items: [], nextCursor: null }));
+    window.history.replaceState({}, "", "/unknown");
+    render(<App configResult={validConfig} />);
+    const header = within(screen.getByRole("banner"));
+    const search = header.getByRole("search", { name: "전체 경매 검색" });
+    fireEvent.change(within(search).getByRole("searchbox"), { target: { value: "가".repeat(101) } });
+    fireEvent.submit(search);
+    expect(within(search).getByRole("alert")).toHaveTextContent("100자 이하");
+    expect(window.location.pathname).toBe("/unknown");
+    fireEvent.change(within(search).getByRole("searchbox"), { target: { value: "카메라" } });
+    fireEvent.submit(search);
+    expect(await screen.findByRole("heading", { name: "상품 검색" })).toBeVisible();
+    expect(screen.getAllByRole("searchbox")).toHaveLength(1);
   });
 
   it("keeps the current menu and protected registration behavior", async () => {

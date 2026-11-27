@@ -92,11 +92,11 @@ test("Chromium performs PKCE and sends the access token only on protected REST a
     .toBe(String.fromCharCode(...new Uint8Array(digest)));
   expect(await page.evaluate(() => [Object.values(sessionStorage), Object.values(localStorage)])).toEqual([[], []]);
 
-  await page.getByRole("main").getByRole("link", { name: "경매 둘러보기" }).click();
+  const homeSearch = page.getByRole("search", { name: "홈 상품 검색" });
+  await homeSearch.getByRole("searchbox").fill("브라우저");
+  await homeSearch.getByRole("searchbox").press("Enter");
   const auctionNav = page.getByRole("navigation", { name: "주 메뉴" }).getByRole("link", { name: "경매" });
   await expect(auctionNav).toHaveAttribute("aria-current", "page");
-  await page.getByLabel("검색어").fill("브라우저");
-  await page.getByRole("button", { name: "검색", exact: true }).click();
   await page.getByRole("link", { name: listing.title }).click();
   await expect(auctionNav).toHaveAttribute("aria-current", "location");
   await expect(page.getByRole("heading", { name: listing.title })).toBeVisible();

@@ -485,8 +485,14 @@ test.describe("상품 등록·입찰 Browser 흐름", () => {
     }, { timeout: 15_000, message: "필터를 설정하기 전에 세 상품 모두 색인되어야 합니다." }).toEqual([auctionId, premiumId, outsideId].sort());
 
     await page.goBack();
-    await page.getByRole("main").getByRole("link", { name: "경매 둘러보기" }).click();
-    await page.getByLabel("검색어", { exact: true }).fill(token);
+    await page.getByRole("navigation", { name: "카테고리" }).getByRole("link", { name: "디지털·가전" }).click();
+    await expect(page.getByLabel("카테고리", { exact: true })).toHaveValue("DIGITAL");
+    expect(new URL(page.url()).searchParams.get("categoryId")).toBe("DIGITAL");
+    await page.goBack();
+    const homeSearch = page.getByRole("search", { name: "홈 상품 검색" });
+    await homeSearch.getByRole("searchbox").fill(token);
+    await homeSearch.getByRole("searchbox").press("Enter");
+    await expect(page.getByLabel("검색어", { exact: true })).toHaveValue(token);
     await page.getByLabel("카테고리", { exact: true }).selectOption("DIGITAL");
     await page.getByLabel("경매 상태", { exact: true }).selectOption("SCHEDULED");
     await page.getByLabel("최소 가격 (원)").fill("10000");
@@ -511,6 +517,13 @@ test.describe("상품 등록·입찰 Browser 흐름", () => {
     await galleryPhoto.scrollIntoViewIfNeeded();
     await expect(galleryPhoto).toHaveJSProperty("naturalWidth", 1);
     await expect(page.getByRole("form", { name: "입찰 요청" })).toBeVisible();
+    const headerSearch = page.getByRole("search", { name: "전체 경매 검색" });
+    await headerSearch.getByRole("searchbox").fill(token);
+    await headerSearch.getByRole("button", { name: "검색" }).click();
+    await expect(page.getByLabel("검색어", { exact: true })).toHaveValue(token);
+    expect(new URL(page.url()).searchParams.has("categoryId")).toBe(false);
+    await page.goBack();
+    await expect(page).toHaveURL(`${webBaseUrl}/auctions/${auctionId}`);
     await page.goBack();
     await page.reload();
     await expect(page.getByLabel("최대 가격 (원)")).toHaveValue("14000");
