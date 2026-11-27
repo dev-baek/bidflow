@@ -8,6 +8,7 @@ BidFlow의 ADR은 기술 이름을 나열하는 문서가 아니라, **문제 �
 | [Redis 복구](../specs/issue-026-redis-recovery-adr.md) | 활성 경매의 원자 계산에는 Redis Lua, 최종 원장은 PostgreSQL | Redis 유실 시 원장 Snapshot으로 복구하고 요청을 재실행 | 활성 상태 계산을 별도 저장소로 옮겨야 할 실측 근거가 생길 때 |
 | [OpenSearch 파생 데이터](../specs/issue-027-opensearch-derived-data-adr.md) | 검색 성능과 원본 거래 데이터를 분리 | PostgreSQL 원본 + 이벤트로 재색인, 장애가 등록/입찰을 막지 않음 | 검색 요구가 단순해져 PostgreSQL 조회로 충분할 때 |
 | [EC2·ALB 런타임](../specs/issue-002-architecture-adr.md) | 장기 실행 Spring Boot API/Worker와 WebSocket | ALB Health Check, EC2 ASG, Nginx 미사용 | 경로 기반 다중 앱 또는 인스턴스 내부 전환 요구가 생길 때 |
+| [MSA 전환: Auction·Search·Catalog](../specs/issue-408-msa-transition-adr.md) | Search의 원장 DB 의존을 제거하고 독립 배포를 검증 | 공개 검색 상태 이벤트, 인덱스 복구, Search 우선·Catalog 후속 | 복구·되돌리기·거래 격리 기준이 충족되지 않을 때 |
 
 ## 공통 불변식
 

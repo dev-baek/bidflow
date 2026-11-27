@@ -107,4 +107,4 @@ RDS / MSK / ElastiCache / OpenSearch / S3 ── 관리형 데이터 서비스
 
 ## 관련 결정 기록
 
-기술별 대안과 전환 조건은 [ADR 인덱스](adr/README.md)에서 확인한다. Architecture는 책임과 데이터 흐름을 설명하고, ADR은 “왜 이 선택을 했는가”를 설명한다.
+기술별 대안과 전환 조건은 [ADR 인덱스](adr/README.md)에서 확인한다. 위 구성은 분리 전 기준이며, Search 독립 배포와 후속 Catalog 분리는 [MSA 전환 ADR](specs/issue-408-msa-transition-adr.md)에서 다룬다.
