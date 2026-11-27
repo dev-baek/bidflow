@@ -35,3 +35,7 @@ jobs:
       - run: make verify
         env:
           BIDFLOW_VERIFY_BASE: ${{ github.event.pull_request.base.sha || github.event.before }}
+      - name: Install Chromium headless shell
+        run: npm --prefix apps/web exec -- playwright install --with-deps --only-shell chromium
+      - name: Run marketplace UI smoke tests
+        run: npm --prefix apps/web run test:e2e:ui

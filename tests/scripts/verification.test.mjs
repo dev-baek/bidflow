@@ -82,6 +82,15 @@ test('CI has fixed versions, least privilege and the same verification entry poi
   assert.ok(!/pull_request_target|secrets\.|id-token|aws-actions|terraform apply|docker compose/.test(yaml));
 });
 
+test('CI runs the isolated UI suite after verify and does not publish traces',()=>{
+  const yaml=readFileSync('.github/workflows/ci.yml','utf8');
+  const verify=yaml.indexOf('run: make verify');
+  const browser=yaml.indexOf('run: npm --prefix apps/web exec -- playwright install --with-deps --only-shell chromium');
+  const ui=yaml.indexOf('run: npm --prefix apps/web run test:e2e:ui');
+  assert.ok(verify>=0&&verify<browser&&browser<ui);
+  assert.doesNotMatch(yaml,/upload-artifact|continue-on-error|BIDFLOW_E2E_BASE_URL/);
+});
+
 test('external tests have explicit tags, while the normal Test task keeps all tests',()=>{
   function javaFiles(dir){return readdirSync(dir,{withFileTypes:true}).flatMap(e=>e.isDirectory()?javaFiles(join(dir,e.name)):e.name.endsWith('.java')?[join(dir,e.name)]:[]);}
   let integrations=0;

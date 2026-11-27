@@ -55,7 +55,8 @@ lock file은 `apps/web/package-lock.json`을 사용한다. 기존 루트 미추�
 - 권한은 `contents: read`, checkout credentials 보존은 끈다. id-token/write·AWS credential action·repository/environment secrets 참조는 넣지 않는다.
 - `pull_request_target`이나 PR 제목/본문을 shell에 직접 삽입하는 구성을 쓰지 않는다.
 - 공식 checkout/setup-java/setup-node만 사용하고 구현 시 공식 저장소에서 검증한 전체 commit SHA로 고정한다. 새 workflow framework·배포 job은 도입하지 않는다. [GitHub 보안 지침](https://docs.github.com/en/actions/reference/security/secure-use)
-- 로컬 인프라·브라우저·Terraform·CloudWatch·배포를 시작하지 않는다. GitHub Actions 사용량과 실제 AWS 사용은 별개다.
+- `make verify`가 통과하면 GitHub runner에서만 합성 데이터 기반 [브라우저 스모크 테스트](../reports/issue-376-marketplace-ui-regression.md)를 추가로 실행한다. 실패 증적은 업로드하지 않는다.
+- 실제 인프라를 연결한 브라우저 E2E는 실행하지 않으며 Terraform·CloudWatch·배포도 시작하지 않는다. GitHub Actions 사용량과 실제 AWS 사용은 별개다.
 - 캐시는 dependency 범위에 한정한다. 실제 비밀 파일·state·전체 작업 디렉터리는 포함하지 않는다. 이번 범위에서는 trace/전체 로그 artifact 업로드도 추가하지 않는다.
 
 ## T. TDD와 검증 증적
