@@ -6,21 +6,23 @@ export type RuntimeConfig = Readonly<{
   cognito?: CognitoConfig;
 }>;
 
+export type RuntimeConfigError = "api-url" | "ws-url" | "auth-mode" | "cognito";
+
 export type RuntimeConfigResult =
   | { readonly ok: true; readonly value: RuntimeConfig }
-  | { readonly ok: false; readonly message: string };
+  | { readonly ok: false; readonly reason: RuntimeConfigError };
 
 export function parseRuntimeConfig(
   env: Readonly<Record<string, string | undefined>>,
 ): RuntimeConfigResult {
   const apiBaseUrl = validUrl(env.VITE_API_BASE_URL, ["http:", "https:"]);
   if (!apiBaseUrl) {
-    return { ok: false, message: "VITE_API_BASE_URL 설정을 확인하세요." };
+    return { ok: false, reason: "api-url" };
   }
 
   const wsBaseUrl = validUrl(env.VITE_WS_BASE_URL, ["ws:", "wss:"]);
   if (!wsBaseUrl) {
-    return { ok: false, message: "VITE_WS_BASE_URL 설정을 확인하세요." };
+    return { ok: false, reason: "ws-url" };
   }
 
   const mode = env.VITE_AUTH_MODE ?? "local";
@@ -38,11 +40,11 @@ export function parseRuntimeConfig(
         throw new Error("invalid Cognito configuration");
       }
     } catch {
-      return { ok: false, message: "Cognito 공개 인증 설정을 확인하세요." };
+      return { ok: false, reason: "cognito" };
     }
   } else if (mode !== "local" || ![apiBaseUrl, wsBaseUrl].every(loopback)
     || Object.keys(env).some(key => key.startsWith("VITE_COGNITO_") && env[key])) {
-    return { ok: false, message: "VITE_AUTH_MODE 설정을 확인하세요." };
+    return { ok: false, reason: "auth-mode" };
   }
 
   return {
