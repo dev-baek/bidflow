@@ -479,7 +479,7 @@ test.describe("상품 등록·입찰 Browser 흐름", () => {
     }, { timeout: 15_000, message: "필터를 설정하기 전에 세 상품 모두 색인되어야 합니다." }).toEqual([auctionId, premiumId, outsideId].sort());
 
     await page.goBack();
-    await page.getByRole("link", { name: "상품 검색 화면 열기" }).click();
+    await page.getByRole("main").getByRole("link", { name: "경매 둘러보기" }).click();
     await page.getByLabel("검색어", { exact: true }).fill(token);
     await page.getByLabel("카테고리", { exact: true }).selectOption("DIGITAL");
     await page.getByLabel("경매 상태", { exact: true }).selectOption("SCHEDULED");
@@ -556,7 +556,7 @@ async function submitDirectBid(page: Page, auctionId: string, amount: string,obs
 
 async function registerAuction(page: Page, sellerId: string, title = "e2e-camera", startingPrice = "10000"): Promise<string> {
   await signInLocal(page, sellerId);
-  await page.getByRole("link", { name: "상품 등록 화면 열기" }).click();
+  await page.getByRole("main").getByRole("link", { name: "상품 등록하기" }).click();
 
   await page.getByLabel("상품 제목").fill(title);
   await page.getByLabel("상품 설명").fill("Playwright가 등록 흐름을 검증하는 테스트 상품입니다.");

@@ -4,7 +4,6 @@
   margin-block-start: var(--space-6);
 }
 
-.auth-brand,
 .auth-browse {
   justify-self: start;
   display: inline-flex;
@@ -13,22 +12,6 @@
   min-block-size: var(--touch-target-min);
   color: var(--color-text);
   text-decoration: none;
-}
-
-.auth-brand {
-  font-size: var(--type-card-size);
-  line-height: var(--type-card-leading);
-  font-weight: var(--font-weight-bold);
-}
-
-.auth-brand__mark {
-  display: grid;
-  place-items: center;
-  inline-size: var(--control-height-sm);
-  block-size: var(--control-height-sm);
-  border-radius: var(--radius-control);
-  background: var(--color-action);
-  color: var(--color-on-action);
 }
 
 .auth-panel {
@@ -75,10 +58,8 @@
   font-weight: var(--font-weight-semibold);
 }
 
-.auth-brand:hover,
 .auth-browse:hover { text-decoration: underline; }
 
-.auth-brand:focus-visible,
 .auth-browse:focus-visible {
   outline: var(--focus-width) solid var(--color-focus);
   outline-offset: var(--focus-offset);

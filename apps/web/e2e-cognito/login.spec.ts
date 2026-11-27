@@ -77,7 +77,7 @@ test("Chromium performs PKCE and sends the access token only on protected REST a
   await page.goto("/login");
   await expect(page.getByLabel("로컬 개발자 ID")).toHaveCount(0);
   await page.getByRole("button", { name: "로그인 계속하기" }).click();
-  await expect(page.getByText("Cognito로 로그인했습니다.")).toBeVisible();
+  await expect(page.getByRole("main").getByText("로그인했습니다.", { exact: true })).toBeVisible();
   await expect(page).toHaveURL(app + "/");
   expect(auth.exchanges).toHaveLength(1);
   const exchange = auth.exchanges[0]!;
@@ -92,10 +92,13 @@ test("Chromium performs PKCE and sends the access token only on protected REST a
     .toBe(String.fromCharCode(...new Uint8Array(digest)));
   expect(await page.evaluate(() => [Object.values(sessionStorage), Object.values(localStorage)])).toEqual([[], []]);
 
-  await page.getByRole("link", { name: "상품 검색 화면 열기" }).click();
+  await page.getByRole("main").getByRole("link", { name: "경매 둘러보기" }).click();
+  const auctionNav = page.getByRole("navigation", { name: "주 메뉴" }).getByRole("link", { name: "경매" });
+  await expect(auctionNav).toHaveAttribute("aria-current", "page");
   await page.getByLabel("검색어").fill("브라우저");
   await page.getByRole("button", { name: "검색", exact: true }).click();
   await page.getByRole("link", { name: listing.title }).click();
+  await expect(auctionNav).toHaveAttribute("aria-current", "location");
   await expect(page.getByRole("heading", { name: listing.title })).toBeVisible();
   await expect.poll(() => auth.frames.some(frame => frame.includes("destination:/user/queue/bid-results"))).toBe(true);
   expect(auth.frames.find(frame => frame.startsWith("CONNECT\n"))).toContain(`Authorization:Bearer ${accessToken}\n`);
@@ -107,13 +110,13 @@ test("Chromium performs PKCE and sends the access token only on protected REST a
   }
   await page.getByLabel("입찰 금액").fill("15000");
   await page.getByRole("button", { name: "입찰 요청" }).click();
-  await expect(page.getByRole("link", { name: "로그인" })).toBeVisible();
+  await expect(page.getByRole("main").getByRole("link", { name: "로그인" })).toBeVisible();
   const bid = auth.rest.find(request => request.path.endsWith("/bid-requests"));
   expect(bid?.headers.authorization).toBe(`Bearer ${accessToken}`);
   expect(bid?.headers["x-actor-id"]).toBeUndefined();
   expect(bid?.headers["idempotency-key"]).toBeTruthy();
   await expect.poll(auth.closed).toBe(1);
-  await page.getByRole("link", { name: "로그인" }).click();
+  await page.getByRole("main").getByRole("link", { name: "로그인" }).click();
   await expect(page.getByRole("button", { name: "로그인 계속하기" })).toBeVisible();
 });
 

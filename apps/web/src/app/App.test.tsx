@@ -1,4 +1,4 @@
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
 import { App } from "./App";
 
@@ -20,7 +20,22 @@ describe("App", () => {
     render(<App configResult={validConfig} />);
 
     expect(screen.getByRole("main")).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: "BidFlow" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "지금 진행 중인 경매를 둘러보세요" })).toBeInTheDocument();
+    const main = within(screen.getByRole("main"));
+    expect(main.getByRole("link", { name: "경매 둘러보기" })).toHaveClass("ui-button--primary");
+    expect(main.getByRole("link", { name: "상품 등록하기" })).toHaveClass("ui-button--secondary");
+    expect(within(screen.getByRole("navigation", { name: "주 메뉴" })).getByRole("link", { name: "홈" }))
+      .toHaveAttribute("aria-current", "page");
+  });
+
+  it("keeps the current menu and protected registration behavior", async () => {
+    window.history.replaceState({}, "", "/listings");
+    render(<App configResult={validConfig} />);
+    const nav = within(screen.getByRole("navigation", { name: "주 메뉴" }));
+    expect(nav.getByRole("link", { name: "경매" })).toHaveAttribute("aria-current", "page");
+    fireEvent.click(nav.getByRole("link", { name: "상품 등록" }));
+    expect(await screen.findByText("상품을 등록하려면 먼저 로그인해 주세요.")).toBeVisible();
+    expect(screen.queryByRole("navigation", { name: "주 메뉴" })).not.toBeInTheDocument();
   });
 
   it("shows a configuration error instead of a blank page", () => {

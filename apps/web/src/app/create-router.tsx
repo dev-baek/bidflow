@@ -8,32 +8,26 @@ import { CognitoCallbackPage } from "../pages/auth/CognitoCallbackPage";
 import { RequireAuthenticated } from "../pages/auth/RequireAuthenticated";
 import { AuctionDetailPage } from "../pages/auction-detail/AuctionDetailPage";
 import { useAuth } from "../features/auth/auth-context";
+import { SiteLayout } from "./SiteLayout";
 
 export function createAppRouter(apiBaseUrl: string, wsBaseUrl: string) {
   return createBrowserRouter([
-    {
-      path: "/",
-      element: <HomePage />,
-    },
     {
       path: "/login",
       element: <LoginPage />,
     },
     { path: "/auth/callback", element: <CognitoCallbackPage /> },
     {
-      element: <RequireAuthenticated />,
+      element: <SiteLayout />,
       children: [
-        {
-          path: "/listings/new",
-          element: <ListingCreateRoute apiBaseUrl={apiBaseUrl} />,
-        },
+        { path: "/", element: <HomePage /> },
+        { path: "/listings", element: <ListingSearchPage apiBaseUrl={apiBaseUrl} /> },
+        { path: "/auctions/:auctionId", element: <AuctionDetailRoute apiBaseUrl={apiBaseUrl} wsBaseUrl={wsBaseUrl} /> },
+        { element: <RequireAuthenticated />, children: [
+          { path: "/listings/new", element: <ListingCreateRoute apiBaseUrl={apiBaseUrl} /> },
+        ] },
+        { path: "*", element: <NotFoundPage /> },
       ],
-    },
-    { path: "/listings", element: <ListingSearchPage apiBaseUrl={apiBaseUrl} /> },
-    { path: "/auctions/:auctionId", element: <AuctionDetailRoute apiBaseUrl={apiBaseUrl} wsBaseUrl={wsBaseUrl} /> },
-    {
-      path: "*",
-      element: <NotFoundPage />,
     },
   ]);
 }

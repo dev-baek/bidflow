@@ -40,16 +40,16 @@
   background: var(--color-action);
 }
 
-.ui-button--primary:enabled:hover { background: var(--color-action-hover); }
-.ui-button--primary:enabled:active { background: var(--color-action-active); }
+.ui-button--primary:not(:disabled):hover { background: var(--color-action-hover); }
+.ui-button--primary:not(:disabled):active { background: var(--color-action-active); }
 
 .ui-button--secondary {
   border-color: var(--color-field-border);
   background: var(--color-surface);
 }
 
-.ui-button:is(.ui-button--secondary, .ui-button--ghost):enabled:hover { background: var(--color-info-surface); }
-.ui-button:is(.ui-button--secondary, .ui-button--ghost):enabled:active { background: var(--color-surface-subtle); }
+.ui-button:is(.ui-button--secondary, .ui-button--ghost):not(:disabled):hover { background: var(--color-info-surface); }
+.ui-button:is(.ui-button--secondary, .ui-button--ghost):not(:disabled):active { background: var(--color-surface-subtle); }
 
 .ui-button:disabled,
 .ui-field__control:disabled {
