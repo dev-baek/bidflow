@@ -565,9 +565,9 @@ async function registerAuction(page: Page, sellerId: string, title = "e2e-camera
   await page.getByLabel("시작가 (원)").fill(startingPrice);
   await page.getByLabel("시작 시각 (UTC)").fill("2030-01-01T12:10");
   await page.getByLabel("종료 시각 (UTC)").fill("2030-01-01T12:30");
-  await page.getByLabel("이미지").setInputFiles({ name: "camera.png", mimeType: "image/png", buffer: Buffer.from("e2e-image") });
+  await page.getByLabel("사진 추가").setInputFiles({ name: "camera.png", mimeType: "image/png", buffer: Buffer.from("e2e-image") });
 
-  await expect(page.getByText("UPLOADED")).toBeVisible();
+  await expect(page.getByText("업로드 완료")).toBeVisible();
   await page.getByRole("button", { name: "상품 등록" }).click();
   const status = page.getByRole("status");
   await expect(status).toContainText("경매 ID:");

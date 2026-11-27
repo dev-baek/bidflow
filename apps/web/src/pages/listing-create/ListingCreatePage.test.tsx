@@ -1,10 +1,72 @@
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { ListingCreatePage } from "./ListingCreatePage";
 
 afterEach(() => { cleanup(); vi.unstubAllGlobals(); });
 
 describe("ListingCreatePage", () => {
+  it("previews photos in selection order and releases previews when removed", () => {
+    const createObjectURL = vi.fn(() => "blob:preview");
+    const revokeObjectURL = vi.fn();
+    vi.stubGlobal("URL", Object.assign(class extends URL {}, { createObjectURL, revokeObjectURL }));
+    const { unmount } = render(<ListingCreatePage />);
+    const input = screen.getByLabelText("사진 추가");
+    expect(input.compareDocumentPosition(screen.getByLabelText("상품 제목")) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+
+    for (const name of ["front.png", "back.png"]) {
+      fireEvent.change(input, { target: { files: [new File(["test"], name, { type: "image/png" })] } });
+    }
+
+    const [, first, second] = within(screen.getByRole("list", { name: "출품 사진" })).getAllByRole("listitem");
+    expect(within(first!).getByText("대표 사진")).toBeVisible();
+    expect(within(first!).getByRole("img", { name: "front.png 미리보기" })).toHaveAttribute("src", "blob:preview");
+    expect(within(second!).queryByText("대표 사진")).not.toBeInTheDocument();
+    fireEvent.click(within(first!).getByRole("button", { name: "front.png 삭제" }));
+    expect(within(second!).getByText("대표 사진")).toBeVisible();
+    expect(revokeObjectURL).toHaveBeenCalledTimes(1);
+    unmount();
+    expect(revokeObjectURL).toHaveBeenCalledTimes(2);
+  });
+
+  it("retries only a failed photo without replacing the successful one", async () => {
+    const request = vi.fn<typeof fetch>().mockImplementation(async () => Response.json({
+      uploadId: "upload", objectKey: "photo.png", uploadUrl: "https://storage.example.test/presigned",
+      requiredHeaders: {},
+    }));
+    vi.stubGlobal("fetch", request);
+    const upload = vi.fn<typeof fetch>()
+      .mockResolvedValueOnce(new Response(null, { status: 200 }))
+      .mockResolvedValueOnce(new Response(null, { status: 503 }))
+      .mockResolvedValueOnce(new Response(null, { status: 200 }));
+    render(<ListingCreatePage apiBaseUrl="https://api.example.test" localActorId="seller" upload={upload} />);
+    fireEvent.change(screen.getByLabelText("사진 추가"), { target: { files: [
+      new File(["front"], "camera.png", { type: "image/png" }),
+      new File(["back"], "camera.png", { type: "image/png" }),
+    ] } });
+
+    const [, first, second] = within(screen.getByRole("list", { name: "출품 사진" })).getAllByRole("listitem");
+    expect(await within(first!).findByText("업로드 완료")).toBeVisible();
+    expect(await within(second!).findByText("업로드 실패")).toBeVisible();
+    expect(upload.mock.calls[0]![1]?.body).not.toBe(upload.mock.calls[1]![1]?.body);
+    fireEvent.click(within(second!).getByRole("button", { name: "camera.png 다시 시도" }));
+    expect(await within(second!).findByText("업로드 완료")).toBeVisible();
+    expect(within(first!).getByText("대표 사진")).toBeVisible();
+    expect(upload).toHaveBeenCalledTimes(3);
+    expect(upload.mock.calls[2]![1]?.body).toBe(upload.mock.calls[1]![1]?.body);
+  });
+
+  it("rejects invalid files and an over-limit batch before making upload requests", () => {
+    const request = vi.fn<typeof fetch>();
+    vi.stubGlobal("fetch", request);
+    render(<ListingCreatePage localActorId="seller" />);
+    const input = screen.getByLabelText("사진 추가");
+    fireEvent.change(input, { target: { files: [new File(["test"], "not-photo.txt", { type: "text/plain" })] } });
+    expect(screen.getByRole("alert")).toHaveTextContent("JPEG·PNG·WebP");
+    fireEvent.change(input, { target: { files: Array.from({ length: 11 }, () => new File(["test"], "photo.png", { type: "image/png" })) } });
+    expect(screen.getByRole("alert")).toHaveTextContent("최대 10장");
+    expect(request).not.toHaveBeenCalled();
+  });
+
   it("shows accessible field errors instead of submitting an incomplete form", () => {
     render(<ListingCreatePage now={() => new Date("2026-11-12T00:00:00Z")} />);
 
@@ -32,10 +94,10 @@ describe("ListingCreatePage", () => {
       ["시작 시각 (UTC)", "2030-01-02T00:00"], ["종료 시각 (UTC)", "2030-01-03T00:00"]] as const) {
       fireEvent.change(screen.getByLabelText(label), { target: { value } });
     }
-    fireEvent.change(screen.getByLabelText("이미지"), {
+    fireEvent.change(screen.getByLabelText("사진 추가"), {
       target: { files: [new File(["test"], "image.png", { type: "image/png" })] },
     });
-    expect(await screen.findByText("image.png — UPLOADED")).toBeVisible();
+    expect(await screen.findByText("업로드 완료")).toBeVisible();
     fireEvent.click(screen.getByRole("button", { name: "상품 등록" }));
     expect(await screen.findByText("등록했습니다. 경매 ID: auction-1")).toBeVisible();
     expect(request.mock.calls.map(([url]) => url)).toEqual([
