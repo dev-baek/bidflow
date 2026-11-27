@@ -34,6 +34,16 @@ runner가 단순히 nonzero라는 이유만으로 캡처 성공을 선언하지 
 
 [Playwright 기록 옵션](https://playwright.dev/docs/test-use-options#recording-options)과 [Trace Viewer](https://playwright.dev/docs/trace-viewer)에서 캡처 정책과 로컬 확인 방법을 볼 수 있다. trace는 화면·요청·로그를 담을 수 있으므로 실제 업무 실행의 원문을 무검토로 커밋/업로드하지 않는다.
 
+## 반응형 UI 테스트의 실패 증적
+
+#376에서 추가한 `npm run test:e2e:ui`도 실패한 경우에만 자동 스크린샷과 trace를 보관한다. 설정 변경 전후로 같은 임시 테스트를 Chromium에서 고의 실패시켰다. Vite 서버를 끄고 모든 브라우저 요청을 차단했으며, 고정 HTML과 고정 console 메시지만 사용했다.
+
+- 변경 전: 종료 코드 1, 스크린샷 있음, trace 없음.
+- 변경 후: 종료 코드 1과 같은 오류 문구를 유지했고, 스크린샷과 ZIP 무결성 검사를 통과한 `trace.zip`을 남겼다. trace에서 고정 console 및 오류 표식을 확인했다.
+- 정상 UI 시나리오 5개는 통과했으며 실패용 trace를 남기지 않았다. 테스트가 따로 첨부하는 390px/1280px 캡처는 유지한다.
+
+임시 테스트와 원본 파일은 커밋하지 않는다. 이 검증에는 실제 백엔드·Cognito·AWS가 없으므로 HTTP/WebSocket/원장 상관관계 전체가 검증됐다는 뜻은 아니다.
+
 ## 상태 보존과 한계
 
 실행 전후 기존 API PID 30982·정확한 인자와 개발 컨테이너 ID가 같았고 사후 readiness UP이었다. API jar도 직전 #297 검증의 hash와 같았다. API/Clock 재시작·DB/Redis/볼륨/offset 초기화·AWS 작업은 없다.
