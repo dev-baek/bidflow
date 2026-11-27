@@ -11,7 +11,7 @@ public record AuctionRecoverySnapshot(
         AuctionStatus status,
         long currentPrice,
         String winnerId,
-        long winnerMaximum,
+        Long winnerMaximum,
         Instant startsAt,
         Instant endsAt,
         long version,

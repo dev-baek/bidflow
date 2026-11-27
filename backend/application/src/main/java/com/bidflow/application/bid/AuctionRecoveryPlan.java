@@ -12,8 +12,14 @@ public record AuctionRecoveryPlan(AuctionRedisState state, Duration ttl, boolean
         if (snapshot.status() == AuctionStatus.ENDED || snapshot.status() == AuctionStatus.CANCELLED || !snapshot.endsAt().isAfter(now)) {
             return new AuctionRecoveryPlan(null, Duration.ZERO, true);
         }
+        String winnerId = snapshot.winnerId();
+        Long maximum = snapshot.winnerMaximum();
+        if (winnerId == null) maximum = snapshot.currentPrice();
+        if (maximum == null || maximum < snapshot.currentPrice()) {
+            throw new IllegalStateException("invalid effective winner maximum for auction " + snapshot.auctionId());
+        }
         AuctionRedisState state = new AuctionRedisState(snapshot.auctionId(), snapshot.status(), snapshot.currentPrice(),
-                snapshot.winnerId() == null ? "" : snapshot.winnerId(), snapshot.winnerMaximum(), snapshot.startsAt(), snapshot.endsAt(), snapshot.version());
+                winnerId == null ? "" : winnerId, maximum, snapshot.startsAt(), snapshot.endsAt(), snapshot.version());
         return new AuctionRecoveryPlan(state, Duration.between(now, snapshot.endsAt()).plus(REPLAY_RETENTION), false);
     }
 }

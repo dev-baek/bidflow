@@ -21,13 +21,12 @@ public final class JdbcAuctionRecoverySnapshotRepository implements AuctionRecov
     public Optional<AuctionRecoverySnapshot> findByAuctionId(UUID auctionId) {
         List<RecoveryRow> rows = jdbc.query("""
                 select a.auction_id, a.status, a.current_price, a.current_winner_id, a.starts_at, a.ends_at, a.version,
-                       coalesce(m.maximum, a.current_price) as winner_maximum
+                       a.effective_winner_maximum
                 from auction a
-                left join auto_bid_maximum m on m.auction_id = a.auction_id and m.bidder_id = a.current_winner_id
                 where a.auction_id = ?
                 """, (resultSet, rowNum) -> new RecoveryRow(
                 resultSet.getObject("auction_id", UUID.class), AuctionStatus.valueOf(resultSet.getString("status")),
-                resultSet.getLong("current_price"), resultSet.getString("current_winner_id"), resultSet.getLong("winner_maximum"),
+                resultSet.getLong("current_price"), resultSet.getString("current_winner_id"), resultSet.getObject("effective_winner_maximum", Long.class),
                 resultSet.getTimestamp("starts_at").toInstant(), resultSet.getTimestamp("ends_at").toInstant(), resultSet.getLong("version")), auctionId);
         return rows.stream().findFirst().map(row -> new AuctionRecoverySnapshot(row.auctionId(), row.status(), row.currentPrice(),
                 row.winnerId(), row.winnerMaximum(), row.startsAt(), row.endsAt(), row.version(), maxima(auctionId)));
@@ -40,7 +39,7 @@ public final class JdbcAuctionRecoverySnapshotRepository implements AuctionRecov
                 resultSet.getString("bidder_id"), resultSet.getLong("maximum")), auctionId);
     }
 
-    private record RecoveryRow(UUID auctionId, AuctionStatus status, long currentPrice, String winnerId, long winnerMaximum,
+    private record RecoveryRow(UUID auctionId, AuctionStatus status, long currentPrice, String winnerId, Long winnerMaximum,
                                java.time.Instant startsAt, java.time.Instant endsAt, long version) {
     }
 }

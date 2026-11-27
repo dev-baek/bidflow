@@ -86,7 +86,7 @@ class DirectBidCommandKafkaListener {
         AuctionRecoveryResult recovered = recovery.recover(payload.auctionId(), now);
         if (recovered.ended()) {
             return new DirectBidResult(DirectBidResultCode.AUCTION_ENDED, recovered.snapshot().currentPrice(),
-                    recovered.snapshot().winnerId(), recovered.snapshot().winnerMaximum(), recovered.snapshot().endsAt(), recovered.snapshot().version());
+                    recovered.snapshot().winnerId(), recovered.snapshot().currentPrice(), recovered.snapshot().endsAt(), recovered.snapshot().version());
         }
         DirectBidResult retried = execute(payload, now);
         if (retried.code() == DirectBidResultCode.NOT_ACTIVE) {
