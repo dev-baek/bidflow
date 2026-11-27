@@ -132,11 +132,14 @@ class JdbcBidLedgerRepositoryIntegrationTest {
         assertThat(repository.persist(command)).isTrue();
 
         assertThat(jdbc.queryForObject("select status from bid_request where bid_request_id = ?", String.class, fixture.requestId())).isEqualTo("ACCEPTED");
-        assertThat(jdbc.queryForMap("select current_price, current_winner_id, ends_at, version from auction where auction_id = ?", fixture.auctionId()))
-                .containsEntry("current_price", 13_000L).containsEntry("current_winner_id", "bidder-2").containsEntry("version", 2L);
+        assertThat(jdbc.queryForMap("select current_price, current_winner_id, effective_winner_maximum, ends_at, version from auction where auction_id = ?", fixture.auctionId()))
+                .containsEntry("current_price", 13_000L).containsEntry("current_winner_id", "bidder-2")
+                .containsEntry("effective_winner_maximum", 13_000L).containsEntry("version", 2L);
         assertThat(jdbc.queryForObject("select count(*) from bid_ledger where bid_request_id = ?", Integer.class, fixture.requestId())).isEqualTo(1);
         assertThat(jdbc.queryForMap("select topic, event_type, payload->>'currentPrice' as current_price, payload->>'isHighestBidder' as highest_bidder from outbox_event where aggregate_id = ? and event_type = 'BidAccepted'", fixture.auctionId()))
                 .containsEntry("topic", "bid-event").containsEntry("event_type", "BidAccepted").containsEntry("current_price", "13000").containsEntry("highest_bidder", "true");
+        assertThat(jdbc.queryForObject("select payload::text from outbox_event where aggregate_id = ? and event_type = 'BidAccepted'", String.class, fixture.auctionId()))
+                .doesNotContain("winnerMaximum", "effective_winner_maximum");
     }
 
     @Test
@@ -229,6 +232,26 @@ class JdbcBidLedgerRepositoryIntegrationTest {
         assertThat(jdbc.queryForObject("select count(*) from bid_ledger where bid_request_id = ?", Integer.class, fixture.requestId())).isZero();
         assertThat(jdbc.queryForObject("select count(*) from outbox_event where aggregate_id = ? and topic = 'bid-event'", Integer.class, fixture.auctionId())).isZero();
         assertThat(jdbc.queryForObject("select status from bid_request where bid_request_id = ?", String.class, fixture.requestId())).isEqualTo("RECEIVED");
+    }
+
+    @Test
+    void rollsBackTheMaximumWhenOutboxCreationFailsAfterTheAuctionUpdate() {
+        Fixture fixture = fixture(1L);
+        jdbc.update("update auction set effective_winner_maximum = 17000 where auction_id = ?", fixture.auctionId());
+        var generated = new java.util.concurrent.atomic.AtomicInteger();
+        var failing = new JdbcBidLedgerRepository(jdbc,
+                new TransactionTemplate(new DataSourceTransactionManager(jdbc.getDataSource())), new ObjectMapper(),
+                () -> {
+                    if (generated.getAndIncrement() == 0) return UUID.randomUUID();
+                    throw new IllegalStateException("outbox id generation failed");
+                });
+
+        assertThatThrownBy(() -> failing.persist(acceptedCommand(fixture))).hasMessage("outbox id generation failed");
+        assertThat(jdbc.queryForMap("select effective_winner_maximum, current_price, version from auction where auction_id = ?", fixture.auctionId()))
+                .containsEntry("effective_winner_maximum", 17_000L).containsEntry("current_price", 12_000L).containsEntry("version", 1L);
+        assertThat(jdbc.queryForObject("select status from bid_request where bid_request_id = ?", String.class, fixture.requestId())).isEqualTo("RECEIVED");
+        assertThat(jdbc.queryForObject("select count(*) from bid_ledger where bid_request_id = ?", Integer.class, fixture.requestId())).isZero();
+        assertThat(jdbc.queryForObject("select count(*) from outbox_event where aggregate_id = ? and topic = 'bid-event'", Integer.class, fixture.auctionId())).isZero();
     }
 
     private static BidSettlementCommand acceptedCommand(Fixture fixture) {
