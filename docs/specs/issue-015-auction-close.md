@@ -89,7 +89,7 @@ Scheduler는 정확한 종료 시각에 실행되는 예약기가 아니다. Pol
 
 ### 7.2 종료 이후 입찰 명령
 
-PostgreSQL `ENDED`가 최종 우선순위다. Redis Key를 아직 정리하지 못한 짧은 구간에 Lua가 승인한 결과가 있어도, 원장 Transaction은 종료된 경매의 버전·상태 검증에서 실패하고 Kafka offset을 커밋하지 않는다. #86 복구 Worker는 해당 경매가 `ENDED`임을 확인해 Redis Key를 제거하고 남은 명령을 `AUCTION_ENDED` 결과로 수렴시킨다. 종료 뒤에는 새 입찰 원장·가격·낙찰자를 만들지 않는다.
+PostgreSQL `ENDED`가 최종 우선순위다. Redis 정리 전에 계산한 승인 후보가 버전 충돌로 미확정 상태에 남지 않게 하는 전환은 [#417 마감·정산 확정 사양](issue-417-auction-close-settlement-order.md)에서 정의한다. 종료 뒤에는 확정 가격·낙찰자를 바꾸지 않는다.
 
 ### 7.3 낙찰·유찰 Consumer
 
