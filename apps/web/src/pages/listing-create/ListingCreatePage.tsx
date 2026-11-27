@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useReducer, useRef, useState, type ChangeEvent, type FormEvent, type ReactNode } from "react";
+import { useEffect, useMemo, useReducer, useRef, useState, type ChangeEvent, type FormEvent } from "react";
+import { Link } from "react-router-dom";
 import {
   createListingFormState,
   listingImageAccept,
@@ -11,6 +12,9 @@ import {
 } from "../../features/listing-form/listing-form-state";
 import { createApiClient, createProtectedApiClient, type AccessTokenSource, type ApiClient } from "../../shared/api/api-client";
 import { Button } from "../../shared/ui/Button";
+import { StatusMessage } from "../../shared/ui/Feedback";
+import { Field } from "../../shared/ui/Field";
+import { PageLayout } from "../../shared/ui/PageLayout";
 
 export type ListingCreatePageProps = Readonly<{
   now?: () => Date;
@@ -52,6 +56,8 @@ export function ListingCreatePage({ now = () => new Date(), apiBaseUrl = "", loc
     undefined,
     () => createListingFormState(createIdempotencyKey()),
   );
+  const form = useRef<HTMLFormElement>(null);
+  const submitLocked = useRef(false);
   const files = useRef(new Map<string, File>());
   const [selectionError, setSelectionError] = useState<string>();
   const defaultClient = useMemo(() => cognitoAccess ? createProtectedApiClient(apiBaseUrl, fetch, cognitoAccess)
@@ -85,8 +91,16 @@ export function ListingCreatePage({ now = () => new Date(), apiBaseUrl = "", loc
     setSelectionError(undefined);
     dispatch({ type: "IMAGE_REMOVED", localId });
   };
-  const photosLocked = state.mode === "SUBMITTING" || state.mode === "SUCCEEDED";
+  const submitting = state.mode === "SUBMITTING";
+  const completed = state.mode === "SUCCEEDED";
+  const formLocked = submitting || completed;
   const photosError = selectionError ?? state.errors.images;
+
+  useEffect(() => {
+    if (state.mode === "VALIDATION_ERROR") {
+      form.current?.querySelector<HTMLElement>('[aria-invalid="true"]:not(:disabled)')?.focus();
+    }
+  }, [state.mode, state.errors]);
 
   const uploadImage = async (localId: string) => {
     const file = files.current.get(localId);
@@ -110,10 +124,12 @@ export function ListingCreatePage({ now = () => new Date(), apiBaseUrl = "", loc
 
   const submit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (submitLocked.current) return;
     const currentNow = now();
     const errors = validateListingDraft(state.draft, currentNow);
     dispatch({ type: "SUBMIT_REQUESTED", now: currentNow });
     if (Object.keys(errors).length > 0 || (!cognitoAccess && !localActorId)) return;
+    submitLocked.current = true;
     void resolvedClient.post<ListingResponse>("/api/v1/listings", {
       title: state.draft.title, description: state.draft.description, categoryId: state.draft.categoryId,
       conditionGrade: state.draft.conditionGrade, startingPrice: Number(state.draft.startingPrice),
@@ -121,34 +137,26 @@ export function ListingCreatePage({ now = () => new Date(), apiBaseUrl = "", loc
       images: state.draft.images.map((image) => ({ uploadId: image.uploadId })),
     }, { "Idempotency-Key": state.idempotencyKey, ...actorHeaders })
       .then((result) => dispatch({ type: "SUBMIT_SUCCEEDED", auctionId: result.auctionId }))
-      .catch(() => dispatch({ type: "SUBMIT_FAILED" }));
+      .catch(() => {
+        submitLocked.current = false;
+        dispatch({ type: "SUBMIT_FAILED" });
+      });
   };
 
   return (
-    <main className="app-shell listing-shell">
-      <form className="listing-form" noValidate onSubmit={submit} aria-labelledby="listing-create-title">
-        <p className="eyebrow">SELLER LISTING</p>
+    <PageLayout width="form">
+      <form className="listing-create-form" ref={form} noValidate onSubmit={submit} aria-labelledby="listing-create-title">
         <h1 id="listing-create-title">상품 등록</h1>
-        <p className="form-intro">이미지를 먼저 업로드한 뒤, 상품과 경매를 함께 등록합니다.</p>
-
-        {state.mode === "VALIDATION_ERROR" ? (
-          <div className="form-alert" role="alert">
-            <p>입력값을 확인하세요.</p>
-            <ul>
-              {Object.values(state.errors).map((error) => <li key={error}>{error}</li>)}
-            </ul>
-          </div>
-        ) : null}
 
         <section className="listing-photos" aria-labelledby="listing-photos-title">
           <h2 id="listing-photos-title">사진</h2>
           <p id="listing-photos-help" className="listing-photos-help">JPEG·PNG·WebP, 각 10 MiB 이하 · {state.draft.images.length}/{listingImageLimit}장</p>
-          {photosError && <p id="listing-photos-error" className="field-error" role={selectionError ? "alert" : undefined}>{photosError}</p>}
+          {photosError && <p id="listing-photos-error" className="ui-field__error" role="alert">{photosError}</p>}
           <ul className="listing-photo-grid" role="list" aria-label="출품 사진">
               <li className="listing-photo-picker">
                 <label htmlFor="listing-images">사진 추가<span aria-hidden="true" /></label>
                 <input id="listing-images" type="file" accept={listingImageAccept} multiple onChange={selectImages}
-                  disabled={photosLocked || state.draft.images.length >= listingImageLimit}
+                  disabled={formLocked || state.draft.images.length >= listingImageLimit}
                   aria-invalid={Boolean(photosError)} aria-describedby={photosError ? "listing-photos-help listing-photos-error" : "listing-photos-help"} />
               </li>
               {state.draft.images.map((image, index) => (
@@ -160,65 +168,72 @@ export function ListingCreatePage({ now = () => new Date(), apiBaseUrl = "", loc
                   <p className="listing-photo-name">{image.fileName}</p>
                   <p data-status={image.status} className="listing-photo-status" aria-live="polite">{photoStatuses[image.status]}</p>
                   {image.status === "FAILED" && (
-                    <Button variant="secondary" disabled={photosLocked} aria-label={`${image.fileName} 다시 시도`}
+                    <Button variant="secondary" disabled={formLocked} aria-label={`${image.fileName} 다시 시도`}
                       onClick={() => void uploadImage(image.localId)}>다시 시도</Button>
                   )}
-                  <Button variant="ghost" disabled={photosLocked || image.status === "UPLOADING"}
+                  <Button variant="ghost" disabled={formLocked || image.status === "UPLOADING"}
                     aria-label={`${image.fileName} 삭제`} onClick={() => removePhoto(image.localId)}>삭제</Button>
                 </li>
               ))}
           </ul>
         </section>
 
-        <FieldError error={state.errors.title}>
-          <label htmlFor="listing-title">상품 제목</label>
-          <input id="listing-title" value={state.draft.title} onChange={changeField("title")} aria-invalid={Boolean(state.errors.title)} />
-        </FieldError>
+        <fieldset className="listing-create-section" disabled={formLocked}>
+          <legend>상품 정보</legend>
+          <div className="listing-create-fields">
+            <Field id="listing-title" label="상품 제목" error={state.errors.title}>
+              {(control) => <input {...control} value={state.draft.title} onChange={changeField("title")} />}
+            </Field>
+            <div className="listing-create-pair">
+              <Field id="listing-category" label="카테고리" error={state.errors.categoryId}>
+                {(control) => <select {...control} value={state.draft.categoryId} onChange={changeField("categoryId")}>
+                  <option value="">선택하세요</option>
+                  {categories.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
+                </select>}
+              </Field>
+              <Field id="listing-condition" label="상품 상태" error={state.errors.conditionGrade}>
+                {(control) => <select {...control} value={state.draft.conditionGrade} onChange={changeField("conditionGrade")}>
+                  <option value="">선택하세요</option>
+                  {conditionGrades.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
+                </select>}
+              </Field>
+            </div>
+            <Field id="listing-description" label="상품 설명" error={state.errors.description}>
+              {(control) => <textarea {...control} value={state.draft.description} onChange={changeField("description")} rows={3} />}
+            </Field>
+          </div>
+        </fieldset>
 
-        <FieldError error={state.errors.description}>
-          <label htmlFor="listing-description">상품 설명</label>
-          <textarea id="listing-description" value={state.draft.description} onChange={changeField("description")} aria-invalid={Boolean(state.errors.description)} rows={6} />
-        </FieldError>
+        <fieldset className="listing-create-section" disabled={formLocked}>
+          <legend>경매 조건</legend>
+          <div className="listing-create-fields">
+            <Field id="listing-starting-price" label="시작가 (원)" error={state.errors.startingPrice}>
+              {(control) => <input {...control} type="number" min="1000" step="1" value={state.draft.startingPrice} onChange={changeField("startingPrice")} />}
+            </Field>
+            <div className="listing-create-pair">
+              <Field id="listing-starts-at" label="시작 시각 (UTC)" error={state.errors.startsAt}>
+                {(control) => <input {...control} type="datetime-local" step={60} value={state.draft.startsAt} onChange={changeField("startsAt")} />}
+              </Field>
+              <Field id="listing-ends-at" label="마감 시각 (UTC)" error={state.errors.endsAt}>
+                {(control) => <input {...control} type="datetime-local" step={60} value={state.draft.endsAt} onChange={changeField("endsAt")} />}
+              </Field>
+            </div>
+          </div>
+        </fieldset>
 
-        <div className="form-grid">
-          <FieldError error={state.errors.categoryId}>
-            <label htmlFor="listing-category">카테고리</label>
-            <select id="listing-category" value={state.draft.categoryId} onChange={changeField("categoryId")} aria-invalid={Boolean(state.errors.categoryId)}>
-              <option value="">선택하세요</option>
-              {categories.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
-            </select>
-          </FieldError>
-
-          <FieldError error={state.errors.conditionGrade}>
-            <label htmlFor="listing-condition">상품 상태</label>
-            <select id="listing-condition" value={state.draft.conditionGrade} onChange={changeField("conditionGrade")} aria-invalid={Boolean(state.errors.conditionGrade)}>
-              <option value="">선택하세요</option>
-              {conditionGrades.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
-            </select>
-          </FieldError>
+        <div className="listing-create-actions">
+          {state.mode === "SUBMIT_ERROR" && <StatusMessage kind="error">등록 요청에 실패했어요. 입력한 내용은 그대로 유지됩니다. 다시 시도하세요.</StatusMessage>}
+          {completed && state.auctionId ? (
+            <>
+              <StatusMessage kind="success">상품을 등록했어요.</StatusMessage>
+              <Link className="ui-button ui-button--primary ui-button--md" to={`/auctions/${encodeURIComponent(state.auctionId)}`}>경매 상세 보기</Link>
+            </>
+          ) : (
+            <Button type="submit" disabled={formLocked} pendingLabel={submitting ? "등록 중…" : undefined}>상품 등록</Button>
+          )}
         </div>
-
-        <div className="form-grid">
-          <FieldError error={state.errors.startingPrice}>
-            <label htmlFor="listing-starting-price">시작가 (원)</label>
-            <input id="listing-starting-price" type="number" min="1000" step="1" value={state.draft.startingPrice} onChange={changeField("startingPrice")} aria-invalid={Boolean(state.errors.startingPrice)} />
-          </FieldError>
-          <FieldError error={state.errors.startsAt}>
-            <label htmlFor="listing-starts-at">시작 시각 (UTC)</label>
-            <input id="listing-starts-at" type="datetime-local" value={state.draft.startsAt} onChange={changeField("startsAt")} aria-invalid={Boolean(state.errors.startsAt)} />
-          </FieldError>
-          <FieldError error={state.errors.endsAt}>
-            <label htmlFor="listing-ends-at">종료 시각 (UTC)</label>
-            <input id="listing-ends-at" type="datetime-local" value={state.draft.endsAt} onChange={changeField("endsAt")} aria-invalid={Boolean(state.errors.endsAt)} />
-          </FieldError>
-        </div>
-
-        {state.mode === "SUBMITTING" ? <p className="field-help">등록 요청을 보내는 중입니다.</p> : null}
-        {state.mode === "SUCCEEDED" ? <p role="status">등록했습니다. 경매 ID: {state.auctionId}</p> : null}
-        {state.mode === "SUBMIT_ERROR" ? <p role="alert">등록 요청에 실패했습니다. 다시 시도하세요.</p> : null}
-        <button type="submit" disabled={state.mode === "SUBMITTING"}>상품 등록</button>
       </form>
-    </main>
+    </PageLayout>
   );
 }
 
@@ -231,15 +246,6 @@ function PhotoPreview({ file }: Readonly<{ file?: File }>) {
     return () => URL.revokeObjectURL(previewUrl);
   }, [file]);
   return file && url ? <img src={url} alt={`${file.name} 미리보기`} /> : null;
-}
-
-function FieldError({ children, error }: Readonly<{ children: ReactNode; error?: string }>) {
-  return (
-    <div className="form-field">
-      {children}
-      {error ? <p className="field-error">{error}</p> : null}
-    </div>
-  );
 }
 
 function createIdempotencyKey(): string {

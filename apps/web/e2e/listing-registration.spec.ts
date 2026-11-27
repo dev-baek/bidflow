@@ -26,7 +26,7 @@ test.describe("상품 등록·입찰 Browser 흐름", () => {
     await setE2eClock(request, "2030-01-01T12:00:00Z");
     const auctionId = await registerAuction(page, "e2e-seller");
 
-    await expect(page.getByRole("status")).toContainText(`경매 ID: ${auctionId}`);
+    await expect(page.getByRole("link", { name: "경매 상세 보기" })).toHaveAttribute("href", `/auctions/${auctionId}`);
 
     await setE2eClock(request, "2030-01-01T12:29:59Z");
     const observer = await openBidderPage(browser, auctionId, "e2e-unsold-observer");
@@ -564,19 +564,19 @@ async function registerAuction(page: Page, sellerId: string, title = "e2e-camera
   await page.getByLabel("상품 상태").selectOption("GOOD");
   await page.getByLabel("시작가 (원)").fill(startingPrice);
   await page.getByLabel("시작 시각 (UTC)").fill("2030-01-01T12:10");
-  await page.getByLabel("종료 시각 (UTC)").fill("2030-01-01T12:30");
+  await page.getByLabel("마감 시각 (UTC)").fill("2030-01-01T12:30");
   await page.getByLabel("사진 추가").setInputFiles({ name: "camera.png", mimeType: "image/png", buffer: Buffer.from("e2e-image") });
 
   await expect(page.getByText("업로드 완료")).toBeVisible();
   await page.getByRole("button", { name: "상품 등록" }).click();
-  const status = page.getByRole("status");
-  await expect(status).toContainText("경매 ID:");
-  const match = (await status.textContent())?.match(/경매 ID: ([0-9a-f-]{36})/);
-  if (!match?.[1]) throw new Error("등록 성공 응답에서 경매 ID를 찾을 수 없습니다.");
+  await expect(page.getByRole("status")).toHaveText("상품을 등록했어요.");
+  const detailLink = page.getByRole("link", { name: "경매 상세 보기" });
+  await expect(detailLink).toHaveAttribute("href", /^\/auctions\/[0-9a-f-]{36}$/);
+  const auctionId = (await detailLink.getAttribute("href"))!.split("/").at(-1)!;
   if (process.env.BIDFLOW_E2E_STARTUP_OBSERVATION === "1") {
-    process.stdout.write(JSON.stringify({ startupObservation: "auction", auctionId: match[1] }) + "\n");
+    process.stdout.write(JSON.stringify({ startupObservation: "auction", auctionId }) + "\n");
   }
-  return match[1];
+  return auctionId;
 }
 
 async function setE2eClock(request: APIRequestContext, instant: string): Promise<void> {
