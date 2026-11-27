@@ -5,6 +5,7 @@ import { AuthProvider, useAuth } from "./auth-context";
 import { CognitoCallbackPage } from "../../pages/auth/CognitoCallbackPage";
 import { LoginPage } from "../../pages/auth/LoginPage";
 import { HomePage } from "../../pages/home/HomePage";
+import { SiteLayout } from "../../app/SiteLayout";
 import { RequireAuthenticated } from "../../pages/auth/RequireAuthenticated";
 import { createProtectedApiClient, type AccessTokenSource } from "../../shared/api/api-client";
 
@@ -30,11 +31,13 @@ function setup(route: string, complete = vi.fn(async () => ({
     <MemoryRouter initialEntries={[route]}>
       <Controls />
       <Routes>
-        <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/auth/callback" element={<CognitoCallbackPage />} />
-        <Route element={<RequireAuthenticated />}>
-          <Route path="/listings/new" element={<p>보호된 등록 폼</p>} />
+        <Route element={<SiteLayout />}>
+          <Route path="/" element={<HomePage />} />
+          <Route element={<RequireAuthenticated />}>
+            <Route path="/listings/new" element={<p>보호된 등록 폼</p>} />
+          </Route>
         </Route>
       </Routes>
     </MemoryRouter>
@@ -67,7 +70,7 @@ it("completes the callback and signs out without rendering the access token", as
 
 it("mounts protected UI for an authenticated Cognito session", async () => {
   setup("/auth/callback");
-  fireEvent.click(await screen.findByRole("link", { name: "상품 등록 화면 열기" }));
+  fireEvent.click(await screen.findByRole("link", { name: "상품 등록하기" }));
   expect(screen.getByText("보호된 등록 폼")).toBeInTheDocument();
 });
 
