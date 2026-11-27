@@ -10,31 +10,40 @@ BidFlow는 단순한 CRUD 경매 서비스가 아니라 **동시 입찰의 정�
 
 | 영역 | 현재 상태 | 설명 |
 |---|---|---|
-| 상품 등록 | 구현됨 | SeaweedFS(S3 호환) presigned upload와 상품·경매 생성 API |
-| 상품 검색 | 구현됨 | OpenSearch 검색·필터와 검색 결과 → 경매 상세 이동 |
+| 상품 등록 | 구현됨 | 사진 미리보기·개별 재시도, SeaweedFS(S3 호환) 직접 업로드, 날짜·시·분 단위 경매 등록 |
+| 상품 검색·상세 | 구현됨 | OpenSearch 검색·필터·정렬, 목록 대표 사진과 상세 갤러리. 공개된 경매의 등록 사진에만 짧은 수명의 읽기 주소 발급 |
 | 입찰 엔진 | 구현됨 | Redis Lua 직접/자동 입찰, 요청 재실행, Redis 복구 |
 | 자동 연장·종료 | 구현됨 | 마감까지 5분 미만일 때 입찰 승인 시 기존 종료 시각 +5분. 낙찰·유찰 확정, 본인 결과 조회 |
 | Kafka·Outbox | 구현됨 | 경매별 Key, Consumer 멱등성, DLT 계약 |
 | Cognito 인증 | 구현·로컬 대역 검증 | PKCE와 보호 REST·STOMP 연동. 실제 User Pool 로그인은 미검증 |
-| Browser E2E | 로컬 검증 | 검색 포함 기능 5개와 새 경매의 원장·이벤트 교차 검사 통과 |
+| Browser E2E | 로컬 검증 | 실제 로컬 경매 흐름 5개, 반응형 UI 5개, 모의 Cognito 2개 통과 |
 | k6·장애 실험 | 로컬 실측 | 단일 경매 20 VU 누적 1,000건, 분산 입찰과 정산 Consumer·Redis·OpenSearch 중단 후 복구 |
 | AWS 배포 | 설계·정적 검증 | Terraform과 검증 Runbook 준비. 실제 배포·청구·Destroy 검증은 미실행 |
 
 ## 핵심 시연과 결과
 
-마감 1분 전 두 사용자의 자동 입찰이 경쟁하면 기존 마감이 5분 연장된다. 새 마감에 두 화면은 공개 낙찰가 21,000원으로 일치하지만 로그인한 각 사용자는 자신의 낙찰·패찰만 확인한다. [로컬 Browser 시연 재현](docs/reports/issue-099-playwright-e2e.md)
+판매자가 사진을 등록하면 구매자는 검색 결과에서 대표 사진과 가격을 비교하고, 상세에서 사진·현재가·마감 시각을 확인한 뒤 입찰한다. 로컬 검증에서는 **같은 경매의 사진 업로드부터 12,000원 직접 입찰, 공개 낙찰가·본인 낙찰 확인까지** 이어서 확인했다. [실행 결과와 재현 방법](docs/reports/issue-376-marketplace-ui-regression.md)
 
-같은 테스트 경매를 두 브라우저 세션에서 캡처했다. 공개 가격은 같고, 본인 결과만 다르다.
+![BidFlow 경매 상세 화면: 상품 사진과 현재가·마감 시각·입찰 동작](docs/design-previews/marketplace/issue-376-1280.jpg)
+
+[390px 모바일 캡처](docs/design-previews/marketplace/issue-376-390.jpg) · 화면에 사용한 상품·사진은 테스트 예시다.
+
+마감 1분 전 두 사용자의 자동 입찰이 경쟁하면 기존 마감이 5분 연장된다. 새 마감에 두 화면은 공개 낙찰가 21,000원으로 일치하지만, 로그인한 각 사용자는 자신의 낙찰·패찰만 확인한다. [자동 입찰 시연 재현](docs/reports/issue-099-playwright-e2e.md)
+
+<details>
+<summary>이전 로컬 시연 증적: 같은 공개 가격, 다른 본인 결과</summary>
 
 | 입찰자 A — 낙찰 | 입찰자 B — 패찰 |
 |---|---|
 | ![공개 낙찰가 21,000원과 본인 낙찰 표시](docs/reports/evidence/issue-021-auction-winner.png) | ![공개 낙찰가 21,000원과 본인 패찰 표시](docs/reports/evidence/issue-021-auction-outbid.png) |
 
+</details>
+
 - **분산 입찰:** 경매 6개, 20 VU 유지 구간 2분. 2,535건 모두 접수됐고, 접수 P95는 **41.88ms**, 서버 요청 기록부터 처리 시작까지 P95는 **1,338.53ms**였다. 미처리와 중복 원장은 0건이었다. 최종 DB 커밋이나 브라우저 결과 전달 지연은 측정하지 않았다. [부하 실측](docs/reports/issue-019-distributed-load-baseline.md)
 - **단일 경매 누적 1,000건:** 20 VU × 50회, 요청·원장·결과 각각 1,000개. 승인 207건·정상 거절 793건·미처리 0건, 접수 P95 **290.48ms**·P99 **713.15ms**, HTTP 오류율 0%였다. 공유 로컬 환경 한 번의 결과이며 P95 기준 여유는 약 9.52ms뿐이다. [실행·복원 증적](docs/reports/issue-019-instrumented-rerun.md)
 - **별도 정산 대기 관측:** 20 VU 누적 1,000건을 모두 접수했고 P95는 **165.66ms**였다. 같은 실행에서 검증용 정산 SELECT가 서버의 4초 제한에 걸려 원장·화면 대조를 끝내지 못했다. 기준 실행 대비 성능 개선이나 정산 자체의 실패로 해석하지 않는다. [대기 관측 결과](docs/reports/issue-019-settlement-wait-live.md)
-- **기능 E2E:** 등록/유찰·자동입찰/낙찰·직접입찰 재시도·재연결·검색의 5개가 실패/skip/retry 없이 통과했다. 새 경매 8개의 원장·이벤트도 사후 SQL로 대조했다. 로컬 테스트 인증/Clock 조건이며 Cognito/AWS 검증은 아니다. [회귀 결과](docs/reports/issue-020-local-functional-regression.md)
-- **인증 브라우저 테스트:** 합성 로그인·API·STOMP로 정상 PKCE 로그인과 잘못된 콜백 차단을 각각 두 번 검증했다. 실제 Cognito 서비스나 기존 로컬 DB는 사용하지 않았다. [재현 방법](docs/specs/issue-005-cognito-frontend.md#로컬-chromium-재현)
+- **기능 E2E:** [최신 로컬 회귀 5개](docs/reports/issue-376-marketplace-ui-regression.md)는 사진부터 낙찰까지, 유찰, 자동 입찰·연장, 직접 입찰 멱등성, 재연결을 확인했다. 새 경매 8개의 원장·이벤트를 대조한 SQL은 [이전 별도 실행](docs/reports/issue-020-local-functional-regression.md)의 증적이다.
+- **UI·인증 브라우저 테스트:** 320·390·768·1280px에서 가로 넘침과 키보드 포커스를 확인했다. 정상 PKCE 로그인·잘못된 콜백 차단은 합성 로그인·API·STOMP로 검증했다. [재현 방법](docs/reports/issue-376-marketplace-ui-regression.md#다시-실행하기)
 - **장애 복구:** 정산 Consumer만 멈춰도 입찰 접수는 유지됐고, 재시작 후 대기 3건이 중복 없이 정산됐다. 반면 검색 그룹 Lag가 0이어도 DLT로 이동한 이벤트의 문서는 검색에서 빠졌다. [장애 사례와 회고](docs/reports/issue-102-portfolio-retrospective.md)
 
 ## 핵심 흐름
@@ -53,6 +62,8 @@ BidFlow는 단순한 CRUD 경매 서비스가 아니라 **동시 입찰의 정�
 
 | 기술 | 담당 문제 | 선택 근거 |
 |---|---|---|
+| React · TypeScript · Vite | 검색·출품·입찰의 화면 상태 | 순수 Reducer로 상태 전이를 테스트하고, 별도 SSR 서버 없이 배포할 정적 파일로 빌드 |
+| Spring Boot | 경매 API와 비동기 작업의 서버 경계 | 트랜잭션으로 요청·원장·Outbox의 저장 경계를 표현하고, Kafka Listener와 WebSocket을 같은 애플리케이션에서 연결 |
 | PostgreSQL | 입찰 원장과 낙찰의 최종 사실 | Transaction, 제약조건, 잠금, Outbox를 하나의 내구성 경계로 유지 |
 | Kafka | 경매별 순서·독립 Consumer·이벤트 재생 | `auctionId` Key의 Partition 순서와 Consumer Group별 Offset을 사용 |
 | Redis Lua | 활성 경매의 원자적 가격 계산 | 여러 Key 변경 중간 상태를 노출하지 않고 요청 재시도 결과를 고정 |
@@ -69,27 +80,31 @@ Kafka는 전역 순서나 exactly-once를 보장한다고 주장하지 않는다
 - Java 21
 - Node.js 24
 
-로컬 구성은 PostgreSQL, Kafka, Redis, SeaweedFS를 Docker로 실행한다. OpenSearch는 메모리 사용량 때문에 별도 profile로 분리했다.
+로컬 구성은 PostgreSQL, Kafka, Redis, SeaweedFS를 Docker로 실행한다. 검색까지 시연하려면 OpenSearch가 포함된 구성을 먼저 시작한다.
 
 ```bash
-# 기본 인프라: PostgreSQL, Kafka, Redis, SeaweedFS 및 Kafka Topic
-make local-up
-
-# OpenSearch까지 포함
+# 전체 사용자 흐름: OpenSearch 포함
 make local-up-search
+
+# 검색이 필요 없는 백엔드 확인만 할 경우, 대신 아래 명령을 사용
+# make local-up
 ```
 
-새 터미널에서 백엔드와 프론트엔드를 실행한다.
+저장소 루트에서 백엔드를 실행한다.
 
 ```bash
-# Spring Boot API (로컬 X-Actor-Id adapter 활성화)
 SPRING_PROFILES_ACTIVE=local ./backend/gradlew -p backend :runtime:bootRun
+```
 
-# Vite 개발 서버
+다른 터미널에서 프런트엔드를 실행한다. Vite는 시작할 때 API와 WebSocket 주소가 필요하다.
+
+```bash
 cd apps/web
 npm ci
-npm run dev
+VITE_API_BASE_URL=http://127.0.0.1:8080 VITE_WS_BASE_URL=ws://127.0.0.1:8080 npm run dev -- --host 127.0.0.1 --port 5173 --strictPort
 ```
+
+[http://127.0.0.1:5173/](http://127.0.0.1:5173/)에서 로컬 ID(예: `local-seller`)로 로그인한다. 등록할 때 UTC 기준 시작은 현재보다 10분 이상 뒤, 마감은 시작보다 10분 이상 뒤로 지정한다. 직접 입찰은 경매가 시작된 뒤 판매자와 다른 로컬 ID로 시도한다. 즉시 시작·종료를 재현하려면 [로컬 E2E 실행 순서](docs/reports/issue-099-playwright-e2e.md)를 사용한다.
 
 `local`(또는 `local,e2e`)에서는 Outbox 조회 간격이 100ms다. `local`이 없으면 공통 fallback은 1,000ms로 유지된다. [로컬 대조 실험](docs/reports/issue-019-outbox-delay-aba.md)에서 화면 관측 지연이 줄었지만 유휴 조회와 DB CPU 사용은 늘었다. DEBUG 로그는 기본으로 켜지지 않으며, 이 설정을 위해 AWS에서 로컬 인증 프로필을 사용하지 않는다.
 
@@ -140,7 +155,7 @@ make load-distributed
 
 PR과 main push의 GitHub Actions도 `make verify`를 사용한다. CI는 Java 21·Node 24와 읽기 전용 권한을 사용하며 배포하지 않는다. CI의 whitespace 검사는 기준 SHA부터 변경분을 검사하고, 로컬 기본 실행은 작업 트리와 staged diff를 검사한다. [공통 검증 사양](docs/specs/issue-003-verification-ci.md) · [구현과 검증 결과](docs/reports/issue-003-verification-ci.md)
 
-k6 입력과 실행 방법은 [k6 부하 시나리오](docs/reports/issue-095-k6-bid-load.md), 기존 JSON·SQL·Lag 증적은 [결과·회고](docs/reports/issue-102-portfolio-retrospective.md)에서 확인할 수 있다. Playwright는 [별도 로컬 실행 절차](docs/reports/issue-099-playwright-e2e.md)에 따라 테스트 전용 Clock을 사용한다.
+k6 입력과 실행 방법은 [k6 부하 시나리오](docs/reports/issue-095-k6-bid-load.md), 기존 JSON·SQL·Lag 증적은 [결과·회고](docs/reports/issue-102-portfolio-retrospective.md)에서 확인할 수 있다. 화면만 확인할 때는 `apps/web`에서 `npx playwright install chromium` 후 `npm run test:e2e:ui`를 실행한다(Docker 불필요). 실제 로컬 서비스를 사용하는 Playwright는 [별도 실행 절차](docs/reports/issue-099-playwright-e2e.md)에 따라 테스트 전용 Clock을 사용한다.
 
 ## 문서 지도
 

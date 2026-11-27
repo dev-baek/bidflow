@@ -17,7 +17,9 @@ API는 PostgreSQL에 입찰 요청과 Outbox를 함께 저장한 뒤 `202 RECEIV
 
 재현: [#99 Browser 실행 절차와 전체 시나리오](issue-099-playwright-e2e.md). 기존 로컬 실행 기록: [검색 → 상세 #234](https://github.com/dev-baek/bidflow/pull/234) · [연장 → 종료 #229](https://github.com/dev-baek/bidflow/pull/229) · [종료 후 거절 #236](https://github.com/dev-baek/bidflow/pull/236) · [개인 결과 #240](https://github.com/dev-baek/bidflow/pull/240). 위 시연 순서는 여러 테스트를 묶은 것이며, [README 화면](../../README.md#핵심-시연과-결과)은 그중 로컬 자동입찰 시나리오의 낙찰·패찰 캡처다. [자동 연장 테스트](issue-104-auction-extension.md)는 정확히 5분 남았을 때와 같은 요청을 재실행했을 때 연장하지 않는 경계도 다룬다.
 
-2026년 11월 22일 [기능 회귀](issue-020-local-functional-regression.md)에서는 등록/유찰·자동입찰/낙찰·직접입찰 재시도·재연결·검색의 기존 5개를 한 번씩 실행해 모두 통과했다. 새 경매 8개의 요청/원장/입찰 결과는 각각 8개(승인 7·종료 후 거절 1), 미처리·중복 0개였고 경매 결과와 AuctionEnded 3개를 대조했다. 로컬 테스트 인증/Clock 조건이며 실제 Cognito나 AWS 사용자 여정은 아니다.
+2026년 11월 27일 [경매 마켓 통합 검증](issue-376-marketplace-ui-regression.md)에서는 등록한 JPEG의 목록·상세 표시부터 같은 경매의 12,000원 직접 입찰과 본인 낙찰까지 확인했다. 실제 로컬 서비스 기능 5개와 별도 Chromium 화면 5개, Cognito 대역 2개가 통과했다. 화면 확인용 시각·사진은 테스트 예시이며 운영 데이터와 AWS는 사용하지 않았다.
+
+2026년 11월 22일 [이전 기능 회귀](issue-020-local-functional-regression.md)의 SQL 교차 검사는 별도 증적이다. 새 경매 8개의 요청/원장/입찰 결과는 각각 8개(승인 7·종료 후 거절 1), 미처리·중복 0개였고 경매 결과와 AuctionEnded 3개를 대조했다. 이 수치를 최신 UI 실행의 결과로 합산하지 않는다.
 
 ## 측정 결과: 무엇을 증명했나
 

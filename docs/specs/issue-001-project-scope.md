@@ -161,7 +161,7 @@ MVP에서는 별도의 운영자 CRUD 화면을 만들지 않는다. CloudWatch 
 | 상품 상세·입찰 | 연결 중, 입찰 접수, 처리 대기, 승인, 거절, 자동 연장, 연결 끊김, 종료 |
 | 내 경매 | 예정, 진행 중, 종료, 낙찰, 유찰 |
 
-UI의 목표는 기능의 기술적 흐름을 분명하게 보여주는 것이다. 디자인 시스템 구축이나 복잡한 애니메이션은 범위에서 제외한다.
+UI의 목표는 상품을 빠르게 비교하고 공개 경매 상태와 개인 입찰 결과를 구분하는 것이다. 경매 마켓 화면과 공통 디자인 토큰은 [개정 UI 사양](issue-368-web-design-system.md)을 따른다. 별도 디자인 시스템 제품 구축이나 복잡한 애니메이션은 범위에서 제외한다.
 
 프론트엔드는 React.js와 TypeScript로 구현한다. 화면 상태는 컴포넌트 내부의 임의 분기보다 명시적인 상태 모델, 순수 Reducer와 Selector로 표현하며 상태 전이 테스트를 작성한다.
 
@@ -384,11 +384,12 @@ Redis와 OpenSearch 데이터는 PostgreSQL 원본으로 복원할 수 있어야
 
 ### 12.6 현재 증적과 남은 성공 기준
 
-2026년 11월 25일 기준이다. 목표 자체를 낮추지 않고, 측정한 환경·부하·지연 구간을 구분한다. 아래는 기존 증적 요약이며 새 실행이나 전체 프로젝트 완료 선언이 아니다.
+2026년 11월 27일 기준이다. 목표 자체를 낮추지 않고, 측정한 환경·부하·지연 구간을 구분한다. 아래는 기존 증적 요약이며 새 실행이나 전체 프로젝트 완료 선언이 아니다.
 
 | 기준 | 확보한 증적 | 남은 범위 |
 |---|---|---|
-| 등록부터 낙찰까지 기능 | [로컬 테스트 인증으로 기능 5개](../reports/issue-020-local-functional-regression.md)와 원장/결과 교차 검사 통과 | 배포 환경의 동일 사용자 여정은 [#20](https://github.com/dev-baek/bidflow/issues/20)·[#91](https://github.com/dev-baek/bidflow/issues/91)에 남아 있음 |
+| 등록부터 낙찰까지 기능 | [최신 로컬 통합 검증](../reports/issue-376-marketplace-ui-regression.md): 기능 5개 통과, 같은 경매에서 사진 업로드·검색/상세 사진 읽기·직접 입찰·낙찰까지 검증. 원장/이벤트 교차 검사는 [이전 별도 실행](../reports/issue-020-local-functional-regression.md) | 배포 환경의 동일 사용자 여정은 [#356](https://github.com/dev-baek/bidflow/issues/356)에서 별도 승인 후 검증 |
+| 반응형 화면과 키보드 | [로컬 Chromium UI 5개](../reports/issue-376-marketplace-ui-regression.md): 320·390·768·1280px에서 화면 폭, 포커스, 입력 오류, 화면 상태를 검증 | 스크린리더 실기기 검증과 접근성 전수 인증은 범위 밖 |
 | Cognito 인증 | [로컬 Chromium 대역](issue-005-cognito-frontend.md#로컬-chromium-재현) 2개 시나리오를 각각 두 번 통과. PKCE, 공개/보호 요청 경계, 401 뒤 STOMP 연결 종료 확인 | 실제 User Pool·App Client와 배포 환경의 토큰 교환은 [#39](https://github.com/dev-baek/bidflow/issues/39)·[#91](https://github.com/dev-baek/bidflow/issues/91) 승인 후 확인 |
 | 같은 경매 1,000건 | [기준 실행](../reports/issue-019-instrumented-rerun.md): 20 VU 누적 1,000건, 요청/원장/결과 일치, 미처리/중복 0 | [별도 대기 관측 실행](../reports/issue-019-settlement-wait-live.md)은 서버의 정산 검증 SELECT 4초 제한으로 원장·화면 대조 미완료. 12.2의 1,000건 전체 동시 HTTP도 미검증 |
 | 접수 API P95 300ms 이하 | 기준 실행 290.48ms, 대기 관측 실행 165.66ms. 두 실행의 접수 HTTP 오류율은 각각 0% | 각각의 공유 Mac 실측. 별도 관측 조건이므로 개선율·운영 SLA로 해석하지 않으며, 접수 통과를 정산 통과로 세지 않음 |
