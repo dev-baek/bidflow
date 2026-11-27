@@ -57,11 +57,33 @@ test('capture separates correlation from attachments and preserves original fail
   const empty=createFailureJournal({runId:uuid(2),source,now:()=>0});let queried=false;
   const e=await captureFailure(empty,{...io,sql:()=>{queried=true;}});assert.equal(queried,false);assert.equal(e.diagnosticsComplete,false);
 });
-test('timeouts do not mutate saved evidence or start late attachments',async()=>{
+test('budget timeout does not mutate saved evidence or start late attachments',async t=>{
+  t.mock.timers.enable({apis:['setTimeout']});
+  t.mock.method(Date,'now',()=>1000);
+  t.mock.method(performance,'now',()=>0);
   const {journal}=fixture();let resolve,attached=false,saved;
-  const result=await captureFailure(journal,{sql:()=>new Promise(r=>{resolve=r;}),screenshot:async()=>({bytes:1,sha256:'b'.repeat(64)}),detach:()=>{},write:e=>{saved=e;return '/external/evidence.json';},attach:async()=>{attached=true;}},{budgetMs:5});
-  const before=JSON.stringify(saved);resolve(fixture().sql);await new Promise(r=>setTimeout(r,10));
-  assert.equal(result.diagnosticsComplete,false);assert.equal(JSON.stringify(saved),before);assert.equal(attached,false);
+  const capture=captureFailure(journal,{sql:()=>new Promise(r=>{resolve=r;}),screenshot:async()=>({bytes:1,sha256:'b'.repeat(64)}),detach:()=>{},write:e=>{saved=e;return '/external/evidence.json';},attach:async()=>{attached=true;}},{budgetMs:5});
+  await new Promise(setImmediate);
+  t.mock.timers.tick(5);
+  const result=await capture;
+  assert.equal(saved.capture.sql,'TIMEOUT');
+  const before=JSON.stringify(saved);resolve(fixture().sql);await new Promise(setImmediate);
+  assert.equal(result.diagnosticsComplete,false);assert.equal(JSON.stringify(saved),before);
+  assert.equal(result.attached,false);assert.equal(attached,false);
+});
+test('a SQL-only timeout still permits attaching partial evidence within the total budget',async t=>{
+  t.mock.timers.enable({apis:['setTimeout']});
+  let elapsed=0;
+  t.mock.method(performance,'now',()=>elapsed);
+  const {journal}=fixture();let attachedPath;
+  const capture=captureFailure(journal,{sql:()=>new Promise(()=>{}),screenshot:async()=>({bytes:1,sha256:'b'.repeat(64)}),detach:()=>{},write:()=>'/external/evidence.json',attach:async path=>{attachedPath=path;}});
+  await new Promise(setImmediate);
+  elapsed=5000;
+  t.mock.timers.tick(5000);
+  const result=await capture;
+  assert.equal(result.data.capture.sql,'TIMEOUT');
+  assert.equal(result.diagnosticsComplete,false);
+  assert.equal(result.attached,true);assert.equal(attachedPath,'/external/evidence.json');
 });
 test('probe is opt-in and restricted to one local case with no parallelism or retry',()=>{
   const input={flag:'direct-bid',web:'http://127.0.0.1:5173',api:'http://127.0.0.1:8080',title:'직접 입찰 재시도는 같은 요청이고 같은 사용자의 후속 입찰은 새 요청이다',workers:1,retries:0};
