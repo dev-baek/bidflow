@@ -20,6 +20,7 @@
 
 - 저장소 루트: `make verify` (백엔드 단위 테스트, 프런트 137개, 스크립트 158개, 빌드). 브라우저 테스트는 아래처럼 별도로 실행한다.
 - `apps/web`: `npm run test:e2e:ui` (합성 화면 테스트 5개, 서버는 명령이 시작한다). 자동 실패 스크린샷·trace는 `test-results-ui/`, HTML 보고서는 `playwright-report-ui/`에 보관한다. 실패한 테스트의 `trace.zip`은 `npx playwright show-trace <trace.zip 경로>`로 로컬에서 확인한다. [실패 증적 검증](issue-020-failure-artifacts.md#반응형-ui-테스트의-실패-증적)
+- GitHub Verify: `make verify` 통과 후 [Chromium headless shell과 Linux 의존성](https://playwright.dev/docs/browsers)을 설치해 같은 합성 UI 테스트를 실행한다. CI에서는 로그로 결과를 확인하며 스크린샷·trace·HTML 보고서는 업로드하지 않는다. 실제 API·Cognito를 연결하는 E2E는 이 워크플로에 포함하지 않는다.
 - `apps/web`: `npm run test:e2e -- --config playwright.cognito.config.ts` (실제 Cognito를 호출하지 않는 모의 인증 2개).
 - [로컬 검색 환경 실행 순서](issue-099-playwright-e2e.md)에 따라 서버를 준비한 뒤 `apps/web`에서 핵심 흐름 5개를 실행한다. 로컬 테스트 Clock을 공유하므로 한 워커로 실행한다.
 

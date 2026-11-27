@@ -153,7 +153,7 @@ make load-distributed
 
 [전체 백엔드 재검증](docs/reports/issue-020-backend-full-check.md)에서는 192개(통합 태그 46개 포함)가 실패/skip 없이 통과했다. 첫 실행은 Docker 소켓 mount 문제로 45개가 skip됐으므로 Gradle 성공만으로 통합 성공을 판단하지 않았다. 이 Mac의 Docker Desktop에서는 호출 시 `TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE=/var/run/docker.sock`을 별도로 지정했으며 전역 설정은 바꾸지 않았다. 재현 명령과 적용 범위는 보고서에 있다.
 
-PR과 main push의 GitHub Actions도 `make verify`를 사용한다. CI는 Java 21·Node 24와 읽기 전용 권한을 사용하며 배포하지 않는다. CI의 whitespace 검사는 기준 SHA부터 변경분을 검사하고, 로컬 기본 실행은 작업 트리와 staged diff를 검사한다. [공통 검증 사양](docs/specs/issue-003-verification-ci.md) · [구현과 검증 결과](docs/reports/issue-003-verification-ci.md)
+PR과 main push의 GitHub Actions는 `make verify` 뒤에 합성 데이터 기반 브라우저 스모크 테스트(`test:e2e:ui`)를 실행한다. CI는 Java 21·Node 24와 읽기 전용 권한을 사용하며 배포하지 않는다. CI의 whitespace 검사는 기준 SHA부터 변경분을 검사하고, 로컬 기본 실행은 작업 트리와 staged diff를 검사한다. [공통 검증 사양](docs/specs/issue-003-verification-ci.md) · [UI 회귀 검증](docs/reports/issue-376-marketplace-ui-regression.md)
 
 k6 입력과 실행 방법은 [k6 부하 시나리오](docs/reports/issue-095-k6-bid-load.md), 기존 JSON·SQL·Lag 증적은 [결과·회고](docs/reports/issue-102-portfolio-retrospective.md)에서 확인할 수 있다. 화면만 확인할 때는 `apps/web`에서 `npx playwright install chromium` 후 `npm run test:e2e:ui`를 실행한다(Docker 불필요). 실제 로컬 서비스를 사용하는 Playwright는 [별도 실행 절차](docs/reports/issue-099-playwright-e2e.md)에 따라 테스트 전용 Clock을 사용한다.
 
@@ -174,7 +174,7 @@ k6 입력과 실행 방법은 [k6 부하 시나리오](docs/reports/issue-095-k6
 
 [두 사용자 동시 제출 10회](docs/reports/issue-019-concurrent-snapshot-fix.md)에서는 요청 20건과 SQL 대조가 모두 완료됐고 화면 수렴 관측 P95는 443ms였다. 개인 메시지의 최신 snapshot과 요청별 정산을 혼동한 초기 관측 실패를 재현·수정했다. 두 건씩 겹친 제한된 실험이며, 20건 전체 동시 부하나 AWS SLO로 일반화하지 않는다.
 
-초기 E2E 시간 초과 2건은 [세 번의 재시작 관측](docs/reports/issue-019-startup-observation.md)에서 재현되지 않았고 원인은 미확정이다. 공통 검증은 `make verify`로 실행하며, 통합·브라우저·부하·AWS 검증은 별도 범위로 유지한다.
+초기 E2E 시간 초과 2건은 [세 번의 재시작 관측](docs/reports/issue-019-startup-observation.md)에서 재현되지 않았고 원인은 미확정이다. 공통 검증은 `make verify`로 실행하며, 실제 서비스를 연결하는 통합·브라우저 E2E와 부하·AWS 검증은 합성 UI CI와 분리한다.
 
 AWS는 상시 운영하지 않는다. 별도 승인 뒤 짧게 생성하고 배포·기능·비용을 확인한 뒤 삭제하는 계획이다. 실제 AWS 계정에서 실행한 결과는 아직 없다.
 
