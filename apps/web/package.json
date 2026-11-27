@@ -11,7 +11,8 @@
     "build": "tsc -b && vite build",
     "test": "vitest",
     "test:run": "vitest run",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --config playwright.ui.config.ts"
   },
   "dependencies": {
     "@stomp/stompjs": "^7.2.0",

@@ -64,7 +64,7 @@ async function fixture(page: Page, mismatch = false) {
       }
       if (pathname !== "/api/v1/auctions/example" || request.method() !== "GET") return route.abort();
       return route.fulfill({ headers: cors, json: {
-        ...listing, thumbnailObjectKey: null, auctionVersion: 1, outcome: null, finalPrice: null,
+        ...listing, hasThumbnail: false, auctionVersion: 1, outcome: null, finalPrice: null,
       } });
     }
     return route.abort();

@@ -65,12 +65,6 @@
   text-decoration: underline;
 }
 
-.brand-link:focus-visible,
-.site-header a:focus-visible {
-  outline: var(--focus-width) solid var(--color-focus);
-  outline-offset: var(--focus-offset);
-}
-
 .marketplace-entry {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
@@ -169,11 +163,6 @@
 .market-home__categories li a:hover {
   border-color: var(--color-action);
   background: var(--color-info-surface);
-}
-
-.market-home__categories li a:focus-visible {
-  outline: var(--focus-width) solid var(--color-focus);
-  outline-offset: var(--focus-offset);
 }
 
 .market-home__categories small,

@@ -60,11 +60,6 @@
 
 .auth-browse:hover { text-decoration: underline; }
 
-.auth-browse:focus-visible {
-  outline: var(--focus-width) solid var(--color-focus);
-  outline-offset: var(--focus-offset);
-}
-
 @media (min-width: 768px) {
   .auth-stack { margin-block-start: var(--space-12); }
   .auth-panel { padding: var(--space-8); }

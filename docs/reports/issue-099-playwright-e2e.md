@@ -1,5 +1,7 @@
 # [Issue #99] Playwright E2E 실행 기준
 
+최신 경매 마켓 화면의 반응형 검증과 실제 사진 출품 → 검색 → 입찰·낙찰 흐름은 [#376 로컬 UI 통합 검증](issue-376-marketplace-ui-regression.md)에 정리했다.
+
 최근 [#20 로컬 기능 회귀 결과](issue-020-local-functional-regression.md): #292 병합 소스에서 검색을 포함한 기능 5개 통과, 실패/skip/retry 0, 새 경매의 원장·이벤트 교차 검사와 기존 API 복원 완료. 지연 측정 2개와 AWS 사용자 여정은 별도 범위다.
 
 [실패 캡처 확인](issue-020-failure-artifacts.md)은 외부 임시 fixture의 고의 실패 1회에서 자동 screenshot·trace·console 기록을 확인했다. 업무 E2E 통과나 실제 HTTP/WS/SQL 장애 진단과 구분하며, 원문 artifact는 저장소에 커밋하지 않았다.

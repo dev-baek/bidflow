@@ -2,6 +2,7 @@
 
 - 상태: 경매 마켓 방향 개정안
 - 상위 이슈: [#368 전 화면 UI 개편](https://github.com/dev-baek/bidflow/issues/368)
+- 로컬 검증과 캡처: [#376 통합 검증 보고서](../reports/issue-376-marketplace-ui-regression.md)
 - 범위: React·TypeScript·Vite와 기존 CSS 및 공통 UI를 재사용한다. 입찰·정산·인증 계약, 업로드 규칙, DB 스키마, AWS 배포는 변경하지 않는다. 공개 상품 사진의 읽기 계약만 #390에서 별도로 검토한다.
 
 ## S. 화면과 사용자 흐름
