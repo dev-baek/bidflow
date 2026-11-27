@@ -1,6 +1,7 @@
 @import "./styles/tokens.css";
 @import "./styles/form-controls.css";
 @import "./styles/page-feedback.css";
+@import "./styles/auth.css";
 
 :root {
   color: var(--color-text);
@@ -165,12 +166,6 @@ h1 {
   opacity: 0.65;
 }
 
-.auth-card .ui-field { margin-block-start: var(--space-6); }
-.auth-card .ui-button {
-  inline-size: 100%;
-  margin-block-start: var(--space-8);
-}
-
 .auth-summary {
   display: flex;
   gap: 12px;
@@ -190,8 +185,4 @@ h1 {
   color: #3157d5;
   font: inherit;
   font-weight: 800;
-}
-
-.auth-card {
-  max-width: 560px;
 }

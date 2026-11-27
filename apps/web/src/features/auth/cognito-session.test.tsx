@@ -47,7 +47,9 @@ it("starts managed login and never accepts a local developer ID in Cognito mode"
   expect(screen.queryByLabelText("로컬 개발자 ID")).not.toBeInTheDocument();
   fireEvent.click(screen.getByText("로컬 요청"));
   expect(screen.getByLabelText("session state")).toHaveTextContent("ANONYMOUS");
-  fireEvent.click(screen.getByRole("button", { name: "Cognito 로그인" }));
+  fireEvent.click(screen.getByRole("button", { name: "로그인 계속하기" }));
+  expect(screen.getByRole("button", { name: "연결 중" })).toBeDisabled();
+  expect(screen.getByText("로그인 화면으로 이동하고 있습니다.")).toHaveAttribute("role", "status");
   await waitFor(() => expect(redirect).toHaveBeenCalledWith("https://login.example.test/oauth2/authorize"));
   expect(begin).toHaveBeenCalledTimes(1);
 });
@@ -95,6 +97,18 @@ it("shows a safe login error when the callback is rejected", async () => {
   setup("/auth/callback", vi.fn(async () => { throw Error("private detail"); }));
   expect(await screen.findByRole("alert")).toHaveTextContent("로그인에 실패했습니다.");
   expect(screen.queryByText("private detail")).not.toBeInTheDocument();
+});
+
+it("shows callback progress, then offers managed sign-in again when the session is expired", async () => {
+  let finish!: (session: { accessToken: string; expiresAt: number }) => void;
+  const { begin } = setup("/auth/callback", vi.fn(() => new Promise(resolve => { finish = resolve; })));
+  expect(screen.getByRole("heading", { name: "로그인 확인 중" })).toBeVisible();
+  expect(screen.getByText("로그인을 확인하고 있습니다.")).toHaveAttribute("role", "status");
+  await act(async () => finish({ accessToken: "expired-token", expiresAt: Date.now() - 1 }));
+  expect(await screen.findByRole("alert")).toHaveTextContent("세션이 만료되었습니다.");
+  expect(screen.queryByText("expired-token")).not.toBeInTheDocument();
+  await act(async () => fireEvent.click(screen.getByRole("button", { name: "로그인 계속하기" })));
+  expect(begin).toHaveBeenCalledTimes(1);
 });
 
 it("does not restore a session if a callback resolves after sign-out", async () => {

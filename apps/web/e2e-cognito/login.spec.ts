@@ -76,7 +76,7 @@ test("Chromium performs PKCE and sends the access token only on protected REST a
   const auth = await fixture(page);
   await page.goto("/login");
   await expect(page.getByLabel("로컬 개발자 ID")).toHaveCount(0);
-  await page.getByRole("button", { name: "Cognito 로그인" }).click();
+  await page.getByRole("button", { name: "로그인 계속하기" }).click();
   await expect(page.getByText("Cognito로 로그인했습니다.")).toBeVisible();
   await expect(page).toHaveURL(app + "/");
   expect(auth.exchanges).toHaveLength(1);
@@ -114,13 +114,13 @@ test("Chromium performs PKCE and sends the access token only on protected REST a
   expect(bid?.headers["idempotency-key"]).toBeTruthy();
   await expect.poll(auth.closed).toBe(1);
   await page.getByRole("link", { name: "로그인" }).click();
-  await expect(page.getByRole("button", { name: "Cognito 로그인" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "로그인 계속하기" })).toBeVisible();
 });
 
 test("Chromium rejects a mismatched callback without exchanging the code", async ({ page }) => {
   const auth = await fixture(page, true);
   await page.goto("/login");
-  await page.getByRole("button", { name: "Cognito 로그인" }).click();
+  await page.getByRole("button", { name: "로그인 계속하기" }).click();
   await expect(page.getByRole("alert")).toHaveText("로그인에 실패했습니다. 다시 시도하세요.");
   await expect(page).toHaveURL(app + "/login");
   expect(auth.exchanges).toHaveLength(0);
