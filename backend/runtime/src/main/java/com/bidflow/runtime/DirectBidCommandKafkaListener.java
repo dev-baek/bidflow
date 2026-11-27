@@ -69,16 +69,16 @@ class DirectBidCommandKafkaListener {
     private void settle(BidCommandPayload payload, Instant now) {
         DirectBidResult result = execute(payload, now);
         if (result.code() == DirectBidResultCode.NOT_ACTIVE) result = recoverAndExecute(payload, now);
-        boolean persisted = ledger.persist(new BidSettlementCommand(
+        var settled = ledger.persist(new BidSettlementCommand(
                 payload.bidRequestId(), payload.auctionId(), payload.bidderId(), payload.amount(), result, now, payload.correlationId()));
-        if (persisted) {
-            try (LogContext.Scope ignored = LogContext.fields(Map.of("event", "bid.settled", "bidRequestId", payload.bidRequestId().toString(),
-                    "auctionId", payload.auctionId().toString(), "outcome", result.code().name()))) {
-                log.info("bid settlement completed");
-            }
-        }
-        if (persisted && "AUTO_MAX".equals(payload.bidKind()) && result.code() == DirectBidResultCode.ACCEPTED) {
+        if (settled.isEmpty()) return;
+        DirectBidResultCode decision = settled.orElseThrow();
+        if ("AUTO_MAX".equals(payload.bidKind()) && decision == DirectBidResultCode.ACCEPTED) {
             automaticMaxima.save(new AutoBidMaximum(payload.auctionId(), payload.bidderId(), payload.amount()));
+        }
+        try (LogContext.Scope ignored = LogContext.fields(Map.of("event", "bid.settled", "bidRequestId", payload.bidRequestId().toString(),
+                "auctionId", payload.auctionId().toString(), "outcome", decision.name()))) {
+            log.info("bid settlement completed");
         }
     }
 

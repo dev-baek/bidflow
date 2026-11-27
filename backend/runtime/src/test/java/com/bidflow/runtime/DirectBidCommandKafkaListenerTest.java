@@ -72,6 +72,23 @@ class DirectBidCommandKafkaListenerTest {
     }
 
     @Test
+    void doesNotSaveAutomaticMaximumWhenPostgresRejectsTheLuaApproval() {
+        DirectBidCommandKafkaListener listener = new DirectBidCommandKafkaListener(new ObjectMapper(),
+                command -> { throw new AssertionError("DIRECT must not run"); },
+                command -> new DirectBidResult(DirectBidResultCode.ACCEPTED, 12_000L,
+                        command.bidderId(), command.maximum(), command.now().plusSeconds(300), 2L),
+                command -> {
+                    assertThat(command.accepted()).isTrue();
+                    return Optional.of(DirectBidResultCode.AUCTION_ENDED);
+                },
+                maximum -> { throw new AssertionError("rejected maximum must not be saved"); }, null,
+                (event, effect) -> effect.run(), Clock.systemUTC());
+
+        listener.consume(new ConsumerRecord<>("bid-command", 0, 11L, AUCTION_ID.toString(),
+                event().replace("\"DIRECT\"", "\"AUTO_MAX\"")));
+    }
+
+    @Test
     void restoresADeletedRedisStateThenRetriesTheSameCommandOnce() {
         NotActiveThenAcceptedProcessor processor = new NotActiveThenAcceptedProcessor();
         CapturingLedger ledger = new CapturingLedger();
@@ -117,7 +134,10 @@ class DirectBidCommandKafkaListenerTest {
 
     private static final class CapturingLedger implements BidLedgerRepository {
         private int calls;
-        @Override public boolean persist(BidSettlementCommand command) { calls++; return true; }
+        @Override public Optional<DirectBidResultCode> persist(BidSettlementCommand command) {
+            calls++;
+            return Optional.of(command.result().code());
+        }
     }
 
     private static final class DuplicateIgnoringProcessor implements ConsumerEventProcessor {

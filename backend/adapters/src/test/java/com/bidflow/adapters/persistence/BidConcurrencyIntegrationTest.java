@@ -114,9 +114,9 @@ class BidConcurrencyIntegrationTest {
                 new DirectBidResult(DirectBidResultCode.ACCEPTED, 13_000L, "bidder-1", 13_000L, NOW.plusSeconds(600), 2L),
                 NOW, "concurrency-test");
 
-        List<Boolean> results = concurrently(ignored -> ledger.persist(command));
+        var results = concurrently(ignored -> ledger.persist(command));
 
-        assertThat(results).filteredOn(Boolean::booleanValue).hasSize(1);
+        assertThat(results).filteredOn(java.util.Optional::isPresent).containsExactly(java.util.Optional.of(DirectBidResultCode.ACCEPTED));
         assertThat(jdbc.queryForObject("select count(*) from bid_ledger where bid_request_id = ?", Integer.class, fixture.requestId())).isEqualTo(1);
         assertThat(jdbc.queryForObject("select count(*) from outbox_event where aggregate_id = ? and topic = 'bid-event'", Integer.class, fixture.auctionId())).isEqualTo(1);
         assertThat(jdbc.queryForObject("select count(*) from bid_request where bid_request_id = ? and status = 'ACCEPTED'", Integer.class, fixture.requestId())).isEqualTo(1);
